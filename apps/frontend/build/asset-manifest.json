@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/static/css/main.e3abb54b.css",
+    "main.js": "/static/js/main.e2a889af.js",
+    "static/media/candle_light_view_couple.jpg": "/static/media/candle_light_view_couple.edb694ef9f4db74ebe55.jpg",
+    "static/media/datifyy-logo.png": "/static/media/datifyy-logo.6448e0fb8bc27d1f8801.png",
+    "index.html": "/index.html",
+    "main.e3abb54b.css.map": "/static/css/main.e3abb54b.css.map",
+    "main.e2a889af.js.map": "/static/js/main.e2a889af.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e3abb54b.css",
+    "static/js/main.e2a889af.js"
+  ]
+}
