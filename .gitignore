@@ -5,6 +5,10 @@ dist
 tmp
 /out-tsc
 
+.env
+
+services/nodejs-service/.env
+
 # dependencies
 node_modules
 
