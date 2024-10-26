@@ -1,20 +1,25 @@
 // src/index.ts
 import express from "express";
 import { DataSource } from "typeorm";
-import * as dotenv from 'dotenv';
-dotenv.config();
+import * as dotenv from "dotenv";
+import eventRoutes from './routes/eventRoutes';
+import morgan from 'morgan';
+import cors from 'cors';
 
-const app = express();
+dotenv.config();
 const PORT = process.env.SERVER_PORT || 4000;
 
+const app = express();
+app.use(morgan('combined'));
+app.use(cors());
 app.use(express.json());
 
 const AppDataSource = new DataSource({
   type: "postgres",
   host: process.env.POSTGRES_DB_HOST,
-  port:  Number(process.env.POSTGRES_DB_PORT) || 4000,
-  username:  process.env.POSTGRES_USERNAME,
-  password:  process.env.POSTGRES_PASSWORD,
+  port: Number(process.env.POSTGRES_DB_PORT) || 4000,
+  username: process.env.POSTGRES_USERNAME,
+  password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB_NAME,
   synchronize: false,
   logging: true,
@@ -23,6 +28,8 @@ const AppDataSource = new DataSource({
     rejectUnauthorized: false,
   },
 });
+export { AppDataSource };
+
 
 AppDataSource.initialize()
   .then(() => {
@@ -37,7 +44,11 @@ app.get("/", (req, res) => {
   res.send("Welcome to Datifyy Express Server!");
 });
 
+app.use('/api/v1', eventRoutes);
+
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
