@@ -5,6 +5,7 @@ import { Box, Typography, Button, Container } from "@mui/material";
 import backgroundImage from "../assets/images/candle_light_view_couple.jpg"; // Update the path as necessary
 import "./home.css";
 import Header from "../global-header/global_header";
+import Events from "../events/events";
 
 const Home: React.FC = () => {
   return (
@@ -12,9 +13,11 @@ const Home: React.FC = () => {
       <Header />
       <Box
         className="home-container"
-        style={{ backgroundImage: `url(${backgroundImage})` }} // Inline style for the background image
+        style={{ backgroundImage: `url(${backgroundImage})`, }} // Inline style for the background image
       >
-        <Container maxWidth="sm" sx={{ position: "relative", zIndex: 1 }}>
+        <Container maxWidth="sm" sx={{ position: "relative", zIndex: 1, paddingLeft: 0,paddingRight: 0, maxWidth: '800px !important' }}>
+          <Events />
+
           <Typography variant="h2" className="home-title">
             Welcome to Datifyy
           </Typography>
