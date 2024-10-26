@@ -1,0 +1,13 @@
+[
+  {
+    "name": "default",
+    "type": "postgres",
+    "host": "dpg-cpu1nn1u0jms73eht15g-a.oregon-postgres.render.com",
+    "port": 5432,
+    "username": "admin123",
+    "password": "EGLGmwBkfN34SnCZXqA5YDLbXTYYP69w",
+    "database": "",
+    "synchronize": false,
+    "entities": ["entities/*.js"]
+  }
+]
