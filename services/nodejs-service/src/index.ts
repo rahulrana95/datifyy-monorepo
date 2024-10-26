@@ -3,6 +3,7 @@ import express from "express";
 import { DataSource } from "typeorm";
 import * as dotenv from "dotenv";
 import eventRoutes from './routes/eventRoutes';
+import userRoutes from './routes/userRoutes';
 import morgan from 'morgan';
 import cors from 'cors';
 
@@ -45,6 +46,7 @@ app.get("/", (req, res) => {
 });
 
 app.use('/api/v1', eventRoutes);
+app.use('/api/v1', userRoutes);
 
 
 // Start the server
