@@ -16,24 +16,26 @@ const Home: React.FC = () => {
         style={{ backgroundImage: `url(${backgroundImage})`, }} // Inline style for the background image
       >
         <Container maxWidth="sm" sx={{ position: "relative", zIndex: 1, paddingLeft: 0,paddingRight: 0, maxWidth: '800px !important' }}>
-          <Events />
 
-          <Typography variant="h2" className="home-title">
+          <Typography variant="h4" className="home-title">
             Welcome to Datifyy
           </Typography>
-          <Typography variant="h5" className="home-subtitle">
+          <Typography variant="h6" className="home-subtitle">
             Connect with verified people. We verify them using government IDs
             and workplace verification.
           </Typography>
-          <Button
+          {/* <Button
             variant="contained"
             color="primary"
             href="/signup"
             className="home-button"
           >
             Get Started
-          </Button>
+          </Button> */}
+          <Events classes="events_wrapper" />
+
         </Container>
+
         <Box className="overlay" />
       </Box>
     </Box>
