@@ -4,6 +4,7 @@ import "./App.css";
 import { Helmet } from "react-helmet-async";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./home/home";
+import AdminRoute from "./admin/AdminRoute";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
         </Routes>
+        <AdminRoute />
       </Router>
     </div>
   );

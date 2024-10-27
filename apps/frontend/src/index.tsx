@@ -12,7 +12,6 @@ const root = ReactDOM.createRoot(
 root.render(
   <HelmetProvider>
   <ThemeProvider theme={theme}>
- 
     <App />
   </ThemeProvider>
   </HelmetProvider>
