@@ -9,6 +9,8 @@ import {
   useParticipant,
 } from "@videosdk.live/react-sdk";
 import ReactPlayer from "react-player";
+import { useUserStore } from "../stores/userStore";
+import Login from "../login-signup/LiveEventLogin";
 //This is the Auth token, you will use it to generate a meeting and connect to it
 export const authToken: string = process.env.REACT_APP_VIDEO_TOKEN ?? "";
 
@@ -71,24 +73,13 @@ function JoinScreen({
   const onClick = async () => {
     getMeetingAndToken(meetingId);
   };
+  const {isAuthenticated}  = useUserStore();
+
+  if (!isAuthenticated) {
+      return <Login/>
+  }
   return (
     <div>
-      <button
-        onClick={() =>
-          createMultipleMeetings([
-            "3rahul4@gmail.com",
-            "3rahul41@gmail.com",
-            "3rahul42@gmail.com",
-            "3rahul4@gmail.com",
-            "3rahul4@gmail.com",
-            "3rahul4@gmail.com",
-            "3rahul4@gmail.com",
-            "3rahul4@gmail.com",
-          ])
-        }
-      >
-        Createa n meetings
-      </button>
       <input
         type="text"
         placeholder="Enter Meeting Id"
