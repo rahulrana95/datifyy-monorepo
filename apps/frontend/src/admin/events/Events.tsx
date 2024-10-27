@@ -1,6 +1,6 @@
 // src/components/admin/Events.tsx
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Dialog,
@@ -9,70 +9,109 @@ import {
   DialogTitle,
   TextField,
   CircularProgress,
-} from '@mui/material';
+  SelectChangeEvent,
+} from "@mui/material";
+import { MenuItem, Select, FormControl, InputLabel } from "@mui/material";
+import Dropdown from "./dropdown";
+
+const currencyOptions = [
+    { id: "1", value: "USD" },
+    { id: "2", value: "EUR" },
+    { id: "3", value: "JPY" },
+    { id: "4", value: "GBP" },
+    { id: "5", value: "AUD" },
+    { id: "6", value: "CAD" },
+    { id: "7", value: "CHF" },
+    { id: "8", value: "CNY" },
+    { id: "9", value: "SEK" },
+    { id: "10", value: "NZD" },
+    { id: "11", value: "MXN" },
+    { id: "12", value: "SGD" },
+    { id: "13", value: "HKD" },
+    { id: "14", value: "NOK" },
+    { id: "15", value: "KRW" },
+    { id: "16", value: "TRY" },
+    { id: "17", value: "INR" },
+    { id: "18", value: "RUB" },
+    { id: "19", value: "BRL" },
+    { id: "20", value: "ZAR" },
+    // Add more as needed
+  ];
+  
 
 const Events: React.FC = () => {
-    const loading = false;
-    const events = [];
+  const loading = false;
+  const events = [];
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
-    eventdate: '',
+    eventdate: "",
     totalmenstickets: 0,
     totalfemaletickets: 0,
-    menticketprice: '',
-    womenticketprice: '',
-    currencycode: '',
-    mode: '',
-    type: '',
-    title: '',
-    description: '',
+    menticketprice: "",
+    womenticketprice: "",
+    currencycode: "",
+    mode: "",
+    type: "",
+    title: "",
+    description: "",
     photos: [],
     isdeleted: false,
     maxcapacity: 0,
-    registrationdeadline: '',
-    refundpolicy: '',
+    registrationdeadline: "",
+    refundpolicy: "",
     tags: [],
     socialmedialinks: [],
-    createdby: '',  // You should set this based on the current user's ID
-    updatedby: '',  // You should set this based on the current user's ID
+    createdby: "", // You should set this based on the current user's ID
+    updatedby: "", // You should set this based on the current user's ID
   });
-
-
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = event.target;
+    if (
+      (name === "totalmenstickets" || name === "totalfemaletickets") &&
+      Number(value) <= 0
+    ) {
+      return;
+    }
     setFormData({ ...formData, [name]: value });
   };
 
+
   const handleSubmit = async () => {
-       // @ts-expect-error
-    await createEvent({...formData,location: 'delhi'});
+    // @ts-expect-error
+    await createEvent({ ...formData, location: "delhi" });
     setFormData({
-      eventdate: '',
+      eventdate: "",
       totalmenstickets: 0,
       totalfemaletickets: 0,
-      menticketprice: '',
-      womenticketprice: '',
-      currencycode: '',
-      mode: '',
-      type: '',
-      title: '',
-      description: '',
+      menticketprice: "",
+      womenticketprice: "",
+      currencycode: "",
+      mode: "",
+      type: "",
+      title: "",
+      description: "",
       photos: [],
       isdeleted: false,
       maxcapacity: 0,
-      registrationdeadline: '',
-      refundpolicy: '',
+      registrationdeadline: "",
+      refundpolicy: "",
       tags: [],
       socialmedialinks: [],
-      createdby: '',
-      updatedby: '',
+      createdby: "",
+      updatedby: "",
     });
     handleClose();
   };
+
+  const onCurrencyChange = (value: string) => {
+    setFormData({ ...formData, currencycode: value });
+  }
 
   return (
     <div>
@@ -80,21 +119,6 @@ const Events: React.FC = () => {
       <Button variant="contained" color="primary" onClick={handleOpen}>
         Create Event
       </Button>
-
-      {loading ? (
-        <CircularProgress />
-      ) : (
-        <ul>
-          {/* {events.map((event) => (
-            <li key={event.id}>
-              <h4>{event.title}</h4>
-              <p>{event.eventdate.toString()}</p>
-              <p>{event.description}</p>
-              <p>{event.location}</p>
-            </li>
-          ))} */}
-        </ul>
-      )}
 
       {/* Modal for creating event */}
       <Dialog open={open} onClose={handleClose}>
@@ -107,6 +131,7 @@ const Events: React.FC = () => {
             label="Event Title"
             type="text"
             fullWidth
+            required
             value={formData.title}
             onChange={handleInputChange}
           />
@@ -116,6 +141,7 @@ const Events: React.FC = () => {
             label="Event Date"
             type="datetime-local"
             fullWidth
+            required
             InputLabelProps={{ shrink: true }}
             value={formData.eventdate}
             onChange={handleInputChange}
@@ -126,6 +152,8 @@ const Events: React.FC = () => {
             label="Total Men Tickets"
             type="number"
             fullWidth
+            required
+            inputProps={{ min: 1 }}
             value={formData.totalmenstickets}
             onChange={handleInputChange}
           />
@@ -141,8 +169,8 @@ const Events: React.FC = () => {
           <TextField
             margin="dense"
             name="menticketprice"
+            type="number"
             label="Men Ticket Price"
-            type="text"
             fullWidth
             value={formData.menticketprice}
             onChange={handleInputChange}
@@ -150,21 +178,13 @@ const Events: React.FC = () => {
           <TextField
             margin="dense"
             name="womenticketprice"
+            type="number"
             label="Women Ticket Price"
-            type="text"
             fullWidth
             value={formData.womenticketprice}
             onChange={handleInputChange}
           />
-          <TextField
-            margin="dense"
-            name="currencycode"
-            label="Currency Code"
-            type="text"
-            fullWidth
-            value={formData.currencycode}
-            onChange={handleInputChange}
-          />
+            <Dropdown options={currencyOptions} labelId="currenyc-code" name="currency" label="Currency" onChange={onCurrencyChange}   />
           <TextField
             margin="dense"
             name="mode"
@@ -230,9 +250,11 @@ const Events: React.FC = () => {
             label="Tags (comma separated)"
             type="text"
             fullWidth
-            value={formData.tags.join(', ')}
-            // @ts-expect-error
-            onChange={(e) => setFormData({ ...formData, tags: e.target.value.split(', ') })}
+            value={formData.tags.join(", ")}
+            onChange={(e) =>
+                            // @ts-expect-error
+              setFormData({ ...formData, tags: e.target.value.split(", ") })
+            }
           />
           <TextField
             margin="dense"
@@ -240,9 +262,14 @@ const Events: React.FC = () => {
             label="Social Media Links (comma separated)"
             type="text"
             fullWidth
-            value={formData.socialmedialinks.join(', ')}
-             // @ts-expect-error
-            onChange={(e) => setFormData({ ...formData, socialmedialinks: e.target.value.split(', ') })}
+            value={formData.socialmedialinks.join(", ")}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                            // @ts-expect-error
+                socialmedialinks: e.target.value.split(", "),
+              })
+            }
           />
         </DialogContent>
         <DialogActions>
