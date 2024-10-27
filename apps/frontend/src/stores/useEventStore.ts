@@ -1,9 +1,9 @@
 // src/store/useEventStore.ts
 
-import {create} from 'zustand';
+import { create } from 'zustand';
 import axios from 'axios';
 
-interface Event {
+export interface Event {
   id: number;
   eventdate: Date;
   totalmenstickets: number;
@@ -27,7 +27,7 @@ interface Event {
   updatedby: string;  // Adjust based on your user model
 }
 
-interface EventStore {
+export interface EventStore {
   events: Event[];
   loading: boolean;
   fetchEvents: () => Promise<void>;
@@ -37,11 +37,11 @@ interface EventStore {
 const useEventStore = create<EventStore>((set) => ({
   events: [],
   loading: false,
-  
+
   fetchEvents: async () => {
     set({ loading: true });
     try {
-      const response = await axios.get<Event[]>('/api/events'); // Adjust the endpoint based on your API
+      const response = await axios.get<Event[]>('http://localhost:3453/api/v1/events'); // Adjust the endpoint based on your API
       set({ events: response.data });
     } catch (error) {
       console.error('Failed to fetch events', error);
@@ -52,10 +52,10 @@ const useEventStore = create<EventStore>((set) => ({
 
   createEvent: async (eventData) => {
     try {
-      await axios.post('/api/events', eventData); // Adjust the endpoint based on your API
-      // Optionally refetch events after creating a new one
-      await set((state) => ({
-        events: [...state.events, { ...eventData, id: Date.now() }] // Mocking the id for now
+      const response = await axios.post('http://localhost:3453/api/v1/events', eventData); // Adjust the endpoint based on your API
+      // Directly update the events with the newly created event from the response
+      set((state) => ({
+        events: [...state.events, response.data] // Assuming response.data contains the created event with an id
       }));
     } catch (error) {
       console.error('Failed to create event', error);

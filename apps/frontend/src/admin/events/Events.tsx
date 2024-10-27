@@ -10,10 +10,10 @@ import {
   TextField,
   CircularProgress,
 } from '@mui/material';
-import useEventStore from '../../stores/useEventStore';
 
 const Events: React.FC = () => {
-  const { events, loading, fetchEvents, createEvent } = useEventStore();
+    const loading = false;
+    const events = [];
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     eventdate: '',
@@ -37,9 +37,7 @@ const Events: React.FC = () => {
     updatedby: '',  // You should set this based on the current user's ID
   });
 
-  useEffect(() => {
-    fetchEvents();
-  }, [fetchEvents]);
+
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -87,14 +85,14 @@ const Events: React.FC = () => {
         <CircularProgress />
       ) : (
         <ul>
-          {events.map((event) => (
+          {/* {events.map((event) => (
             <li key={event.id}>
               <h4>{event.title}</h4>
               <p>{event.eventdate.toString()}</p>
               <p>{event.description}</p>
               <p>{event.location}</p>
             </li>
-          ))}
+          ))} */}
         </ul>
       )}
 

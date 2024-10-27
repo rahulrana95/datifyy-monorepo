@@ -5,6 +5,7 @@ import { Box, CssBaseline, Toolbar } from "@mui/material";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import Events from "./events/Events";
+import EventList from "./events/EventList";
 
 const AdminDashboard: React.FC = () => {
   return (
@@ -21,6 +22,7 @@ const AdminDashboard: React.FC = () => {
       >
         <Header />
         <Events />
+        <EventList/>
       </Box>
     </Box>
   );

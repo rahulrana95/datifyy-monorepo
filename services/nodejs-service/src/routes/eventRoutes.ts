@@ -6,7 +6,7 @@ import { validateEvent } from '../middlewares/validateEvent';
 const router = express.Router();
 
 router.post('/events', validateEvent, authenticateToken, requireAdmin, createEvent);
-router.get('/',  authenticateToken, requireAdmin,fetchEvents); // Use fetchEvents function to handle this route
+router.get('/events',  fetchEvents); // Use fetchEvents function to handle this route
 
 
 export default router;
