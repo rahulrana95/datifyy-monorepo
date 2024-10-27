@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { DatifyyUsersLogin } from "./DatifyyUsersLogin";
 import { DatifyyTicketPurchases } from "./DatifyyTicketPurchases";
+import { Rooms } from "./Rooms";
 
 @Index("datifyy_events_pkey", ["id"], { unique: true })
 @Entity("datifyy_events", { schema: "public" })
@@ -129,4 +130,7 @@ export class DatifyyEvents {
     (datifyyTicketPurchases) => datifyyTicketPurchases.event
   )
   datifyyTicketPurchases: DatifyyTicketPurchases[];
+
+  @OneToMany(() => Rooms, (rooms) => rooms.event)
+  rooms: Rooms[];
 }

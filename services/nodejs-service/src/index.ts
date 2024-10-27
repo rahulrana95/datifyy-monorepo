@@ -4,6 +4,8 @@ import { DataSource } from "typeorm";
 import * as dotenv from "dotenv";
 import eventRoutes from './routes/eventRoutes';
 import userRoutes from './routes/userRoutes';
+import roomRoutes from './routes/roomRoutes';
+
 import morgan from 'morgan';
 import cors from 'cors';
 
@@ -47,6 +49,7 @@ app.get("/", (req, res) => {
 
 app.use('/api/v1', eventRoutes);
 app.use('/api/v1', userRoutes);
+app.use('/api/v1', roomRoutes);
 
 
 // Start the server
