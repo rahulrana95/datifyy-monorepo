@@ -4,7 +4,7 @@ import axios from "axios";
 const baseUrl =
   process.env.REACT_APP_ENV === "dev"
     ? "http://localhost:3453/api/v1"
-    : "https://api.datifyy.com/api/v1";
+    : "https://datifyy-monorepo.onrender.com/api/v1";
 
 // Create an axios instance
 const axiosInstance = axios.create({
