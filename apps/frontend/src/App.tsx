@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./home/home";
 import AdminRoute from "./admin/AdminRoute";
 import LiveEvent from "./events/LiveEvent";
+import GlobalSnackbar from "./globalSnackbar";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         </Routes>
         <AdminRoute />
       </Router>
+      <GlobalSnackbar />
     </div>
   );
 }

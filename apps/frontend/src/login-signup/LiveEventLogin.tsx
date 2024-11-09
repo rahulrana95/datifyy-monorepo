@@ -3,8 +3,9 @@
 import React, { useState } from "react";
 import { Button, TextField, Typography, Box } from "@mui/material";
 import { useUserStore } from "../stores/userStore";
-import axios from 'axios';
+import axios from "axios";
 import { useParams } from "react-router-dom";
+import axiosInstance from "../utils/axios";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -17,12 +18,9 @@ const Login: React.FC = () => {
     // Simulate a login by directly setting the user in Zustand
     if (email && password) {
       try {
-        await axios.post(`http://localhost:3453/api/v1/events/${params.eventId}/verify-passcode`)
-      }
-      catch (err) {
-
+        await axiosInstance.post(`/events/${params.eventId}/verify-passcode`);
+      } catch (err) {
       } finally {
-
       }
       // Ideally, perform API call here to validate user credentials
       setUser(email);
@@ -67,7 +65,13 @@ const Login: React.FC = () => {
         onChange={(e) => setPassword(e.target.value)}
         required
       />
-      <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+      <Button
+        type="submit"
+        variant="contained"
+        color="primary"
+        fullWidth
+        sx={{ mt: 2 }}
+      >
         Login
       </Button>
     </Box>

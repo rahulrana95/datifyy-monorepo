@@ -15,12 +15,10 @@ import { MenuItem, Select, FormControl, InputLabel } from "@mui/material";
 import Dropdown from "./dropdown";
 import CreateEventModal, { EventFormData } from "./createEventModal";
 import useEventStore from "../../stores/useEventStore";
+import useAuthStore from "../../stores/authStore";
 
 const Events: React.FC = () => {
-  const loading = false;
-  const events = [];
   const [open, setOpen] = useState(false);
-
   const { createEvent } = useEventStore();
 
   const handleOpen = () => setOpen(true);
@@ -29,8 +27,8 @@ const Events: React.FC = () => {
   const onEventSubmit = async (eventData: EventFormData) => {
     const eventRequest = {
       ...eventData,
-      createdby: 1,
-      updatedby: 1,
+      createdby: 1, // todo read from auth store user
+      updatedby: 1, // // todo read from auth store user
     };
     const response = await createEvent(eventRequest);
   };
