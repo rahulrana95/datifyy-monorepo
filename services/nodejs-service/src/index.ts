@@ -47,6 +47,11 @@ app.get("/", (req, res) => {
   res.send("Welcome to Datifyy Express Server!");
 });
 
+// Define a health
+app.get("/health", (req, res) => {
+  res.send("Welcome to Datifyy Express Server!");
+});
+
 app.use('/api/v1', eventRoutes);
 app.use('/api/v1', userRoutes);
 app.use('/api/v1', roomRoutes);
