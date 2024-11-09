@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Modal, TextField, Grid } from '@mui/material';
-// @ts-expect-error
 import { v4 as uuidv4 } from 'uuid';
 import useEventStore from '../../stores/useEventStore';
 import { useVideoRoomStore } from '../../stores/videoRoomStore';
