@@ -1,11 +1,9 @@
-// apps/frontend/src/pages/AdminDashboard/Sidebar.tsx
-
 import React from "react";
 import {
   Box,
   Drawer,
   List,
-  ListItem,
+  ListItemButton,
   ListItemText,
   Toolbar,
 } from "@mui/material";
@@ -14,7 +12,7 @@ import { styled } from "@mui/system";
 
 const drawerWidth = 240;
 
-const StyledListItem = styled(ListItem)(({ theme }) => ({
+const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
   color: theme.palette.text.primary,
   textDecoration: "none",
   "&.active, &:hover": {
@@ -33,8 +31,8 @@ const Sidebar: React.FC = () => {
         "& .MuiDrawer-paper": {
           width: drawerWidth,
           boxSizing: "border-box",
-          bgcolor: "#2A2D34", // User's preferred color
-          color: "white",
+          bgcolor: "white", // User's preferred color
+          color: "black",
         },
       }}
       variant="permanent"
@@ -43,14 +41,26 @@ const Sidebar: React.FC = () => {
       <Toolbar />
       <Box sx={{ overflow: "auto", color: 'white !important' }}>
         <List>
-          <StyledListItem
-            className={location.pathname === "/admin/events" ? "active" : ""}
-          >
-            <ListItemText primary="Events" />
-          </StyledListItem>
+          <Link to="/">
+            <StyledListItemButton
+
+              className={location.pathname === "/admin/home" ? "active" : ""}
+            >
+              <ListItemText primary="Home" />
+            </StyledListItemButton>
+          </Link>
+
+          <Link to="/admin">
+            <StyledListItemButton
+
+              className={location.pathname === "/admin" ? "active" : ""}
+            >
+              <ListItemText primary="Events" />
+            </StyledListItemButton>
+          </Link>
         </List>
       </Box>
-    </Drawer>
+    </Drawer >
   );
 };
 

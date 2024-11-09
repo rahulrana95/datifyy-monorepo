@@ -61,6 +61,7 @@ const ParticipantCard: React.FC<{
             color="secondary"
             onClick={() => onDeleteRoomId(participant.id)}
             sx={{ marginTop: 1 }}
+            size='small'
         >
             Delete Room ID
         </Button>
