@@ -1,0 +1,10 @@
+{
+    "path-intellisense.autoTriggerNextSuggestion": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "html.format.endWithNewline": true,
+    "html.format.indentHandlebars": true,
+    "html.format.templating": true,
+    "vs-code-prettier-eslint.prettierLast": true
+}

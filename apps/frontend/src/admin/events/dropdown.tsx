@@ -12,6 +12,7 @@ interface DropdownType<T extends DropdownOption> {
   label: string;
   options: T[];
   onChange?: (value: string) => void; // Optional callback if needed
+  error?: boolean
 }
 
 const Dropdown = <T extends DropdownOption>({
@@ -20,6 +21,7 @@ const Dropdown = <T extends DropdownOption>({
   label,
   options,
   onChange,
+  error
 }: DropdownType<T>) => {
   const [selectedValue, setSelectedValue] = useState<string>("");
 
@@ -39,6 +41,7 @@ const Dropdown = <T extends DropdownOption>({
         value={selectedValue}
         onChange={handleSelectInputChange}
         fullWidth
+        error={error}
       >
         {options.map((option) => (
           <MenuItem key={option.id} value={option.value}>

@@ -1,11 +1,12 @@
-import { Request, Response } from 'express';
-import { AppDataSource } from '../index';
-import { DatifyyEvents } from '../models/entities/DatifyyEvents';
-import { validationResult } from 'express-validator';
-import { DatifyyUsersLogin } from '../models/entities/DatifyyUsersLogin';
-import { getRepository } from 'typeorm';
+import { Request, Response } from "express";
+import { AppDataSource } from "../index";
+import { DatifyyEvents } from "../models/entities/DatifyyEvents";
+import { validationResult } from "express-validator";
+import { DatifyyUsersLogin } from "../models/entities/DatifyyUsersLogin";
+import { getRepository } from "typeorm";
 
 export const createEvent = async (req: Request, res: Response) => {
+  console.log("-----");
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.status(400).json({ errors: errors.array() });
@@ -43,7 +44,7 @@ export const createEvent = async (req: Request, res: Response) => {
     // Retrieve creator by ID if it exists
     const creator = await userRepo.findOneBy({ id: createdby });
     if (!creator) {
-      res.status(404).json({ message: 'Creator not found' });
+      res.status(404).json({ message: "Creator not found" });
       return;
     }
 
@@ -72,28 +73,40 @@ export const createEvent = async (req: Request, res: Response) => {
     });
 
     await eventRepo.save(newEvent);
-    res.status(201).json({ message: 'Event created successfully', event: newEvent });
+    res
+      .status(201)
+      .json({ message: "Event created successfully", event: newEvent });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error creating event' });
+    res.status(500).json({ message: "Error creating event" });
   }
 };
 
-
-export const fetchEvents = async (req: Request, res: Response): Promise<void> => {
+export const fetchEvents = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
+    const { createdby, updatedby } = req.query; // Read query params for sorting
+
+    // Prepare the order object dynamically based on query params
+    const order: { [key: string]: "ASC" | "DESC" } = {
+      createdby: createdby === "desc" ? "DESC" : "ASC", // Default to 'ASC' if not specified
+      updatedby: updatedby === "desc" ? "DESC" : "ASC", // Default to 'ASC' if not specified
+    };
+
     const eventsRepository = AppDataSource.getRepository(DatifyyEvents);
     const events = await eventsRepository.find({
       where: { isdeleted: false }, // Fetch only non-deleted events
-      order: { eventdate: 'ASC' } // Order by event date
+      order: { createdat: "DESC" }, // Order by event date
     });
-    
-     res.status(200).json(events);
-     return;
+
+    res.status(200).json(events);
+    return;
   } catch (error) {
     console.error(error);
-     res.status(500).json({ message: 'Internal server error' });
-     return;
+    res.status(500).json({ message: "Internal server error" });
+    return;
   }
 };
 
@@ -101,22 +114,22 @@ export const fetchEvents = async (req: Request, res: Response): Promise<void> =>
 export const deleteEvent = async (req: Request, res: Response) => {
   const { id } = req.params;
   const eventRepository = AppDataSource.getRepository(DatifyyEvents);
-  
+
   try {
     const event = await eventRepository.findOne({ where: { id: Number(id) } });
-      if (!event) {
-          res.status(404).json({ message: 'Event not found' });
-          return; // No need to return anything after sending response
-      }
+    if (!event) {
+      res.status(404).json({ message: "Event not found" });
+      return; // No need to return anything after sending response
+    }
 
-      // Update the isDeleted flag to true
-      event.isdeleted = true; // Assuming 'isdeleted' is the column name in your entity
-      await eventRepository.save(event);
-      
-      res.status(200).json({ message: 'Event successfully deleted' }); // You can also return the updated event if needed
+    // Update the isDeleted flag to true
+    event.isdeleted = true; // Assuming 'isdeleted' is the column name in your entity
+    await eventRepository.save(event);
+
+    res.status(200).json({ message: "Event successfully deleted" }); // You can also return the updated event if needed
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -124,20 +137,20 @@ export const deleteEvent = async (req: Request, res: Response) => {
 export const editEvent = async (req: Request, res: Response) => {
   const { id } = req.params;
   const eventRepository = AppDataSource.getRepository(DatifyyEvents);
-  
+
   try {
     const event = await eventRepository.findOne({ where: { id: Number(id) } });
     if (!event) {
-          res.status(404).json({ message: 'Event not found' });
-          return; // No need to return anything after sending response
-      }
+      res.status(404).json({ message: "Event not found" });
+      return; // No need to return anything after sending response
+    }
 
-      // Update the event with provided data
-      const updatedEvent = eventRepository.merge(event, req.body);
-      await eventRepository.save(updatedEvent);
-      res.json(updatedEvent);
+    // Update the event with provided data
+    const updatedEvent = eventRepository.merge(event, req.body);
+    await eventRepository.save(updatedEvent);
+    res.json(updatedEvent);
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
