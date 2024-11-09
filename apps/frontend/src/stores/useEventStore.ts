@@ -27,20 +27,33 @@ export interface Event {
   socialmedialinks: string[] | null;
   createdby: string; // Adjust based on your user model
   updatedby: string; // Adjust based on your user model
+  status: string;
+  coverimageurl?: string;
+  durationObj?: {
+    hours: number;
+    minutes: number;
+  };
+  duration: number;
+  createdat: string;
+  updatedat: string;
 }
 
 export interface EventStore {
   events: Event[];
+  event: Event | null;
   loading: boolean;
   fetchEvents: () => Promise<void>;
+  fetchEvent: (eventId: number) => Promise<void>;
   createEvent: (eventData: CreateEventRequest) => Promise<{
     error?: string;
     success?: boolean;
   }>;
+  updateEvent: (eventId: number, eventData: Partial<Event>) => Promise<{error?: string, success?: boolean}>;
   deleteEvent: (id: number) => Promise<boolean>;
   deleteMultipleEvents: (id: number[]) => Promise<boolean>;
     isDeleteEventInProgress: boolean,
   isEventCreationInProgress: boolean,
+  isFetchingEvent: boolean
 }
 
 export interface CreateEventRequest extends EventFormData {
@@ -48,10 +61,12 @@ export interface CreateEventRequest extends EventFormData {
   updatedby: number;
 }
 
-const useEventStore = create<EventStore>((set) => ({
+const useEventStore = create<EventStore>((set, get) => ({
   events: [],
+  event: null,
   loading: false,
   isDeleteEventInProgress: false,
+  isFetchingEvent: false,
   isEventCreationInProgress: false,
 
   fetchEvents: async () => {
@@ -67,6 +82,21 @@ const useEventStore = create<EventStore>((set) => ({
       set({ loading: false });
     }
   },
+
+  fetchEvent: async (eventId: number) => {
+    set({ isFetchingEvent: true });
+    try {
+      const response = await axiosInstance.get<Event>(
+        `/events/${eventId}`
+      ); // Adjust the endpoint based on your API
+      set({ event: response.data });
+    } catch (error) {
+      console.error("Failed to fetch events", error);
+    } finally {
+       set({ isFetchingEvent: false });
+    }
+  },
+  
 
   createEvent: async (eventData: CreateEventRequest) => {
     try {
@@ -103,6 +133,42 @@ const useEventStore = create<EventStore>((set) => ({
       }))
     }
   },
+
+  updateEvent: async (eventId: number, eventData: Partial<Event>) => {
+  try {
+    set((state) => ({
+      ...state,
+      isEventUpdateInProgress: true,
+    }));
+    
+    await axiosInstance.put(`/events/${eventId}`, eventData); // Adjust the endpoint based on your API
+
+    // Access fetchEvent using getState and call it
+    get().fetchEvent(eventId);
+    
+    return {
+      success: true,
+    };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return {
+        error:
+          error?.response?.data?.message ||
+          error?.message ||
+          "Unknown error occurred",
+      };
+    }
+    return {
+      error: "An unknown error occurred",
+    };
+  } finally {
+    set((state) => ({
+      ...state,
+      isEventUpdateInProgress: false,
+    }));
+  }
+},
+
 
   // Delete a single event
   deleteEvent: async (eventId: number) => {

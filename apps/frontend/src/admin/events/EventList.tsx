@@ -23,6 +23,8 @@ import {
   Checkbox,
 
 } from "@mui/material";
+import { Link } from "react-router-dom";  // Import the Link component from react-router-dom
+
 import useEventStore, { Event } from "../../stores/useEventStore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useSnackbarStore } from "../../stores/useSnackbarStore";
@@ -216,7 +218,20 @@ const EventList: React.FC = () => {
                       <TableCell padding="checkbox">
                         <Checkbox checked={isItemSelected} color="primary" />
                       </TableCell>
-                      <TableCell>{event.title}</TableCell>
+                      <TableCell>
+                        {/* Make the title clickable and link to the event's admin page */}
+                        <Link to={`/admin/events/${event.id}`} style={{
+                          textDecoration: 'none', // Remove default underline
+                          color: '#1976d2', // Material UI blue color (you can customize this)
+                          fontWeight: 'bold', // Make it bold
+                          fontSize: '1.1rem', // Slightly larger font size for emphasis
+                          transition: 'all 0.3s ease', // Smooth transition for hover effect
+                        }}
+                          onMouseOver={(e) => (e.currentTarget.style.textDecoration = 'underline')} // Underline on hover
+                          onMouseOut={(e) => (e.currentTarget.style.textDecoration = 'none')}>
+                          {event.title}
+                        </Link>
+                      </TableCell>
                       <TableCell>{event.description}</TableCell>
                       <TableCell>
                         {new Date(event.eventdate).toLocaleDateString()}

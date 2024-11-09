@@ -110,13 +110,40 @@ export const fetchEvents = async (
   }
 };
 
+export const fetchEvent = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { eventId } = req.params; // Get the eventId from the request params
+
+    // Fetch the event from the database by its ID
+    const eventsRepository = AppDataSource.getRepository(DatifyyEvents);
+    const event = await eventsRepository.findOne({
+      where: { id: Number(eventId), isdeleted: false }, // Ensure the event exists and is not deleted
+    });
+
+    if (!event) {
+      // If the event is not found, return a 404
+      res.status(404).json({ message: "Event not found" });
+      return;
+    }
+
+    // If the event is found, return it
+    res.status(200).json(event);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 // Soft delete an event
 export const deleteEvent = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { eventId } = req.params;
   const eventRepository = AppDataSource.getRepository(DatifyyEvents);
 
   try {
-    const event = await eventRepository.findOne({ where: { id: Number(id) } });
+    const event = await eventRepository.findOne({ where: { id: Number(eventId) } });
     if (!event) {
       res.status(404).json({ message: "Event not found" });
       return; // No need to return anything after sending response
@@ -135,11 +162,11 @@ export const deleteEvent = async (req: Request, res: Response) => {
 
 // Edit an event
 export const editEvent = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { eventId } = req.params;
   const eventRepository = AppDataSource.getRepository(DatifyyEvents);
 
   try {
-    const event = await eventRepository.findOne({ where: { id: Number(id) } });
+    const event = await eventRepository.findOne({ where: { id: Number(eventId) } });
     if (!event) {
       res.status(404).json({ message: "Event not found" });
       return; // No need to return anything after sending response

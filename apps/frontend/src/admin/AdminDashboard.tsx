@@ -6,6 +6,8 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 import Events from "./events/Events";
 import EventList from "./events/EventList";
+import { Route, Routes } from "react-router-dom";
+import EventPage from "./events/eventPage";
 
 const AdminDashboard: React.FC = () => {
   return (
@@ -21,9 +23,13 @@ const AdminDashboard: React.FC = () => {
         sx={{ flexGrow: 1, bgcolor: "#f5f5f5", p: 3, minHeight: "100vh" }}
       >
         <Header />
-        <Events />
-        <EventList/>
+        <Routes>
+          <Route index element={<><Events /><EventList /></>} />
+
+          <Route path="events/:eventId" element={<EventPage />} />
+        </Routes>
       </Box>
+
     </Box>
   );
 };

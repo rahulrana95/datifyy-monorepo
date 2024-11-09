@@ -7,6 +7,7 @@ import Home from "./home/home";
 import AdminRoute from "./admin/AdminRoute";
 import LiveEvent from "./events/LiveEvent";
 import GlobalSnackbar from "./globalSnackbar";
+import EventPage from "./admin/events/eventPage";
 
 function App() {
   return (
