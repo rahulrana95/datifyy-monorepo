@@ -4,9 +4,9 @@ import { DatifyyEvents } from "../models/entities/DatifyyEvents";
 import { validationResult } from "express-validator";
 import { DatifyyUsersLogin } from "../models/entities/DatifyyUsersLogin";
 import { getRepository } from "typeorm";
+import { Rooms } from "../models/entities/Rooms";
 
 export const createEvent = async (req: Request, res: Response) => {
-  console.log("-----");
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.status(400).json({ errors: errors.array() });
@@ -179,5 +179,116 @@ export const editEvent = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updateUserRooms = async (req: Request, res: Response) => {
+  const { eventId } = req.params; // Event ID from URL
+  const { roomAssignments } = req.body; // Array of room assignments
+  console.log(roomAssignments);
+  console.log(typeof roomAssignments);
+
+  try {
+    // Ensure event exists
+    const event = await AppDataSource.getRepository(DatifyyEvents).findOne({ where: { id: Number(eventId) } });
+    if (!event) {
+      res.status(404).json({ error: "Event not found" });
+      return;
+    }
+
+    const roomAssignmentsResults = [];
+
+    // Process each room assignment
+    for (let assignment of roomAssignments) {
+      const { userEmail, roomId } = assignment;
+
+      // Ensure roomId is unique for the event
+      const existingRoom = await AppDataSource.getRepository(Rooms).findOne({
+        where: { roomId, event },
+      });
+      if (existingRoom) {
+        roomAssignmentsResults.push({
+          userEmail,
+          roomId,
+          error: "Room ID is already assigned to this event.",
+        });
+        continue; // Skip to next assignment if there's an error
+      }
+
+      // Ensure userEmail is not already assigned to another room for this event
+      const existingUser = await AppDataSource.getRepository(Rooms).findOne({
+        where: { userEmail, event },
+      });
+      if (existingUser) {
+        roomAssignmentsResults.push({
+          userEmail,
+          roomId,
+          error: "User is already assigned to a room in this event.",
+        });
+        continue; // Skip to next assignment if there's an error
+      }
+
+      // Create the new room assignment
+      const room = new Rooms();
+      room.roomId = roomId;
+      room.userEmail = userEmail;
+      room.event = event;
+
+      // Save the new room to the database
+      await AppDataSource.getRepository(Rooms).save(room);
+
+      roomAssignmentsResults.push({
+        userEmail,
+        roomId,
+        success: true,
+        message: "Room assigned successfully.",
+      });
+    }
+
+    // Return a response with the results of all assignments
+    res.status(200).json({
+      success: true,
+      message: "Room assignments processed.",
+      results: roomAssignmentsResults,
+    });
+    return;
+  } catch (error) {
+    console.error("Error updating rooms:", error);
+    res.status(500).json({ error: "Failed to update rooms. Please try again later." });
+    return;
+  }
+};
+
+// API to fetch rooms for an event
+export const getRooms = async (req: Request, res: Response) => {
+  const { eventId } = req.params; // Get eventId from request parameters
+
+  try {
+    // Find the event by its ID
+    const event = await AppDataSource.getRepository(DatifyyEvents).findOne({
+      where: { id: Number(eventId) }, // Ensure the event exists
+    });
+
+    // If the event does not exist, send an error response
+    if (!event) {
+      res.status(404).json({ error: 'Event not found' });
+      return;
+    }
+
+    const rooms = await AppDataSource.getRepository(Rooms).find({
+      where: { event: { id: Number(eventId) } }, // Use the `id` field of the `event` object
+    });
+
+    console.log(rooms)
+    console.log(event)
+
+    // Send the fetched rooms back to the client
+    res.json({ rooms });
+    return;
+
+  } catch (error) {
+    console.error('Error fetching rooms:', error);
+    res.status(500).json({ error: 'Failed to fetch rooms' });
+    return;
   }
 };

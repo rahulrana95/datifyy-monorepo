@@ -27,6 +27,7 @@ import useEventStore, { Event } from '../../stores/useEventStore';
 import { EVENT_MODES, EVENT_STATUS, EVENT_TYPES } from '../../constants/events';
 import { Save as SaveIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import EventInfoPage from './eventInfoPage';
+import VideoRooms from './eventVideoRoomsPage';
 
 const EventPage: React.FC = () => {
     const [selectedTab, setSelectedTab] = useState(0);
@@ -58,8 +59,7 @@ const EventPage: React.FC = () => {
 
                 {selectedTab === 1 && (
                     <Box sx={{ padding: 2 }}>
-                        <Typography variant="h5">Video Rooms</Typography>
-                        {/* Render Video Rooms content here */}
+                        <VideoRooms />
                     </Box>
                 )}
             </Card>

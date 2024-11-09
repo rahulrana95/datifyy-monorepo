@@ -254,7 +254,7 @@ const EventInfoPage = () => {
                                     onChange={(e) => handleChange('mode', e.target.value)}
                                 >
                                     {EVENT_MODES.map((type) => {
-                                        return <MenuItem value={type.value}>{type.value}</MenuItem>
+                                        return <MenuItem key={type.value} value={type.value}>{type.value}</MenuItem>
                                     })}
                                 </Select>
                             </FormControl>
@@ -269,7 +269,7 @@ const EventInfoPage = () => {
                                     onChange={(e) => handleChange('type', e.target.value)}
                                 >
                                     {EVENT_TYPES.map((type) => {
-                                        return <MenuItem value={type.value}>{type.value}</MenuItem>
+                                        return <MenuItem key={type.value} value={type.value}>{type.value}</MenuItem>
                                     })}
                                     {/* Add more options as necessary */}
                                 </Select>
