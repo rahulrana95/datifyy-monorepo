@@ -8,6 +8,7 @@ import {
 } from "typeorm";
 import { DatifyyEvents } from "./DatifyyEvents";
 
+@Index("unique_event_user_email", ["eventId", "userEmail"], { unique: true })
 @Index("rooms_pkey", ["id"], { unique: true })
 @Index("idx_room_id", ["roomId"], {})
 @Index("idx_user_email", ["userEmail"], {})
@@ -19,8 +20,15 @@ export class Rooms {
   @Column("character varying", { name: "room_id", length: 255 })
   roomId: string;
 
-  @Column("character varying", { name: "user_email", length: 255 })
+  @Column("character varying", {
+    name: "user_email",
+    unique: true,
+    length: 255,
+  })
   userEmail: string;
+
+  @Column("integer", { name: "event_id", unique: true })
+  eventId: number;
 
   @Column("timestamp without time zone", {
     name: "created_at",

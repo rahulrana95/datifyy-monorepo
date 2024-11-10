@@ -8,10 +8,10 @@ import {
 } from "typeorm";
 import { DatifyyEvents } from "./DatifyyEvents";
 
+@Index("user_events_passcodes_email_key", ["email"], { unique: true })
 @Index("user_events_passcodes_email_event_id_key", ["email", "eventId"], {
   unique: true,
 })
-@Index("user_events_passcodes_email_key", ["email"], { unique: true })
 @Index("user_events_passcodes_pkey", ["id"], { unique: true })
 @Entity("user_events_passcodes", { schema: "public" })
 export class UserEventsPasscodes {

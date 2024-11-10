@@ -62,23 +62,44 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
 
         const targetGender = userRoom.gender === "male" ? "female" : "male";
 
-        // Lock the available users for reading and writing to ensure consistency
-        const nextAvailableUser = await roomRepository
-            .createQueryBuilder("room")
-            .innerJoinAndSelect(VideoChatSessions, "session", "session.man_email = :email OR session.woman_email = :email", { email: email })
-            .where("room.event = :eventId", { eventId })
+        // Step 1: Find the available session with locking
+        const availableSession = await sessionRepository
+            .createQueryBuilder("session")
+            .where("session.event_id = :eventId", { eventId })
+            .andWhere("(session.man_email = :manEmail OR session.woman_email = :womanEmail)", {
+                manEmail: email,
+                womanEmail: email
+            })
             .andWhere("session.status = :status", { status: 'available' })
-            .andWhere("room.gender = :targetGender", { targetGender })
-            .orderBy("room.userEmail", "ASC")
-            .setLock("pessimistic_write") // Lock for update
+            .setLock("pessimistic_write") // Lock session table for reading and writing
             .getOne();
 
+        if (!availableSession) {
+             await queryRunner.rollbackTransaction();
+            res.status(404).json({ message: "No available users found for chat." });
+            return;
+        }
 
-        if (!nextAvailableUser) {
+        // Step 2: Find the room associated with the woman in the available session
+        const nextAvailableRoom = await roomRepository
+            .createQueryBuilder("room")
+            .where("room.userEmail = :womanEmail", { womanEmail: availableSession.womanEmail })
+            .andWhere("room.event = :eventId", { eventId })
+            .andWhere("room.gender = :targetGender", { targetGender: "female" }) // assuming targetGender here
+            .setLock("pessimistic_write") // Lock room table for reading and writing
+            .getOne();
+
+        if (!nextAvailableRoom) {
+             await queryRunner.rollbackTransaction();
+            res.status(404).json({ message: "No available users found for chat." });
+        }
+
+        if (!nextAvailableRoom) {
             await queryRunner.rollbackTransaction(); // Rollback if no available user is found
             res.status(404).json({ message: "No available users found for chat." });
             return;
         }
+
 
         // Check if a session already exists with the same event_id, manEmail, and womanEmail
         const existingSession = await sessionRepository.findOne({
@@ -87,7 +108,7 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
                     id: Number(eventId)
                 },
                 manEmail: requestingUser.userEmail,
-                womanEmail: nextAvailableUser.userEmail,
+                womanEmail: nextAvailableRoom.userEmail,
                 status: 'available'
             }
         });
@@ -99,7 +120,7 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
             await sessionRepository.save(existingSession);
         } else {
 
-            await queryRunner.commitTransaction(); // Commit the transaction to apply changes
+            await queryRunner.rollbackTransaction();
             res.status(200).json({
                 message: "No more users.",
                 nextUser: null,
@@ -110,7 +131,7 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
 
         res.status(200).json({
             message: "Next available user found for chat.",
-            nextUser: nextAvailableUser,
+            nextUser: nextAvailableRoom,
         });
     } catch (error) {
         console.error("Error fetching next available user:", error);
@@ -162,6 +183,7 @@ export const createVideoChatSessions = async (req: Request, res: Response): Prom
                     sessionId: generateRandomKey(),
                     manEmail: male.userEmail,
                     womanEmail: female.userEmail,
+                    eventId: Number(eventId),
                     event,
                     status: "upcoming",
                     createdAt: new Date(),

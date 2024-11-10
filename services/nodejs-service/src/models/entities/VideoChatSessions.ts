@@ -8,14 +8,17 @@ import {
 } from "typeorm";
 import { DatifyyEvents } from "./DatifyyEvents";
 
+@Index("unique_event_man_woman", ["eventId", "manEmail", "womanEmail"], {
+  unique: true,
+})
 @Index("video_chat_sessions_pkey", ["sessionId"], { unique: true })
 @Entity("video_chat_sessions", { schema: "public" })
 export class VideoChatSessions {
   @PrimaryGeneratedColumn({ type: "integer", name: "session_id" })
   sessionId: number;
 
-  @Column("character varying", { name: "status", nullable: true, length: 20 })
-  status: string | null;
+  @Column("integer", { name: "event_id", nullable: true, unique: true })
+  eventId: number | null;
 
   @Column("timestamp without time zone", {
     name: "created_at",
@@ -27,6 +30,7 @@ export class VideoChatSessions {
   @Column("character varying", {
     name: "man_email",
     nullable: true,
+    unique: true,
     length: 255,
   })
   manEmail: string | null;
@@ -34,9 +38,18 @@ export class VideoChatSessions {
   @Column("character varying", {
     name: "woman_email",
     nullable: true,
+    unique: true,
     length: 255,
   })
   womanEmail: string | null;
+
+  @Column("character varying", {
+    name: "status",
+    nullable: true,
+    length: 20,
+    default: () => "'available'",
+  })
+  status: string | null;
 
   @ManyToOne(
     () => DatifyyEvents,
