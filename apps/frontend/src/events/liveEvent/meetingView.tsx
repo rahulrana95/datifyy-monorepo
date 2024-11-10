@@ -53,7 +53,6 @@ export default function MeetingView({
             <div>
                 {uniqueParticipantsKeys.map((displayName) => {
                     const participant = Array.from(participants).find(([key, value]) => value?.displayName === displayName);
-                    console.log(participant?.[0]);
                     return (
                         <ParticipantView
                             participantId={participant?.[0] ?? ''}
