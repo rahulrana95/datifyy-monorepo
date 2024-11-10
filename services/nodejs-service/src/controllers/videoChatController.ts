@@ -60,9 +60,39 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
             return;
         }
 
-        const targetGender = userRoom.gender === "male" ? "female" : "male";
+        // Step 1: If a user for current event is already in a chat session
+        // i.e its status in chat session is busy we return the same user
+        // until the chat session is completed by user.
+        const alreadyExistingSession = await sessionRepository
+            .createQueryBuilder("session")
+            .where("session.event_id = :eventId", { eventId })
+            .andWhere("(session.man_email = :manEmail OR session.woman_email = :womanEmail)", {
+                manEmail: email,
+                womanEmail: email
+            })
+            .andWhere("session.status = :status", { status: 'busy' })
+            .setLock("pessimistic_write") // Lock session table for reading and writing
+            .getOne();
 
-        // Step 1: Find the available session with locking
+        if (alreadyExistingSession) {
+            const userRoom = await roomRepository
+                .createQueryBuilder("room")
+                .where("room.event_id = :eventId", { eventId })
+                .andWhere("(room.user_email = :userEmail)", {
+                    userEmail: alreadyExistingSession.womanEmail,
+                })
+                .setLock("pessimistic_write") // Lock session table for reading and writing
+                .getOne();
+            await queryRunner.rollbackTransaction();
+            res.status(200).json({
+                message: "User is already in a chat session.",
+                nextUser: userRoom,
+            });
+            return;
+        }
+
+        // Step 2: Find the available session with locking
+        // we will find the new chat session which is available
         const availableSession = await sessionRepository
             .createQueryBuilder("session")
             .where("session.event_id = :eventId", { eventId })
@@ -75,7 +105,7 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
             .getOne();
 
         if (!availableSession) {
-             await queryRunner.rollbackTransaction();
+            await queryRunner.rollbackTransaction();
             res.status(404).json({ message: "No available users found for chat." });
             return;
         }
@@ -90,7 +120,7 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
             .getOne();
 
         if (!nextAvailableRoom) {
-             await queryRunner.rollbackTransaction();
+            await queryRunner.rollbackTransaction();
             res.status(404).json({ message: "No available users found for chat." });
         }
 
@@ -141,6 +171,61 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
         await queryRunner.release(); // Release the query runner
     }
 };
+
+export const updateVideoChatSession = async (req: Request, res: Response): Promise<void> => {
+    const { sessionId } = req.params;
+    const { status, manEmail, womanEmail, eventId, createdAt, updatedAt } = req.body; 
+
+    // Enforce allowed statuses for the 'status' column
+    const allowedStatuses = ['available', 'busy', 'completed'];
+    if (status && !allowedStatuses.includes(status)) {
+        res.status(400).json({ message: "Invalid status. Allowed values are 'available', 'busy', or 'completed'." });
+        return;
+    }
+
+    const queryRunner = AppDataSource.createQueryRunner();
+
+    try {
+        await queryRunner.startTransaction();
+
+        const sessionRepository = queryRunner.manager.getRepository(VideoChatSessions);
+
+        // Lock the specific session row for reading and writing
+        const session = await sessionRepository
+            .createQueryBuilder("session")
+            .where("session.id = :sessionId", { sessionId: Number(sessionId) })
+            .setLock("pessimistic_write") // Lock for read and write access
+            .getOne();
+
+        if (!session) {
+            await queryRunner.rollbackTransaction();
+            res.status(404).json({ message: "Session not found." });
+            return;
+        }
+
+        const event = await AppDataSource.getRepository(DatifyyEvents).findOne({ where: { id: Number(eventId) } });
+
+        // Update all allowed fields except 'session_id'
+        if (status) session.status = status;
+        if (manEmail) session.manEmail = manEmail;
+        if (womanEmail) session.womanEmail = womanEmail;
+        if (eventId && event) session.event = event;
+        if (createdAt) session.createdAt = new Date(createdAt);
+
+        await sessionRepository.save(session);
+
+        await queryRunner.commitTransaction();
+        res.status(200).json({ message: "Session updated successfully." });
+
+    } catch (error) {
+        console.error("Error updating session:", error);
+        await queryRunner.rollbackTransaction();
+        res.status(500).json({ message: "Internal server error." });
+    } finally {
+        await queryRunner.release();
+    }
+};
+
 
 
 export const createVideoChatSessions = async (req: Request, res: Response): Promise<void> => {
