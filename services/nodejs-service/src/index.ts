@@ -5,7 +5,7 @@ import * as dotenv from "dotenv";
 import eventRoutes from './routes/eventRoutes';
 import userRoutes from './routes/userRoutes';
 import roomRoutes from './routes/roomRoutes';
-
+import videoChatRoutes from './routes/videoChatRoutes';
 import morgan from 'morgan';
 import cors from 'cors';
 
@@ -55,6 +55,7 @@ app.get("/health", (req, res) => {
 app.use('/api/v1', eventRoutes);
 app.use('/api/v1', userRoutes);
 app.use('/api/v1', roomRoutes);
+app.use('/api/v1', videoChatRoutes);
 
 
 // Start the server

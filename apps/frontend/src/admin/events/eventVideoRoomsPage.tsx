@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Modal, TextField, Grid } from '@mui/material';
+// @ts-ignore
 import { v4 as uuidv4 } from 'uuid';
 import useEventStore from '../../stores/useEventStore';
 import { useVideoRoomStore } from '../../stores/videoRoomStore';
 import { useParams } from 'react-router-dom';
 import { useSnackbarStore } from '../../stores/useSnackbarStore';
+import { on } from 'events';
 
 interface Participant {
     id: string;
@@ -35,6 +37,7 @@ const RoomModal: React.FC<{
             <Button variant="contained" color="primary" onClick={onCreateRooms} sx={{ marginTop: 2 }} disabled={isCreateButtonDisabled}>
                 Generate Rooms
             </Button>
+
         </Box>
     </Modal>
 );
@@ -80,7 +83,10 @@ const VideoRooms: React.FC = () => {
     const { totalMen, totalWomen } = { totalMen: 5, totalWomen: 5 };
     const { eventId } = useParams();
     const { fetchEvent, event } = useEventStore();
-    const { createRoomsOnVideoSdk, roomIds, updateUserRooms, validateRoomId, getRoomsForEvent, roomAssignments, isCreatingMeeting, isFetchingRooms, isUpdatingRooms } = useVideoRoomStore();
+    const { createRoomsOnVideoSdk, createVideoChatSessions, roomIds,
+        updateUserRooms, validateRoomId, getRoomsForEvent,
+        roomAssignments, isCreatingMeeting, isFetchingRooms,
+        isUpdatingRooms } = useVideoRoomStore();
     const [participants, setParticipants] = useState<Participant[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [numberOfRooms, setNumberOfRooms] = useState<number>(0);
@@ -168,6 +174,15 @@ const VideoRooms: React.FC = () => {
         }
     }
 
+    const onCreateVideoChatSessions = async () => {
+        const { success } = await createVideoChatSessions(Number(eventId));
+        if (success) {
+            snackbar.show('success', 'Video chat sessions created successfully');
+        } else {
+            snackbar.show('error', 'Error creating video chat sessions');
+        }
+    }
+
     const hasAllParticipantsRooms = participants.every((participant) => !!participant.roomId);
 
     if (isFetchingRooms) return <Box><Typography>Loading...</Typography></Box>;
@@ -175,18 +190,22 @@ const VideoRooms: React.FC = () => {
     return (
         <Box>
             <Typography variant="h5">Video Rooms</Typography>
-            <Button variant="contained" color="primary" onClick={() => setIsModalOpen(true)} disabled={hasAllParticipantsRooms}>
-                Create Rooms
-            </Button>
-
-            <RoomModal
-                isOpen={isModalOpen}
-                numberOfRooms={numberOfRooms}
-                setNumberOfRooms={setNumberOfRooms}
-                onClose={() => setIsModalOpen(false)}
-                onCreateRooms={handleCreateRooms}
-                isCreateButtonDisabled={isCreatingMeeting}
-            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Button variant="contained" color="primary" onClick={() => setIsModalOpen(true)} disabled={hasAllParticipantsRooms}>
+                    Create Rooms
+                </Button>
+                <Button variant="contained" color="secondary" onClick={onCreateVideoChatSessions}>
+                    Create Video chat sessions
+                </Button>
+                <RoomModal
+                    isOpen={isModalOpen}
+                    numberOfRooms={numberOfRooms}
+                    setNumberOfRooms={setNumberOfRooms}
+                    onClose={() => setIsModalOpen(false)}
+                    onCreateRooms={handleCreateRooms}
+                    isCreateButtonDisabled={isCreatingMeeting}
+                />
+            </div>
 
             <Grid container spacing={2} sx={{ marginTop: 2 }}>
                 {participants.map((participant) => (

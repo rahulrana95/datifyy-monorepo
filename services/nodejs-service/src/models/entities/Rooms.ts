@@ -49,6 +49,14 @@ export class Rooms {
   })
   isCompleted: boolean | null;
 
+  @Column("character varying", {
+    name: "gender",
+    nullable: true,
+    length: 10,
+    default: () => "'male'",
+  })
+  gender: string | null;
+
   @ManyToOne(() => DatifyyEvents, (datifyyEvents) => datifyyEvents.rooms, {
     onDelete: "CASCADE",
   })

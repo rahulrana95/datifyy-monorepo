@@ -30,6 +30,7 @@ interface RoomAssignment {
 interface VideoRoomState {
     roomId: string | null;
     roomIds: string[];
+    sessions: any[];
     isCreatingMeeting: boolean;
     createRoomsOnVideoSdk: (n: number) => Promise<void>;
     roomAssignments: RoomAssignment[];
@@ -42,12 +43,15 @@ interface VideoRoomState {
     }>;
     getRoomsForEvent: (eventId: number) => Promise<void>;
     validateRoomId: (roomId: string) => Promise<{ success?: boolean; error?: string }>;
+    createVideoChatSessions: (eventId: number) => Promise<{ success?: boolean; error?: string }>;
+    getVideoChatSessions: (eventId: number) => Promise<{ success?: boolean; error?: string }>;
 }
 
 export const useVideoRoomStore = create<VideoRoomState>()(
     devtools((set) => ({
         roomId: null,
         roomIds: [],
+        sessions: [],
         isCreatingMeeting: false,
         error: null,
         roomAssignments: [],
@@ -147,6 +151,34 @@ export const useVideoRoomStore = create<VideoRoomState>()(
                 console.error("Error validating room ID:", error);
                 return {
                     error: error?.response?.data?.message || "An error occurred while validating room ID"
+                }
+            }
+        },
+
+        createVideoChatSessions: async (eventId: number) => { 
+            try {
+                await axiosInstance.post(`/events/${eventId}/create-video-chat-session`);
+                return {
+                    success: true
+                }
+            } catch (error: any) {
+                console.error("Error creating video chat sessions:", error);
+                return {
+                    error: error?.response?.data?.message || "An error occurred while creating video chat sessions"
+                }
+            }
+        },
+        getVideoChatSessions: async (eventId: number) => { 
+            try {
+                const response = await axiosInstance.get(`/events/${eventId}/video-chat-sessions`);
+                set({ sessions: response.data?.sessions ?? [] });
+                return {
+                   success: true,
+                }
+            } catch (error: any) {
+                console.error("Error fetching video chat sessions:", error);
+                return {
+                    error: error?.response?.data?.message || "An error occurred while fetching video chat sessions"
                 }
             }
         }

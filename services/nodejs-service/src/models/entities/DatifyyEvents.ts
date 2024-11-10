@@ -10,6 +10,8 @@ import {
 import { DatifyyUsersLogin } from "./DatifyyUsersLogin";
 import { DatifyyTicketPurchases } from "./DatifyyTicketPurchases";
 import { Rooms } from "./Rooms";
+import { UserEventsPasscodes } from "./UserEventsPasscodes";
+import { VideoChatSessions } from "./VideoChatSessions";
 
 @Index("datifyy_events_pkey", ["id"], { unique: true })
 @Entity("datifyy_events", { schema: "public" })
@@ -133,4 +135,16 @@ export class DatifyyEvents {
 
   @OneToMany(() => Rooms, (rooms) => rooms.event)
   rooms: Rooms[];
+
+  @OneToMany(
+    () => UserEventsPasscodes,
+    (userEventsPasscodes) => userEventsPasscodes.event
+  )
+  userEventsPasscodes: UserEventsPasscodes[];
+
+  @OneToMany(
+    () => VideoChatSessions,
+    (videoChatSessions) => videoChatSessions.event
+  )
+  videoChatSessions: VideoChatSessions[];
 }

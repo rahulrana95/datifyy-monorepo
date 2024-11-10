@@ -38,6 +38,14 @@ export class DatifyyUsersLogin {
   })
   isadmin: boolean | null;
 
+  @Column("character varying", {
+    name: "gender",
+    nullable: true,
+    length: 10,
+    default: () => "'male'",
+  })
+  gender: string | null;
+
   @OneToMany(() => DatifyyEvents, (datifyyEvents) => datifyyEvents.createdby)
   datifyyEvents: DatifyyEvents[];
 
