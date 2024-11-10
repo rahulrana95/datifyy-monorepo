@@ -23,13 +23,14 @@ import {
   Checkbox,
 
 } from "@mui/material";
-import { Link } from "react-router-dom";  // Import the Link component from react-router-dom
+import { Link, useParams } from "react-router-dom";  // Import the Link component from react-router-dom
 
 import useEventStore, { Event } from "../../stores/useEventStore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useSnackbarStore } from "../../stores/useSnackbarStore";
 
 const EventList: React.FC = () => {
+  const { eventId } = useParams();
   const { fetchEvents, events, loading, deleteEvent, isDeleteEventInProgress, isEventCreationInProgress } = useEventStore();
   const [page, setPage] = React.useState(0);
   const snackbar = useSnackbarStore();
@@ -107,8 +108,6 @@ const EventList: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Events List
       </Typography>
-
-
       {loading ? (
         <CircularProgress />
       ) : events.length === 0 ? (

@@ -65,6 +65,30 @@ export const getRooms = async (_req: Request, res: Response) => {
       return;
     }
   };
+
+    // Fetch a single room by ID
+  export const getRoomByEmailAndEvent = async (req: Request, res: Response) => {
+    const { eventId, email } = req.params;
+  
+    try {
+      const room = await AppDataSource.getRepository(Rooms).findOne({
+        where: { eventId: Number(eventId), userEmail: email },
+        relations: ["event"],
+      });
+  
+      if (!room) {
+        res.status(404).json({ message: "Room not found" });
+        return;
+      }
+  
+       res.status(200).json(room);
+       return;
+    } catch (error) {
+      console.error("Error fetching room:", error);
+      res.status(500).json({ message: "Internal server error" });
+      return;
+    }
+  };
   
   // Update the room's active status or completion status
   export const updateRoomStatus = async (req: Request, res: Response) => {

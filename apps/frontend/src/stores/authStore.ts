@@ -1,10 +1,10 @@
 import { create } from "zustand";
 
 interface User {
-  firstName: string;
-  lastName: string;
-  email: string;
-  id: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  id?: string;
 }
 
 interface AuthState {
@@ -18,6 +18,11 @@ interface AuthState {
 const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: true,
   isAdmin: true,
+  user: {
+    firstName: "Rahul",
+    lastName: "Rana",
+    email: "user-1@gmail.com"
+  },
   setAuthenticated: (authStatus) => set({ isAuthenticated: authStatus }),
   setAdmin: (adminStatus) => set({ isAdmin: adminStatus }),
   setUser: (user: User) => set({ user }),

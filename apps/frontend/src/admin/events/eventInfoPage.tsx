@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
     Box,
     Typography,
@@ -131,6 +131,11 @@ const EventInfoPage = () => {
                     <Typography variant="h4" sx={{ marginBottom: 2 }}>
                         Edit Event - {event.title}
                     </Typography>
+                    <Link to={`/events/${eventId}/live`}>
+                        <Typography variant="h4" gutterBottom>
+                            Live event link
+                        </Typography>
+                    </Link>
 
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>

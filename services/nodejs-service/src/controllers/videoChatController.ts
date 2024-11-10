@@ -32,7 +32,7 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
             return;
         }
 
-        const userRoom = await roomRepository.findOne({
+        const userRoomOriginal = await roomRepository.findOne({
             where: {
                 userEmail: email, event: {
                     id: Number(eventId)
@@ -40,7 +40,7 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
             }
         });
 
-        if (!userRoom) {
+        if (!userRoomOriginal) {
             await queryRunner.rollbackTransaction(); // Rollback the transaction if no user or event is found
             res.status(404).json({ message: "User not found in this event." });
             return;
@@ -79,7 +79,7 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
                 .createQueryBuilder("room")
                 .where("room.event_id = :eventId", { eventId })
                 .andWhere("(room.user_email = :userEmail)", {
-                    userEmail: alreadyExistingSession.womanEmail,
+                    userEmail: userRoomOriginal?.gender === 'female' ?  alreadyExistingSession.manEmail : alreadyExistingSession.womanEmail,
                 })
                 .setLock("pessimistic_write") // Lock session table for reading and writing
                 .getOne();

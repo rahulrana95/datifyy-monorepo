@@ -3,7 +3,7 @@ import { devtools } from "zustand/middleware";
 import axiosInstance from "../utils/axios";
 import axios from "axios";
 
-export const authToken: string = process.env.REACT_APP_VIDEO_TOKEN ?? "";
+export const authToken: string = process.env.REACT_APP_VIDEO_TOKEN ?? "N/A";
 
 // API call to create a meeting
 export const createMeeting = async ({ token }: { token: string }) => {
@@ -26,33 +26,60 @@ interface RoomAssignment {
     roomId: string;
 }
 
+interface UserMatch {
+    email: string;
+    roomId: string;
+}
+
+
+interface UserRoom {
+    email: string;
+    gender: string;
+    roomId: string;
+}
+
+interface Response {
+    success?: boolean;
+    error?: string;
+}
+
 // Zustand store
 interface VideoRoomState {
     roomId: string | null;
     roomIds: string[];
+    userRoom: UserRoom | null;
+    userMatch: UserMatch | null;
     sessions: any[];
     isCreatingMeeting: boolean;
     createRoomsOnVideoSdk: (n: number) => Promise<void>;
     roomAssignments: RoomAssignment[];
     isUpdatingRooms: boolean;
     isFetchingRooms: boolean;
+    isFetchingUserRoom: boolean;
     error: string | null;
     updateUserRooms: (id: number, roomAssignments: RoomAssignment[]) => Promise<{
         success?: boolean;
         error?: string;
     }>;
     getRoomsForEvent: (eventId: number) => Promise<void>;
-    validateRoomId: (roomId: string) => Promise<{ success?: boolean; error?: string }>;
-    createVideoChatSessions: (eventId: number) => Promise<{ success?: boolean; error?: string }>;
-    getVideoChatSessions: (eventId: number) => Promise<{ success?: boolean; error?: string }>;
+    validateRoomId: (roomId: string) => Promise<Response>;
+    createVideoChatSessions: (eventId: number) => Promise<Response>;
+    getVideoChatSessions: (eventId: number) => Promise<Response>;
+    createMeeting: () => Promise<string>;
+    createMultipleMeetings: (userEmails: string[]) => Promise<Response>;
+    getNextMatch: (eventId: string, email: string) => Promise<Response>;
+    getUserRooms: (eventId: number, email: string) => Promise<Response>;
 }
 
 export const useVideoRoomStore = create<VideoRoomState>()(
-    devtools((set) => ({
+    devtools((set, get) => ({
         roomId: null,
         roomIds: [],
         sessions: [],
+        userMatch: null,
+        userRoom: null,
         isCreatingMeeting: false,
+        isFetchingUserRoom: false,
         error: null,
         roomAssignments: [],
         isUpdatingRooms: false,
@@ -122,7 +149,7 @@ export const useVideoRoomStore = create<VideoRoomState>()(
 
         getRoomsForEvent: async (eventId: number) => {
             try {
-                  set({ isUpdatingRooms: true, error: null });
+                set({ isUpdatingRooms: true, error: null });
                 // Fetch room assignments for the event
                 const response = await axiosInstance.get(`/events/${eventId}/rooms`);
 
@@ -137,13 +164,13 @@ export const useVideoRoomStore = create<VideoRoomState>()(
             }
         },
 
-        validateRoomId: async (roomId: string) => { 
+        validateRoomId: async (roomId: string) => {
             try {
                 await axios.get(`https://api.videosdk.live/v2/rooms/validate/${roomId}`, {
                     headers: {
-                           authorization: `${authToken}`,
+                        authorization: `${authToken}`,
                     }
-                 });
+                });
                 return {
                     success: true
                 }
@@ -155,7 +182,7 @@ export const useVideoRoomStore = create<VideoRoomState>()(
             }
         },
 
-        createVideoChatSessions: async (eventId: number) => { 
+        createVideoChatSessions: async (eventId: number) => {
             try {
                 await axiosInstance.post(`/events/${eventId}/create-video-chat-session`);
                 return {
@@ -168,12 +195,12 @@ export const useVideoRoomStore = create<VideoRoomState>()(
                 }
             }
         },
-        getVideoChatSessions: async (eventId: number) => { 
+        getVideoChatSessions: async (eventId: number) => {
             try {
                 const response = await axiosInstance.get(`/events/${eventId}/video-chat-sessions`);
                 set({ sessions: response.data?.sessions ?? [] });
                 return {
-                   success: true,
+                    success: true,
                 }
             } catch (error: any) {
                 console.error("Error fetching video chat sessions:", error);
@@ -181,6 +208,97 @@ export const useVideoRoomStore = create<VideoRoomState>()(
                     error: error?.response?.data?.message || "An error occurred while fetching video chat sessions"
                 }
             }
+        },
+        createMeeting: async () => {
+            const res = await fetch(`https://api.videosdk.live/v2/rooms`, {
+                method: "POST",
+                headers: {
+                    authorization: `${authToken}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                }),
+            });
+            //Destructuring the roomId from the response
+            const { roomId }: { roomId: string } = await res.json();
+            return roomId;
+        },
+
+        createMultipleMeetings: async (
+            userEmails: string[]
+        ): Promise<{
+            success?: boolean;
+            error?: string;
+        }> => {
+            const createMeeting = get().createMeeting;
+            try {
+                const roomPromises = userEmails.map(async (email) => {
+                    const roomId = await createMeeting(); // Create a meeting for each user
+                    return { email, roomId }; // Return an object with the email and roomId
+                });
+
+                // Wait for all the room creations to complete
+                const roomDetails = await Promise.all(roomPromises);
+
+                console.log(roomDetails);
+
+                // Send the room details to the backend
+                const response = await axiosInstance.post("/rooms", {
+                   body: roomDetails
+                } );
+
+                return {
+                    success: true
+                }
+            } catch (error) {
+                return {
+                    error: 'Failed to save rooms in the database'
+                }
+            }
+        },
+
+        getNextMatch: async (eventId: string, email: string) => {
+            try {
+                const response = await axiosInstance.get(`events/${eventId}/live/${email}/next-user-to-match`);
+                console.log(response.data?.nextUser
+                );
+                const { nextUser } = response.data;
+                
+                set({
+                    userMatch: {
+                        email: nextUser.userEmail,
+                        roomId: nextUser.roomId,
+                } });
+                return {
+                    success: true,
+                };
+            } catch (error: any) {
+                return {
+                    error: error?.response?.data?.message || "An error occurred while fetching next match"
+                };
+            }
+        },
+        getUserRooms: async (eventId: number, email: string) => {
+            try {
+                set({ isFetchingUserRoom: true, error: null });
+                const response = await axiosInstance.get(`/events/${eventId}/rooms/${email}`);
+                set({
+                    userRoom: {
+                        email: response.data?.userEmail ?? '',
+                        gender: response.data?.gender ?? '',
+                        roomId: response.data?.roomId ?? '',
+                } });
+                return {
+                    success: true,
+                }
+            } catch (error: any) {
+                return {
+                    error: "An error occurred while fetching user rooms"
+                }
+            } finally {
+                set({ isFetchingUserRoom: false });
+            }
         }
+
     }))
 );
