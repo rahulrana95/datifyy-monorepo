@@ -61,7 +61,6 @@ function LiveEvent() {
   }, [userMatch?.roomId, userRoom])
 
 
-  console.log('meetingId', meetingId);
   return authToken && meetingId && userRoom?.email ? (
     <MeetingProvider
       config={{
@@ -70,6 +69,7 @@ function LiveEvent() {
         webcamEnabled: true,
         name: `(${userRoom?.email})`,
         debugMode: false,
+        maxResolution: 'hd'
       }}
       token={authToken}
     >
