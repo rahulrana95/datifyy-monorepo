@@ -4,7 +4,7 @@ import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
 import { Card, CardContent, Typography, Avatar, Box, IconButton } from "@mui/material";
 
 
-export default function ParticipantView({ participantId, setMeetingId }: { participantId: string; setMeetingId: () => void }) {
+export default function ParticipantView({ participantId, setMeetingId, isSelfView }: { participantId: string; setMeetingId: () => void, isSelfView: boolean }) {
     const micRef = useRef<HTMLAudioElement>(null);
     const { webcamStream, micStream, webcamOn, micOn, isLocal, displayName } =
         useParticipant(participantId);
@@ -63,7 +63,7 @@ export default function ParticipantView({ participantId, setMeetingId }: { parti
                             playsinline
                             pip={false}
                             light={false}
-                            controls={false}
+                            controls={true}
                             muted={true}
                             playing={true}
                             url={videoStream}
@@ -81,15 +81,17 @@ export default function ParticipantView({ participantId, setMeetingId }: { parti
             </CardContent>
             <Box sx={{ alignSelf: 'center', ml: 2 }}>
                 {/* Option to mute/unmute or turn off webcam */}
-                <IconButton sx={{ color: 'green' }} onClick={() => leave()}>
+                {isSelfView && <><IconButton sx={{ color: 'green' }} onClick={() => leave()}>
                     <Typography variant="body2">End the date</Typography>
                 </IconButton>
-                <IconButton sx={{ color: micOn ? 'green' : 'red' }} onClick={() => toggleMic()}>
-                    <Typography variant="body2">{micOn ? "Mute" : "Unmute"}</Typography>
-                </IconButton>
-                <IconButton sx={{ color: webcamOn ? 'green' : 'red' }} onClick={() => toggleWebcam()}>
-                    <Typography variant="body2">{webcamOn ? "Turn Off Webcam" : "Turn On Webcam"}</Typography>
-                </IconButton>
+                    <IconButton sx={{ color: micOn ? 'green' : 'red' }} onClick={() => toggleMic()}>
+                        <Typography variant="body2">{micOn ? "Mute" : "Unmute"}</Typography>
+                    </IconButton>
+                    <IconButton sx={{ color: webcamOn ? 'green' : 'red' }} onClick={() => toggleWebcam()}>
+                        <Typography variant="body2">{webcamOn ? "Turn Off Webcam" : "Turn On Webcam"}</Typography>
+                    </IconButton>
+                </>
+                }
             </Box>
         </Card>
     );

@@ -5,6 +5,7 @@ import ParticipantView from "./participantView";
 import DateJoiningLoading from "./dateJoiningLoading";
 import { useVideoRoomStore } from "../../stores/videoRoomStore";
 
+
 export default function MeetingView({
     onMeetingLeave,
     meetingId,
@@ -38,44 +39,31 @@ export default function MeetingView({
 
     useEffect(() => {
         if (userMatch?.roomId) {
-            setJoined("JOINING");
-            join();
+            setTimeout(() => {
+                setJoined("JOINING");
+                join();
+            }, 3000);
         }
     }, [userRoom, userMatch?.roomId])
 
-    const uniqueParticipants = [...Array.from(participants.keys())].filter((participantId) => {
-        const displayName = participants.get(participantId)?.displayName;
+    const uniqueParticipantsKeys = Array.from(new Set([...Array.from(participants.keys())].map((key) => participants.get(key)?.displayName ?? '')));
 
-        if (displayName && seenNames.has(displayName)) {
-            return false;
-        }
-
-        seenNames.add(displayName);
-        return true;
-    });
-
-    console.log([...Array.from(participants.keys())])
     return (
         <div className="container" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center' }}>
             <div>
-                {[...Array.from(participants.keys())].map((participantId) => {
-                    const displayName = participants.get(participantId)?.displayName;
-
-                    // Skip rendering if the display name is already seen
-                    if (displayName && !seenNames.has(displayName)) {
-                        // Mark this display name as seen
-                        seenNames.add(displayName);
-                    }
-
+                {uniqueParticipantsKeys.map((displayName) => {
+                    const participant = Array.from(participants).find(([key, value]) => value?.displayName === displayName);
+                    console.log(participant?.[0]);
                     return (
                         <ParticipantView
-                            participantId={participantId}
-                            key={participantId}
+                            participantId={participant?.[0] ?? ''}
+                            key={participant?.[0] ?? ''}
                             setMeetingId={onMeetingLeave}
+                            isSelfView={`(${userRoom?.email})` === `${displayName}`}
                         />
                     );
                 })}
-                {uniqueParticipants.length <= 1 && <DateJoiningLoading matchName={userMatch?.email ?? 'N/A'} />}
+                {uniqueParticipantsKeys.length <= 1 && <DateJoiningLoading matchName={userMatch?.email ?? 'N/A'} />}
             </div>
 
         </div>

@@ -112,7 +112,6 @@ export const useVideoRoomStore = create<VideoRoomState>()(
                     createdRooms = [...createdRooms, ...batchRooms];
                 }
 
-                console.log("Created rooms:", createdRooms);
 
                 // Update state with the created roomIds
                 set({ roomIds: createdRooms });
@@ -240,7 +239,6 @@ export const useVideoRoomStore = create<VideoRoomState>()(
                 // Wait for all the room creations to complete
                 const roomDetails = await Promise.all(roomPromises);
 
-                console.log(roomDetails);
 
                 // Send the room details to the backend
                 const response = await axiosInstance.post("/rooms", {
@@ -260,8 +258,7 @@ export const useVideoRoomStore = create<VideoRoomState>()(
         getNextMatch: async (eventId: string, email: string) => {
             try {
                 const response = await axiosInstance.get(`events/${eventId}/live/${email}/next-user-to-match`);
-                console.log(response.data?.nextUser
-                );
+                
                 const { nextUser } = response.data;
                 
                 set({

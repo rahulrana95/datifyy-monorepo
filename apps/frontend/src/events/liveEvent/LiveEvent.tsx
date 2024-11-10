@@ -1,23 +1,14 @@
-// @ts-expect-error
-import { VideoSDK, VideoCall } from "videosdk"; // Import VideoSDK
-import { Box, Typography, Button, CircularProgress } from "@mui/material";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MeetingProvider,
-  MeetingConsumer,
-  useMeeting,
-  useParticipant,
 } from "@videosdk.live/react-sdk";
-import ReactPlayer from "react-player";
-import { useUserStore } from "../../stores/userStore";
 import useAuthStore from "../../stores/authStore";
 import { authToken, useVideoRoomStore } from "../../stores/videoRoomStore";
 import { useLocation, useParams } from "react-router-dom";
 import WaitingScreen from "./waitScreen";
-import ParticipantView from "./participantView";
-import DateJoiningLoading from "./dateJoiningLoading";
 import MeetingView from "./meetingView";
-//This is the Auth token, you will use it to generate a meeting and connect to it
+import { auth } from "googleapis/build/src/apis/abusiveexperiencereport";
+
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -25,7 +16,7 @@ function useQuery() {
 function LiveEvent() {
   const [meetingId, setMeetingId] = useState<string>("");
   const { user } = useAuthStore();
-  const { getNextMatch, userMatch, createMeeting, getUserRooms, userRoom } = useVideoRoomStore();
+  const { getNextMatch, userMatch, getUserRooms, userRoom } = useVideoRoomStore();
   const { eventId } = useParams();
   const query = useQuery();
   const emailParam = query.get("email"); // Replace 'paramName' with your query parameter
@@ -60,7 +51,6 @@ function LiveEvent() {
     }
   }, [userMatch?.roomId, userRoom])
 
-
   return authToken && meetingId && userRoom?.email ? (
     <MeetingProvider
       config={{
@@ -68,7 +58,7 @@ function LiveEvent() {
         micEnabled: true,
         webcamEnabled: true,
         name: `(${userRoom?.email})`,
-        debugMode: false,
+        debugMode: true,
         maxResolution: 'hd'
       }}
       token={authToken}
