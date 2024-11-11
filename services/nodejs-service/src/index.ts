@@ -6,6 +6,7 @@ import eventRoutes from './routes/eventRoutes';
 import userRoutes from './routes/userRoutes';
 import roomRoutes from './routes/roomRoutes';
 import videoChatRoutes from './routes/videoChatRoutes';
+import emailRoutes from './routes/emailRoutes';
 import morgan from 'morgan';
 import cors from 'cors';
 
@@ -56,6 +57,9 @@ app.use('/api/v1', eventRoutes);
 app.use('/api/v1', userRoutes);
 app.use('/api/v1', roomRoutes);
 app.use('/api/v1', videoChatRoutes);
+app.use('/api/v1', emailRoutes);
+
+
 
 
 // Start the server

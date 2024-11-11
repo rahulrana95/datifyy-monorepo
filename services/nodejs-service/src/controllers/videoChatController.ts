@@ -21,7 +21,6 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
 
         const sessionRepository = queryRunner.manager.getRepository(VideoChatSessions);
         const roomRepository = queryRunner.manager.getRepository(Rooms);
-        const userRepo = queryRunner.manager.getRepository(DatifyyUsersLogin);
         const eventRepo = queryRunner.manager.getRepository(DatifyyEvents);
 
         const event = await eventRepo.findOne({ where: { id: Number(eventId ?? '') } });
@@ -32,21 +31,7 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
             return;
         }
 
-        const userRoomOriginal = await roomRepository.findOne({
-            where: {
-                userEmail: email, event: {
-                    id: Number(eventId)
-                }
-            }
-        });
-
-        if (!userRoomOriginal) {
-            await queryRunner.rollbackTransaction(); // Rollback the transaction if no user or event is found
-            res.status(404).json({ message: "User not found in this event." });
-            return;
-        }
-
-        // Fetch user details and determine gender
+        // Fetch requesting user details and determine gender
         const requestingUser = await roomRepository.findOne({
             where: {
                 userEmail: email, event: {
@@ -56,7 +41,7 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
         });
         if (!requestingUser) {
             await queryRunner.rollbackTransaction(); // Rollback if user details are not found
-            res.status(404).json({ message: "User in the room not found in this event." });
+            res.status(404).json({ message: "There is no room exist for this user and this event." });
             return;
         }
 
@@ -74,12 +59,13 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
             .setLock("pessimistic_write") // Lock session table for reading and writing
             .getOne();
 
+        // If there is chat session going just return the oppsite gender room.
         if (alreadyExistingSession) {
             const userRoom = await roomRepository
                 .createQueryBuilder("room")
                 .where("room.event_id = :eventId", { eventId })
                 .andWhere("(room.user_email = :userEmail)", {
-                    userEmail: userRoomOriginal?.gender === 'female' ?  alreadyExistingSession.manEmail : alreadyExistingSession.womanEmail,
+                    userEmail: requestingUser?.gender === 'female' ? alreadyExistingSession.manEmail : alreadyExistingSession.womanEmail,
                 })
                 .setLock("pessimistic_write") // Lock session table for reading and writing
                 .getOne();
@@ -91,6 +77,14 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
             return;
         }
 
+        const busyWomenEmails = await sessionRepository
+            .createQueryBuilder("session")
+            .select("DISTINCT session.woman_email", "woman_email")
+            .where("session.status = :status", { status: 'busy' })
+            .getRawMany();
+
+        const uniqueBusyWomenEmails = busyWomenEmails.map(row => row.woman_email);
+
         // Step 2: Find the available session with locking
         // we will find the new chat session which is available
         const availableSession = await sessionRepository
@@ -101,9 +95,11 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
                 womanEmail: email
             })
             .andWhere("session.status = :status", { status: 'available' })
+            .andWhere("session.woman_email NOT IN (:...uniqueBusyWomenEmails)", { uniqueBusyWomenEmails })
             .setLock("pessimistic_write") // Lock session table for reading and writing
             .getOne();
 
+        console.log(availableSession);
         if (!availableSession) {
             await queryRunner.rollbackTransaction();
             res.status(404).json({ message: "No available users found for chat." });
@@ -113,41 +109,23 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
         // Step 2: Find the room associated with the woman in the available session
         const nextAvailableRoom = await roomRepository
             .createQueryBuilder("room")
-            .where("room.userEmail = :womanEmail", { womanEmail: availableSession.womanEmail })
+            .where("room.userEmail = :email", { email: requestingUser.gender === 'male' ? availableSession.womanEmail : availableSession.manEmail })
             .andWhere("room.event = :eventId", { eventId })
-            .andWhere("room.gender = :targetGender", { targetGender: "female" }) // assuming targetGender here
             .setLock("pessimistic_write") // Lock room table for reading and writing
             .getOne();
 
-        if (!nextAvailableRoom) {
-            await queryRunner.rollbackTransaction();
-            res.status(404).json({ message: "No available users found for chat." });
-        }
-
+        console.log(nextAvailableRoom);
         if (!nextAvailableRoom) {
             await queryRunner.rollbackTransaction(); // Rollback if no available user is found
             res.status(404).json({ message: "No available users found for chat." });
             return;
         }
 
-
-        // Check if a session already exists with the same event_id, manEmail, and womanEmail
-        const existingSession = await sessionRepository.findOne({
-            where: {
-                event: {
-                    id: Number(eventId)
-                },
-                manEmail: requestingUser.userEmail,
-                womanEmail: nextAvailableRoom.userEmail,
-                status: 'available'
-            }
-        });
-
-        if (existingSession) {
+        if (nextAvailableRoom) {
             // If the session exists, update the status to 'busy'
-            existingSession.status = 'busy'; // available, busy, completed
+            availableSession.status = 'busy'; // available, busy, completed
             // Save the updated session
-            await sessionRepository.save(existingSession);
+            await sessionRepository.save(availableSession);
         } else {
 
             await queryRunner.rollbackTransaction();
@@ -174,7 +152,7 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
 
 export const updateVideoChatSession = async (req: Request, res: Response): Promise<void> => {
     const { sessionId } = req.params;
-    const { status, manEmail, womanEmail, eventId, createdAt, updatedAt } = req.body; 
+    const { status, manEmail, womanEmail, eventId, createdAt, updatedAt } = req.body;
 
     // Enforce allowed statuses for the 'status' column
     const allowedStatuses = ['available', 'busy', 'completed'];
