@@ -5,6 +5,7 @@ import { Rooms } from "../models/entities/Rooms";
 import { DatifyyUsersLogin } from "../models/entities/DatifyyUsersLogin";
 import { DatifyyEvents } from "../models/entities/DatifyyEvents";
 import { randomUUID } from "crypto";
+import { Repository } from "typeorm";
 
 export function generateRandomKey(min: number = 1, max: number = 10000000): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -12,64 +13,35 @@ export function generateRandomKey(min: number = 1, max: number = 10000000): numb
 
 export const getNextAvailableUser = async (req: Request, res: Response): Promise<void> => {
     const { eventId, email } = req.params;
-
     const queryRunner = AppDataSource.createQueryRunner();
 
-    try {
-        // Start a transaction to lock the rows for reading and writing
-        await queryRunner.startTransaction();
+    await queryRunner.startTransaction();
 
-        const sessionRepository = queryRunner.manager.getRepository(VideoChatSessions);
-        const roomRepository = queryRunner.manager.getRepository(Rooms);
+    try {
+        const sessionRepo = queryRunner.manager.getRepository(VideoChatSessions);
+        const roomRepo = queryRunner.manager.getRepository(Rooms);
         const eventRepo = queryRunner.manager.getRepository(DatifyyEvents);
 
-        const event = await eventRepo.findOne({ where: { id: Number(eventId ?? '') } });
-
+        // Validate Event
+        const event = await eventRepo.findOne({ where: { id: Number(eventId) } });
         if (!event) {
-            await queryRunner.rollbackTransaction(); // Rollback the transaction if no user or event is found
             res.status(404).json({ message: "Event not found." });
             return;
         }
 
-        // Fetch requesting user details and determine gender
-        const requestingUser = await roomRepository.findOne({
-            where: {
-                userEmail: email, event: {
-                    id: Number(eventId)
-                }
-            }
+        // Validate Requesting User
+        const requestingUser = await roomRepo.findOne({
+            where: { userEmail: email, event: { id: Number(eventId) } }
         });
         if (!requestingUser) {
-            await queryRunner.rollbackTransaction(); // Rollback if user details are not found
-            res.status(404).json({ message: "There is no room exist for this user and this event." });
+            res.status(404).json({ message: "Room not found for user and event." });
             return;
         }
 
-        // Step 1: If a user for current event is already in a chat session
-        // i.e its status in chat session is busy we return the same user
-        // until the chat session is completed by user.
-        const alreadyExistingSession = await sessionRepository
-            .createQueryBuilder("session")
-            .where("session.event_id = :eventId", { eventId })
-            .andWhere("(session.man_email = :manEmail OR session.woman_email = :womanEmail)", {
-                manEmail: email,
-                womanEmail: email
-            })
-            .andWhere("session.status = :status", { status: 'busy' })
-            .setLock("pessimistic_write") // Lock session table for reading and writing
-            .getOne();
-
-        // If there is chat session going just return the oppsite gender room.
-        if (alreadyExistingSession) {
-            const userRoom = await roomRepository
-                .createQueryBuilder("room")
-                .where("room.event_id = :eventId", { eventId })
-                .andWhere("(room.user_email = :userEmail)", {
-                    userEmail: requestingUser?.gender === 'female' ? alreadyExistingSession.manEmail : alreadyExistingSession.womanEmail,
-                })
-                .setLock("pessimistic_write") // Lock session table for reading and writing
-                .getOne();
-            await queryRunner.rollbackTransaction();
+        // Check for Existing Busy Session
+        const existingSession = await findBusySession(sessionRepo, eventId, email);
+        if (existingSession) {
+            const userRoom = await findRoomByGender(roomRepo, eventId, requestingUser.gender ?? '', existingSession);
             res.status(200).json({
                 message: "User is already in a chat session.",
                 nextUser: userRoom,
@@ -77,78 +49,95 @@ export const getNextAvailableUser = async (req: Request, res: Response): Promise
             return;
         }
 
-        const busyWomenEmails = await sessionRepository
-            .createQueryBuilder("session")
-            .select("DISTINCT session.woman_email", "woman_email")
-            .where("session.status = :status", { status: 'busy' })
-            .getRawMany();
+        // Get Unique Busy Women Emails
+        const busyWomenEmails = await getBusyWomenEmails(sessionRepo);
 
-        const uniqueBusyWomenEmails = busyWomenEmails.map(row => row.woman_email);
-
-        // Step 2: Find the available session with locking
-        // we will find the new chat session which is available
-        const availableSession = await sessionRepository
-            .createQueryBuilder("session")
-            .where("session.event_id = :eventId", { eventId })
-            .andWhere("(session.man_email = :manEmail OR session.woman_email = :womanEmail)", {
-                manEmail: email,
-                womanEmail: email
-            })
-            .andWhere("session.status = :status", { status: 'available' })
-            .andWhere("session.woman_email NOT IN (:...uniqueBusyWomenEmails)", { uniqueBusyWomenEmails })
-            .setLock("pessimistic_write") // Lock session table for reading and writing
-            .getOne();
-
-        console.log(availableSession);
+        // Find Next Available Session
+        const availableSession = await findAvailableSession(sessionRepo, eventId, email, busyWomenEmails);
         if (!availableSession) {
-            await queryRunner.rollbackTransaction();
             res.status(404).json({ message: "No available users found for chat." });
             return;
         }
 
-        // Step 2: Find the room associated with the woman in the available session
-        const nextAvailableRoom = await roomRepository
-            .createQueryBuilder("room")
-            .where("room.userEmail = :email", { email: requestingUser.gender === 'male' ? availableSession.womanEmail : availableSession.manEmail })
-            .andWhere("room.event = :eventId", { eventId })
-            .setLock("pessimistic_write") // Lock room table for reading and writing
-            .getOne();
-
-        console.log(nextAvailableRoom);
+        // Find Next Available Room for Matching User
+        const nextAvailableRoom = await findNextAvailableRoom(roomRepo, eventId, requestingUser.gender ?? '', availableSession);
         if (!nextAvailableRoom) {
-            await queryRunner.rollbackTransaction(); // Rollback if no available user is found
             res.status(404).json({ message: "No available users found for chat." });
             return;
         }
 
-        if (nextAvailableRoom) {
-            // If the session exists, update the status to 'busy'
-            availableSession.status = 'busy'; // available, busy, completed
-            // Save the updated session
-            await sessionRepository.save(availableSession);
-        } else {
+        // Update Session Status
+        availableSession.status = 'busy';
+        await sessionRepo.save(availableSession);
 
-            await queryRunner.rollbackTransaction();
-            res.status(200).json({
-                message: "No more users.",
-                nextUser: null,
-            });
-            return;
-        }
-        await queryRunner.commitTransaction(); // Commit the transaction to apply changes
-
+        await queryRunner.commitTransaction();
         res.status(200).json({
             message: "Next available user found for chat.",
             nextUser: nextAvailableRoom,
         });
     } catch (error) {
+        await queryRunner.rollbackTransaction();
         console.error("Error fetching next available user:", error);
-        await queryRunner.rollbackTransaction(); // Rollback in case of an error
         res.status(500).json({ message: "Internal server error" });
     } finally {
-        await queryRunner.release(); // Release the query runner
+        await queryRunner.release();
     }
 };
+
+// Utility Function to Find Busy Session
+async function findBusySession(sessionRepo: Repository<VideoChatSessions>, eventId: string, email: string) {
+    return await sessionRepo
+        .createQueryBuilder("session")
+        .where("session.event_id = :eventId", { eventId })
+        .andWhere("(session.man_email = :manEmail OR session.woman_email = :womanEmail)", { manEmail: email, womanEmail: email })
+        .andWhere("session.status = :status", { status: 'busy' })
+        .setLock("pessimistic_write")
+        .getOne();
+}
+
+// Utility Function to Find Room by Gender
+async function findRoomByGender(roomRepo: Repository<Rooms>, eventId: string, gender: string, session: VideoChatSessions) {
+    const oppositeEmail = gender === 'female' ? session.manEmail : session.womanEmail;
+    return await roomRepo
+        .createQueryBuilder("room")
+        .where("room.event_id = :eventId", { eventId })
+        .andWhere("room.user_email = :userEmail", { userEmail: oppositeEmail })
+        .setLock("pessimistic_write")
+        .getOne();
+}
+
+// Utility Function to Get Unique Busy Women Emails
+async function getBusyWomenEmails(sessionRepo: Repository<VideoChatSessions>) {
+    const busyWomenEmails = await sessionRepo
+        .createQueryBuilder("session")
+        .select("DISTINCT session.woman_email", "woman_email")
+        .where("session.status = :status", { status: 'busy' })
+        .getRawMany();
+    return busyWomenEmails.map(row => row.woman_email);
+}
+
+// Utility Function to Find Available Session
+async function findAvailableSession(sessionRepo: Repository<VideoChatSessions>, eventId: string, email: string, busyWomenEmails: string[]) {
+    return await sessionRepo
+        .createQueryBuilder("session")
+        .where("session.event_id = :eventId", { eventId })
+        .andWhere("(session.man_email = :manEmail OR session.woman_email = :womanEmail)", { manEmail: email, womanEmail: email })
+        .andWhere("session.status = :status", { status: 'available' })
+        .andWhere("session.woman_email NOT IN (:...busyWomenEmails)", { busyWomenEmails })
+        .setLock("pessimistic_write")
+        .getOne();
+}
+
+// Utility Function to Find Next Available Room
+async function findNextAvailableRoom(roomRepo: Repository<Rooms>, eventId: string, gender: string, session: VideoChatSessions) {
+    const nextUserEmail = gender === 'male' ? session.womanEmail : session.manEmail;
+    return await roomRepo
+        .createQueryBuilder("room")
+        .where("room.userEmail = :email", { email: nextUserEmail })
+        .andWhere("room.event = :eventId", { eventId })
+        .setLock("pessimistic_write")
+        .getOne();
+}
 
 export const updateVideoChatSession = async (req: Request, res: Response): Promise<void> => {
     const { sessionId } = req.params;
