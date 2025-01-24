@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Flex, Text, Link, Card, Button, TextField } from '@radix-ui/themes';
 import './header.css';
 import { HeartIcon } from '@radix-ui/react-icons';
@@ -9,8 +9,48 @@ import {
 } from '@radix-ui/react-icons';
 import { Form } from "radix-ui";
 
+const launchDate = new Date('2025-01-31T00:00:00').getTime();
+
+const HeartIconWithCircle = () => {
+    return (
+        <div className="heart-container">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                className="heart-icon"
+            >
+                <path
+                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                    fill="rgba(214, 77, 131, 0.1)" /* Heart opacity at 10% */
+                />
+            </svg>
+        </div>
+    );
+};
+
 
 const Countdown: React.FC = () => {
+    const [timeLeft, setTimeLeft] = React.useState({
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+    });
+
+
+    useEffect(() => {
+        setInterval(() => {
+            const now = new Date().getTime();
+            const distance = launchDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            setTimeLeft({ days, hours, minutes, seconds });
+        }, 1000);
+    }, []);
     return (
         <header>
             {/* Header Section */}
@@ -23,10 +63,10 @@ const Countdown: React.FC = () => {
 
                     {/* Right: Navigation */}
                     <Flex gap="4" align="center" className="header-navigation">
-                        <Link href="/about" color="gray" highContrast className="nav-link">
+                        <Link href="/about" className="nav-link">
                             About
                         </Link>
-                        <Link href="/contact" color="gray" highContrast className="nav-link">
+                        <Link href="/contact" className="nav-link">
                             Contact
                         </Link>
                     </Flex>
@@ -52,9 +92,8 @@ const Countdown: React.FC = () => {
                             {['Days', 'Hours', 'Minutes', 'Seconds'].map((unit, index) => (
                                 <Card key={index} variant="classic" className="countdown-card">
                                     <Text size="7" weight="bold" className="countdown-number">
-                                        00
+                                        {timeLeft[unit.toLowerCase() as keyof typeof timeLeft]}
                                     </Text>
-                                    <br />
                                     <Text size="4" color="gray" className="countdown-label">
                                         {unit}
                                     </Text>
@@ -71,7 +110,7 @@ const Countdown: React.FC = () => {
                             <Form.Root className="waitlist-form">
                                 <Form.Field className="FormField" name="name">
                                     <Form.Control asChild>
-                                        <input className="Input" type="name" required placeholder='Full Name' />
+                                        <input className="Input" type="name" required placeholder='Full Name' autoComplete='off' />
                                     </Form.Control>
                                 </Form.Field>
                                 <Form.Field className="FormField" name="email">
@@ -90,7 +129,7 @@ const Countdown: React.FC = () => {
                                         </Form.Message>
                                     </div>
                                     <Form.Control asChild>
-                                        <input className="Input" type="email" required placeholder='Email' />
+                                        <input className="Input" type="email" required placeholder='Email' autoComplete='off' />
                                     </Form.Control>
                                 </Form.Field>
                                 <Button variant="solid" className="submit-button">
@@ -125,14 +164,14 @@ const Features = () => {
                 <Card variant="classic" className="feature-card">
                     <div className="feature-icon">
                         <div className="icon-circle">
-                            <HeartIcon width="32" height="32" />
+                            <HeartIconWithCircle />
                         </div>
                     </div>
-                    <Text size="6" weight="bold" className="feature-heading">
+                    <Text size="4" weight="bold" className="feature-heading">
                         Smart Matching
                     </Text>
                     <br />
-                    <Text size="4" color="gray" className="feature-description">
+                    <Text size="2" color="gray" className="feature-description">
                         Advanced algorithm to find the perfect match based on interests and compatibility.
                     </Text>
                 </Card>
@@ -144,11 +183,11 @@ const Features = () => {
                             shiedl
                         </div>
                     </div>
-                    <Text size="6" weight="bold" className="feature-heading">
+                    <Text size="4" weight="bold" className="feature-heading">
                         Safe Dating
                     </Text>
                     <br />
-                    <Text size="4" color="gray" className="feature-description">
+                    <Text size="2" color="gray" className="feature-description">
                         Aadhar Verified profiles and secure messaging to ensure a safe dating experience.
                     </Text>
                 </Card>
@@ -160,11 +199,11 @@ const Features = () => {
                             🎉
                         </div>
                     </div>
-                    <Text size="6" weight="bold" className="feature-heading">
+                    <Text size="4" weight="bold" className="feature-heading">
                         Fun Events
                     </Text>
                     <br />
-                    <Text size="4" color="gray" className="feature-description">
+                    <Text size="2" color="gray" className="feature-description">
                         Regular online and offline events to match people and build connections.
                     </Text>
                 </Card>
