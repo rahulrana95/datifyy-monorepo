@@ -13,16 +13,30 @@ const launchDate = new Date('2025-01-31T00:00:00').getTime();
 
 const HeartIconWithCircle = () => {
     return (
-        <div className="heart-container">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                className="heart-icon"
-            >
-                <path
-                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                    fill="rgba(214, 77, 131, 0.1)" /* Heart opacity at 10% */
-                />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "80px", height: "80px", borderRadius: "50%", backgroundColor: "rgba(214, 77, 131, 0.1)" }}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="rgba(214, 77, 131, 0.9)">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
+        </div>
+    );
+};
+
+const ShieldHeartIconWithCircle = () => {
+    return (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "80px", height: "80px", borderRadius: "50%", backgroundColor: "rgba(214, 77, 131, 0.1)" }}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="rgba(214, 77, 131, 0.9)">
+                <path d="M12 2C7.69 2 4.06 3.64 4.06 3.64L4 3.66V12c0 4.95 3.8 9.74 8 11 4.2-1.26 8-6.05 8-11V3.66s-3.63-1.64-7.94-1.64H12zm0 9.5l-.91-.82C9.09 8.84 8 7.92 8 6.8c0-1.1.9-2 2-2 .74 0 1.47.4 1.91 1.03.44-.63 1.17-1.03 1.91-1.03 1.1 0 2 .9 2 2 0 1.12-1.09 2.04-3.09 3.88L12 11.5z" />
+            </svg>
+        </div>
+    );
+};
+
+const FunEventsIconWithCircle = () => {
+    return (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "80px", height: "80px", borderRadius: "50%", backgroundColor: "rgba(214, 77, 131, 0.1)" }}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="rgba(214, 77, 131, 0.9)">
+                <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z" />
+                <path d="M7 12h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z" />
             </svg>
         </div>
     );
@@ -61,15 +75,7 @@ const Countdown: React.FC = () => {
                         Datifyy
                     </Text>
 
-                    {/* Right: Navigation */}
-                    <Flex gap="4" align="center" className="header-navigation">
-                        <Link href="/about" className="nav-link">
-                            About
-                        </Link>
-                        <Link href="/contact" className="nav-link">
-                            Contact
-                        </Link>
-                    </Flex>
+
                 </Flex>
             </div>
 
@@ -79,7 +85,7 @@ const Countdown: React.FC = () => {
                 <div className="gradient-bg">
                     <Flex direction="column" gap="6" align="center" className="coming-soon-content">
                         {/* Line 1: Coming Soon */}
-                        <Text size="8" weight="bold" className="coming-soon-heading">
+                        <Text size="9" weight="bold" className="coming-soon-heading">
                             Coming Soon
                         </Text>
                         <Text size="4" weight="bold" className="form-heading">
@@ -163,9 +169,7 @@ const Features = () => {
                 {/* Feature 1: Smart Matching */}
                 <Card variant="classic" className="feature-card">
                     <div className="feature-icon">
-                        <div className="icon-circle">
-                            <HeartIconWithCircle />
-                        </div>
+                        <HeartIconWithCircle />
                     </div>
                     <Text size="4" weight="bold" className="feature-heading">
                         Smart Matching
@@ -179,9 +183,7 @@ const Features = () => {
                 {/* Feature 2: Safe Dating */}
                 <Card variant="ghost" className="feature-card">
                     <div className="feature-icon">
-                        <div className="icon-circle">
-                            shiedl
-                        </div>
+                        <ShieldHeartIconWithCircle />
                     </div>
                     <Text size="4" weight="bold" className="feature-heading">
                         Safe Dating
@@ -195,9 +197,7 @@ const Features = () => {
                 {/* Feature 3: Fun Events */}
                 <Card variant="ghost" className="feature-card">
                     <div className="feature-icon">
-                        <div className="icon-circle fun-events-icon">
-                            🎉
-                        </div>
+                        <FunEventsIconWithCircle />
                     </div>
                     <Text size="4" weight="bold" className="feature-heading">
                         Fun Events
