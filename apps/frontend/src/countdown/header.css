@@ -1,0 +1,314 @@
+:root {
+  --accent-color: rgba(214, 77, 131, 1); /* Accent color */
+  --accent-gradient: linear-gradient(
+    to right,
+    rgba(214, 77, 131, 1),
+    rgba(214, 77, 131, 0.5)
+  ); /* Gradient using the accent color */
+  --light-bg: rgba(242, 242, 242, 1); /* Light background color */
+  --text-color: rgba(255, 255, 255, 0.9); /* Light text color */
+}
+
+.header {
+  background-color: var(--light-bg);
+  padding: 1rem 2rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-logo {
+  color: var(--accent-color);
+}
+
+.header-navigation {
+  gap: 1.5rem;
+}
+
+.nav-link {
+  font-size: 1rem;
+  color: rgba(0, 0, 0, 0.7);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--accent-color);
+}
+
+/* Coming Soon Section */
+.coming-soon-section {
+  padding: 2rem;
+  background: var(--accent-gradient);
+  color: var(--text-color);
+}
+
+.coming-soon-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.coming-soon-heading {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+/* Countdown Cards */
+.countdown-cards {
+  display: flex;
+  gap: 1rem;
+}
+
+.countdown-card {
+  width: 100px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 1rem;
+  border-radius: 8px;
+  color: var(--text-color);
+}
+
+.countdown-number {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.countdown-label {
+  font-size: 1rem;
+}
+
+/* Waitlist Form */
+.waitlist-card {
+  width: 100%;
+  max-width: 500px;
+  margin-top: 2rem;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1.5rem;
+  border-radius: 8px;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.form-heading {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.waitlist-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-field label {
+  font-size: 1rem;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.submit-button {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: rgba(214, 77, 131, 0.8);
+}
+
+.waitlist-info {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.features-section {
+  padding: 2rem;
+  background-color: var(--light-bg);
+}
+
+.features-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+  margin-bottom: 1rem;
+}
+
+.icon-circle {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-gradient);
+  border-radius: 50%;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.feature-heading {
+  margin-top: 0.5rem;
+  color: var(--accent-color);
+}
+
+.feature-description {
+  margin-top: 0.5rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.footer {
+  background-color: #1a1a1a; /* Dark background color */
+  color: white;
+  padding: 2rem 1rem;
+}
+
+.footer-container {
+  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.social-icon:hover {
+  color: var(--accent-color); /* Accent color defined in root */
+}
+
+.footer-year {
+  margin-top: 1rem;
+  color: rgba(255, 255, 255, 0.6); /* Slightly muted text color */
+}
+
+@import "@radix-ui/colors/black-alpha.css";
+@import "@radix-ui/colors/violet.css";
+@import "@radix-ui/colors/mauve.css";
+
+/* reset */
+input,
+textarea,
+button {
+  all: unset;
+  box-sizing: border-box;
+}
+
+.FormRoot {
+  width: 260px;
+}
+
+.FormField {
+  display: grid;
+  margin-bottom: 10px;
+}
+
+.FormLabel {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 35px;
+  color: white;
+}
+
+.FormMessage {
+  font-size: 13px;
+  color: white;
+  opacity: 0.8;
+}
+
+.Input,
+.Textarea {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 15px;
+  color: white;
+  background-color: var(--black-a2);
+  box-shadow: 0 0 0 1px var(--black-a6);
+}
+
+.Input:hover,
+.Textarea:hover {
+  box-shadow: 0 0 0 1px black;
+}
+
+.Input:focus,
+.Textarea:focus {
+  box-shadow: 0 0 0 2px black;
+}
+
+.Input::selection,
+.Textarea::selection {
+  background-color: var(--black-a6);
+  color: white;
+}
+
+.Input {
+  padding: 0 10px;
+  height: 35px;
+  line-height: 1;
+}
+
+.Textarea {
+  resize: none;
+  padding: 10px;
+}
+
+.Button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  padding: 0 15px;
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 500;
+  height: 35px;
+  width: 100%;
+  background-color: white;
+  color: var(--violet-11);
+  box-shadow: 0 2px 10px var(--black-a4);
+}
+
+.Button:hover {
+  background-color: var(--mauve-3);
+}
+
+.Button:focus {
+  box-shadow: 0 0 0 2px black;
+}

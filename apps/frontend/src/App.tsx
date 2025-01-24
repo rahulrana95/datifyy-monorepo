@@ -8,8 +8,14 @@ import AdminRoute from "./admin/AdminRoute";
 import LiveEvent from "./events/liveEvent/LiveEvent";
 import GlobalSnackbar from "./globalSnackbar";
 import EventPage from "./admin/events/eventPage";
+import Countdown from "./countdown/countdown";
 
 function App() {
+  const isCountdown = true;
+
+  if (isCountdown) {
+    return <Countdown />
+  }
   return (
     <div className="App">
       <Helmet>
