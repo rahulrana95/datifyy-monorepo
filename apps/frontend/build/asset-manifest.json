@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.552abc01.css",
-    "main.js": "/static/js/main.9fd96eaf.js",
+    "main.css": "/static/css/main.d212c44a.css",
+    "main.js": "/static/js/main.2938b522.js",
     "reactPlayerYouTube.js": "/static/js/reactPlayerYouTube.9723d7aa.chunk.js",
     "reactPlayerSoundCloud.js": "/static/js/reactPlayerSoundCloud.fcc564f9.chunk.js",
     "reactPlayerVimeo.js": "/static/js/reactPlayerVimeo.57663333.chunk.js",
@@ -19,8 +19,8 @@
     "static/media/candle_light_view_couple.jpg": "/static/media/candle_light_view_couple.edb694ef9f4db74ebe55.jpg",
     "static/media/datifyy-logo.png": "/static/media/datifyy-logo.6448e0fb8bc27d1f8801.png",
     "index.html": "/index.html",
-    "main.552abc01.css.map": "/static/css/main.552abc01.css.map",
-    "main.9fd96eaf.js.map": "/static/js/main.9fd96eaf.js.map",
+    "main.d212c44a.css.map": "/static/css/main.d212c44a.css.map",
+    "main.2938b522.js.map": "/static/js/main.2938b522.js.map",
     "reactPlayerYouTube.9723d7aa.chunk.js.map": "/static/js/reactPlayerYouTube.9723d7aa.chunk.js.map",
     "reactPlayerSoundCloud.fcc564f9.chunk.js.map": "/static/js/reactPlayerSoundCloud.fcc564f9.chunk.js.map",
     "reactPlayerVimeo.57663333.chunk.js.map": "/static/js/reactPlayerVimeo.57663333.chunk.js.map",
@@ -37,7 +37,7 @@
     "reactPlayerPreview.b20545b9.chunk.js.map": "/static/js/reactPlayerPreview.b20545b9.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.552abc01.css",
-    "static/js/main.9fd96eaf.js"
+    "static/css/main.d212c44a.css",
+    "static/js/main.2938b522.js"
   ]
 }

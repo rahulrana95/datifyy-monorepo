@@ -9,6 +9,27 @@ import LiveEvent from "./events/liveEvent/LiveEvent";
 import GlobalSnackbar from "./globalSnackbar";
 import EventPage from "./admin/events/eventPage";
 import Countdown from "./countdown/countdown";
+import ReactGA from 'react-ga4';
+import reportWebVitals from "./reportWebVitals";
+import { Toast } from "radix-ui";
+
+// Initialize Google Analytics with your GA4 Measurement ID
+ReactGA.initialize('G-6HZEXYEH51'); // Replace with your GA4 Measurement ID
+
+// Track the initial page view
+ReactGA.send('pageview');
+
+
+// Optionally, if you want to track performance metrics like P90, P99, etc.:
+reportWebVitals((metric) => {
+  ReactGA.event({
+    category: 'Web Vitals',
+    action: metric.name,
+    label: metric.id,
+    value: Math.round(metric.value), // You can adjust this if necessary
+    nonInteraction: true, // Optional, if you don't want to count as user interaction
+  });
+});
 
 function App() {
   const isCountdown = true;
