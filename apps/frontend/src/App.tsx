@@ -12,6 +12,10 @@ import Countdown from "./countdown/countdown";
 import ReactGA from 'react-ga4';
 import reportWebVitals from "./reportWebVitals";
 import { Toast } from "radix-ui";
+import Login from "./mvp/Login";
+import Signup from "./mvp/Signup";
+import Header from "./mvp/Header";
+
 
 // Initialize Google Analytics with your GA4 Measurement ID
 ReactGA.initialize('G-6HZEXYEH51'); // Replace with your GA4 Measurement ID
@@ -32,7 +36,7 @@ reportWebVitals((metric) => {
 });
 
 function App() {
-  const isCountdown = true;
+  const isCountdown = false;
 
   if (isCountdown) {
     return <Countdown />
@@ -48,6 +52,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/events/:eventId/live" element={<LiveEvent />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/header" element={<Header />} />
         </Routes>
         <AdminRoute />
       </Router>

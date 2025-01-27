@@ -9,8 +9,9 @@
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^6.1.5",
     "@mui/material": "^6.1.5",
+    "@radix-ui/react-dialog": "^1.1.5",
     "empty": "0.10.1",
-    "react-router-dom": "^6.27.0"
+    "react-router-dom": "^6.28.2"
   },
   "devDependencies": {
     "@nx/workspace": "20.0.6",
