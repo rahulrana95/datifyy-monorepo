@@ -4,8 +4,10 @@ import { DataSource } from "typeorm";
 import * as dotenv from "dotenv";
 import eventRoutes from './routes/eventRoutes';
 import userRoutes from './routes/userRoutes';
+import userProfileRoutes from './routes/userProfileRoutes';
 import roomRoutes from './routes/roomRoutes';
 import videoChatRoutes from './routes/videoChatRoutes';
+import allRoutes from './routes/allRoutes';
 import emailRoutes from './routes/emailRoutes';
 import morgan from 'morgan';
 import cors from 'cors';
@@ -54,10 +56,16 @@ app.get("/health", (req, res) => {
 });
 
 app.use('/api/v1', eventRoutes);
-app.use('/api/v1', userRoutes);
 app.use('/api/v1', roomRoutes);
 app.use('/api/v1', videoChatRoutes);
 app.use('/api/v1', emailRoutes);
+
+// MVP
+app.use('/api/v1', userRoutes);
+app.use('/api/v1', userProfileRoutes);
+app.use('/api/v1', allRoutes);
+
+
 
 
 

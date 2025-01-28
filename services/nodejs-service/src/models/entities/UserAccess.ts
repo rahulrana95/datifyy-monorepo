@@ -8,9 +8,9 @@ export class UserAccess {
 
   @Column("enum", {
     name: "access_type",
-    enum: ["SuperAdmin", "Admin", "User"],
+    enum: ["Admin", "SuperAdmin", "User"],
   })
-  accessType: "SuperAdmin" | "Admin" | "User";
+  accessType: "Admin" | "SuperAdmin" | "User";
 
   @Column("boolean", { name: "isactive" })
   isactive: boolean;

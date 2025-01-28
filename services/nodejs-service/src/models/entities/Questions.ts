@@ -44,9 +44,9 @@ export class Questions {
 
   @Column("enum", {
     name: "difficulty",
-    enum: ["easy", "medium", "difficult", "expert"],
+    enum: ["difficult", "easy", "expert", "medium"],
   })
-  difficulty: "easy" | "medium" | "difficult" | "expert";
+  difficulty: "difficult" | "easy" | "expert" | "medium";
 
   @Column("boolean", {
     name: "is_frontend_app",

@@ -7,6 +7,7 @@ import {
 } from "typeorm";
 import { DatifyyEvents } from "./DatifyyEvents";
 import { DatifyyTicketPurchases } from "./DatifyyTicketPurchases";
+import { DatifyyUsersInformation } from "./DatifyyUsersInformation";
 
 @Index("datifyy_users_login_email_key", ["email"], { unique: true })
 @Index("datifyy_users_login_pkey", ["id"], { unique: true })
@@ -57,4 +58,10 @@ export class DatifyyUsersLogin {
     (datifyyTicketPurchases) => datifyyTicketPurchases.user
   )
   datifyyTicketPurchases: DatifyyTicketPurchases[];
+
+  @OneToMany(
+    () => DatifyyUsersInformation,
+    (datifyyUsersInformation) => datifyyUsersInformation.userLogin
+  )
+  datifyyUsersInformations: DatifyyUsersInformation[];
 }

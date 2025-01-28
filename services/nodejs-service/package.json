@@ -24,7 +24,8 @@
     "nodemailer": "^6.9.16",
     "reflect-metadata": "^0.2.2",
     "supertest": "^7.0.0",
-    "typeorm-model-generator": "^0.4.6"
+    "typeorm-model-generator": "^0.4.6",
+    "uuid": "^11.0.5"
   },
   "scripts": {
     "dev": "nodemon --exec 'ts-node -r tsconfig-paths/register' src/index.ts",
