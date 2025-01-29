@@ -29,6 +29,7 @@ import {
   getVideoChatSessions,
   updateVideoChatSession,
 } from "../controllers/videoChatController";
+import { addToWaitlist } from "../controllers/waitListController";
 
 const router = Router();
 
@@ -54,7 +55,7 @@ router.post("/events/:eventId/rooms", updateRoomStatus);
 router.delete("/events/:eventId/rooms", deleteRoom);
 router.get("/events/:eventId/rooms/:email", getRoomByEmailAndEvent);
 
-// router.post('/waitlist/', waitList);
+router.post('/waitlist/', addToWaitlist);
 
 router.get("/user-profile", getUserProfile);
 

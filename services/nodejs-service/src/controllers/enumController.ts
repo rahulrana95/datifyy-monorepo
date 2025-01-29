@@ -2,7 +2,7 @@ import { AppDataSource } from "..";
 import { Request, Response } from 'express';
 
 // Helper function to fetch enums and return in key-value format
-const fetchEnumValues = async (tableName: string, schema: string = 'public') => {
+export const fetchEnumValues = async (tableName: string, schema: string = 'public') => {
     const query = `
         SELECT
             c.column_name,

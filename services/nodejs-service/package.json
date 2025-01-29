@@ -11,6 +11,7 @@
     "@types/morgan": "^1.9.9",
     "@types/nodemailer": "^6.4.16",
     "bcrypt": "^5.1.1",
+    "cloudinary": "^2.5.1",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.5",

@@ -1,21 +1,27 @@
-import { Request, Response } from 'express';
-import { getRepository } from 'typeorm';
-import { Waitlist } from '../entities/Waitlist';
+import { Request, Response } from "express";
+import { Waitlist } from "../models/entities/Waitlist";
+import { AppDataSource } from "..";
 
-export const addToWaitlist = async (req: Request, res: Response): Promise<Response> => {
-    const { name, email } = req.body;
+export const addToWaitlist = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { name, email } = req.body;
 
-    if (!email) {
-        return res.status(400).json({ message: 'Email is required' });
-    }
+  if (!email) {
+    res.status(400).json({ message: "Email is required" });
+    return;
+  }
 
-    try {
-        const waitlistRepository = getRepository(Waitlist);
-        const newEntry = waitlistRepository.create({ name, email });
-        await waitlistRepository.save(newEntry);
+  try {
+    const waitlistRepository = AppDataSource.getRepository(Waitlist);
+    const newEntry = waitlistRepository.create({ name, email });
+    await waitlistRepository.save(newEntry);
 
-        return res.status(200).json({ message: 'Successfully added to waitlist' });
-    } catch (error) {
-        return res.status(500).json({ message: 'Internal server error', error });
-    }
+    res.status(200).json({ message: "Successfully added to waitlist" });
+    return;
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error });
+    return;
+  }
 };
