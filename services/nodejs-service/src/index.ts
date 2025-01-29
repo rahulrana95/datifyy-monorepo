@@ -2,15 +2,34 @@
 import express from "express";
 import { DataSource } from "typeorm";
 import * as dotenv from "dotenv";
-import allRoutes from './routes/allRoutes';
-import morgan from 'morgan';
-import cors from 'cors';
+import allRoutes from "./routes/allRoutes";
+import morgan from "morgan";
+import cors from "cors";
 
 dotenv.config();
 const PORT = process.env.SERVER_PORT || 4000;
 
 const app = express();
-app.use(morgan('combined'));
+
+const allowedOrigins = [process.env.FRONTEND_URL_DEV ?? ''];
+
+
+app.use(
+  cors({
+    origin:
+      process.env.ENV === "prod"
+        ? [process.env.FRONTEND_URL_PROD ?? '']
+        : allowedOrigins, // Ensure this matches your frontend domain
+    credentials: true, // Allow cookies & authentication headers
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+app.options("*", cors());
+
+
+app.use(morgan("combined"));
 app.use(cors());
 app.use(express.json());
 
@@ -30,7 +49,6 @@ const AppDataSource = new DataSource({
 });
 export { AppDataSource };
 
-
 AppDataSource.initialize()
   .then(() => {
     console.log("Data Source has been initialized!");
@@ -49,13 +67,7 @@ app.get("/health", (req, res) => {
   res.send("Welcome to Datifyy Express Server!");
 });
 
-
-app.use('/api/v1', allRoutes);
-
-
-
-
-
+app.use("/api/v1", allRoutes);
 
 // Start the server
 app.listen(PORT, () => {
@@ -63,4 +75,3 @@ app.listen(PORT, () => {
 });
 
 export default app;
-
