@@ -188,6 +188,7 @@
   padding: 0.75rem;
   font-size: 1rem;
   border-radius: 4px;
+  width: 100% !important;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -307,6 +308,7 @@ button {
 .FormField {
   display: grid;
   margin-bottom: 10px;
+  width: 100%;
 }
 
 .FormLabel {
