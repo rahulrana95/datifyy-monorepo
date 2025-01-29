@@ -36,7 +36,7 @@ reportWebVitals((metric) => {
 });
 
 function App() {
-  const isCountdown = false;
+  const isCountdown = process.env.REACT_APP_IS_COUNTDOWN_ENABLED === "true";
 
   if (isCountdown) {
     return <Countdown />

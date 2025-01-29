@@ -11,7 +11,7 @@ import { Form } from "radix-ui";
 import { Toast } from "radix-ui";
 import ToastC from './toast';
 
-const launchDate = new Date('2025-01-31T00:00:00').getTime();
+const launchDate = new Date('2025-02-06T00:00:00').getTime();
 
 const HeartIconWithCircle = () => {
     return (
