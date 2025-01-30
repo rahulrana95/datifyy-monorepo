@@ -20,7 +20,7 @@ class ApiService {
       headers: {
         "Content-Type": "application/json",
       },
-      withCredentials: true, // Ensures cookies (e.g., JWT tokens) are sent
+    //   withCredentials: true, // Ensures cookies (e.g., JWT tokens) are sent
     });
 
     this.setupInterceptors();

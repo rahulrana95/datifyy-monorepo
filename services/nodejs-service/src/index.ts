@@ -18,10 +18,10 @@ if (process.env.FRONTEND_URL_DEV) {
 
 app.use(
   cors({
-    origin: allowedOrigins, // Ensure this matches your frontend domain
-    credentials: true, // Allow cookies & authentication headers
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: "https://datifyy.com", // Allow only your frontend
+    credentials: true, // Allow cookies and auth headers
+    allowedHeaders: ["Content-Type", "Authorization"], // Allow specific headers
+    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
   })
 );
 
