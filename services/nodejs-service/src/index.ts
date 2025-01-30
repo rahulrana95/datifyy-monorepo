@@ -25,10 +25,6 @@ app.use(
   })
 );
 
-
-app.options("*", cors());
-
-
 app.use(morgan("combined"));
 app.use(cors());
 app.use(express.json());
