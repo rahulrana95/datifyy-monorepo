@@ -8,6 +8,7 @@ import { toZonedTime } from 'date-fns-tz';
 import * as Tabs from '@radix-ui/react-tabs';
 import './waitList.css';
 import Loader from "../common/loader/Loader";
+import { Slot } from "@radix-ui/react-slot";
 
 import { Checkbox } from "radix-ui";
 import { CheckIcon } from "@radix-ui/react-icons";
@@ -82,15 +83,8 @@ const WaitList = () => {
     useEffect(() => {
         setInterval(() => {
             fetchData();
-        }, 10000)
+        }, 5000);
     }, []);
-
-    const renderCard = (title: string, value: number) => (
-        <div className="p-4 bg-white shadow-lg rounded-md flex flex-col items-center justify-center">
-            <h3 className="text-xl font-semibold">{title}</h3>
-            <p className="text-2xl font-bold text-blue-500">{value}</p>
-        </div>
-    );
 
     const counts = data.counts ?? {};
     const waitlistData = data.data ?? [];
@@ -125,10 +119,18 @@ const WaitList = () => {
                             <td>{entry.email}</td>
                             <td>{new Date(entry.createdAt).toLocaleString()}</td>
                             <td>
-                                <button onClick={() => handleSendMail(entry.email)}>Send Mail</button>
+                                <Slot>
+                                    <button className="send-mail-button" onClick={() => handleSendMail(entry.email)}>
+                                        Send Mail
+                                    </button>
+                                </Slot>
                             </td>
                             <td>
-                                <button onClick={() => handleDelete(entry.id)}>Delete</button>
+                                <Slot>
+                                    <button className="send-mail-button" onClick={() => handleDelete(entry.id)}>
+                                        Delete
+                                    </button>
+                                </Slot>
                             </td>
                         </tr>
                     ))}
@@ -146,24 +148,20 @@ const WaitList = () => {
                     <CardRoot title="Total Count" value={data.totalCount} />
                     <CardRoot title="Last 3 Months" value={counts.last3Months} />
                     <CardRoot title="Last 6 Hrs" value={counts.last6Hrs} />
-                    <CardRoot title="Last 7 Days" value={counts.last7Days} />
-                    {loading && <Loader />}
+                    <CardRoot title="Last 24 hrs" value={counts.last24Hrs} />
+                    <CardRoot title="Last 7 days" value={counts.last7Days} />
+                    <CardRoot title="Last 30 days" value={counts.last30Days} />
+                    <CardRoot title="Last 60 days" value={counts.last60Days} />
+                    <CardRoot title="Last 3 months" value={counts.last3Months} />
+                    <CardRoot title="Last 6 months" value={counts.last6Months} />
+                    <CardRoot title="Last 1 year" value={counts.lastYear} />
+                    {loading && <Loader text="Fetching latest content" />}
                 </div>
 
                 <Tabs.Root className="tabs-root" defaultValue="last30Days">
-                    <Tabs.List className="tabs-list">
-                        <Tabs.Trigger className="tab-trigger" value="last30Days">Last 30 Days</Tabs.Trigger>
-                        <Tabs.Trigger className="tab-trigger" value="last60Days">Last 60 Days</Tabs.Trigger>
-                        <Tabs.Trigger className="tab-trigger" value="lastYear">Last Year</Tabs.Trigger>
-                    </Tabs.List>
+
 
                     <Tabs.Content className="tabs-content" value="last30Days">
-                        <Table data={waitlistData} />
-                    </Tabs.Content>
-                    <Tabs.Content className="tabs-content" value="last60Days">
-                        <Table data={waitlistData} />
-                    </Tabs.Content>
-                    <Tabs.Content className="tabs-content" value="lastYear">
                         <Table data={waitlistData} />
                     </Tabs.Content>
                 </Tabs.Root>

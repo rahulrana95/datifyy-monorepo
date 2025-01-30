@@ -1,7 +1,11 @@
 import React from 'react';
 import './Loader.css';
 
-const Loader: React.FC = ({ text = 'Loading...' }: { text?: string }) => {
+interface LoaderProps {
+    text?: string;
+}
+
+const Loader: React.FC<LoaderProps> = ({ text = 'Loading...' }) => {
     return (
         <div className="alllove">
             <span className="love love1 glyphicon glyphicon-heart"></span>

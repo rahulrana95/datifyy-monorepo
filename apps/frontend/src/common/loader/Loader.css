@@ -1,7 +1,6 @@
 @import url(https://fonts.googleapis.com/css?family=Bad+Script);
 
 h1 {
-  position: absolute;
   top: 160px;
   font-family: "Bad Script";
   color: #de4747;
@@ -11,7 +10,6 @@ h1 {
 }
 
 .alllove {
-  position: relative;
   width: 80px;
   height: 80px;
   margin: 0 auto;
@@ -24,9 +22,17 @@ h1 {
   color: #de4747;
 }
 
+.glyphicon-heart {
+  font-size: 30px;
+  color: #de4747;
+
+  background-color: #de4747;
+}
+
 .love1 {
   -webkit-animation-name: love1;
   -webkit-animation-duration: 5s;
+  animation-duration: 5s;
   -webkit-animation-iteration-count: infinite;
 }
 
@@ -54,6 +60,7 @@ h1 {
 .love5 {
   left: 100px;
   -webkit-animation-name: love5;
+  animation-name: love5;
   -webkit-animation-duration: 5s;
   -webkit-animation-iteration-count: infinite;
 }

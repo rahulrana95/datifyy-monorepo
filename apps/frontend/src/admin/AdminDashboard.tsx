@@ -9,13 +9,15 @@ import EventList from "./events/EventList";
 import { Route, Routes } from "react-router-dom";
 import EventPage from "./events/eventPage";
 import WaitList from "./WaitList";
+import CollapsibleSidebar from "./Sidebar/SideBarV2";
 
 const AdminDashboard: React.FC = () => {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
 
-      <Sidebar />
+      {/* <Sidebar /> */}
+      <CollapsibleSidebar />
 
       {/* Content Area */}
       <Box
