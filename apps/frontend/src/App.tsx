@@ -22,7 +22,7 @@ Sentry.init({
 });
 
 // Initialize Google Analytics with your GA4 Measurement ID
-ReactGA.initialize('G-6HZEXYEH51'); // Replace with your GA4 Measurement ID
+ReactGA.initialize(process.env.REACT_APP_GA_ID ?? ''); // Replace with your GA4 Measurement ID
 
 // Track the initial page view
 ReactGA.send('pageview');
