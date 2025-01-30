@@ -15,10 +15,7 @@ const allowedOrigins = [process.env.FRONTEND_URL_DEV ?? '', 'https://datifyy.com
 
 app.use(
   cors({
-    origin:
-      process.env.ENV === "prod"
-        ? [process.env.FRONTEND_URL_PROD ?? '']
-        : allowedOrigins, // Ensure this matches your frontend domain
+    origin: allowedOrigins, // Ensure this matches your frontend domain
     credentials: true, // Allow cookies & authentication headers
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
