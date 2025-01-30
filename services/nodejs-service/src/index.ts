@@ -11,7 +11,10 @@ const PORT = process.env.SERVER_PORT || 4000;
 
 const app = express();
 
-const allowedOrigins = [process.env.FRONTEND_URL_DEV ?? '', 'https://datifyy.com'];
+let allowedOrigins = ['https://datifyy.com'];
+if (process.env.FRONTEND_URL_DEV) {
+  allowedOrigins = [...allowedOrigins, process.env.FRONTEND_URL_DEV];
+}
 
 app.use(
   cors({
