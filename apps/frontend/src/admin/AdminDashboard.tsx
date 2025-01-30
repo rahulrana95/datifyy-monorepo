@@ -14,7 +14,6 @@ const AdminDashboard: React.FC = () => {
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
 
-      {/* Sidebar */}
       <Sidebar />
 
       {/* Content Area */}

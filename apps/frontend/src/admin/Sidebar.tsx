@@ -13,10 +13,10 @@ import { styled } from "@mui/system";
 const drawerWidth = 240;
 
 const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
-  color: theme.palette.text.primary,
+  color: theme?.palette?.text?.primary,
   textDecoration: "none",
   "&.active, &:hover": {
-    backgroundColor: theme.palette.action.hover,
+    backgroundColor: theme?.palette?.action?.hover,
   },
 }));
 
@@ -56,6 +56,15 @@ const Sidebar: React.FC = () => {
               className={location.pathname === "/admin" ? "active" : ""}
             >
               <ListItemText primary="Events" />
+            </StyledListItemButton>
+          </Link>
+
+          <Link to="/admin/waitlist">
+            <StyledListItemButton
+
+              className={location.pathname === "/admin/waitlist" ? "active" : ""}
+            >
+              <ListItemText primary="WaitList" />
             </StyledListItemButton>
           </Link>
         </List>

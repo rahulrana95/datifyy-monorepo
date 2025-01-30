@@ -45,7 +45,7 @@ function App() {
     <div className="App">
       <Helmet>
         <title>Datifyy</title> {/* Dynamically set title */}
-        <meta name="description" content="A simple counter application" />{" "}
+        <meta name="description" content="Datifyy" />{" "}
         {/* Optional meta tags */}
       </Helmet>
       <Router>
