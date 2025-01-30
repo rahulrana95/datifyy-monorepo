@@ -19,7 +19,6 @@ class ApiService {
       baseURL,
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*", // Temporary for debugging
       },
       withCredentials: true, // Ensures cookies (e.g., JWT tokens) are sent
     });
