@@ -15,7 +15,11 @@ import { Toast } from "radix-ui";
 import Login from "./mvp/Login";
 import Signup from "./mvp/Signup";
 import Header from "./mvp/Header";
-
+import * as Sentry from "@sentry/react";
+Sentry.init({
+  dsn: "https://f67ff8bff2418714abfe30925e9dd6f0@o4508734190256128.ingest.us.sentry.io/4508734195761152",
+  integrations: [],
+});
 
 // Initialize Google Analytics with your GA4 Measurement ID
 ReactGA.initialize('G-6HZEXYEH51'); // Replace with your GA4 Measurement ID

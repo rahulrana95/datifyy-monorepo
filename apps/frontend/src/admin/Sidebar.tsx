@@ -16,13 +16,13 @@ const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
   color: theme?.palette?.text?.primary,
   textDecoration: "none",
   "&.active, &:hover": {
-    backgroundColor: theme?.palette?.action?.hover,
+    backgroundColor: 'grey',
   },
 }));
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
-
+  console.log(location)
   return (
     <Drawer
       sx={{
@@ -39,9 +39,9 @@ const Sidebar: React.FC = () => {
       anchor="left"
     >
       <Toolbar />
-      <Box sx={{ overflow: "auto", color: 'white !important' }}>
+      <Box sx={{ overflow: "auto", color: 'black !important' }}>
         <List>
-          <Link to="/">
+          <Link to="/admin">
             <StyledListItemButton
 
               className={location.pathname === "/admin/home" ? "active" : ""}

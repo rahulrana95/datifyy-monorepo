@@ -1,7 +1,7 @@
 import React from 'react';
 import './Loader.css';
 
-const Loader: React.FC = ({ text = 'Loading Love...' }: { text?: string }) => {
+const Loader: React.FC = ({ text = 'Loading...' }: { text?: string }) => {
     return (
         <div className="alllove">
             <span className="love love1 glyphicon glyphicon-heart"></span>

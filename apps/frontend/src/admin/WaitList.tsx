@@ -9,7 +9,8 @@ import * as Tabs from '@radix-ui/react-tabs';
 import './waitList.css';
 import Loader from "../common/loader/Loader";
 
-
+import { Checkbox } from "radix-ui";
+import { CheckIcon } from "@radix-ui/react-icons";
 
 function formatTimestamp(timestamp: string): string {
     const parsedDate = parseISO(timestamp);
@@ -111,11 +112,14 @@ const WaitList = () => {
                     {data.map((entry, index) => (
                         <tr key={index}>
                             <td>
-                                <input
-                                    type="checkbox"
-                                    checked={selectedItems.has(entry.id)}
-                                    onChange={() => handleCheckboxChange(entry.id)}
-                                />
+                                <div style={{ display: "flex", alignItems: "center" }}>
+                                    <Checkbox.Root className="CheckboxRoot" checked={selectedItems.has(entry.id)} id="c1" onCheckedChange={() => handleCheckboxChange(entry.id)}>
+                                        <Checkbox.Indicator className="CheckboxIndicator">
+                                            <CheckIcon />
+                                        </Checkbox.Indicator>
+                                    </Checkbox.Root>
+
+                                </div>
                             </td>
                             <td>{entry.name}</td>
                             <td>{entry.email}</td>
@@ -134,12 +138,6 @@ const WaitList = () => {
     };
 
 
-    if (loading) {
-        return <div className="p-6 space-y-6">
-            <Loader />
-        </div>
-    }
-
     return (
         <div className="p-6 space-y-6">
             {/* Metrics Cards */}
@@ -149,7 +147,7 @@ const WaitList = () => {
                     <CardRoot title="Last 3 Months" value={counts.last3Months} />
                     <CardRoot title="Last 6 Hrs" value={counts.last6Hrs} />
                     <CardRoot title="Last 7 Days" value={counts.last7Days} />
-
+                    {loading && <Loader />}
                 </div>
 
                 <Tabs.Root className="tabs-root" defaultValue="last30Days">
