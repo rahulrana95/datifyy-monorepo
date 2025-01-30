@@ -8,6 +8,7 @@ import Events from "./events/Events";
 import EventList from "./events/EventList";
 import { Route, Routes } from "react-router-dom";
 import EventPage from "./events/eventPage";
+import WaitList from "./WaitList";
 
 const AdminDashboard: React.FC = () => {
   return (
@@ -26,6 +27,7 @@ const AdminDashboard: React.FC = () => {
           <Route index element={<><Events /><EventList /></>} />
 
           <Route path="events/:eventId" element={<EventPage />} />
+          <Route path="waitlist" element={<WaitList />} />
         </Routes>
       </Box>
 

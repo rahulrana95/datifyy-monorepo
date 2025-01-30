@@ -9,6 +9,10 @@ class WaitService {
   async joinWaitlist(payload: WaitlistPayload): Promise<{ response?: any; error?: { code: number; message: string } }> {
     return api.post("/api/v1/waitlist", payload);
   }
+    
+    async getWaitlistData(): Promise<{ response?: any; error?: { code: number; message: string } }> { 
+        return api.get("/api/v1/waitlist-data");
+    }
 }
 
 const waitService = new WaitService();

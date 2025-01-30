@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 * {
   box-sizing: border-box;
 }
@@ -28,7 +32,7 @@ form {
 }
 
 .LoginButton {
-  background-color: #D90166;
+  background-color: #d90166;
   width: 91%;
   border-radius: 10px;
   padding: 10px;
@@ -42,14 +46,12 @@ form {
   width: 100%;
   border: 2px solid darkgrey;
   border-radius: 5px;
-
 }
 
 #name {
   width: 100%;
   border: 2px solid darkgrey;
   border-radius: 2px;
-
 }
 
 .cancel {
@@ -58,9 +60,6 @@ form {
   right: 15px;
   cursor: pointer;
 }
-
-
-
 
 /* Container styles */
 .container {
@@ -168,7 +167,7 @@ h2 {
 
 .submit-button {
   width: 100%;
-  background: #D90166;
+  background: #d90166;
   color: white;
   padding: 0.5rem;
   border-radius: 8px;
@@ -190,7 +189,7 @@ h2 {
 /* Right Section */
 .right-section {
   display: none;
-  background: #D90166;
+  background: #d90166;
   color: white;
   padding: 2rem;
   text-align: center;
@@ -218,7 +217,6 @@ h2 {
   margin-top: 1rem;
   font-size: 1.5rem;
 }
-
 
 .header {
   width: 100%;
@@ -257,67 +255,34 @@ h2 {
   background-color: #2563eb;
 }
 
-
-
-
-
-
-
-
-
 :root {
   --accent-color: rgba(214, 77, 131, 1);
   /* Accent color */
-  --accent-gradient: linear-gradient(to right,
-      rgb(244, 204, 241),
-      rgba(246, 157, 231, 0.5));
+  --accent-gradient: linear-gradient(
+    to right,
+    rgb(244, 204, 241),
+    rgba(246, 157, 231, 0.5)
+  );
   /* Gradient using the accent color */
   --light-bg: rgba(242, 242, 242, 1);
   /* Light background color */
-  --accent-color-100: rgba(245,
-      152,
-      229,
-      0.1);
+  --accent-color-100: rgba(245, 152, 229, 0.1);
   /* Accent color with 10% opacity */
-  --accent-color-200: rgba(214,
-      77,
-      131,
-      0.2);
+  --accent-color-200: rgba(214, 77, 131, 0.2);
   /* Accent color with 20% opacity */
-  --accent-color-300: rgba(214,
-      77,
-      131,
-      0.3);
+  --accent-color-300: rgba(214, 77, 131, 0.3);
   /* Accent color with 30% opacity */
-  --accent-color-400: rgba(214,
-      77,
-      131,
-      0.4);
+  --accent-color-400: rgba(214, 77, 131, 0.4);
   /* Accent color with 40% opacity */
-  --accent-color-500: rgba(214,
-      77,
-      131,
-      0.5);
+  --accent-color-500: rgba(214, 77, 131, 0.5);
   /* Accent color with 50% opacity */
-  --accent-color-600: rgba(214,
-      77,
-      131,
-      0.6);
+  --accent-color-600: rgba(214, 77, 131, 0.6);
   /* Accent color with 60% opacity */
-  --accent-color-700: rgba(214,
-      77,
-      131,
-      0.7);
+  --accent-color-700: rgba(214, 77, 131, 0.7);
   /* Accent color with 70% opacity */
-  --accent-color-800: rgba(214,
-      77,
-      131,
-      0.8);
+  --accent-color-800: rgba(214, 77, 131, 0.8);
   /* Accent color with 80% opacity */
-  --accent-color-900: rgba(214,
-      77,
-      131,
-      0.9);
+  --accent-color-900: rgba(214, 77, 131, 0.9);
   /* Accent color with 90% opacity */
   --text-color: rgba(255, 255, 255, 0.9);
   /* Light text color */
