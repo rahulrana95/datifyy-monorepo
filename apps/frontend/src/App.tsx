@@ -17,7 +17,7 @@ import Signup from "./mvp/Signup";
 import Header from "./mvp/Header";
 import * as Sentry from "@sentry/react";
 Sentry.init({
-  dsn: "https://f67ff8bff2418714abfe30925e9dd6f0@o4508734190256128.ingest.us.sentry.io/4508734195761152",
+  dsn: process.env.REACT_APP_SENTRY_DSN,
   integrations: [],
 });
 
