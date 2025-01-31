@@ -1,66 +1,79 @@
 import { Request, Response } from "express";
-import nodemailer from "nodemailer";
-import crypto from "crypto";
+import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
+// Mailersend API Key
+const MAILERSEND_API_KEY = process.env.MAILER_SEND_KEY ?? "na";
 
-// Utility function to generate a random code
-const generateRandomCode = (): string => {
-    return crypto.randomBytes(3).toString("hex"); // Generates a 6-character random code
+// Function to send email
+const sendEmail = async (
+  to: string,
+  subject: string,
+  text: string,
+  html: string
+) => {
+    console.log(MAILERSEND_API_KEY)
+  const mailer = new MailerSend({
+    apiKey:
+      MAILERSEND_API_KEY,
+  });
+
+  const sentFrom = new Sender("rahulrana@datifyy.com", "Datifyy");
+  const recipients = [new Recipient(to, "Your Client")];
+  const emailParams = new EmailParams()
+    .setFrom(sentFrom)
+    .setTo(recipients)
+    .setReplyTo(sentFrom)
+    .setSubject(subject)
+    .setHtml(html)
+    .setText(text);
+
+  try {
+    const response = await mailer.email.send(emailParams);
+
+    return response;
+  } catch (error: any) {
+    if (error instanceof Error) {
+      throw new Error(`Error sending email: ${error.message}`);
+    } else {
+      throw new Error("Error sending email" + error.message);
+    }
+  }
 };
 
-// Email sending function
-const sendEmail = async (email: string, code: string) => {
-    const transporter = nodemailer.createTransport({
-        service: "gmail", // e.g., Gmail; customize for your email provider
-        auth: {
-            user: process.env.EMAIL_USER, // Sender's email
-            pass: process.env.EMAIL_PASSWORD, // Sender's email password
-        },
-        secure: false, // Use TLS
-        port: 587, // TLS port
-        tls: {
-            rejectUnauthorized: false
-        }
-    });
+// Controller for sending a single email
+export const sendSingleEmail = async (req: Request, res: Response) => {
+  const { to, subject, text, html } = req.body;
 
-    const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: "Your Verification Code",
-        text: `Your verification code is: ${code}`,
-    };
-
-    await transporter.sendMail(mailOptions);
+  try {
+    const result = await sendEmail(to, subject, text, html);
+    res.status(200).json({ message: "Email sent successfully", result });
+    return;
+  } catch (error: any) {
+    console.log(error);
+    res.status(500).json({ message: error?.message });
+    return;
+  }
 };
 
-// Controller function
-export const sendVerificationCodes = async (req: Request, res: Response) => {
-    const { emails } = req.body;
+// Controller for sending bulk emails
+export const sendBulkEmails = async (req: Request, res: Response) => {
+  const { recipients, subject, text, html } = req.body;
 
-    if (!emails || !Array.isArray(emails) || emails.length === 0) {
-        res.status(400).json({ message: "Invalid email list provided." });
-        return;
+  if (!Array.isArray(recipients) || recipients.length === 0) {
+    return res
+      .status(400)
+      .json({ message: "Recipients must be an array and cannot be empty" });
+  }
+
+  try {
+    const results = [];
+    for (let i = 0; i < recipients.length; i++) {
+      const result = await sendEmail(recipients[i], subject, text, html);
+      results.push(result);
     }
-
-    try {
-        // Generate a random code for each email
-        const codes = emails.map(email => ({
-            email,
-            code: generateRandomCode(),
-        }));
-
-        // Send emails
-        await Promise.all(
-            codes.map(async ({ email, code }) => {
-                await sendEmail(email, code);
-            })
-        );
-
-        res.status(200).json({
-            message: "Verification codes sent successfully",
-            codes: codes.map(({ email, code }) => ({ email, code })), // Optionally return the codes
-        });
-    } catch (error) {
-        console.error("Error sending emails:", error);
-        res.status(500).json({ message: "Failed to send verification codes" });
-    }
+    return res
+      .status(200)
+      .json({ message: "Bulk emails sent successfully", results });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
 };
