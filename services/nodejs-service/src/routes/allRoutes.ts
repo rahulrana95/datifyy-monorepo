@@ -4,7 +4,7 @@ import { Router } from "express";
 import { signup, login } from "../controllers/userController";
 import { get } from "http";
 import { getEnumValues } from "../controllers/enumController";
-import { sendVerificationCodes } from "../controllers/emailController";
+import { sendSingleEmail } from "../controllers/emailController";
 import {
   createEvent,
   deleteEvent,
@@ -35,7 +35,7 @@ const router = Router();
 
 // enums
 router.get("/enums", getEnumValues);
-router.post("/emails/:email/send-verification-codes", sendVerificationCodes);
+// router.post("/emails/:email/send-verification-codes", sendVerificationCodes);
 
 // router.post('/events', validateEvent, authenticateToken, requireAdmin, createEvent);
 router.post("/events", validateEvent, createEvent);
@@ -63,6 +63,10 @@ router.get("/user-profile", getUserProfile);
 
 router.post("/signup", signup);
 router.post("/login", login);
+
+// notif mails
+router.post('/send-emails', sendSingleEmail)
+
 
 router.get(
   "/events/:eventId/live/:email/next-user-to-match",

@@ -2,12 +2,13 @@
 import express from "express";
 import { DataSource } from "typeorm";
 import * as dotenv from "dotenv";
+dotenv.config();
+
 import allRoutes from "./routes/allRoutes";
 import morgan from "morgan";
 import cors from "cors";
 import rateLimit from 'express-rate-limit';
 
-dotenv.config();
 const PORT = process.env.SERVER_PORT || 4000;
 
 const app = express();
