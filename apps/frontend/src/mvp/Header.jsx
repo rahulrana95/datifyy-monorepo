@@ -1,59 +1,49 @@
-import { Flex, Text, Button } from "@radix-ui/themes";
-// import Login from "./login/Login";
-import Signup from "./Signup";
+import { Box, Flex, Spacer, Button, Link, HStack } from "@chakra-ui/react";
 
-import { useState } from "react";
 const Header = () => {
-  const [isLoginVisible, setIsLoginVisible] = useState(false);
-  const [isSignupVisible, setIsSignupVisible] = useState(false);
-
-  const handleLoginClick = () => {
-    setIsLoginVisible((isLoginVisible) => !isLoginVisible);
-  };
-
-  const handleSignupClick = () => {
-    setIsSignupVisible(true);
-  };
   return (
-    <header>
-      <div className="header">
-        <Flex justify="between" align="center" className="header-container">
-          {/* Left: Logo */}
-          <Text size="5" weight="bold" className="header-logo">
-            Datifyy
-          </Text>
+    <Box bg="white" px={6} py={4} boxShadow="md">
+      <Flex align="center">
+        {/* Left: Logo */}
+        <Box fontSize="2xl" fontWeight="bold" color="pink.500">
+          Datifyy
+        </Box>
 
-          {/* Right: Buttons */}
-          <Flex gap="2">
-            <Button
-              className="login-button"
-              variant="solid"
-              onClick={handleLoginClick}
-            >
-              Login
-            </Button>
-            <Button
-              className="signup-button"
-              variant="solid"
-              onClick={handleSignupClick}
-            >
-              Signup
-            </Button>
-          </Flex>
-        </Flex>
-      </div>
+        <Spacer />
 
-      {/* Render Login Dialog */}
-      {isLoginVisible && (
-        <div className="login-dialog-overlay">{/* <Login /> */}</div>
-      )}
-      {/* Render Signup Dialog */}
-      {isSignupVisible && (
-        <div className="dialog-overlay">
-          <Signup onClose={() => setIsSignupVisible(!isSignupVisible)} />
-        </div>
-      )}
-    </header>
+        {/* Center-Right: Navigation Links */}
+        <HStack spacing={6} display={{ base: "none", md: "flex" }}>
+          <Link
+            href="/"
+            fontWeight="medium"
+            color="gray.600"
+            _hover={{ color: "pink.500" }}
+          >
+            Home
+          </Link>
+          <Link
+            href="/about"
+            fontWeight="medium"
+            color="gray.600"
+            _hover={{ color: "pink.500" }}
+          >
+            About Us
+          </Link>
+        </HStack>
+
+        <Spacer />
+
+        {/* Right: Sign Up & Login Buttons */}
+        <HStack spacing={4}>
+          <Button as={Link} href="/signup" colorScheme="pink" variant="outline">
+            Sign Up
+          </Button>
+          <Button as={Link} href="/login" colorScheme="pink">
+            Login
+          </Button>
+        </HStack>
+      </Flex>
+    </Box>
   );
 };
 

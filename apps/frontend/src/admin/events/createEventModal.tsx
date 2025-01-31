@@ -287,11 +287,11 @@ const CreateEventModal = ({
         <TextField
           margin="dense"
           name="duration"
-          error={!!errors.duration.length}
+          error={!!errors?.duration.length}
           type="number"
           label="Duration"
           fullWidth
-          value={formData.duration}
+          value={formData?.duration}
           onChange={handleInputChange}
         />
         <Dropdown
