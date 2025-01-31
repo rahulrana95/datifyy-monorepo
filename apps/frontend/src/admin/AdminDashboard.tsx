@@ -2,12 +2,12 @@
 
 import React from "react";
 import { Box, CssBaseline, Toolbar } from "@mui/material";
-import Sidebar from "./Sidebar";
+// import Sidebar from "./Sidebar";
 import Header from "./Header";
-import Events from "./events/Events";
-import EventList from "./events/EventList";
+// import Events from "./events/Events";
+// import EventList from "./events/EventList";
 import { Route, Routes } from "react-router-dom";
-import EventPage from "./events/eventPage";
+// import EventPage from "./events/eventPage";
 import WaitList from "./WaitList";
 import CollapsibleSidebar from "./Sidebar/SideBarV2";
 
@@ -26,9 +26,9 @@ const AdminDashboard: React.FC = () => {
       >
         <Header />
         <Routes>
-          <Route index element={<><Events /><EventList /></>} />
+          {/* <Route index element={<><Events /><EventList /></>} /> */}
 
-          <Route path="events/:eventId" element={<EventPage />} />
+          {/* <Route path="events/:eventId" element={<EventPage />} /> */}
           <Route path="waitlist" element={<WaitList />} />
         </Routes>
       </Box>

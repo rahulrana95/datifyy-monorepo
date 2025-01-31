@@ -3,7 +3,7 @@ import "./App.css";
 import { Helmet } from "react-helmet-async";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // import Home from "./home/home";
-// import AdminRoute from "./admin/AdminRoute";
+import AdminRoute from "./admin/AdminRoute";
 // import LiveEvent from "./events/liveEvent/LiveEvent";
 import GlobalSnackbar from "./globalSnackbar";
 // import EventPage from "./admin/events/eventPage";
@@ -68,7 +68,9 @@ function App() {
             {/* <Route path="/signup" element={<Signup />} />
             <Route path="/header" element={<Header />} /> */}
           </Routes>
+          {/* <AdminRoute /> */}
         </Router>
+
         {/* <GlobalSnackbar /> */}
 
       </div >
