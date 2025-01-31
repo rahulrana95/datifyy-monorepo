@@ -13,19 +13,23 @@ import { Slot } from "@radix-ui/react-slot";
 import { Checkbox } from "radix-ui";
 import { CheckIcon } from "@radix-ui/react-icons";
 
-function formatTimestamp(timestamp: string): string {
-    const parsedDate = parseISO(timestamp);
+function convertUnixToLocalTime(unixTimestamp: number): string {
+    // Convert Unix timestamp to milliseconds
+    const date = new Date(unixTimestamp * 1000);
 
-    // Get the user's local timezone
-    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // Format date and time in the local timezone
+    const options: Intl.DateTimeFormatOptions = {
+        weekday: 'long',   // "Monday"
+        year: 'numeric',   // "2025"
+        month: 'long',     // "January"
+        day: 'numeric',    // "30"
+        hour: '2-digit',   // "02"
+        minute: '2-digit', // "45"
+        second: '2-digit', // "30"
+        hour12: true,      // Use 12-hour format (AM/PM)
+    };
 
-    // Convert to user's local timezone
-    const zonedDate = toZonedTime(parsedDate, userTimeZone);
-
-    // Format for 12-hour clock with AM/PM
-    const formattedTime = format(zonedDate, 'dd MMM yyyy, hh:mm:ss a \'hrs\'');
-
-    return formattedTime;
+    return date.toLocaleString('en-US', options);
 }
 
 
@@ -38,7 +42,6 @@ const WaitList = () => {
 
     const [data, setData] = useState<WaitlistData>({ counts: {}, data: [], totalCount: 0 });
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
     const handleDelete = (id: string) => {
@@ -73,7 +76,7 @@ const WaitList = () => {
             }
             setData({
                 ...response.response,
-                data: response.response.data.sort((a: { createdAt: string }, b: { createdAt: string }) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                data: response.response.data.sort((a: { createdAt: string }, b: { createdAt: string }) => Number(b.createdAt) - Number(a.createdAt))
             });
             setLoading(false);
         }
@@ -117,7 +120,7 @@ const WaitList = () => {
                             </td>
                             <td>{entry.name}</td>
                             <td>{entry.email}</td>
-                            <td>{new Date(entry.createdAt).toLocaleString()}</td>
+                            <td>{convertUnixToLocalTime(Number(entry.createdAt))}</td>
                             <td>
                                 <Slot>
                                     <button className="send-mail-button" onClick={() => handleSendMail(entry.email)}>
