@@ -29,7 +29,7 @@ import {
   getVideoChatSessions,
   updateVideoChatSession,
 } from "../controllers/videoChatController";
-import { addToWaitlist, getWaitlistData } from "../controllers/waitListController";
+import { addToWaitlist, getWaitlistCount, getWaitlistData } from "../controllers/waitListController";
 
 const router = Router();
 
@@ -57,6 +57,7 @@ router.get("/events/:eventId/rooms/:email", getRoomByEmailAndEvent);
 
 router.post('/waitlist/', addToWaitlist);
 router.get('/waitlist-data/', getWaitlistData);
+router.get('/waitlist-count/', getWaitlistCount);
 
 router.get("/user-profile", getUserProfile);
 

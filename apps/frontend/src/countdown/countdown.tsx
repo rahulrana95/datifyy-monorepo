@@ -141,7 +141,7 @@ const Countdown: React.FC = () => {
             setTimeLeft({ days, hours, minutes, seconds });
         }, 1000);
 
-        waitService.getWaitlistData().then((response) => {
+        waitService.getWaitlistCount().then((response) => {
             if (response.error) {
                 console.error("Error fetching waitlist data:", response.error.message);
                 setLoading(false);

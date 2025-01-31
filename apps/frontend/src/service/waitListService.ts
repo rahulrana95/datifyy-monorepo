@@ -13,6 +13,10 @@ class WaitService {
     async getWaitlistData(): Promise<{ response?: any; error?: { code: number; message: string } }> { 
         return api.get("/api/v1/waitlist-data");
     }
+  
+  async getWaitlistCount(): Promise<{ response?: any; error?: { code: number; message: string } }> {
+    return api.get("/api/v1/waitlist-count");
+  }
 }
 
 const waitService = new WaitService();

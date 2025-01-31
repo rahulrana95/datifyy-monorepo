@@ -89,4 +89,23 @@ const counts = await Promise.all(
   }
 };
 
-export { getWaitlistData };
+const getWaitlistCount = async (req: Request, res: Response) => {
+    try {
+      const waitlistRepository = AppDataSource.getRepository(Waitlist);
+
+
+
+
+    // Count for all-time entries
+    const totalCount = await waitlistRepository.count();
+
+    res.status(200).json({
+      totalCount,
+    });
+  } catch (error) {
+    console.error("Error fetching waitlist data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export { getWaitlistData, getWaitlistCount };
