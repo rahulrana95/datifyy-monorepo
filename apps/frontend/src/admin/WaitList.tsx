@@ -15,7 +15,7 @@ import { CheckIcon } from "@radix-ui/react-icons";
 
 function convertUnixToLocalTime(unixTimestamp: number): string {
     // Convert Unix timestamp to milliseconds
-    const date = new Date(unixTimestamp * 1000);
+    const date = new Date(unixTimestamp);
 
     // Format date and time in the local timezone
     const options: Intl.DateTimeFormatOptions = {
