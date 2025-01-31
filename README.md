@@ -5,3 +5,10 @@
 1. https://app.mailersend.com/dashboard - prefer this
 2. https://app.brevo.com/ 300 per month
 3. https://mailtrap.io/pricing/
+
+
+UI:
+https://chakra-ui.com/docs/components/concepts/server-components
+
+IMG
+https://console.cloudinary.com/pm/c-f5ac5a4804e8739afce3f12a95b672/getting-started

@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import apiService from "../service/apiService";
 import waitService from "../service/waitListService";
 import { format, formatDistanceToNow, parseISO, set } from "date-fns";
-import { toZonedTime } from 'date-fns-tz';
+import { toZonedTime } from "date-fns-tz";
 
-import * as Tabs from '@radix-ui/react-tabs';
-import './waitList.css';
+import * as Tabs from "@radix-ui/react-tabs";
+import "./waitList.css";
 import Loader from "../common/loader/Loader";
 import { Slot } from "@radix-ui/react-slot";
 
@@ -15,45 +15,59 @@ import { CheckIcon } from "@radix-ui/react-icons";
 
 function convertUnixToLocalTime(unixTimestamp: number): string {
     // Convert Unix timestamp to milliseconds
-    const date = new Date(unixTimestamp);
+    let date = new Date(unixTimestamp);
+    const year = date.getFullYear();
+
+    // some data in seconds so for that.
+    if (year < 1971) {
+        date = new Date(unixTimestamp * 1000);
+    }
 
     // Format date and time in the local timezone
     const options: Intl.DateTimeFormatOptions = {
-        weekday: 'long',   // "Monday"
-        year: 'numeric',   // "2025"
-        month: 'long',     // "January"
-        day: 'numeric',    // "30"
-        hour: '2-digit',   // "02"
-        minute: '2-digit', // "45"
-        second: '2-digit', // "30"
-        hour12: true,      // Use 12-hour format (AM/PM)
+        weekday: "long", // "Monday"
+        year: "numeric", // "2025"
+        month: "long", // "January"
+        day: "numeric", // "30"
+        hour: "2-digit", // "02"
+        minute: "2-digit", // "45"
+        second: "2-digit", // "30"
+        hour12: true, // Use 12-hour format (AM/PM)
     };
 
-    return date.toLocaleString('en-US', options);
+    return date.toLocaleString("en-US", options);
 }
-
 
 const WaitList = () => {
     interface WaitlistData {
         counts: { [key: string]: number };
-        data: { id: string; name: string; email: string; status: string; createdAt: string }[];
+        data: {
+            id: string;
+            name: string;
+            email: string;
+            status: string;
+            createdAt: string;
+        }[];
         totalCount: number;
     }
 
-    const [data, setData] = useState<WaitlistData>({ counts: {}, data: [], totalCount: 0 });
+    const [data, setData] = useState<WaitlistData>({
+        counts: {},
+        data: [],
+        totalCount: 0,
+    });
     const [loading, setLoading] = useState(true);
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
     const handleDelete = (id: string) => {
         // Implement the delete logic here
-        console.log('Deleting item with ID:', id);
+        console.log("Deleting item with ID:", id);
     };
 
     const handleSendMail = (email: string) => {
         // Implement the logic to send mail
-        console.log('Sending email to:', email);
+        console.log("Sending email to:", email);
     };
-
 
     const handleCheckboxChange = (id: string) => {
         const newSelectedItems = new Set(selectedItems);
@@ -65,7 +79,6 @@ const WaitList = () => {
         setSelectedItems(newSelectedItems);
     };
 
-
     const fetchData = async () => {
         setLoading(true);
         waitService.getWaitlistData().then((response) => {
@@ -76,12 +89,14 @@ const WaitList = () => {
             }
             setData({
                 ...response.response,
-                data: response.response.data.sort((a: { createdAt: string }, b: { createdAt: string }) => Number(b.createdAt) - Number(a.createdAt))
+                data: response.response.data.sort(
+                    (a: { createdAt: string }, b: { createdAt: string }) =>
+                        Number(b.createdAt) - Number(a.createdAt)
+                ),
             });
             setLoading(false);
-        }
-        );
-    }
+        });
+    };
     // Optionally, you can fetch data from an API or update the data
     useEffect(() => {
         setInterval(() => {
@@ -92,7 +107,15 @@ const WaitList = () => {
     const counts = data.counts ?? {};
     const waitlistData = data.data ?? [];
 
-    const Table: React.FC<{ data: Array<{ id: string; name: string; email: string; status: string; createdAt: string }> }> = ({ data }) => {
+    const Table: React.FC<{
+        data: Array<{
+            id: string;
+            name: string;
+            email: string;
+            status: string;
+            createdAt: string;
+        }>;
+    }> = ({ data }) => {
         return (
             <table className="data-table">
                 <thead>
@@ -110,12 +133,16 @@ const WaitList = () => {
                         <tr key={index}>
                             <td>
                                 <div style={{ display: "flex", alignItems: "center" }}>
-                                    <Checkbox.Root className="CheckboxRoot" checked={selectedItems.has(entry.id)} id="c1" onCheckedChange={() => handleCheckboxChange(entry.id)}>
+                                    <Checkbox.Root
+                                        className="CheckboxRoot"
+                                        checked={selectedItems.has(entry.id)}
+                                        id="c1"
+                                        onCheckedChange={() => handleCheckboxChange(entry.id)}
+                                    >
                                         <Checkbox.Indicator className="CheckboxIndicator">
                                             <CheckIcon />
                                         </Checkbox.Indicator>
                                     </Checkbox.Root>
-
                                 </div>
                             </td>
                             <td>{entry.name}</td>
@@ -123,14 +150,20 @@ const WaitList = () => {
                             <td>{convertUnixToLocalTime(Number(entry.createdAt))}</td>
                             <td>
                                 <Slot>
-                                    <button className="send-mail-button" onClick={() => handleSendMail(entry.email)}>
+                                    <button
+                                        className="send-mail-button"
+                                        onClick={() => handleSendMail(entry.email)}
+                                    >
                                         Send Mail
                                     </button>
                                 </Slot>
                             </td>
                             <td>
                                 <Slot>
-                                    <button className="send-mail-button" onClick={() => handleDelete(entry.id)}>
+                                    <button
+                                        className="send-mail-button"
+                                        onClick={() => handleDelete(entry.id)}
+                                    >
                                         Delete
                                     </button>
                                 </Slot>
@@ -141,7 +174,6 @@ const WaitList = () => {
             </table>
         );
     };
-
 
     return (
         <div className="p-6 space-y-6">
@@ -162,8 +194,6 @@ const WaitList = () => {
                 </div>
 
                 <Tabs.Root className="tabs-root" defaultValue="last30Days">
-
-
                     <Tabs.Content className="tabs-content" value="last30Days">
                         <Table data={waitlistData} />
                     </Tabs.Content>
@@ -173,7 +203,10 @@ const WaitList = () => {
     );
 };
 
-const CardRoot: React.FC<{ title: string, value: number }> = ({ title, value }) => {
+const CardRoot: React.FC<{ title: string; value: number }> = ({
+    title,
+    value,
+}) => {
     return (
         <div className="card-root">
             <div className="card-header">{title}</div>
@@ -183,7 +216,5 @@ const CardRoot: React.FC<{ title: string, value: number }> = ({ title, value }) 
         </div>
     );
 };
-
-
 
 export default WaitList;
