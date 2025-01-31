@@ -16,9 +16,11 @@ import {
     Text,
     useToast,
     Center,
+    useTheme,
 } from "@chakra-ui/react";
 import waitService from "../../../service/waitListService";
 import AdminHeader from "../AdminHeader";
+import ConfirmModal from "../../common/ConfirmModal/ConfirmModal";
 
 function convertUnixToLocalTime(unixTimestamp: number): string {
     let date = new Date(unixTimestamp);
@@ -42,6 +44,9 @@ const WaitList = () => {
         data: { id: string; name: string; email: string; status: string; createdAt: string }[];
         totalCount: number;
     }
+
+    const theme = useTheme();
+
 
     const [data, setData] = useState<WaitlistData>({ counts: {}, data: [], totalCount: 0 });
     const [loading, setLoading] = useState(true);
@@ -115,7 +120,7 @@ const WaitList = () => {
 
             <Box overflowX="auto">
                 {data?.data?.length > 0 ? <Table variant="simple" size="sm">
-                    <Thead bg="gray.200">
+                    <Thead bg={theme.colors.lightBg}>
                         <Tr>
                             <Th>Select</Th>
                             <Th>Name</Th>
@@ -135,21 +140,33 @@ const WaitList = () => {
                                 <Td>{entry.email}</Td>
                                 <Td>{convertUnixToLocalTime(Number(entry.createdAt))}</Td>
                                 <Td>
-                                    <Button size="sm" colorScheme="blue" onClick={() => handleSendMail(entry.email)}>
-                                        Send Mail
-                                    </Button>
+                                    <ConfirmModal
+                                        onConfirm={() => handleSendMail(entry.email)}
+                                        title="Send Mail"
+                                        message="Are you sure you want to send a email to this user?"
+                                        buttonText="Send email"
+                                        colorScheme="accent"// Uses theme color
+                                        bg="accent.500"
+                                        _hover={{ bg: "accent.600", cursor: "pointer" }}
+                                    />
                                 </Td>
                                 <Td>
-                                    <Button size="sm" colorScheme="red" onClick={() => handleDelete(entry.id)}>
-                                        Delete
-                                    </Button>
+                                    <ConfirmModal
+                                        onConfirm={() => handleDelete(entry.id)}
+                                        title="Delete User"
+                                        message="Are you sure you want to delete this user? This action cannot be undone."
+                                        buttonText="Delete"
+                                        colorScheme="accent"// Uses theme color
+                                        bg="accent.800"
+                                        _hover={{ bg: "accent.900", cursor: "pointer" }}
+                                    />
                                 </Td>
                             </Tr>
                         ))}
                     </Tbody>
                 </Table> :
                     <Center py={10}>
-                        <Text fontSize="lg" fontWeight="medium" color="gray.500">
+                        <Text fontSize="lg" fontWeight="medium" color="red">
                             🚀 No data to display
                         </Text>
                     </Center>
@@ -163,7 +180,7 @@ const WaitList = () => {
 const StatCard: React.FC<{ title: string; value: number }> = ({ title, value }) => {
     return (
         <Box p={4} borderWidth={1} borderRadius="md" bg="white" boxShadow="sm">
-            <Text fontSize="sm" fontWeight="bold" color="gray.500">
+            <Text fontSize="sm" fontWeight="bold">
                 {title}
             </Text>
             <Text fontSize="2xl" fontWeight="bold">
