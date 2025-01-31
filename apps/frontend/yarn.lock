@@ -8153,6 +8153,11 @@ lodash@^4.17.15, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.7.0:
   version "4.17.21"
   resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"
 
+logrocket@^9.0.2:
+  version "9.0.2"
+  resolved "https://registry.npmjs.org/logrocket/-/logrocket-9.0.2.tgz#83d946ea0fb351e3fa02d79feed7c3a01eb3cc27"
+  integrity sha512-DscsCEi9PLEEXPXWOsf+BGsmwZGIFzn9Ixo+lTezFpR2o3xzZxD7Qz3FWecYYuci6SKvalVciy6msVvMjD16PA==
+
 loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.4.0:
   version "1.4.0"
   resolved "https://registry.npmjs.org/loose-envify/-/loose-envify-1.4.0.tgz"

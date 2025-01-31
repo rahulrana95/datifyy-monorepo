@@ -16,6 +16,11 @@ import { Toast } from "radix-ui";
 import Signup from "./mvp/Signup";
 import Header from "./mvp/Header";
 import * as Sentry from "@sentry/react";
+import LogRocket from 'logrocket';
+
+LogRocket.init('kcpnhr/datifyy-fronend');
+
+
 Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_DSN,
   integrations: [],
