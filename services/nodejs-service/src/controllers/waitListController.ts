@@ -17,6 +17,8 @@ export const addToWaitlist = async (
   try {
     const waitlistRepository = AppDataSource.getRepository(Waitlist);
     const newEntry = waitlistRepository.create({ name, email });
+    newEntry.createdAt = String(Date.now());
+;
     await waitlistRepository.save(newEntry);
 
     res.status(200).json({ message: "Successfully added to waitlist" });
@@ -62,7 +64,9 @@ const getWaitlistData = async (req: Request, res: Response) => {
     const counts = await Promise.all(
       Object.entries(timeFrames).map(async ([key, date]) => ({
         [key]: await waitlistRepository.count({
-          where: { createdAt: MoreThanOrEqual(date) },
+          where: {
+            createdAt: String(MoreThanOrEqual(date))
+          },
         }),
       }))
     );

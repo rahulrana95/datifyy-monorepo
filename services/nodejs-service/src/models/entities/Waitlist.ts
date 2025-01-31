@@ -60,10 +60,13 @@ export class Waitlist {
   @Column("character varying", { name: "country", nullable: true, length: 255 })
   country: string | null;
 
-  @Column("timestamp without time zone", {
+  @Column("bigint", {
     name: "created_at",
     nullable: true,
-    default: () => "CURRENT_TIMESTAMP",
+    default: () => "EXTRACT(epoch FROM now())",
   })
-  createdAt: Date | null;
+  createdAt: string | null;
+
+  @Column("bigint", { name: "created_at_unix", nullable: true })
+  createdAtUnix: string | null;
 }
