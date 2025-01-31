@@ -5,6 +5,7 @@ import * as dotenv from "dotenv";
 import allRoutes from "./routes/allRoutes";
 import morgan from "morgan";
 import cors from "cors";
+import rateLimit from 'express-rate-limit';
 
 dotenv.config();
 const PORT = process.env.SERVER_PORT || 4000;
@@ -24,6 +25,17 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
   })
 );
+
+// Create a rate limiter that allows 100 requests per 15 minutes per IP
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per window
+  message: 'Too many requests from this IP, please try again later.',
+  headers: true,
+});
+
+// Apply rate limiting middleware globally to all routes
+app.use(limiter);
 
 app.use(morgan("combined"));
 app.use(cors());
