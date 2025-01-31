@@ -19,6 +19,8 @@ import { ChakraProvider, } from '@chakra-ui/react'
 import theme from "./theme";
 import Home from "./mvp/home/home";
 import AdminRoute from "./mvp/admin/AdminRoute";
+import ProfilePage from "./mvp/profile/UserProfile";
+import HeaderWithTabs from "./mvp/profile/HeaderWithTabs";
 
 LogRocket.init('kcpnhr/datifyy-fronend');
 
@@ -63,6 +65,8 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/profile" element={<HeaderWithTabs />}></Route>
+
             {/* <Route path="/events/:eventId/live" element={<LiveEvent />} />
             {/* <Route path="/login" element={<Login />} /> */}
             {/* <Route path="/signup" element={<Signup />} />
