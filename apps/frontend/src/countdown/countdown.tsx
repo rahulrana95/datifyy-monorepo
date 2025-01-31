@@ -104,6 +104,7 @@ const Countdown: React.FC = () => {
 
     const [open, setOpen] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
+    const [count, setCount] = React.useState(0);
 
     const [name, setName] = React.useState("");
     const [email, setEmail] = React.useState("");
@@ -139,6 +140,15 @@ const Countdown: React.FC = () => {
 
             setTimeLeft({ days, hours, minutes, seconds });
         }, 1000);
+
+        waitService.getWaitlistData().then((response) => {
+            if (response.error) {
+                console.error("Error fetching waitlist data:", response.error.message);
+                setLoading(false);
+                return;
+            }
+            setCount(response.response.totalCount);
+        });
     }, []);
     return (
         <header>
@@ -256,7 +266,7 @@ const Countdown: React.FC = () => {
                             </Form.Root>
 
                             <Text size="3" color="gray" className="waitlist-info">
-                                Already <strong>2,555</strong> people are on the waitlist!
+                                Already <strong>{count}</strong> people are on the waitlist!
                             </Text>
                         </Card>
                     </Flex>
