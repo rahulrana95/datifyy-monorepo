@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Waitlist } from "../models/entities/Waitlist";
 import { AppDataSource } from "..";
-import { MoreThanOrEqual } from "typeorm";
+import { MoreThanOrEqual, Raw } from "typeorm";
 
 export const addToWaitlist = async (
   req: Request,
@@ -38,38 +38,42 @@ const getWaitlistData = async (req: Request, res: Response) => {
     // Fetch all waitlist entries
     const waitlistData = await waitlistRepository.find();
 
-    // Get current timestamp
     const now = new Date();
 
-    // Function to calculate past timestamps
-    const getPastDate = (minutes: number) =>
-      new Date(now.getTime() - minutes * 60 * 1000);
+const getPastDate = (minutes: number) => Math.floor((now.getTime() - minutes * 60 * 1000) / 1000);
 
-    // Timeframes for filtering
-    const timeFrames = {
-      last15Min: getPastDate(15),
-      last60Min: getPastDate(60),
-      last6Hrs: getPastDate(6 * 60),
-      last12Hrs: getPastDate(12 * 60),
-      last24Hrs: getPastDate(24 * 60),
-      last7Days: getPastDate(7 * 24 * 60),
-      last30Days: getPastDate(30 * 24 * 60),
-      last60Days: getPastDate(60 * 24 * 60),
-      last3Months: getPastDate(3 * 30 * 24 * 60),
-      last6Months: getPastDate(6 * 30 * 24 * 60),
-      lastYear: getPastDate(12 * 30 * 24 * 60),
+
+// Timeframes for filtering
+const timeFrames = {
+  last15Min: getPastDate(15),
+  last60Min: getPastDate(60),
+  last6Hrs: getPastDate(6 * 60),
+  last12Hrs: getPastDate(12 * 60),
+  last24Hrs: getPastDate(24 * 60),
+  last7Days: getPastDate(7 * 24 * 60),
+  last30Days: getPastDate(30 * 24 * 60),
+  last60Days: getPastDate(60 * 24 * 60),
+  last3Months: getPastDate(3 * 30 * 24 * 60),
+  last6Months: getPastDate(6 * 30 * 24 * 60),
+  lastYear: getPastDate(12 * 30 * 24 * 60),
+};
+
+// Fetch counts for each timeframe
+const counts = await Promise.all(
+  Object.entries(timeFrames).map(async ([key, unixTimestamp]) => {
+    console.log(`Fetching data for ${key} with timestamp: ${unixTimestamp}`);
+
+    return {
+      [key]: await waitlistRepository.count({
+        where: {
+          createdAt: Raw(
+            (alias) => `${alias} >= ${unixTimestamp}`
+          ),
+        },
+      }),
     };
-
-    // Fetch counts for each timeframe
-    const counts = await Promise.all(
-      Object.entries(timeFrames).map(async ([key, date]) => ({
-        [key]: await waitlistRepository.count({
-          where: {
-            createdAt: String(MoreThanOrEqual(date))
-          },
-        }),
-      }))
-    );
+  })
+);
 
     // Count for all-time entries
     const totalCount = await waitlistRepository.count();
