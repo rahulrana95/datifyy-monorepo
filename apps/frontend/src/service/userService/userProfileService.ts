@@ -14,7 +14,7 @@ class UserProfileService {
           data?: DatifyyUsersInformation
         };
         error?: ErrorObject;
-      } = await api.get("/api/v1/user-profile");
+      } = await api.get("user-profile");
       
       if (!response.response) {
         return getResponseNotExistErrorObject();
@@ -32,7 +32,7 @@ class UserProfileService {
       const response: {
         response?: string;
         error?: ErrorObject;
-      } = await api.put("/api/v1/user-profile", data);
+      } = await api.put("user-profile", data);
       
       if (!response) {
         return getResponseNotExistErrorObject();

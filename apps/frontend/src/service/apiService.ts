@@ -3,6 +3,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 class ApiService {
   private axiosInstance: AxiosInstance;
   private authToken: string;
+  private prefixPath: string;
 
   constructor() {
     const baseURL =
@@ -11,6 +12,7 @@ class ApiService {
         : process.env.REACT_APP_BACKENDEND_URL_DEV;
     
     this.authToken = "";
+    this.prefixPath = '/api/v1'
 
     if (!baseURL) {
       throw new Error(
@@ -59,21 +61,21 @@ class ApiService {
   }
 
   async get<T>(path: string, config?: AxiosRequestConfig) {
-    return this.handleRequest<T>(this.axiosInstance.get<T>(path, config));
+    return this.handleRequest<T>(this.axiosInstance.get<T>(`${this.prefixPath}/${path}`, config));
   }
 
   async post<T>(path: string, data?: unknown, config?: AxiosRequestConfig) {
     return this.handleRequest<T>(
-      this.axiosInstance.post<T>(path, data, config)
+      this.axiosInstance.post<T>(`${this.prefixPath}/${path}`, data, config)
     );
   }
 
   async put<T>(path: string, data?: unknown, config?: AxiosRequestConfig) {
-    return this.handleRequest<T>(this.axiosInstance.put<T>(path, data, config));
+    return this.handleRequest<T>(this.axiosInstance.put<T>(`${this.prefixPath}/${path}`, data, config));
   }
 
   async delete<T>(path: string, config?: AxiosRequestConfig) {
-    return this.handleRequest<T>(this.axiosInstance.delete<T>(path, config));
+    return this.handleRequest<T>(this.axiosInstance.delete<T>(`${this.prefixPath}/${path}`, config));
   }
 
   async setAuthToken(token: string) {
