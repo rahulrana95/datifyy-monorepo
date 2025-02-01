@@ -8,7 +8,7 @@ const Header = () => {
   return (
     <>
       {/* HEADER */}
-      <Box bg="white" px={6} py={4} boxShadow="md">
+      <Box bg="white" px={6} py={4} boxShadow="md" className="global-header">
         <Flex align="center">
           <Box fontSize="2xl" fontWeight="bold" color="pink.500">
             Datifyy
