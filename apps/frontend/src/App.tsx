@@ -22,6 +22,7 @@ import AdminRoute from "./mvp/admin/AdminRoute";
 import ProfilePage from "./mvp/profile/UserProfile";
 import HeaderWithTabs from "./mvp/profile/HeaderWithTabs";
 import apiService from "./service/apiService";
+import StatusWrapper from "./mvp/common/StatusWrapper/StatusWrapper";
 
 LogRocket.init('kcpnhr/datifyy-fronend');
 
@@ -68,13 +69,6 @@ function App() {
     return <Countdown />
   }
 
-  if (loading) {
-    return <div><Spinner /></div>
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>
-  }
   return (
     <ChakraProvider theme={theme}>
       <div className="App">
@@ -83,21 +77,23 @@ function App() {
           <meta name="description" content="Datifyy" />{" "}
           {/* Optional meta tags */}
         </Helmet>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Home />} >
-              <Route path="profile" element={<HeaderWithTabs />}></Route>
-            </Route>
+        <StatusWrapper isLoading={loading} error={error ?? ''} p={0}>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Home />} >
+                <Route path="profile" element={<HeaderWithTabs />}></Route>
+              </Route>
 
-            {/* <Route path="/events/:eventId/live" element={<LiveEvent />} />
+              {/* <Route path="/events/:eventId/live" element={<LiveEvent />} />
             {/* <Route path="/login" element={<Login />} /> */}
-            {/* <Route path="/signup" element={<Signup />} />
+              {/* <Route path="/signup" element={<Signup />} />
             <Route path="/header" element={<Header />} /> */}
-          </Routes>
-          <AdminRoute />
-        </Router>
+            </Routes>
+            <AdminRoute />
+          </Router>
 
-        {/* <GlobalSnackbar /> */}
+          {/* <GlobalSnackbar /> */}
+        </StatusWrapper>
 
       </div >
     </ChakraProvider>
