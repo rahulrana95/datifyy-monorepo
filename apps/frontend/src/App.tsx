@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import { Helmet } from "react-helmet-async";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
@@ -15,12 +15,13 @@ import { Toast } from "radix-ui";
 import Header from "./mvp/Header";
 import * as Sentry from "@sentry/react";
 import LogRocket from 'logrocket';
-import { ChakraProvider, } from '@chakra-ui/react'
+import { ChakraProvider, Spinner, } from '@chakra-ui/react'
 import theme from "./theme";
 import Home from "./mvp/home/home";
 import AdminRoute from "./mvp/admin/AdminRoute";
 import ProfilePage from "./mvp/profile/UserProfile";
 import HeaderWithTabs from "./mvp/profile/HeaderWithTabs";
+import apiService from "./service/apiService";
 
 LogRocket.init('kcpnhr/datifyy-fronend');
 
@@ -50,9 +51,29 @@ reportWebVitals((metric) => {
 
 function App() {
   const isCountdown = process.env.REACT_APP_IS_COUNTDOWN_ENABLED === "true";
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      const isTokenExist = await apiService.setTokenFromCookies();
+      setLoading(false);
+      setError(isTokenExist ? null : "Token not found");
+    }
+    fetchData();
+  }, []);
 
   if (isCountdown) {
     return <Countdown />
+  }
+
+  if (loading) {
+    return <div><Spinner /></div>
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>
   }
   return (
     <ChakraProvider theme={theme}>

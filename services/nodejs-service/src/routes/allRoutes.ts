@@ -22,7 +22,7 @@ import {
   getRoomById,
   updateRoomStatus,
 } from "../controllers/roomController";
-import { getUserProfile } from "../controllers/userProfile";
+import { getUserProfile, updateUserProfile } from "../controllers/userProfile";
 import {
   createVideoChatSessions,
   getNextAvailableUser,
@@ -60,6 +60,7 @@ router.get('/waitlist-data/', getWaitlistData);
 router.get('/waitlist-count/', getWaitlistCount);
 
 router.get("/user-profile", getUserProfile);
+router.put("/user-profile", updateUserProfile);
 
 router.post("/signup", signup);
 router.post("/login", login);

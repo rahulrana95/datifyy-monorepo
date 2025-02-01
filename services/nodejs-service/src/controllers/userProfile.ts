@@ -221,25 +221,8 @@ const updateUserProfile = async (
     const enums = await fetchEnumValues("datifyy_users_information");
 
     for (const key of Object.keys(req.body)) {
-      if (!enums.data[key]) {
-        res.status(400).json({ message: `Invalid field: ${key}` });
-        return;
-      }
-
-      if (
-        enums.data[key] &&
-        enums.data[key].find((item: any) => item.id === req.body[key]) ===
-          undefined
-      ) {
-        res.status(400).json({
-          message: `Invalid value for ${key}. Expected values: ${enums[
-            key
-          ].join(", ")}`,
-        });
-        return;
-      }
-
-      (userProfile as any)[key] = req.body[key];
+      // @ts-expect-error
+      userProfile[key] = req.body[key];
     }
 
     await userProfilesRepository.save(userProfile);
