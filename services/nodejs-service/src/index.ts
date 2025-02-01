@@ -18,6 +18,7 @@ let allowedOrigins = ['https://datifyy.com'];
 if (process.env.FRONTEND_URL_DEV) {
   allowedOrigins = [...allowedOrigins, process.env.FRONTEND_URL_DEV];
 }
+app.use(cookieParser()); // Enables parsing cookies in `req.cookies`
 
 app.use(
   cors({
@@ -27,7 +28,6 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
   })
 );
-app.use(cookieParser()); // Enables parsing cookies in `req.cookies`
 
 
 // Create a rate limiter that allows 100 requests per 15 minutes per IP
@@ -42,7 +42,6 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use(morgan("combined"));
-app.use(cors());
 app.use(express.json());
 
 const AppDataSource = new DataSource({
