@@ -20,8 +20,8 @@ import CitySelect from "./CitySelect";
 import MalePreview from "../../assets/images/male-preview.jpeg";
 import FemalePreview from "../../assets/images/female-preview.jpeg";
 import ImageUploadButton from "./ImageUploadButton";
-import userProfileService from "../../service/userProfileService";
-import { DatifyyUsersInformation, Gender } from "../../service/UserProfileTypes";
+import userProfileService from "../../service/userService/userProfileService";
+import { DatifyyUsersInformation, Gender } from "../../service/userService/UserProfileTypes";
 
 
 const fieldIcons = {
@@ -248,12 +248,17 @@ const ProfileForm = () => {
         isDeleted: false,
         userLoginId: null,
     });
+    const [draftProfileData, setDraftProfileData] = useState<Partial<DatifyyUsersInformation> | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isEditMode, setIsEditMode] = useState<{
         [key: string]: boolean;
     }>({});
 
     useEffect(() => {
+        fetchUserDetails();
+    }, [])
+
+    const fetchUserDetails = () => {
         userProfileService.getUserProfile().then((response) => {
             if (response.error || !response?.response) {
                 console.error(response.error);
@@ -261,7 +266,7 @@ const ProfileForm = () => {
                 setProfileData(response.response);
             }
         });
-    }, [])
+    }
 
 
 
@@ -269,7 +274,7 @@ const ProfileForm = () => {
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
         const { name, value, type, checked } = e.target as HTMLInputElement;
-        setProfileData((prev: DatifyyUsersInformation) => ({
+        setDraftProfileData((prev: Partial<DatifyyUsersInformation> | null) => ({
             ...prev,
             [name]: type === "checkbox" ? checked : value,
         }));
@@ -320,7 +325,7 @@ const ProfileForm = () => {
                             id={field.name}
                             name={field.name}
                             type={field.type}
-                            value={String(profileData[field.name] ?? "")}
+                            value={String(draftProfileData?.[field.name] ?? profileData[field.name] ?? "")}
                             onChange={handleChange}
                             isReadOnly={!isEditEnabled}
                         /> : renderFieldReadView(field.label, String(profileData[field.name] ?? ""), field.icon, field.name)
@@ -383,6 +388,13 @@ const ProfileForm = () => {
     };
 
     const handleSave = (sectionId: string) => {
+        userProfileService.updateUserProfile(draftProfileData ?? {}).then((response) => {
+            if (response.error || !response?.response) {
+                console.error(response.error);
+            } else {
+                // 
+            }
+        });
         setIsEditMode((isEditMode) => ({ ...isEditMode, [sectionId]: false }));
         // Save logic goes here (e.g., send data to server)
     };

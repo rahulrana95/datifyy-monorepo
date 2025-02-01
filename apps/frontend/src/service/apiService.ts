@@ -10,7 +10,7 @@ class ApiService {
         ? process.env.REACT_APP_BACKENDEND_URL_PROD
         : process.env.REACT_APP_BACKENDEND_URL_DEV;
     
-    this.authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTUsImVtYWlsIjoidGVzdDFAZ21haWwuY29tIiwiaXNhZG1pbiI6ZmFsc2UsImlhdCI6MTczODM1NzM1NiwiZXhwIjoxNzM4NTMwMTU2fQ.nlj0gewX_PsZYTeGbYy38dqL13EdoiSUPktY28CLlEo';
+    this.authToken = "";
 
     if (!baseURL) {
       throw new Error(
@@ -83,19 +83,25 @@ class ApiService {
 
   async setTokenFromCookies() { 
     const token = await this.getTokenFromCookies();
+    this.setTokenInCookies(token);
     if (token) {
       this.setAuthToken(token);
     }
+    return !!this.authToken;
+  }
+
+  async setTokenInCookies(token: string) {
+    document.cookie = `Authorization=${token}; path=/;`;
+    this.setAuthToken(token);
   }
 
 
    async getTokenFromCookies() { 
-    const match = document.cookie.match(new RegExp('(^| )authToken=([^;]+)'));
+    const match = document.cookie.match(new RegExp('(^| )Authorization=([^;]+)'));
     if (match) {
-      this.authToken = match[2];
-      this.setAuthToken(this.authToken);
+      this.setAuthToken(match[2]);
     }
-    return this.authToken;
+    return match?.[2] ?? '';
   }
 }
 

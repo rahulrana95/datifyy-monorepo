@@ -1,6 +1,6 @@
-import { getErrorObject, getResponseNotExistErrorObject } from "../mvp/common/utils/serviceUtils";
-import api from "./apiService";
-import { ErrorObject } from "./ErrorTypes";
+import { getErrorObject, getResponseNotExistErrorObject } from "../../mvp/common/utils/serviceUtils";
+import api from "../apiService";
+import { ErrorObject } from "../ErrorTypes";
 import { DatifyyUsersInformation } from "./UserProfileTypes";
 
 
@@ -20,6 +20,24 @@ class UserProfileService {
         return getResponseNotExistErrorObject();
       }
       return { response: response.response.data ?? null, error: undefined };
+    } catch (error: any) {
+      return getErrorObject(error);
+    }
+  }
+
+  async updateUserProfile(data: Partial<DatifyyUsersInformation>): Promise<{
+    response?:  string | null;
+    error?: ErrorObject }> {
+    try {
+      const response: {
+        response?: string;
+        error?: ErrorObject;
+      } = await api.put("/api/v1/user-profile", data);
+      
+      if (!response) {
+        return getResponseNotExistErrorObject();
+      }
+      return { response: response.response, error: undefined };
     } catch (error: any) {
       return getErrorObject(error);
     }
