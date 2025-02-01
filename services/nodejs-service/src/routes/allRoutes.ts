@@ -56,7 +56,7 @@ router.post("/events/:eventId/rooms", updateRoomStatus);
 router.delete("/events/:eventId/rooms", deleteRoom);
 router.get("/events/:eventId/rooms/:email", getRoomByEmailAndEvent);
 
-router.post('/waitlist/', authenticateToken,addToWaitlist);
+router.post('/waitlist/',addToWaitlist);
 router.get('/waitlist-data/',authenticateToken, getWaitlistData);
 router.get('/waitlist-count/', getWaitlistCount);
 
