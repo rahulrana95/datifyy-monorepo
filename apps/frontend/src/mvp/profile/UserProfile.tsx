@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Select,
     FormControl,
@@ -20,6 +20,8 @@ import CitySelect from "./CitySelect";
 import MalePreview from "../../assets/images/male-preview.jpeg";
 import FemalePreview from "../../assets/images/female-preview.jpeg";
 import ImageUploadButton from "./ImageUploadButton";
+import userProfileService from "../../service/userProfileService";
+import { DatifyyUsersInformation, Gender } from "../../service/UserProfileTypes";
 
 
 const fieldIcons = {
@@ -46,7 +48,7 @@ const fieldIcons = {
 };
 
 const enums = {
-    gender: ["Male", "Female", "Other"],
+    gender: [Gender.Male, "Female", "Other"],
     exercise: ["Heavy", "Light", "Moderate", "None"],
     educationLevel: ["Graduate", "High School", "Postgraduate", "Undergraduate"],
     drinking: ["Never", "Occasionally", "Regularly"],
@@ -71,7 +73,7 @@ const enums = {
 };
 
 export interface FormField {
-    name: string;
+    name: keyof DatifyyUsersInformation;
     label: string;
     icon?: any;
     type: "text" | "email" | "date" | "select" | "checkbox" | "city" | "image";
@@ -101,7 +103,7 @@ const formConfig: FormSection[] = [
             ],
             [
                 {
-                    name: "profileImage",
+                    name: "images",
                     label: "Profile Image",
                     icon: fieldIcons.profileImage,
                     type: "image",
@@ -207,39 +209,59 @@ const formConfig: FormSection[] = [
     },
 ];
 
-export interface ProfileData {
-    [key: string]: string | boolean | undefined;
-}
-
 const ProfileForm = () => {
     const theme = useTheme();
-    const [profileData, setProfileData] = useState<ProfileData>({
-        firstName: "John",
-        lastName: "Doe",
-        dob: "1990-01-01",
-        gender: "male",
-        officialEmail: "john.doe@example.com",
-        isOfficialEmailVerified: true,
-        isAadharVerified: true,
-        isPhoneVerified: true,
-        height: "180 cm",
-        exercise: "Moderate",
-        drinking: "Occasionally",
-        smoking: "Never",
-        lookingFor: "Relationship",
-        currentCity: "New York",
-        hometown: "Los Angeles",
-        settleDownInMonths: "12-24",
+    const [profileData, setProfileData] = useState<DatifyyUsersInformation>({
+        id: "",
+        firstName: "",
+        lastName: "",
+        updatedAt: null,
+        bio: null,
+        images: null,
+        dob: null,
+        gender: null,
+        officialEmail: "",
+        isOfficialEmailVerified: false,
+        isAadharVerified: false,
+        isPhoneVerified: false,
+        height: null,
+        exercise: null,
+        drinking: null,
+        smoking: null,
+        lookingFor: null,
+        currentCity: null,
+        hometown: null,
+        settleDownInMonths: null,
         haveKids: false,
-        wantsKids: true,
-        starSign: "Leo",
-        pronoun: "He/Him",
-        profileImage: "",
+        wantsKids: false,
+        starSign: null,
+        pronoun: null,
+        favInterest: null,
+        causesYouSupport: null,
+        qualityYouValue: null,
+        prompts: null,
+        educationLevel: null,
+        religion: null,
+        education: null,
+        birthTime: null,
+        kundliBeliever: null,
+        isDeleted: false,
+        userLoginId: null,
     });
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isEditMode, setIsEditMode] = useState<{
         [key: string]: boolean;
     }>({});
+
+    useEffect(() => {
+        userProfileService.getUserProfile().then((response) => {
+            if (response.error || !response?.response) {
+                console.error(response.error);
+            } else {
+                setProfileData(response.response);
+            }
+        });
+    }, [])
 
 
 
@@ -247,7 +269,7 @@ const ProfileForm = () => {
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
         const { name, value, type, checked } = e.target as HTMLInputElement;
-        setProfileData((prev: ProfileData) => ({
+        setProfileData((prev: DatifyyUsersInformation) => ({
             ...prev,
             [name]: type === "checkbox" ? checked : value,
         }));

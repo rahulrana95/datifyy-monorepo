@@ -9,6 +9,15 @@ export const login = async (username: string, password: string) => {
     }
 };
 
+export const autoLogin = async () => {
+    try {
+        const response = await apiService.post('/auth/login');
+        return { response: response.response, error: null };
+    } catch (error) {
+        return { response: null, error: 'Auto login failed' };
+    }
+}
+
 export const register = async (username: string, password: string, email: string) => {
     try {
         const response = await apiService.post('/auth/register', { username, password, email });
