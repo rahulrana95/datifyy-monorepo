@@ -1,7 +1,7 @@
 // src/routes/userRoutes.ts
 
 import { Router } from "express";
-import { signup, login } from "../controllers/userController";
+import { signup, login, validateToken } from "../controllers/userController";
 import { get } from "http";
 import { getEnumValues } from "../controllers/enumController";
 import { sendSingleEmail } from "../controllers/emailController";
@@ -30,6 +30,7 @@ import {
   updateVideoChatSession,
 } from "../controllers/videoChatController";
 import { addToWaitlist, getWaitlistCount, getWaitlistData } from "../controllers/waitListController";
+import { authenticateToken } from "../middlewares/authentication";
 
 const router = Router();
 
@@ -55,18 +56,19 @@ router.post("/events/:eventId/rooms", updateRoomStatus);
 router.delete("/events/:eventId/rooms", deleteRoom);
 router.get("/events/:eventId/rooms/:email", getRoomByEmailAndEvent);
 
-router.post('/waitlist/', addToWaitlist);
-router.get('/waitlist-data/', getWaitlistData);
-router.get('/waitlist-count/', getWaitlistCount);
+router.post('/waitlist/', authenticateToken,addToWaitlist);
+router.get('/waitlist-data/',authenticateToken, getWaitlistData);
+router.get('/waitlist-count/',authenticateToken, getWaitlistCount);
 
-router.get("/user-profile", getUserProfile);
-router.put("/user-profile", updateUserProfile);
+router.get("/user-profile",authenticateToken, getUserProfile);
+router.put("/user-profile",authenticateToken, updateUserProfile);
 
 router.post("/signup", signup);
 router.post("/login", login);
+router.post("/validate-token", validateToken);
 
 // notif mails
-router.post('/send-emails', sendSingleEmail)
+router.post('/send-emails',authenticateToken, sendSingleEmail)
 
 
 router.get(

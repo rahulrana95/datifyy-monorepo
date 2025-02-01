@@ -5,15 +5,15 @@ import { useAuthStore } from '../login-signup/authStore';
 function AdminRoute() {
   const { isAuthenticated, isAdmin } = useAuthStore();
 
-  if (!isAuthenticated) {
-    // Redirect to login if not authenticated
-    return <Navigate to="/login" replace />;
-  }
+  // if (!isAuthenticated) {
+  //   // Redirect to login if not authenticated
+  //   return <Navigate to="/login" replace />;
+  // }
 
-  if (!isAdmin) {
-    // Redirect to unauthorized or error page if not an admin
-    return <Navigate to="/unauthorized" replace />;
-  }
+  // if (!isAdmin) {
+  //   // Redirect to unauthorized or error page if not an admin
+  //   return <Navigate to="/unauthorized" replace />;
+  // }
 
   return (
     <Routes>

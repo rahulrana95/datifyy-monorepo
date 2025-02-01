@@ -8,6 +8,7 @@ import allRoutes from "./routes/allRoutes";
 import morgan from "morgan";
 import cors from "cors";
 import rateLimit from 'express-rate-limit';
+import cookieParser from "cookie-parser";
 
 const PORT = process.env.SERVER_PORT || 4000;
 
@@ -26,6 +27,8 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
   })
 );
+app.use(cookieParser()); // Enables parsing cookies in `req.cookies`
+
 
 // Create a rate limiter that allows 100 requests per 15 minutes per IP
 const limiter = rateLimit({
