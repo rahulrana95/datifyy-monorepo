@@ -7,15 +7,15 @@ interface WaitlistPayload {
 
 class WaitService {
   async joinWaitlist(payload: WaitlistPayload): Promise<{ response?: any; error?: { code: number; message: string } }> {
-    return api.post("/api/v1/waitlist", payload);
+    return api.post("waitlist", payload);
   }
     
     async getWaitlistData(): Promise<{ response?: any; error?: { code: number; message: string } }> { 
-        return api.get("/api/v1/waitlist-data");
+        return api.get("waitlist-data");
     }
   
   async getWaitlistCount(): Promise<{ response?: any; error?: { code: number; message: string } }> {
-    return api.get("/api/v1/waitlist-count");
+    return api.get("waitlist-count");
   }
 }
 
