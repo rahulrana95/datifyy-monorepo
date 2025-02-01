@@ -24,13 +24,20 @@ export const login = async (username: string, password: string) => {
     }
 };
 
-export const autoLogin = async () => {
+export const verifyToken = async () => {
     try {
-        apiService.getTokenFromCookies();
-        const response = await apiService.post('/login');
+        await apiService.getTokenFromCookies();
+        const response: {
+            response?: {
+                id: string;
+                email: string;
+                isadmin: boolean;
+            },
+            error?: ErrorObject
+        } = await apiService.post('/validate-token');
         return { response: response.response, error: null };
     } catch (error) {
-        return { response: null, error: 'Auto login failed' };
+        return { response: null, error: 'validate-token failed' };
     }
 }
 
@@ -86,6 +93,7 @@ const authService = {
     getCurrentUser,
     sendEmailCode,
     verifyCode,
+    verifyToken,
 }
 
 export default authService;

@@ -10,6 +10,10 @@ interface StatusWrapperProps {
     children?: React.ReactNode;
     onRetry?: () => void;
     p?: number;
+    h?: string;
+    display?: string;
+    justifyContent?: string;
+    alignItems?: string;
 }
 
 const StatusWrapper: React.FC<StatusWrapperProps> = ({
@@ -21,6 +25,10 @@ const StatusWrapper: React.FC<StatusWrapperProps> = ({
     children,
     onRetry,
     p = 6,
+    h = "auto",
+    display = "",
+    justifyContent = "",
+    alignItems = "",
 }) => {
     let content;
 
@@ -84,10 +92,15 @@ const StatusWrapper: React.FC<StatusWrapperProps> = ({
         <Box
             minH={minH}
             w="100%"
-            p={6}
+            p={p}
             bg="gray.50"
             borderRadius="lg"
             boxShadow="md"
+            className="status-wrapper"
+            display={display}
+            justifyContent={justifyContent}
+            alignItems={alignItems}
+            h={h}
         >
             {content}
         </Box>

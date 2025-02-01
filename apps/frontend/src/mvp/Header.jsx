@@ -1,9 +1,10 @@
 import { Box, Flex, Spacer, Button, Link, HStack } from "@chakra-ui/react";
-import AuthModal from "./login-signup/login";
 import { useAuthStore } from "./login-signup/authStore";
+import AuthModal from "./login-signup/AuthModal";
+import UserMenu from "./UserMenu";
 
 const Header = () => {
-  const { toggleLogin } = useAuthStore();
+  const { showHideLogin, showHideSignup, isAuthenticated } = useAuthStore();
 
   return (
     <>
@@ -37,18 +38,26 @@ const Header = () => {
 
           <Spacer />
 
-          <HStack spacing={4}>
-            <Button
-              colorScheme="pink"
-              variant="outline"
-              onClick={() => toggleLogin(true)}
-            >
-              Sign Up
-            </Button>
-            <Button colorScheme="pink" onClick={() => toggleLogin(true)}>
-              Login
-            </Button>
-          </HStack>
+          {!isAuthenticated && (
+            <HStack spacing={4}>
+              <Button
+                colorScheme="pink"
+                variant="outline"
+                onClick={() => showHideSignup(true)}
+              >
+                Sign Up
+              </Button>
+              <Button
+                colorScheme="pink"
+                onClick={() => {
+                  showHideLogin(true);
+                }}
+              >
+                Login
+              </Button>
+            </HStack>
+          )}
+          {isAuthenticated && <UserMenu />}
         </Flex>
       </Box>
 

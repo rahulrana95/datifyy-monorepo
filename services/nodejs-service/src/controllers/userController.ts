@@ -1,6 +1,14 @@
 // src/controllers/userController.ts
 
 import { Request, Response } from "express";
+import cookieParser from "cookie-parser";
+
+// Extend the Request interface to include the user property
+declare module "express-serve-static-core" {
+  interface Request {
+    user?: any;
+  }
+}
 import { DatifyyUsersLogin } from "../models/entities/DatifyyUsersLogin"; // Ensure this path is correct
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -166,5 +174,24 @@ export const login = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+export const validateToken = (req: Request, res: Response, next: Function) => {
+  const token = req.headers.authorization || req.cookies.token || '';
+  if (!token) {
+    res.status(401).json({ message: "Access denied. No token provided." });
+    return;
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    res.status(200).json(decoded);
+    return;
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "Invalid token." });
+    return;
   }
 };

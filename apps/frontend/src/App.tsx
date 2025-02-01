@@ -4,25 +4,23 @@ import { Helmet } from "react-helmet-async";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // import Home from "./home/home";
 // import LiveEvent from "./events/liveEvent/LiveEvent";
-import GlobalSnackbar from "./globalSnackbar";
 // import EventPage from "./admin/events/eventPage";
 import Countdown from "./countdown/countdown";
 import ReactGA from 'react-ga4';
 import reportWebVitals from "./reportWebVitals";
-import { Toast } from "radix-ui";
 // import Login from "./mvp/login/Login";
 // import Signup from "./mvp/Signup";
-import Header from "./mvp/Header";
 import * as Sentry from "@sentry/react";
 import LogRocket from 'logrocket';
-import { ChakraProvider, Spinner, } from '@chakra-ui/react'
+import { ChakraProvider, } from '@chakra-ui/react'
 import theme from "./theme";
 import Home from "./mvp/home/home";
 import AdminRoute from "./mvp/admin/AdminRoute";
-import ProfilePage from "./mvp/profile/UserProfile";
 import HeaderWithTabs from "./mvp/profile/HeaderWithTabs";
 import apiService from "./service/apiService";
 import StatusWrapper from "./mvp/common/StatusWrapper/StatusWrapper";
+import authService from "./service/authService";
+import { useAuthStore } from "./mvp/login-signup/authStore";
 
 LogRocket.init('kcpnhr/datifyy-fronend');
 
@@ -52,6 +50,7 @@ reportWebVitals((metric) => {
 
 function App() {
   const isCountdown = process.env.REACT_APP_IS_COUNTDOWN_ENABLED === "true";
+  const authStore = useAuthStore();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -59,8 +58,21 @@ function App() {
     async function fetchData() {
       setLoading(true);
       const isTokenExist = await apiService.setTokenFromCookies();
+      const { error, response } = await authService.verifyToken();
+      if (!error) {
+        authStore.setIsAuthenticated(true);
+        console.log(response)
+        authStore.setUserData({
+          email: response?.email ?? '',
+          isAdmin: response?.isadmin ?? false,
+          id: response?.id ?? ''
+        })
+      }
       setLoading(false);
+
       setError(isTokenExist ? null : "Token not found");
+
+
     }
     fetchData();
   }, []);
@@ -68,6 +80,17 @@ function App() {
   if (isCountdown) {
     return <Countdown />
   }
+
+  const StatusWrapperProps = loading ? {
+    isLoading: loading,
+    error: error ?? '',
+    p: 0,
+    h: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  } : {
+  };
 
   return (
     <ChakraProvider theme={theme}>
@@ -77,7 +100,7 @@ function App() {
           <meta name="description" content="Datifyy" />{" "}
           {/* Optional meta tags */}
         </Helmet>
-        <StatusWrapper isLoading={loading} error={error ?? ''} p={0}>
+        <StatusWrapper isLoading={loading} error={error ?? ''} p={0} {...StatusWrapperProps}>
           <Router>
             <Routes>
               <Route path="/" element={<Home />} >
