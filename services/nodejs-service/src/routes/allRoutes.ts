@@ -68,7 +68,7 @@ router.post("/login", login);
 router.post("/validate-token", validateToken);
 
 // notif mails
-router.post('/send-emails',authenticateToken, sendSingleEmail)
+router.post('/send-emails', sendSingleEmail)
 
 
 router.get(
