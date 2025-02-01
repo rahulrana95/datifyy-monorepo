@@ -64,8 +64,9 @@ function App() {
         </Helmet>
         <Router>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/profile" element={<HeaderWithTabs />}></Route>
+            <Route path="/" element={<Home />} >
+              <Route path="profile" element={<HeaderWithTabs />}></Route>
+            </Route>
 
             {/* <Route path="/events/:eventId/live" element={<LiveEvent />} />
             {/* <Route path="/login" element={<Login />} /> */}
