@@ -61,7 +61,6 @@ function App() {
       const { error, response } = await authService.verifyToken();
       if (!error) {
         authStore.setIsAuthenticated(true);
-        console.log(response)
         authStore.setUserData({
           email: response?.email ?? '',
           isAdmin: response?.isadmin ?? false,
@@ -83,7 +82,7 @@ function App() {
 
   const StatusWrapperProps = loading ? {
     isLoading: loading,
-    error: error ?? '',
+    error: '',
     p: 0,
     h: "100vh",
     display: "flex",
@@ -100,7 +99,7 @@ function App() {
           <meta name="description" content="Datifyy" />{" "}
           {/* Optional meta tags */}
         </Helmet>
-        <StatusWrapper isLoading={loading} error={error ?? ''} p={0} {...StatusWrapperProps}>
+        <StatusWrapper isLoading={loading} error={''} p={0} {...StatusWrapperProps}>
           <Router>
             <Routes>
               <Route path="/" element={<Home />} >
