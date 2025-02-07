@@ -13,7 +13,7 @@ import ToastC from "./toast";
 import waitService from "../service/waitListService";
 import { set } from "date-fns";
 
-const launchDate = new Date("2025-02-06T00:00:00").getTime();
+const launchDate = new Date("2025-02-10T00:00:00").getTime();
 
 const HeartIconWithCircle = () => {
     return (
