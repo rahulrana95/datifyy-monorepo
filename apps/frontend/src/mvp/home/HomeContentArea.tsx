@@ -3,10 +3,9 @@ import { ReactNode } from "react";
 
 interface HomeContentAreaProps {
     children: ReactNode;
-    footer: ReactNode;
 }
 
-const HomeContentArea = ({ children, footer }: HomeContentAreaProps) => {
+const HomeContentArea = ({ children }: HomeContentAreaProps) => {
     const theme = useTheme();
     return (
         <Flex
@@ -28,17 +27,6 @@ const HomeContentArea = ({ children, footer }: HomeContentAreaProps) => {
                     {children}
                 </VStack>
             </Container>
-
-            {/* Footer at the bottom */}
-            <Box
-                w="100%"
-                bg="gray.100"
-                py={4}
-                mt={10} // Adds spacing before footer
-                textAlign="center"
-            >
-                {footer}
-            </Box>
         </Flex>
     );
 };

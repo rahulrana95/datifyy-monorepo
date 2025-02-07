@@ -30,7 +30,8 @@ export const verifyToken = async () => {
         const response: {
             response?: {
                 id: string;
-                email: string;
+                firstName: string;
+                officialEmail: string;
                 isadmin: boolean;
             },
             error?: ErrorObject
@@ -75,7 +76,8 @@ export const getCurrentUser = async () => {
         const response: {
             response?: {
                 data: {id: string;
-                email: string;
+                    officialEmail: string;
+                firstName: string
                 isadmin: boolean;}
             },
             error?: ErrorObject

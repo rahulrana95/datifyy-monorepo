@@ -36,7 +36,8 @@ const LoginForm = ({ onSignup, onForgotPassword }: { onSignup: () => void; onFor
         const data = response?.response?.data;
         if (!response.error) {
             authStore.setUserData({
-                email: data?.email ?? '',
+                email: data?.officialEmail ?? '',
+                name: data?.firstName ?? '',
                 isAdmin: data?.isadmin ?? false,
                 id: data?.id ?? ''
             })

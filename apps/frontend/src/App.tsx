@@ -21,6 +21,7 @@ import apiService from "./service/apiService";
 import StatusWrapper from "./mvp/common/StatusWrapper/StatusWrapper";
 import authService from "./service/authService";
 import { useAuthStore } from "./mvp/login-signup/authStore";
+import PrivateRoute from "./mvp/PrivateRoute";
 
 LogRocket.init('kcpnhr/datifyy-fronend');
 
@@ -62,7 +63,8 @@ function App() {
       if (!error) {
         authStore.setIsAuthenticated(true);
         authStore.setUserData({
-          email: response?.email ?? '',
+          email: response?.officialEmail ?? '',
+          name: response?.firstName ?? '',
           isAdmin: response?.isadmin ?? false,
           id: response?.id ?? ''
         })
@@ -104,9 +106,13 @@ function App() {
         <StatusWrapper isLoading={loading} error={''} p={0} {...StatusWrapperProps}>
           <Router>
             <Routes>
-              <Route path="/" element={<Home />} >
-                <Route path="profile" element={<HeaderWithTabs />}></Route>
+              <Route path="/" element={<Home />}>
+                {/* Protect Profile Route Inside Home */}
+                <Route path="profile" element={<PrivateRoute component={<HeaderWithTabs />} />} >
+                </Route>
               </Route>
+              {/* Protect Profile Route */}
+
 
               {/* <Route path="/events/:eventId/live" element={<LiveEvent />} />
             {/* <Route path="/login" element={<Login />} /> */}

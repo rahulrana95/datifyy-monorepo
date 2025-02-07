@@ -58,7 +58,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ }) => {
                             {user.email}
                         </Text>
                         <Text fontSize="sm" color="gray.600" whiteSpace="nowrap">
-                            {user.email}
+                            {user.name ?? 'No name'}
                         </Text>
                     </Box>
                     <MenuItem onClick={onProfileClick} width={"89%"} _hover={{ cursor: 'pointer' }}>Profile</MenuItem>
