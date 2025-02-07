@@ -2,6 +2,7 @@
 
 import { Request, Response } from "express";
 import cookieParser from "cookie-parser";
+import forgotPasswordTemplate from "../methods/templates/forgotPassword";
 
 // Extend the Request interface to include the user property
 declare module "express-serve-static-core" {
@@ -15,7 +16,8 @@ import jwt from "jsonwebtoken";
 import { AppDataSource } from "..";
 import { v4 } from "uuid";
 import { DatifyyUsersInformation } from "../models/entities/DatifyyUsersInformation";
-import { verifyCodeForEmail } from "../methods/code-verify/code-verifying";
+import { getCodeForVerifyingEmail, verifyCodeForEmail } from "../methods/code-verify/code-verifying";
+import { from, sendEmail, sendSingleEmail } from "./emailController";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret"; // Use a secure secret in production
 
@@ -237,3 +239,85 @@ export const verifyEmailCode = async (req: Request, res: Response): Promise<void
     return;
   }
 };
+
+
+export const forgotPasswordSendCode = async (req: Request, res: Response): Promise<void> => {
+  const { email } = req.body;
+
+  if (!email) {
+    res.status(400).json({ message: "Email is required" });
+    return;
+  }
+
+    const userRepository = AppDataSource.getRepository(DatifyyUsersLogin);
+
+  try {
+    // Find user by email
+    const user = await userRepository.findOne({ where: { email } });
+    if (!user) {
+      res.status(400).json({ message: "User not found" });
+      return;
+    }
+
+    const code = getCodeForVerifyingEmail({ to: { email } });
+
+
+    await sendEmail(from, [{ email, name: email }], "Reset Your Password", forgotPasswordTemplate(code), forgotPasswordTemplate(code));
+    res.status(200).json({ message: "Verification code sent successfully" });
+    
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+
+  }
+}
+
+export const forgotPasswordVerifyCode = async (req: Request, res: Response): Promise<void> => {
+  const { email, verificationCode } = req.body;
+
+  if (!email || !verificationCode) {
+    res.status(400).json({ message: "Email and verification code are required" });
+    return;
+  }
+
+  const isCodeValid = verifyCodeForEmail({ email, code: verificationCode });
+
+  if (!isCodeValid) {
+    res.status(400).json({ message: "Invalid verification code" });
+    return;
+  } else {
+    res.status(200).json({ message: "Code verified successfully" });
+    return;
+  }
+}
+
+
+export const forgotPasswordReset = async (req: Request, res: Response): Promise<void> => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    res.status(400).json({ message: "Email and password are required" });
+    return;
+  }
+
+  const userRepository = AppDataSource.getRepository(DatifyyUsersLogin);
+
+  try {
+    // Find user by email
+    const user = await userRepository.findOne({ where: { email } });
+    if (!user) {
+      res.status(400).json({ message: "User not found" });
+      return;
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update user password
+    user.password = hashedPassword;
+    await userRepository.save(user);
+
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+}

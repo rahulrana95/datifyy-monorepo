@@ -6,7 +6,7 @@ import { getCodeForVerifyingEmail } from "../methods/code-verify/code-verifying"
 // Mailersend API Key
 const MAILERSEND_API_KEY = process.env.MAILER_SEND_KEY ?? "na";
 
-  const from = {
+export const from = {
     email: "rahulranarr@datifyy.com",
     name: "Rahul Rana (Founder of Datifyy)",
   }
@@ -18,7 +18,7 @@ interface EmailUser {
 
 
 // Function to send email
-const sendEmail = async (
+export const sendEmail = async (
   from: EmailUser,
   to: EmailUser[],
   subject: string,

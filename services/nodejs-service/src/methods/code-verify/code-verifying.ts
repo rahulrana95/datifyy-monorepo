@@ -20,15 +20,12 @@ export function getCodeForVerifyingEmail({ to }: { to: { email: string } }) {
 
 export function verifyCodeForEmail({ email, code }: { email: string; code: string }) {
     // if the global object doesn't have a map for storing the email and code, return false
-    console.log('entering')
     if (!emailCodeCache) {
         return false;
     }
-    
-    console.log(...emailCodeCache.values());
-    console.log
+
     // if the code is correct, return true
-    if (emailCodeCache.get(code)?.email?.[0].email === email) {
+    if (emailCodeCache.get(code)?.email === email) {
         emailCodeCache.delete(code);
         return true;
     }

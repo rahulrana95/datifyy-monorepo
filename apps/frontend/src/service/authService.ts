@@ -72,7 +72,14 @@ export const logout = async () => {
 
 export const getCurrentUser = async () => {
     try {
-        const response = await apiService.get('/user-profile');
+        const response: {
+            response?: {
+                data: {id: string;
+                email: string;
+                isadmin: boolean;}
+            },
+            error?: ErrorObject
+        } = await apiService.get('/user-profile');
         if (response.error) { 
             return { response: null, error: 'Failed to fetch current user' };
         }
@@ -82,9 +89,9 @@ export const getCurrentUser = async () => {
     }
 };
 
-export const sendEmailCode = async ({ to, type }: { to: {email: string, name: string}[], type: "verifyEmail"}) => {
+export const sendEmailCode = async ({ to, type }: { to: {email: string, name: string}[], type: "verifyEmail" | "forgotPassword"}) => {
     try {
-        const response = await apiService.post('/send-emails', {to, type});
+        const response = await apiService.post('/send-verification-code', {to, type});
         if (response.error) { 
             return { response: null, error: 'Something is wrong.' };
         }
@@ -106,6 +113,44 @@ export const verifyEmailCode = async ({email, verificationCode}: {email: string,
     }
 };
 
+
+export const sendForgotPasswordCode = async (email: string) => {
+    try {
+        const response = await apiService.post('/forgot-password/send-verification-code', {email});
+        if (response.error) { 
+            return { response: null, error: 'Something is wrong.' };
+        }
+        return { response: response.response, error: null };
+    } catch (error) {
+        return { response: null, error: 'Failed to fetch current user' };
+    }
+}
+
+export const verifyForgotPasswordCode = async ({ email, verificationCode }: { email: string, verificationCode: string }) => {
+    try {
+        const response = await apiService.post('/forgot-password/verify-code', { email, verificationCode });
+        if (response.error) { 
+            return { response: null, error: 'Something is wrong.' };
+        }
+        return { response: response.response, error: null };
+    } catch (error) {
+        return { response: null, error: 'Failed to fetch current user' };
+    }
+}
+
+export const resetPassword = async ({ email, password }: { email: string, password: string }) => {
+    try {
+        const response = await apiService.post('/forgot-password/reset-password', { email, password });
+        if (response.error) { 
+            return { response: null, error: 'Something is wrong.' };
+        }
+        return { response: response.response, error: null };
+    } catch (error) {
+        return { response: null, error: 'Failed to fetch current user' };
+    }
+}
+
+
 const authService = {
     login,
     register,
@@ -114,6 +159,9 @@ const authService = {
     sendEmailCode,
     verifyEmailCode,
     verifyToken,
+    sendForgotPasswordCode,
+    verifyForgotPasswordCode,
+    resetPassword
 }
 
 export default authService;

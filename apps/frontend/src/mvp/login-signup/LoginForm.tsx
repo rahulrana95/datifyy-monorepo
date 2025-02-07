@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, FormControl, FormLabel, Input, VStack, Text, useToast } from "@chakra-ui/react";
+import { Button, FormControl, FormLabel, Input, VStack, Text, useToast, Alert, AlertIcon } from "@chakra-ui/react";
 import authService from "../../service/authService";
 import { useAuthStore } from "./authStore";
 import { set } from "date-fns";
@@ -7,6 +7,7 @@ import { set } from "date-fns";
 const LoginForm = ({ onSignup, onForgotPassword }: { onSignup: () => void; onForgotPassword: () => void }) => {
     const { showHideLogin, setIsAuthenticated } = useAuthStore();
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const toast = useToast(); // ✅ Initialize toast
@@ -17,6 +18,7 @@ const LoginForm = ({ onSignup, onForgotPassword }: { onSignup: () => void; onFor
         const { error } = await authService.login(email, password);
 
         if (error) {
+            setError("Invalid email or password.");
             toast({
                 title: "Login failed.",
                 description: "Something went wrong. 🚀",
@@ -30,13 +32,14 @@ const LoginForm = ({ onSignup, onForgotPassword }: { onSignup: () => void; onFor
         }
 
         const response = await authService.getCurrentUser();
-        console.log(response)
+
+        const data = response?.response?.data;
         if (!response.error) {
-            // authStore.setUserData({
-            //     email: response?.email ?? '',
-            //     isAdmin: response?.isadmin ?? false,
-            //     id: response?.id ?? ''
-            // })
+            authStore.setUserData({
+                email: data?.email ?? '',
+                isAdmin: data?.isadmin ?? false,
+                id: data?.id ?? ''
+            })
 
 
             setIsAuthenticated(true);
@@ -51,10 +54,10 @@ const LoginForm = ({ onSignup, onForgotPassword }: { onSignup: () => void; onFor
                 position: "top-right",
             }); // ✅ Show toast on success
             setLoading(false);
-
             return;
         } else {
             setLoading(false);
+            setError("Invalid email or password.");
             toast({
                 title: "Login failed.",
                 description: "Something went wrong. 🚀",
@@ -79,6 +82,12 @@ const LoginForm = ({ onSignup, onForgotPassword }: { onSignup: () => void; onFor
             <Button colorScheme="pink" w="full" onClick={handleLogin} _hover={{ cursor: "pointer" }} isLoading={loading} disabled={loading}>
                 Login
             </Button>
+            {error && (
+                <Alert status="error" rounded="md" fontSize={12}>
+                    <AlertIcon />
+                    {error}
+                </Alert>
+            )}
             <Text color="blue.500" cursor="pointer" onClick={onSignup} _hover={{ cursor: "pointer" }}>
                 Create an account
             </Text>

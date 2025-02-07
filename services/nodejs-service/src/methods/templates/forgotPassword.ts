@@ -1,4 +1,5 @@
-const template = `
+const template = (code: string) => {
+  return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -75,7 +76,7 @@ const template = `
         <div class="content">
             <p>Hey there,</p>
             <p>We heard that you need to reset your password. No worries! Use the code below to set up a new password and get back to finding your perfect match. 💑</p>
-            <div class="code">123456</div>
+            <div class="code">${code}</div>
             <p>Click the button below to reset your password:</p>
             <a href="https://datifyy.com/reset-password" class="button">Reset Password</a>
             <p>If you didn’t request this, you can ignore this email. Your password will remain unchanged.</p>
@@ -90,5 +91,6 @@ const template = `
 
 
 `;
+};
 
 export default template;

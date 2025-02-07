@@ -1,7 +1,7 @@
 // src/routes/userRoutes.ts
 
 import { Router } from "express";
-import { signup, login, validateToken, logout, verifyEmailCode } from "../controllers/userController";
+import { signup, login, validateToken, logout, verifyEmailCode, forgotPasswordSendCode, forgotPasswordVerifyCode, forgotPasswordReset } from "../controllers/userController";
 import { get } from "http";
 import { getEnumValues } from "../controllers/enumController";
 import { sendSingleEmail } from "../controllers/emailController";
@@ -31,6 +31,7 @@ import {
 } from "../controllers/videoChatController";
 import { addToWaitlist, getWaitlistCount, getWaitlistData } from "../controllers/waitListController";
 import { authenticateToken } from "../middlewares/authentication";
+import checkEmailExists from "../middlewares/user";
 
 const router = Router();
 
@@ -71,6 +72,9 @@ router.post("/validate-token", validateToken);
 
 // notif mails
 router.post('/send-emails', sendSingleEmail)
+router.post('/forgot-password/send-verification-code', forgotPasswordSendCode)
+router.post('/forgot-password/verify-code', forgotPasswordVerifyCode)
+router.post('/forgot-password/reset-password', forgotPasswordReset)
 
 
 router.get(
