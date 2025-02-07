@@ -9,13 +9,13 @@ const ForgotPasswordForm = ({ onLogin }: { onLogin: () => void }) => {
     const [password, setPassword] = useState("");
 
     const handleSendCode = async () => {
-        await authService.sendEmailCode();
+        // await authService.sendEmailCode();
         setStep(2);
     };
 
     const handleVerifyCode = async () => {
-        const res = await authService.verifyCode();
-        if (res.response) setStep(3);
+        // const res = await authService.verifyCode();
+        // if (res.response) setStep(3);
     };
 
     const handleResetPassword = async () => {

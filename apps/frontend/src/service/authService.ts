@@ -8,7 +8,7 @@ export const login = async (username: string, password: string) => {
                 token: string;
             },
             error?: ErrorObject
-        } = await apiService.post('/login', { username, password });
+        } = await apiService.post('/login', { email:username, password });
 
         if (!response?.response?.token) {
             return { response: null, error: 'Login failed' };
@@ -44,9 +44,9 @@ export const verifyToken = async () => {
     }
 }
 
-export const register = async (username: string, password: string, email: string) => {
+export const register = async ( password: string, email: string) => {
     try {
-        const response = await apiService.post('/auth/register', { username, password, email });
+        const response = await apiService.post('/signup', { password, email });
         if (response.error) { 
             return { response: null, error: 'Registration failed' };
         }
@@ -82,9 +82,9 @@ export const getCurrentUser = async () => {
     }
 };
 
-export const sendEmailCode = async () => {
+export const sendEmailCode = async ({ to, type }: { to: {email: string, name: string}[], type: "verifyEmail"}) => {
     try {
-        const response = await apiService.get('/user');
+        const response = await apiService.post('/send-emails', {to, type});
         if (response.error) { 
             return { response: null, error: 'Something is wrong.' };
         }
@@ -94,9 +94,9 @@ export const sendEmailCode = async () => {
     }
 };
 
-export const verifyCode = async () => {
+export const verifyEmailCode = async ({email, verificationCode}: {email: string, verificationCode: string}) => {
     try {
-        const response = await apiService.get('/user');
+        const response = await apiService.post('/verify-email-code', {email, verificationCode} );
         if (response.error) { 
             return { response: null, error: 'Something is wrong.' };
         }
@@ -112,7 +112,7 @@ const authService = {
     logout,
     getCurrentUser,
     sendEmailCode,
-    verifyCode,
+    verifyEmailCode,
     verifyToken,
 }
 

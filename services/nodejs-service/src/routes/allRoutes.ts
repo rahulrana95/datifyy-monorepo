@@ -1,7 +1,7 @@
 // src/routes/userRoutes.ts
 
 import { Router } from "express";
-import { signup, login, validateToken, logout } from "../controllers/userController";
+import { signup, login, validateToken, logout, verifyEmailCode } from "../controllers/userController";
 import { get } from "http";
 import { getEnumValues } from "../controllers/enumController";
 import { sendSingleEmail } from "../controllers/emailController";
@@ -66,6 +66,7 @@ router.put("/user-profile",authenticateToken, updateUserProfile);
 router.post("/signup", signup);
 router.post("/login", login);
 router.post("/logout", logout);
+router.post("/verify-email-code", verifyEmailCode);
 router.post("/validate-token", validateToken);
 
 // notif mails

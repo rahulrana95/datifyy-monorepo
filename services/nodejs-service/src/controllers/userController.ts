@@ -15,6 +15,7 @@ import jwt from "jsonwebtoken";
 import { AppDataSource } from "..";
 import { v4 } from "uuid";
 import { DatifyyUsersInformation } from "../models/entities/DatifyyUsersInformation";
+import { verifyCodeForEmail } from "../methods/code-verify/code-verifying";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret"; // Use a secure secret in production
 
@@ -142,14 +143,14 @@ export const login = async (req: Request, res: Response) => {
     // Find user by email
     const user = await userRepository.findOne({ where: { email } });
     if (!user) {
-      res.status(400).json({ message: "Invalid credentials" });
+      res.status(400).json({ message: "User not found" });
       return;
     }
 
     // Compare password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      res.status(400).json({ message: "Invalid credentials" });
+      res.status(400).json({ message: "Invalid password." });
       return;
     }
 
@@ -214,6 +215,25 @@ export const validateToken = (req: Request, res: Response, next: Function) => {
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: "Invalid token." });
+    return;
+  }
+};
+
+export const verifyEmailCode = async (req: Request, res: Response): Promise<void> => {
+  const { email, verificationCode } = req.body;
+
+  if (!email || !verificationCode) { 
+    res.status(400).json({ message: "Email and verification code are required" });
+    return;
+  }
+
+  const isCodeValid = verifyCodeForEmail({ email, code: verificationCode });
+
+  if (!isCodeValid) {
+    res.status(400).json({ message: "Invalid verification code" });
+    return;
+  } else {
+    res.status(200).json({ message: "Email verified successfully" });
     return;
   }
 };
