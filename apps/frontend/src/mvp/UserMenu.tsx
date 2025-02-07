@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuthStore } from "./login-signup/authStore";
 import { useNavigate, useRouteError } from "react-router-dom";
 import authService from "../service/authService";
+import apiService from "../service/apiService";
 
 interface UserMenuProps {
 }
@@ -24,9 +25,13 @@ const UserMenu: React.FC<UserMenuProps> = ({ }) => {
         navigate("/settings");
     }
 
-    const onLogout = () => {
-        authService.logout();
-        authStore.setIsAuthenticated(false);
+    const onLogout = async () => {
+        const response = await authService.logout();
+        if (!response.error) {
+            authStore.setIsAuthenticated(false);
+            apiService.clearToken();
+        }
+
     }
 
     console.log(authStore)

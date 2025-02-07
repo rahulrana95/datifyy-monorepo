@@ -19,114 +19,118 @@ import { DatifyyUsersInformation } from "../models/entities/DatifyyUsersInformat
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret"; // Use a secure secret in production
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    const userRepository = AppDataSource.getRepository(DatifyyUsersLogin);
-    const userInfoRepository = AppDataSource.getRepository(DatifyyUsersInformation);
+  const userRepository = AppDataSource.getRepository(DatifyyUsersLogin);
+  const userInfoRepository = AppDataSource.getRepository(
+    DatifyyUsersInformation
+  );
 
-    const queryRunner = AppDataSource.createQueryRunner();
-    
-    // Start a transaction
-    await queryRunner.startTransaction();
+  const queryRunner = AppDataSource.createQueryRunner();
 
-    try {
-        // Check if user already exists
-        const existingUser = await queryRunner.manager.findOne(DatifyyUsersLogin, { where: { email } });
-        if (existingUser) {
-            await queryRunner.rollbackTransaction();
-            res.status(400).json({ message: "User already exists" });
-            return undefined;
-        }
+  // Start a transaction
+  await queryRunner.startTransaction();
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Create a new user
-        const user = queryRunner.manager.create(DatifyyUsersLogin, {
-            email,
-            password: hashedPassword,
-            isactive: true, // Setting user as active
-            isadmin: false, // Defaulting new users to non-admin
-        });
-
-        const savedUser = await queryRunner.manager.save(user);
-
-
-        // Create a corresponding entry in UserInformation
-        const userInformation = queryRunner.manager.create(DatifyyUsersInformation, {
-            id: v4().toString(),
-            firstName: 'firstName',
-            lastName: 'lastName',
-            gender: 'male',
-            officialEmail: email,
-            userLogin: savedUser, // Set the relationship
-            bio: null,
-            images: null,
-            dob: null,
-            isOfficialEmailVerified: false,
-            isAadharVerified: false,
-            isPhoneVerified: false,
-            height: null,
-            favInterest: null,
-            causesYouSupport: null,
-            qualityYouValue: null,
-            prompts: null,
-            education: null,
-            currentCity: null,
-            hometown: null,
-            exercise: null,
-            educationLevel: null,
-            drinking: null,
-            smoking: null,
-            lookingFor: null,
-            settleDownInMonths: null,
-            haveKids: null,
-            wantsKids: null,
-            starSign: null,
-            birthTime: null,
-            kundliBeliever: null,
-            religion: null,
-            pronoun: null,
-            isDeleted: false
-        });
-
-        // Save the user information
-        await queryRunner.manager.save(userInformation);
-
-        // Create JWT token
-        const token = jwt.sign(
-            { id: savedUser.id, email: savedUser.email, isadmin: savedUser.isadmin },
-            JWT_SECRET,
-            {
-                expiresIn: "1h", // Token expiration
-            }
-        );
-
-        // Set token in HTTP-only cookie
-        res.cookie("token", token, {
-            httpOnly: true, // Prevents JavaScript access to the cookie
-            secure: process.env.NODE_ENV === "production", // Use secure cookies in production
-            sameSite: "strict", // Helps mitigate CSRF attacks
-            maxAge: 3600000, // 1 hour
-        });
-
-        await queryRunner.commitTransaction();
-        res.status(201).json({ message: "User created successfully" });
-        return undefined;
-
-    } catch (error) {
-        console.error(error);
-
-        // If something goes wrong, rollback the transaction
-        await queryRunner.rollbackTransaction();
-
-        res.status(500).json({ message: "Internal server error" });
-        return undefined;
-
-    } finally {
-        // Release the query runner to close the connection
-        await queryRunner.release();
+  try {
+    // Check if user already exists
+    const existingUser = await queryRunner.manager.findOne(DatifyyUsersLogin, {
+      where: { email },
+    });
+    if (existingUser) {
+      await queryRunner.rollbackTransaction();
+      res.status(400).json({ message: "User already exists" });
+      return undefined;
     }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user
+    const user = queryRunner.manager.create(DatifyyUsersLogin, {
+      email,
+      password: hashedPassword,
+      isactive: true, // Setting user as active
+      isadmin: false, // Defaulting new users to non-admin
+    });
+
+    const savedUser = await queryRunner.manager.save(user);
+
+    // Create a corresponding entry in UserInformation
+    const userInformation = queryRunner.manager.create(
+      DatifyyUsersInformation,
+      {
+        id: v4().toString(),
+        firstName: "firstName",
+        lastName: "lastName",
+        gender: "male",
+        officialEmail: email,
+        userLogin: savedUser, // Set the relationship
+        bio: null,
+        images: null,
+        dob: null,
+        isOfficialEmailVerified: false,
+        isAadharVerified: false,
+        isPhoneVerified: false,
+        height: null,
+        favInterest: null,
+        causesYouSupport: null,
+        qualityYouValue: null,
+        prompts: null,
+        education: null,
+        currentCity: null,
+        hometown: null,
+        exercise: null,
+        educationLevel: null,
+        drinking: null,
+        smoking: null,
+        lookingFor: null,
+        settleDownInMonths: null,
+        haveKids: null,
+        wantsKids: null,
+        starSign: null,
+        birthTime: null,
+        kundliBeliever: null,
+        religion: null,
+        pronoun: null,
+        isDeleted: false,
+      }
+    );
+
+    // Save the user information
+    await queryRunner.manager.save(userInformation);
+
+    // Create JWT token
+    const token = jwt.sign(
+      { id: savedUser.id, email: savedUser.email, isadmin: savedUser.isadmin },
+      JWT_SECRET,
+      {
+        expiresIn: "1h", // Token expiration
+      }
+    );
+
+    // Set token in HTTP-only cookie
+    res.cookie("token", token, {
+      httpOnly: true, // Prevents JavaScript access to the cookie
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      sameSite: "strict", // Helps mitigate CSRF attacks
+      maxAge: 3600000, // 1 hour
+    });
+
+    await queryRunner.commitTransaction();
+    res.status(201).json({ message: "User created successfully" });
+    return undefined;
+  } catch (error) {
+    console.error(error);
+
+    // If something goes wrong, rollback the transaction
+    await queryRunner.rollbackTransaction();
+
+    res.status(500).json({ message: "Internal server error" });
+    return undefined;
+  } finally {
+    // Release the query runner to close the connection
+    await queryRunner.release();
+  }
 };
 
 export const login = async (req: Request, res: Response) => {
@@ -177,9 +181,27 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
+export const logout = (req: Request, res: Response): void => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+  // Optionally, you can add logic to invalidate the JWT token on the server side if needed
+  // For example, you can maintain a blacklist of invalidated tokens in a database or in-memory store
+  // Invalidate the JWT token by adding it to a blacklist or similar mechanism
+  // This example uses an in-memory blacklist. In a real application, consider using a persistent store.
+  // const token = req.cookies.token;
+  // if (!token) {
+  //   res.status(401).json({ message: "Unauthorized - No Token Provided" });
+  //   return;
+  // }
+  
+  res.status(200).json({ message: "Logged out" });
+};
 
 export const validateToken = (req: Request, res: Response, next: Function) => {
-  const token = req.headers.authorization || req.cookies.token || '';
+  const token = req.headers.authorization || req.cookies.token || "";
   if (!token) {
     res.status(401).json({ message: "Access denied. No token provided." });
     return;

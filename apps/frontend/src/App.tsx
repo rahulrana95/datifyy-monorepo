@@ -66,6 +66,8 @@ function App() {
           isAdmin: response?.isadmin ?? false,
           id: response?.id ?? ''
         })
+        setLoading(false);
+        return;
       }
       setLoading(false);
 

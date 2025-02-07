@@ -10,6 +10,7 @@ const LoginForm = ({ onSignup, onForgotPassword }: { onSignup: () => void; onFor
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const toast = useToast(); // ✅ Initialize toast
+    const authStore = useAuthStore();
 
     const handleLogin = async () => {
         setLoading(true);
@@ -28,18 +29,41 @@ const LoginForm = ({ onSignup, onForgotPassword }: { onSignup: () => void; onFor
             return;
         }
 
-        setIsAuthenticated(true);
+        const response = await authService.getCurrentUser();
+        console.log(response)
+        if (!response.error) {
+            // authStore.setUserData({
+            //     email: response?.email ?? '',
+            //     isAdmin: response?.isadmin ?? false,
+            //     id: response?.id ?? ''
+            // })
 
-        showHideLogin(false);
-        toast({
-            title: "Login successful.",
-            description: "Welcome back! 🚀",
-            status: "success",
-            duration: 3000,
-            isClosable: true,
-            position: "top-right",
-        }); // ✅ Show toast on success
-        setLoading(false);
+
+            setIsAuthenticated(true);
+
+            showHideLogin(false);
+            toast({
+                title: "Login successful.",
+                description: "Welcome back! 🚀",
+                status: "success",
+                duration: 3000,
+                isClosable: true,
+                position: "top-right",
+            }); // ✅ Show toast on success
+            setLoading(false);
+
+            return;
+        } else {
+            setLoading(false);
+            toast({
+                title: "Login failed.",
+                description: "Something went wrong. 🚀",
+                duration: 3000,
+                isClosable: true,
+                position: "top-right",
+            }); // ✅ Show toast on error
+        }
+
     };
 
     return (

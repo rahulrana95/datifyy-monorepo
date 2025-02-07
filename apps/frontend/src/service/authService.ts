@@ -35,6 +35,9 @@ export const verifyToken = async () => {
             },
             error?: ErrorObject
         } = await apiService.post('/validate-token');
+        if (response.error) {
+            return { response: null, error: 'validate-token failed' };
+        }
         return { response: response.response, error: null };
     } catch (error) {
         return { response: null, error: 'validate-token failed' };
@@ -44,6 +47,9 @@ export const verifyToken = async () => {
 export const register = async (username: string, password: string, email: string) => {
     try {
         const response = await apiService.post('/auth/register', { username, password, email });
+        if (response.error) { 
+            return { response: null, error: 'Registration failed' };
+        }
         return { response: response.response, error: null };
     } catch (error) {
         return { response: null, error: 'Registration failed' };
@@ -53,6 +59,11 @@ export const register = async (username: string, password: string, email: string
 export const logout = async () => {
     try {
         const response = await apiService.post('/logout');
+
+        if (response.error) { 
+            return { response: null, error: 'Logout failed.' };
+        }
+
         return { response: response.response, error: null };
     } catch (error) {
         return { response: null, error: 'Logout failed' };
@@ -61,7 +72,10 @@ export const logout = async () => {
 
 export const getCurrentUser = async () => {
     try {
-        const response = await apiService.get('/user');
+        const response = await apiService.get('/user-profile');
+        if (response.error) { 
+            return { response: null, error: 'Failed to fetch current user' };
+        }
         return { response: response.response, error: null };
     } catch (error) {
         return { response: null, error: 'Failed to fetch current user' };
@@ -71,6 +85,9 @@ export const getCurrentUser = async () => {
 export const sendEmailCode = async () => {
     try {
         const response = await apiService.get('/user');
+        if (response.error) { 
+            return { response: null, error: 'Something is wrong.' };
+        }
         return { response: response.response, error: null };
     } catch (error) {
         return { response: null, error: 'Failed to fetch current user' };
@@ -80,6 +97,9 @@ export const sendEmailCode = async () => {
 export const verifyCode = async () => {
     try {
         const response = await apiService.get('/user');
+        if (response.error) { 
+            return { response: null, error: 'Something is wrong.' };
+        }
         return { response: response.response, error: null };
     } catch (error) {
         return { response: null, error: 'Failed to fetch current user' };
