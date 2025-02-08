@@ -321,3 +321,53 @@ export const forgotPasswordReset = async (req: Request, res: Response): Promise<
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+
+
+export const deleteUser = async (req: Request, res: Response): Promise<void> => {
+  const email = req.user.email;
+
+  if (!email) {
+    res.status(400).json({ message: "Email is required" });
+    return;
+  }
+
+  const userRepository = AppDataSource.getRepository(DatifyyUsersLogin);
+  const userInfoRepository = AppDataSource.getRepository(DatifyyUsersInformation);
+
+  const queryRunner = AppDataSource.createQueryRunner();
+
+  // Start a transaction
+  await queryRunner.startTransaction();
+
+  try {
+    // Find user by email
+    const user = await queryRunner.manager.findOne(DatifyyUsersLogin, { where: { email } });
+    if (!user) {
+      await queryRunner.rollbackTransaction();
+      res.status(400).json({ message: "User not found" });
+      return;
+    }
+
+    // Set isactive to false
+    user.isactive = false;
+    await queryRunner.manager.save(user);
+
+    // Find user information by user login
+    const userInfo = await queryRunner.manager.findOne(DatifyyUsersInformation, { where: { userLogin: user } });
+    if (userInfo) {
+      // Set isDeleted to true
+      userInfo.isDeleted = true;
+      await queryRunner.manager.save(userInfo);
+    }
+
+    await queryRunner.commitTransaction();
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    await queryRunner.rollbackTransaction();
+    res.status(500).json({ message: "Internal server error" });
+  } finally {
+    await queryRunner.release();
+  }
+};

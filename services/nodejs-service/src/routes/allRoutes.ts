@@ -1,7 +1,7 @@
 // src/routes/userRoutes.ts
 
 import { Router } from "express";
-import { signup, login, validateToken, logout, verifyEmailCode, forgotPasswordSendCode, forgotPasswordVerifyCode, forgotPasswordReset } from "../controllers/userController";
+import { signup, login, validateToken, logout, verifyEmailCode, forgotPasswordSendCode, forgotPasswordVerifyCode, forgotPasswordReset, deleteUser } from "../controllers/userController";
 import { get } from "http";
 import { getEnumValues } from "../controllers/enumController";
 import { sendSingleEmail } from "../controllers/emailController";
@@ -32,6 +32,7 @@ import {
 import { addToWaitlist, getWaitlistCount, getWaitlistData } from "../controllers/waitListController";
 import { authenticateToken } from "../middlewares/authentication";
 import checkEmailExists from "../middlewares/user";
+import { getPartnerPreferences, updatePartnerPreferences } from "../controllers/partnerPreference";
 
 const router = Router();
 
@@ -76,6 +77,14 @@ router.post('/forgot-password/send-verification-code', forgotPasswordSendCode)
 router.post('/forgot-password/verify-code', forgotPasswordVerifyCode)
 router.post('/forgot-password/reset-password', forgotPasswordReset)
 
+// partner pref
+router.get('/user/partnerPreferencesController', authenticateToken, getPartnerPreferences);
+router.put('/user/partnerPreferencesController', authenticateToken, updatePartnerPreferences);
+
+
+// delete user
+
+router.delete("/user/delete", authenticateToken, deleteUser);
 
 router.get(
   "/events/:eventId/live/:email/next-user-to-match",

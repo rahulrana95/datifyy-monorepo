@@ -323,7 +323,7 @@ const ProfileForm = () => {
     }
 
     const isFieldReadOnly = (fieldName: string) => {
-        const fields = ["isOfficialEmailVerified", "isAadharVerified", "isPhoneVerified"];
+        const fields = ["isOfficialEmailVerified", "isAadharVerified", "isPhoneVerified", "officialEmail"];
         return fields.indexOf(fieldName) >= 0;
     }
     const renderField = (field: FormField, sectionId: string) => {
@@ -341,7 +341,8 @@ const ProfileForm = () => {
                             type={field.type}
                             value={String(draftProfileData?.[field.name] ?? profileData[field.name] ?? "")}
                             onChange={handleChange}
-                            isReadOnly={!isEditEnabled}
+                            disabled={!isEditEnabled || isFieldReadOnly(field.name)}
+                            isReadOnly={!isEditEnabled || isFieldReadOnly(field.name)}
                         /> : renderFieldReadView(field.label, String(profileData[field.name] ?? ""), field.icon, field.name)
                 );
             case "select":
@@ -352,7 +353,7 @@ const ProfileForm = () => {
                             name={field.name}
                             value={String(profileData[field.name] ?? "")}
                             onChange={handleChange}
-                            isReadOnly={!isEditEnabled}
+                            isReadOnly={!isEditEnabled && isFieldReadOnly(field.name)}
                             fontSize={13}
                         >
                             {field.options?.map((option) => (
