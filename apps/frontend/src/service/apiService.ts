@@ -104,6 +104,12 @@ class ApiService {
       this.setAuthToken(match[2]);
     }
     return match?.[2] ?? '';
+   }
+  
+  async clearToken() {
+    this.authToken = "";
+    this.axiosInstance.defaults.headers.Authorization = "";
+    document.cookie = "Authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
   }
 }
 

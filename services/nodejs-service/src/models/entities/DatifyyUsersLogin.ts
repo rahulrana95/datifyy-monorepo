@@ -7,6 +7,8 @@ import {
 } from "typeorm";
 import { DatifyyEvents } from "./DatifyyEvents";
 import { DatifyyTicketPurchases } from "./DatifyyTicketPurchases";
+import { DatifyyTransactions } from "./DatifyyTransactions";
+import { DatifyyUserPartnerPreferences } from "./DatifyyUserPartnerPreferences";
 import { DatifyyUsersInformation } from "./DatifyyUsersInformation";
 
 @Index("datifyy_users_login_email_key", ["email"], { unique: true })
@@ -58,6 +60,36 @@ export class DatifyyUsersLogin {
     (datifyyTicketPurchases) => datifyyTicketPurchases.user
   )
   datifyyTicketPurchases: DatifyyTicketPurchases[];
+
+  @OneToMany(
+    () => DatifyyTransactions,
+    (datifyyTransactions) => datifyyTransactions.authorizedBy
+  )
+  datifyyTransactions: DatifyyTransactions[];
+
+  @OneToMany(
+    () => DatifyyTransactions,
+    (datifyyTransactions) => datifyyTransactions.initiatedBy
+  )
+  datifyyTransactions2: DatifyyTransactions[];
+
+  @OneToMany(
+    () => DatifyyTransactions,
+    (datifyyTransactions) => datifyyTransactions.user
+  )
+  datifyyTransactions3: DatifyyTransactions[];
+
+  @OneToMany(
+    () => DatifyyTransactions,
+    (datifyyTransactions) => datifyyTransactions.user_2
+  )
+  datifyyTransactions4: DatifyyTransactions[];
+
+  @OneToMany(
+    () => DatifyyUserPartnerPreferences,
+    (datifyyUserPartnerPreferences) => datifyyUserPartnerPreferences.user
+  )
+  datifyyUserPartnerPreferences: DatifyyUserPartnerPreferences[];
 
   @OneToMany(
     () => DatifyyUsersInformation,

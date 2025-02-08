@@ -14,6 +14,7 @@ import {
     SimpleGrid,
     Text,
     Flex,
+    useToast,
 } from "@chakra-ui/react";
 import { FaUser, FaBirthdayCake, FaEnvelope, FaCheckCircle, FaIdCard, FaPhone, FaRuler, FaDumbbell, FaBeer, FaSmoking, FaHeart, FaCity, FaHome, FaCalendarAlt, FaBaby, FaBabyCarriage, FaTransgender, FaCamera, FaEdit } from "react-icons/fa";
 import CitySelect from "./CitySelect";
@@ -22,6 +23,9 @@ import FemalePreview from "../../assets/images/female-preview.jpeg";
 import ImageUploadButton from "./ImageUploadButton";
 import userProfileService from "../../service/userService/userProfileService";
 import { DatifyyUsersInformation, Gender } from "../../service/userService/UserProfileTypes";
+import { Toast } from "@radix-ui/react-toast";
+import { set } from "date-fns";
+import { get } from "http";
 
 
 const fieldIcons = {
@@ -211,6 +215,7 @@ const formConfig: FormSection[] = [
 
 const ProfileForm = () => {
     const theme = useTheme();
+    const toast = useToast();
     const [profileData, setProfileData] = useState<DatifyyUsersInformation>({
         id: "",
         firstName: "",
@@ -253,17 +258,21 @@ const ProfileForm = () => {
     const [isEditMode, setIsEditMode] = useState<{
         [key: string]: boolean;
     }>({});
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         fetchUserDetails();
     }, [])
 
     const fetchUserDetails = () => {
+        setLoading(true);
         userProfileService.getUserProfile().then((response) => {
             if (response.error || !response?.response) {
                 console.error(response.error);
+                setLoading(false);
             } else {
                 setProfileData(response.response);
+                setLoading(false);
             }
         });
     }
@@ -312,6 +321,11 @@ const ProfileForm = () => {
             <Text>{newValue ?? value}</Text>
         </Flex>
     }
+
+    const isFieldReadOnly = (fieldName: string) => {
+        const fields = ["isOfficialEmailVerified", "isAadharVerified", "isPhoneVerified", "officialEmail"];
+        return fields.indexOf(fieldName) >= 0;
+    }
     const renderField = (field: FormField, sectionId: string) => {
         const isEditEnabled = isEditMode[sectionId];
         switch (field.type) {
@@ -327,7 +341,8 @@ const ProfileForm = () => {
                             type={field.type}
                             value={String(draftProfileData?.[field.name] ?? profileData[field.name] ?? "")}
                             onChange={handleChange}
-                            isReadOnly={!isEditEnabled}
+                            disabled={!isEditEnabled || isFieldReadOnly(field.name)}
+                            isReadOnly={!isEditEnabled || isFieldReadOnly(field.name)}
                         /> : renderFieldReadView(field.label, String(profileData[field.name] ?? ""), field.icon, field.name)
                 );
             case "select":
@@ -338,7 +353,7 @@ const ProfileForm = () => {
                             name={field.name}
                             value={String(profileData[field.name] ?? "")}
                             onChange={handleChange}
-                            isReadOnly={!isEditEnabled}
+                            isReadOnly={!isEditEnabled && isFieldReadOnly(field.name)}
                             fontSize={13}
                         >
                             {field.options?.map((option) => (
@@ -356,7 +371,7 @@ const ProfileForm = () => {
                             name={field.name}
                             isChecked={!!profileData[field.name] || false}
                             onChange={handleChange}
-                            isDisabled={!isEditEnabled}
+                            isDisabled={!isEditEnabled && isFieldReadOnly(field.name)}
                         >
                             {field.label}
                         </Checkbox> : renderFieldReadView(field.label, String(profileData[field.name] ?? ""), field.icon, field.name)
@@ -388,15 +403,30 @@ const ProfileForm = () => {
     };
 
     const handleSave = (sectionId: string) => {
+        setLoading(true);
         userProfileService.updateUserProfile(draftProfileData ?? {}).then((response) => {
             if (response.error || !response?.response) {
-                console.error(response.error);
+                toast({
+                    title: "Error",
+                    description: "Failed to update profile",
+                    status: "error",
+                    duration: 1000,
+                    isClosable: true,
+                });
+                setLoading(false);
             } else {
-                // 
+                setIsEditMode((isEditMode) => ({ ...isEditMode, [sectionId]: false }));
+                toast({
+                    title: "Success",
+                    description: "Profile updated successfully",
+                    status: "success",
+                    duration: 1000,
+                    isClosable: true,
+                });
+                fetchUserDetails();
+                setLoading(false);
             }
         });
-        setIsEditMode((isEditMode) => ({ ...isEditMode, [sectionId]: false }));
-        // Save logic goes here (e.g., send data to server)
     };
 
     const handleDiscard = (sectionId: string) => {
@@ -420,6 +450,8 @@ const ProfileForm = () => {
                             p={12}
                             borderRadius={20}
                             w="full"
+                            _loading={{ opacity: 0.5 }}
+
                         >
                             <Flex justifyContent={"space-between"} alignItems={"center"} mb={4}>
                                 <FormLabel fontSize="lg" fontWeight="bold">
@@ -451,7 +483,7 @@ const ProfileForm = () => {
                             </SimpleGrid>
                             {isEditMode[section.section] && (
                                 <HStack spacing={4} mt={6}>
-                                    <Button onClick={() => handleSave(section.section)} size={"sm"} bg={theme.colors.accent[500]} color="white">Save</Button>
+                                    <Button onClick={() => handleSave(section.section)} size={"sm"} bg={theme.colors.accent[500]} color="white" isLoading={loading}>Save</Button>
                                     <Button onClick={() => handleDiscard(section.section)} size={"sm"} bg={theme.colors.accent[800]} colorScheme="red">
                                         Discard
                                     </Button>

@@ -22,7 +22,7 @@ app.use(cookieParser()); // Enables parsing cookies in `req.cookies`
 
 app.use(
   cors({
-    origin: ["https://datifyy.com","http://localhost:3000"], // Allow only your frontend
+    origin: [/\.vercel\.app$/, "https://datifyy.com", "http://localhost:3000"], // Allow only your frontend and all vercel.app subdomains
     credentials: true, // Allow cookies and auth headers
     allowedHeaders: ["Content-Type", "Authorization"], // Allow specific headers
     methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
