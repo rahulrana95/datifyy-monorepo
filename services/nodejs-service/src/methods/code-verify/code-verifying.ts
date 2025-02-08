@@ -13,7 +13,7 @@ export function getCodeForVerifyingEmail({ to }: { to: { email: string } }) {
 
     // store the email and code in the map
     emailCodeCache.set(uniqueCode, { email: to.email, code: uniqueCode });
-
+    
     return uniqueCode;
 }
 
@@ -24,8 +24,14 @@ export function verifyCodeForEmail({ email, code }: { email: string; code: strin
         return false;
     }
 
+    const value = emailCodeCache.get(code);
+    const emailVal = value?.email?.[0].email ?? value?.email;
+
+    console.log(emailVal)
+    console.log(value);
+
     // if the code is correct, return true
-    if (emailCodeCache.get(code)?.email === email) {
+    if (emailVal   === email) {
         emailCodeCache.delete(code);
         return true;
     }

@@ -93,7 +93,7 @@ export const getCurrentUser = async () => {
 
 export const sendEmailCode = async ({ to, type }: { to: {email: string, name: string}[], type: "verifyEmail" | "forgotPassword"}) => {
     try {
-        const response = await apiService.post('/send-verification-code', {to, type});
+        const response = await apiService.post('/send-emails', {to, type});
         if (response.error) { 
             return { response: null, error: 'Something is wrong.' };
         }

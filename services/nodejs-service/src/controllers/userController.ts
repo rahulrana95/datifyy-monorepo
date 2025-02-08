@@ -37,7 +37,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
   try {
     // Check if user already exists
     const existingUser = await queryRunner.manager.findOne(DatifyyUsersLogin, {
-      where: { email },
+      where: { email},
     });
     if (existingUser) {
       await queryRunner.rollbackTransaction();
@@ -143,7 +143,7 @@ export const login = async (req: Request, res: Response) => {
 
   try {
     // Find user by email
-    const user = await userRepository.findOne({ where: { email, isactive: false } });
+    const user = await userRepository.findOne({ where: { email, isactive: true } });
     if (!user) {
       res.status(400).json({ message: "User not found" });
       return;

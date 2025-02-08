@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { validate } from "class-validator";
 import { AppDataSource } from "..";
 import { DatifyyUserPartnerPreferences } from "../models/entities/DatifyyUserPartnerPreferences";
+import { DatifyyUsersLogin } from "../models/entities/DatifyyUsersLogin";
 
 
 
@@ -17,6 +18,16 @@ export const getPartnerPreferences = async (req: Request, res: Response) => {
     if (!userId) {
         res.status(400).json({ error: "Invalid user ID" });
         return;
+    }
+      
+          
+    const user = await AppDataSource.getRepository(DatifyyUsersLogin).findOne({
+        where: { id: userId },
+    });
+
+    if (!user) {
+            res.status(404).json({ error: "User not found" });
+            return;
     }
 
     const preferences = await partnerPreferencesRepo.findOne({
@@ -36,10 +47,19 @@ export const getPartnerPreferences = async (req: Request, res: Response) => {
  * Partially update partner preferences using PATCH
  */
 export const updatePartnerPreferences = async (req: Request, res: Response) => {
-        const partnerPreferencesRepo = AppDataSource.getRepository(DatifyyUserPartnerPreferences);
+    const partnerPreferencesRepo = AppDataSource.getRepository(DatifyyUserPartnerPreferences);
 
   try {
-    const userId = Number(req.user.id);
+      const userId = Number(req.user.id);
+      
+    const user = await AppDataSource.getRepository(DatifyyUsersLogin).findOne({
+        where: { id: userId },
+    });
+
+    if (!user) {
+            res.status(404).json({ error: "User not found" });
+            return;
+    }
 
     if (!userId) {
         res.status(400).json({ error: "Invalid user ID" });
@@ -51,8 +71,10 @@ export const updatePartnerPreferences = async (req: Request, res: Response) => {
     });
 
     if (!preferences) {
-        res.status(404).json({ error: "Preferences not found" });
-        return;
+        preferences = new DatifyyUserPartnerPreferences();
+        preferences.user = user;
+        await partnerPreferencesRepo.save(preferences);
+        preferences.user = user;
     }
 
     // Merge updated fields

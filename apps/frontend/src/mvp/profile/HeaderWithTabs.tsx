@@ -3,6 +3,7 @@ import { Box, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useBreakpointValue,
 import { PhoneIcon } from '@chakra-ui/icons'; // Chakra UI Icons
 import { FaRegUser } from "react-icons/fa";
 import ProfileForm from './UserProfile';
+import PartnerPreferences from './PartnerPreferences';
 
 const HeaderWithTabs: React.FC = () => {
     const theme = useTheme();
@@ -98,7 +99,7 @@ const HeaderWithTabs: React.FC = () => {
                         <ProfileForm />
                     </TabPanel>
                     <TabPanel _hover={{ ...hovercursor }}>
-                        <Text>Partner Preferences content goes here...</Text>
+                        <Text><PartnerPreferences /></Text>
                     </TabPanel>
                     <TabPanel _hover={{ ...hovercursor }}>
                         <Text>Settings content goes here...</Text>

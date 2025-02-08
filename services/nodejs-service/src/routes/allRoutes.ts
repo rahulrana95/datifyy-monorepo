@@ -68,18 +68,18 @@ router.put("/user-profile",authenticateToken, updateUserProfile);
 router.post("/signup", signup);
 router.post("/login", login);
 router.post("/logout", logout);
-router.post("/verify-email-code", verifyEmailCode);
 router.post("/validate-token", validateToken);
 
 // notif mails
-router.post('/send-emails', sendSingleEmail)
+router.post('/send-emails', sendSingleEmail);
+router.post("/verify-email-code", verifyEmailCode);
 router.post('/forgot-password/send-verification-code', forgotPasswordSendCode)
 router.post('/forgot-password/verify-code', forgotPasswordVerifyCode)
 router.post('/forgot-password/reset-password', forgotPasswordReset)
 
 // partner pref
-router.get('/user/partnerPreferencesController', authenticateToken, getPartnerPreferences);
-router.put('/user/partnerPreferencesController', authenticateToken, updatePartnerPreferences);
+router.get('/user/partner-preferences', authenticateToken, getPartnerPreferences);
+router.put('/user/partner-preferences', authenticateToken, updatePartnerPreferences);
 
 
 // delete user
