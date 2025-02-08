@@ -71,7 +71,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
         bio: null,
         images: null,
         dob: null,
-        isOfficialEmailVerified: false,
+        isOfficialEmailVerified: true,
         isAadharVerified: false,
         isPhoneVerified: false,
         height: null,
@@ -143,7 +143,7 @@ export const login = async (req: Request, res: Response) => {
 
   try {
     // Find user by email
-    const user = await userRepository.findOne({ where: { email } });
+    const user = await userRepository.findOne({ where: { email, isactive: false } });
     if (!user) {
       res.status(400).json({ message: "User not found" });
       return;
