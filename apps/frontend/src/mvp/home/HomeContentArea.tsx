@@ -17,7 +17,7 @@ const HomeContentArea = ({ children }: HomeContentAreaProps) => {
         >
             {/* Main Content Area */}
             <Container
-                maxW="container.lg"
+                maxW="container.2xl"
                 py={{ base: 4, md: 8 }} // Responsive spacing
                 flex="1"
                 overflow={{ base: "scroll", md: "scroll" }}
