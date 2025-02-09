@@ -5,6 +5,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import { DatifyyEmailLogs } from "./DatifyyEmailLogs";
 import { DatifyyEvents } from "./DatifyyEvents";
 import { DatifyyTicketPurchases } from "./DatifyyTicketPurchases";
 import { DatifyyTransactions } from "./DatifyyTransactions";
@@ -48,6 +49,12 @@ export class DatifyyUsersLogin {
     default: () => "'male'",
   })
   gender: string | null;
+
+  @OneToMany(
+    () => DatifyyEmailLogs,
+    (datifyyEmailLogs) => datifyyEmailLogs.user
+  )
+  datifyyEmailLogs: DatifyyEmailLogs[];
 
   @OneToMany(() => DatifyyEvents, (datifyyEvents) => datifyyEvents.createdby)
   datifyyEvents: DatifyyEvents[];
