@@ -30,7 +30,7 @@ import {
   updateVideoChatSession,
 } from "../controllers/videoChatController";
 import { addToWaitlist, getWaitlistCount, getWaitlistData } from "../controllers/waitListController";
-import { authenticateToken } from "../middlewares/authentication";
+import { authenticateToken, checkIsAdmin } from "../middlewares/authentication";
 import checkEmailExists from "../middlewares/user";
 import { getPartnerPreferences, updatePartnerPreferences } from "../controllers/partnerPreference";
 import { getAllEnums, getAllTables, updateEnums } from "../controllers/adminController";
@@ -84,7 +84,7 @@ router.put('/user/partner-preferences', authenticateToken, updatePartnerPreferen
 
 
 // send bulk mails
-router.post('/admin/send-bulk-emails', sendBulkEmails);
+router.post('/admin/send-bulk-emails',authenticateToken,checkIsAdmin, sendBulkEmails);
 
 
 // delete user
