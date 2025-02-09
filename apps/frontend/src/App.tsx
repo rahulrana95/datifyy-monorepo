@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import "./App.css";
 import { Helmet } from "react-helmet-async";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
 // import Home from "./home/home";
 // import LiveEvent from "./events/liveEvent/LiveEvent";
 // import EventPage from "./admin/events/eventPage";
@@ -21,6 +21,12 @@ import apiService from "./service/apiService";
 import StatusWrapper from "./mvp/common/StatusWrapper/StatusWrapper";
 import authService from "./service/authService";
 import { useAuthStore } from "./mvp/login-signup/authStore";
+import PrivateRoute from "./mvp/PrivateRoute";
+import AboutUs from "./mvp/AboutUs";
+import LandingPage from "./mvp/home/LandingPage";
+import TermsAndConditions from "./mvp/TNC";
+import ContactUs from "./mvp/ContactUs";
+import PrivacyPolicy from "./mvp/PrivacyPolicy";
 
 LogRocket.init('kcpnhr/datifyy-fronend');
 
@@ -60,12 +66,18 @@ function App() {
       const isTokenExist = await apiService.setTokenFromCookies();
       const { error, response } = await authService.verifyToken();
       if (!error) {
+        const { response } = await authService.getCurrentUser();
+        const data = response?.data;
+
         authStore.setIsAuthenticated(true);
         authStore.setUserData({
-          email: response?.email ?? '',
-          isAdmin: response?.isadmin ?? false,
-          id: response?.id ?? ''
+          email: data?.officialEmail ?? '',
+          name: data?.firstName ?? '',
+          isAdmin: data?.isadmin ?? false,
+          id: data?.id ?? ''
         })
+        setLoading(false);
+        return;
       }
       setLoading(false);
 
@@ -75,6 +87,8 @@ function App() {
     }
     fetchData();
   }, []);
+
+
 
   if (isCountdown) {
     return <Countdown />
@@ -102,9 +116,18 @@ function App() {
         <StatusWrapper isLoading={loading} error={''} p={0} {...StatusWrapperProps}>
           <Router>
             <Routes>
-              <Route path="/" element={<Home />} >
-                <Route path="profile" element={<HeaderWithTabs />}></Route>
+              <Route path="/" element={<Home />}>
+                {/* Protect Profile Route Inside Home */}
+                <Route path="/" element={<LandingPage />}></Route>
+                <Route path="/profile" element={<HeaderWithTabs />}></Route>
+                <Route path="about-us" element={<AboutUs />} />
+                <Route path="tnc" element={<TermsAndConditions />} />
+                <Route path="contact-us" element={<ContactUs />} />
+                <Route path="privacy-policy" element={<PrivacyPolicy />} />
+
               </Route>
+              {/* Protect Profile Route */}
+
 
               {/* <Route path="/events/:eventId/live" element={<LiveEvent />} />
             {/* <Route path="/login" element={<Login />} /> */}

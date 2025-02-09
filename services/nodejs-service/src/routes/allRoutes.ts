@@ -1,7 +1,7 @@
 // src/routes/userRoutes.ts
 
 import { Router } from "express";
-import { signup, login, validateToken } from "../controllers/userController";
+import { signup, login, validateToken, logout, verifyEmailCode, forgotPasswordSendCode, forgotPasswordVerifyCode, forgotPasswordReset, deleteUser } from "../controllers/userController";
 import { get } from "http";
 import { getEnumValues } from "../controllers/enumController";
 import { sendSingleEmail } from "../controllers/emailController";
@@ -31,6 +31,8 @@ import {
 } from "../controllers/videoChatController";
 import { addToWaitlist, getWaitlistCount, getWaitlistData } from "../controllers/waitListController";
 import { authenticateToken } from "../middlewares/authentication";
+import checkEmailExists from "../middlewares/user";
+import { getPartnerPreferences, updatePartnerPreferences } from "../controllers/partnerPreference";
 
 const router = Router();
 
@@ -65,11 +67,24 @@ router.put("/user-profile",authenticateToken, updateUserProfile);
 
 router.post("/signup", signup);
 router.post("/login", login);
+router.post("/logout", logout);
 router.post("/validate-token", validateToken);
 
 // notif mails
-router.post('/send-emails', sendSingleEmail)
+router.post('/send-emails', sendSingleEmail);
+router.post("/verify-email-code", verifyEmailCode);
+router.post('/forgot-password/send-verification-code', forgotPasswordSendCode)
+router.post('/forgot-password/verify-code', forgotPasswordVerifyCode)
+router.post('/forgot-password/reset-password', forgotPasswordReset)
 
+// partner pref
+router.get('/user/partner-preferences', authenticateToken, getPartnerPreferences);
+router.put('/user/partner-preferences', authenticateToken, updatePartnerPreferences);
+
+
+// delete user
+
+router.delete("/user/delete", authenticateToken, deleteUser);
 
 router.get(
   "/events/:eventId/live/:email/next-user-to-match",
