@@ -1,47 +1,42 @@
 export enum GenderPreference {
   MALE = "Male",
   FEMALE = "Female",
-  BOTH = "Both",
 }
 
 export enum SmokingPreference {
   YES = "Yes",
   NO = "No",
-  OCCASIONALLY = "Occasionally",
-  DOESNT_MATTER = "Doesn't matter",
+  OCCASIONALLY = "Occasional",
 }
 
 export enum DrinkingPreference {
   YES = "Yes",
   NO = "No",
-  OCCASIONALLY = "Occasionally",
-  DOESNT_MATTER = "Doesn't matter",
+  OCCASIONALLY = "Occasional",
 }
 
 export enum MaritalStatus {
   SINGLE = "Single",
   DIVORCED = "Divorced",
   WIDOWED = "Widowed",
-  DOESNT_MATTER = "Doesn't matter",
 }
 
 export enum ChildrenPreference {
   YES = "Yes",
   NO = "No",
-  DOESNT_MATTER = "Doesn't matter",
+  DOESNT_MATTER = "Doesnt matter",
 }
 
 export enum ActivityLevel {
   LOW = "Low",
-  MODERATE = "Moderate",
+  MODERATE = "Medium",
   HIGH = "High",
-  DOESNT_MATTER = "Doesn't matter",
 }
 
 export enum PetPreference {
-  LIKES_PETS = "Likes pets",
-  NO_PREFERENCE = "No preference",
-  DOESNT_LIKE_PETS = "Doesn't like pets",
+  LIKES_PETS = "Yes",
+  NO_PREFERENCE = "No",
+  DOESNT_LIKE_PETS = "Doesn't matter",
 }
 
 export enum RelationshipGoals {
