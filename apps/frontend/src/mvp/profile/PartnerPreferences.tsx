@@ -30,8 +30,7 @@ import { Toast } from "@radix-ui/react-toast";
 import { set } from "date-fns";
 import { get } from "http";
 import emptyPartnerPreferences from "./constants";
-import { ChildrenPreference, Currency, DatifyyUserPartnerPreferences, FamousInterests, GenderPreference, Hobbies, MaritalStatus, PersonalityTraits, Profession, RelationshipGoals } from "./types";
-import { Sports } from "@mui/icons-material";
+import { ActivityLevel, Sports, ChildrenPreference, Currency, DatifyyUserPartnerPreferences, DrinkingPreference, EducationLevel, FamousInterests, GenderPreference, Hobbies, MaritalStatus, PersonalityTraits, PetPreference, Profession, RelationshipGoals, SmokingPreference } from "./types";
 import TagInput from "./TagInput";
 import MultiSelect from "./MultiSelectWithChips";
 
@@ -98,36 +97,26 @@ const fieldIcons = {
 };
 
 
-const enums = {
-    gender: [Gender.Male, "Female", "Other"],
-    exercise: ["Heavy", "Light", "Moderate", "None"],
-    educationLevel: ["Graduate", "High School", "Postgraduate", "Undergraduate"],
-    drinking: ["Never", "Occasionally", "Regularly"],
-    smoking: ["Never", "Occasionally", "Regularly"],
-    lookingFor: ["Casual", "Friendship", "Relationship"],
-    settleDownInMonths: ["0-6", "6-12", "12-24", "24+"],
-    starSign: [
-        "Aquarius",
-        "Aries",
-        "Cancer",
-        "Capricorn",
-        "Gemini",
-        "Leo",
-        "Libra",
-        "Pisces",
-        "Sagittarius",
-        "Scorpio",
-        "Taurus",
-        "Virgo",
-    ],
-    pronoun: ["He/Him", "She/Her", "They/Them", "Other"],
-};
+export enum FormFieldType {
+    Text = "text",
+    Email = "email",
+    Date = "date",
+    Number = "number",
+    Select = "select",
+    MultiSelect = "multi-select",
+    MultiSelectText = "multi-select-text",
+    Checkbox = "checkbox",
+    City = "city",
+    Image = "image",
+    TextArea = "textarea",
+}
+
 
 export interface FormField {
     name: keyof DatifyyUserPartnerPreferences;
     label: string;
     icon?: any;
-    type: "text" | "email" | "date" | "select" | "checkbox" | "city" | "image" | "number" | "textarea" | "multi-select" | "multi-select-text";
+    type: FormFieldType;
     options?: string[];
 }
 
@@ -136,62 +125,106 @@ interface FormSection {
     fields: FormField[][];
 }
 
+
+enum FieldNames {
+    GENDER_PREFERENCE = "genderPreference",
+    MIN_AGE = "minAge",
+    MAX_AGE = "maxAge",
+    MIN_HEIGHT = "minHeight",
+    MAX_HEIGHT = "maxHeight",
+    LOCATION_PREFERENCE = "locationPreference",
+    LOCATION_PREFERENCE_RADIUS = "locationPreferenceRadius",
+    RELIGION = "religion",
+    EDUCATION_LEVEL = "educationLevel",
+    PROFESSION = "profession",
+    MIN_INCOME = "minIncome",
+    MAX_INCOME = "maxIncome",
+    CURRENCY = "currency",
+    SMOKING_PREFERENCE = "smokingPreference",
+    DRINKING_PREFERENCE = "drinkingPreference",
+    MARITAL_STATUS = "maritalStatus",
+    CHILDREN_PREFERENCE = "childrenPreference",
+    HOBBIES = "hobbies",
+    INTERESTS = "interests",
+    BOOKS_READING = "booksReading",
+    MUSIC = "music",
+    MOVIES = "movies",
+    TRAVEL = "travel",
+    SPORTS = "sports",
+    PERSONALITY_TRAITS = "personalityTraits",
+    RELATIONSHIP_GOALS = "relationshipGoals",
+    LIFESTYLE_PREFERENCE = "lifestylePreference",
+    ACTIVITY_LEVEL = "activityLevel",
+    PET_PREFERENCE = "petPreference",
+    RELIGION_COMPATIBILITY_SCORE = "religionCompatibilityScore",
+    INCOME_COMPATIBILITY_SCORE = "incomeCompatibilityScore",
+    EDUCATION_COMPATIBILITY_SCORE = "educationCompatibilityScore",
+    APPEARANCE_COMPATIBILITY_SCORE = "appearanceCompatibilityScore",
+    PERSONALITY_COMPATIBILITY_SCORE = "personalityCompatibilityScore",
+    VALUES_COMPATIBILITY_SCORE = "valuesCompatibilityScore",
+    MATCHING_SCORE = "matchingScore",
+    WHAT_OTHER_PERSON_SHOULD_KNOW = "whatOtherPersonShouldKnow",
+
+
+}
+
+
 const formConfig: FormSection[] = [
     {
         section: "Partner Preferences",
         fields: [
             [
                 {
-                    name: "genderPreference",
+                    name: FieldNames.GENDER_PREFERENCE,
                     label: "Gender Preference",
-                    type: "select",
+                    type: FormFieldType.Select,
                     icon: fieldIcons.genderPreference,
                     options: Object.values(GenderPreference)
                 },
-                { name: "minAge", label: "Min Age", type: "number", icon: fieldIcons.minAge },
-                { name: "maxAge", label: "Max Age", type: "number", icon: fieldIcons.minAge },
-                { name: "minHeight", label: "Min Height", type: "text", icon: fieldIcons.minAge },
-                { name: "maxHeight", label: "Max Height", type: "text", icon: fieldIcons.minAge },
+                { name: FieldNames.MIN_AGE, label: "Min Age", type: FormFieldType.Number, icon: fieldIcons.minAge },
+                { name: FieldNames.MAX_AGE, label: "Max Age", type: FormFieldType.Number, icon: fieldIcons.minAge },
+                { name: FieldNames.MIN_HEIGHT, label: "Min Height", type: FormFieldType.Text, icon: fieldIcons.minAge },
+                { name: FieldNames.MAX_HEIGHT, label: "Max Height", type: FormFieldType.Text, icon: fieldIcons.minAge },
                 {
-                    name: "locationPreference",
+                    name: FieldNames.LOCATION_PREFERENCE,
                     label: "Location Preference",
-                    type: "text",
+                    type: FormFieldType.City,
                     icon: fieldIcons.minAge,
                 },
                 {
-                    name: "locationPreferenceRadius",
+                    name: FieldNames.LOCATION_PREFERENCE_RADIUS,
                     label: "Location Radius",
-                    type: "number",
+                    type: FormFieldType.Number,
                     icon: fieldIcons.minAge,
                 },
             ],
             [
                 {
-                    name: "religion",
+                    name: FieldNames.RELIGION,
                     label: "Religion",
-                    type: "text",
+                    type: FormFieldType.Text,
                     icon: fieldIcons.minAge,
                 },
                 {
-                    name: "educationLevel",
+                    name: FieldNames.EDUCATION_LEVEL,
                     label: "Education Level",
-                    type: "multi-select",
+                    type: FormFieldType.MultiSelect,
                     icon: fieldIcons.educationLevel,
-                    options: enums.educationLevel,
+                    options: Object.values(EducationLevel),
                 },
                 {
-                    name: "profession",
+                    name: FieldNames.PROFESSION,
                     label: "Preferred Professions",
-                    type: "multi-select",
+                    type: FormFieldType.MultiSelect,
                     icon: fieldIcons.minAge,
                     options: Object.values(Profession),
                 },
-                { name: "minIncome", label: "Min Income", type: "number", icon: fieldIcons.minAge },
-                { name: "maxIncome", label: "Max Income", type: "number", icon: fieldIcons.minAge },
+                { name: FieldNames.MIN_INCOME, label: "Min Income", type: FormFieldType.Number, icon: fieldIcons.minAge },
+                { name: FieldNames.MAX_INCOME, label: "Max Income", type: FormFieldType.Number, icon: fieldIcons.minAge },
                 {
-                    name: "currency",
+                    name: FieldNames.CURRENCY,
                     label: "Currency",
-                    type: "select",
+                    type: FormFieldType.Select,
                     icon: fieldIcons.minAge,
                     options: Object.values(Currency),
                 },
@@ -204,30 +237,30 @@ const formConfig: FormSection[] = [
         fields: [
             [
                 {
-                    name: "smokingPreference",
+                    name: FieldNames.SMOKING_PREFERENCE,
                     label: "Smoking Preference",
-                    type: "select",
+                    type: FormFieldType.Select,
                     icon: fieldIcons.smokingPreference,
-                    options: enums.smoking,
+                    options: Object.values(SmokingPreference),
                 },
                 {
-                    name: "drinkingPreference",
+                    name: FieldNames.DRINKING_PREFERENCE,
                     label: "Drinking Preference",
-                    type: "select",
+                    type: FormFieldType.Select,
                     icon: fieldIcons.drinkingPreference,
-                    options: enums.drinking,
+                    options: Object.values(DrinkingPreference),
                 },
                 {
-                    name: "maritalStatus",
+                    name: FieldNames.MARITAL_STATUS,
                     label: "Marital Status",
-                    type: "select",
+                    type: FormFieldType.Select,
                     icon: fieldIcons.minAge,
                     options: Object.values(MaritalStatus),
                 },
                 {
-                    name: "childrenPreference",
+                    name: FieldNames.CHILDREN_PREFERENCE,
                     label: "Children Preference",
-                    type: "select",
+                    type: FormFieldType.Select,
                     icon: fieldIcons.minAge,
                     options: Object.values(ChildrenPreference),
                 },
@@ -238,15 +271,15 @@ const formConfig: FormSection[] = [
         section: "Hobbies & Interests",
         fields: [
             [
-                { name: "hobbies", label: "Hobbies", type: "multi-select", icon: fieldIcons.hobbies, options: Object.values(Hobbies) },
-                { name: "interests", label: "Interests", type: "multi-select", icon: fieldIcons.interests, options: Object.values(FamousInterests) },
-                { name: "booksReading", label: "Books", type: "multi-select", icon: fieldIcons.minAge, },
-                { name: "music", label: "Music", type: "multi-select-text", icon: fieldIcons.minAge },
-                { name: "movies", label: "Movies", type: "multi-select-text", icon: fieldIcons.minAge },
+                { name: FieldNames.HOBBIES, label: "Hobbies", type: FormFieldType.MultiSelect, icon: fieldIcons.hobbies, options: Object.values(Hobbies) },
+                { name: FieldNames.INTERESTS, label: "Interests", type: FormFieldType.MultiSelect, icon: fieldIcons.interests, options: Object.values(FamousInterests) },
+                { name: FieldNames.BOOKS_READING, label: "Books", type: FormFieldType.MultiSelectText, icon: fieldIcons.minAge, },
+                { name: FieldNames.MUSIC, label: "Music", type: FormFieldType.MultiSelectText, icon: fieldIcons.minAge },
+                { name: FieldNames.MOVIES, label: "Movies", type: FormFieldType.MultiSelectText, icon: fieldIcons.minAge },
             ],
             [
-                { name: "travel", label: "Travel", type: "multi-select", icon: fieldIcons.minAge },
-                { name: "sports", label: "Sports", type: "multi-select", icon: fieldIcons.minAge, options: Object.values(Sports) },
+                { name: FieldNames.TRAVEL, label: "Travel", type: FormFieldType.MultiSelectText, icon: fieldIcons.minAge },
+                { name: FieldNames.SPORTS, label: "Sports", type: FormFieldType.MultiSelect, icon: fieldIcons.minAge, options: Object.values(Sports) },
             ],
         ],
     },
@@ -254,35 +287,35 @@ const formConfig: FormSection[] = [
         section: "Personality & Lifestyle",
         fields: [
             [
-                { name: "personalityTraits", label: "Personality Traits", type: "multi-select", icon: fieldIcons.minAge, options: Object.values(PersonalityTraits) },
-                { name: "relationshipGoals", label: "Relationship Goals", type: "select", icon: fieldIcons.minAge, options: Object.values(RelationshipGoals) },
-                { name: "lifestylePreference", label: "Lifestyle Preference", type: "text", icon: fieldIcons.minAge },
-                { name: "activityLevel", label: "Activity Level", type: "select", icon: fieldIcons.minAge, options: Object.values(RelationshipGoals) },
-                { name: "petPreference", label: "Pet Preference", type: "select", icon: fieldIcons.minAge, options: Object.values(RelationshipGoals) },
+                { name: "personalityTraits", label: "Personality Traits", type: FormFieldType.MultiSelect, icon: fieldIcons.minAge, options: Object.values(PersonalityTraits) },
+                { name: "relationshipGoals", label: "Relationship Goals", type: FormFieldType.Select, icon: fieldIcons.minAge, options: Object.values(RelationshipGoals) },
+                { name: "lifestylePreference", label: "Lifestyle Preference", type: FormFieldType.MultiSelectText, icon: fieldIcons.minAge },
+                { name: "activityLevel", label: "Activity Level", type: FormFieldType.Select, icon: fieldIcons.minAge, options: Object.values(ActivityLevel) },
+                { name: "petPreference", label: "Pet Preference", type: FormFieldType.Select, icon: fieldIcons.minAge, options: Object.values(PetPreference) },
             ],
         ],
     },
-    {
-        section: "Compatibility",
-        fields: [
-            [
-                { name: "religionCompatibilityScore", label: "Religion Compatibility", type: "number", icon: fieldIcons.minAge },
-                { name: "incomeCompatibilityScore", label: "Income Compatibility", type: "number", icon: fieldIcons.minAge },
-                { name: "educationCompatibilityScore", label: "Education Compatibility", type: "number", icon: fieldIcons.minAge },
-            ],
-            [
-                { name: "appearanceCompatibilityScore", label: "Appearance Compatibility", type: "number", icon: fieldIcons.minAge },
-                { name: "personalityCompatibilityScore", label: "Personality Compatibility", type: "number", icon: fieldIcons.minAge },
-                { name: "valuesCompatibilityScore", label: "Values Compatibility", type: "number", icon: fieldIcons.minAge },
-                { name: "matchingScore", label: "Overall Match Score", type: "number", icon: fieldIcons.minAge },
-            ],
-        ],
-    },
+    // {
+    //     section: "Compatibility",
+    //     fields: [
+    //         [
+    //             { name: "religionCompatibilityScore", label: "Religion Compatibility", type: FormFieldType.Number, icon: fieldIcons.minAge },
+    //             { name: "incomeCompatibilityScore", label: "Income Compatibility", type: FormFieldType.Number, icon: fieldIcons.minAge },
+    //             { name: "educationCompatibilityScore", label: "Education Compatibility", type: FormFieldType.Number, icon: fieldIcons.minAge },
+    //         ],
+    //         [
+    //             { name: "appearanceCompatibilityScore", label: "Appearance Compatibility", type: FormFieldType.Number, icon: fieldIcons.minAge },
+    //             { name: "personalityCompatibilityScore", label: "Personality Compatibility", type: FormFieldType.Number, icon: fieldIcons.minAge },
+    //             { name: "valuesCompatibilityScore", label: "Values Compatibility", type: FormFieldType.Number, icon: fieldIcons.minAge },
+    //             { name: "matchingScore", label: "Overall Match Score", type: FormFieldType.Number, icon: fieldIcons.minAge },
+    //         ],
+    //     ],
+    // },
     {
         section: "Additional Details",
         fields: [
             [
-                { name: "whatOtherPersonShouldKnow", label: "What They Should Know", type: "textarea", icon: fieldIcons.minAge },
+                { name: "whatOtherPersonShouldKnow", label: "What They Should Know", type: FormFieldType.TextArea, icon: fieldIcons.minAge },
             ],
         ],
     },
@@ -317,19 +350,31 @@ const PartnerPreferences = () => {
         });
     }
 
+    const getValue = (type: string, name: keyof DatifyyUserPartnerPreferences, value: string | boolean) => {
+
+        if (type === "multi-select" || type === "multi-select-text") {
+            if (Array.isArray(profileData[name])) {
+                // ure about array value
+                // @ts-expect-error
+                return [...profileData[name], value];
+            }
+
+            return [value];
+
+        }
+
+        return value;
+    }
+
 
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | React.ChangeEvent<HTMLTextAreaElement>
     ) => {
         const { name, value, type, checked } = e.target as HTMLInputElement;
-        let newVal: string[] = [];
-        if (type === "multi-select" || type === "multi-select-text") {
-            newVal = [value];
-        }
         setDraftProfileData((prev: Partial<DatifyyUserPartnerPreferences> | null) => ({
             ...prev,
-            [name]: type === "checkbox" ? checked : newVal,
+            [name]: getValue(type, name as keyof DatifyyUserPartnerPreferences, type === 'checked' ? checked : value),
         }));
     };
 
@@ -378,19 +423,70 @@ const PartnerPreferences = () => {
 
             newValue = `${value} (${calculateAge(value)} years)`;
         }
+
+        let suffixText = <></>;
+        let prefixText = <></>;
+
+        if (fieldName === FieldNames.MIN_INCOME || fieldName === FieldNames.MAX_INCOME) {
+            const currency = profileData.currency;
+            let suffix = "Lakhs";
+            if (currency !== Currency.INR) {
+                suffix = "K";
+            }
+            suffixText = <Text fontSize={10} color={"gray.500"}>{suffix}</Text>;
+        }
+
+        if (fieldName === FieldNames.MIN_HEIGHT || fieldName === FieldNames.MAX_HEIGHT) {
+            suffixText = <Text fontSize={10} color={"gray.500"}>cm</Text>;
+        }
+
+        if (fieldName === FieldNames.MIN_AGE || fieldName === FieldNames.MAX_AGE) {
+            suffixText = <Text fontSize={10} color={"gray.500"}>years</Text>;
+        }
+
+        if (fieldName === FieldNames.LOCATION_PREFERENCE_RADIUS) {
+            suffixText = <Text fontSize={10} color={"gray.500"}>Kms</Text>;
+        }
+
+        if (fieldName === FieldNames.TRAVEL) {
+            prefixText = <Text fontSize={10} color={"gray.500"}>Countries/Cities Travelled</Text>;
+        }
+
+        if (fieldName === FieldNames.MUSIC) {
+            prefixText = <Text fontSize={10} color={"gray.500"}>Artist / Genre</Text>;
+        }
+
+        if (fieldName === FieldNames.BOOKS_READING) {
+            prefixText = <Text fontSize={10} color={"gray.500"}>Books you read</Text>;
+        }
+
+        if (fieldName === FieldNames.MOVIES) {
+            prefixText = <Text fontSize={10} color={"gray.500"}>Movies / Genre you loved to watch</Text>;
+        }
+
         return <Flex justifyContent="space-between" alignItems={"center"} border={"1px solid"} padding={4} pt={2} pb={2} borderColor={"gray.200"} borderRadius={8} fontSize={12} width={"100%"}>
             <HStack>
                 <Box as={icon} mr={2} />
                 <Text>{text}</Text>
             </HStack>
-            <Text>{newValue ?? value}</Text>
+            <Flex gap={1} alignItems={"center"} direction={"column"}>
+                {prefixText}
+                <Text>{newValue}</Text>
+                {suffixText}
+            </Flex>
+
         </Flex>
     }
 
+    const onChangeCity = (name: string, city: string) => {
+        setDraftProfileData((prev: Partial<DatifyyUserPartnerPreferences> | null) => ({
+            ...prev,
+            [name]: city,
+        }));
+    }
 
     const renderField = (field: FormField, sectionId: string) => {
         const isEditEnabled = isEditMode[sectionId];
-
         switch (field.type) {
             case "text":
             case "email":
@@ -420,12 +516,12 @@ const PartnerPreferences = () => {
                             fontSize={13}
                             id={field.name}
                             name={field.name}
-                            value={String(profileData[field.name] ?? "")}
+                            value={String(draftProfileData?.[field.name] ?? profileData[field.name] ?? "")}
                             onChange={handleChange}
                             isReadOnly={!isEditEnabled || isFieldReadOnly(field.name)}
                         />
                     ) : (
-                        renderFieldReadView(field.label, String(profileData[field.name] ?? ""), field.icon, field.name)
+                        renderFieldReadView(field.label, String(draftProfileData?.[field.name] ?? profileData[field.name] ?? ""), field.icon, field.name)
                     )
                 );
 
@@ -435,7 +531,7 @@ const PartnerPreferences = () => {
                         <Select
                             id={field.name}
                             name={field.name}
-                            value={String(profileData[field.name] ?? "")}
+                            value={String(draftProfileData?.[field.name] ?? profileData[field.name] ?? "")}
                             onChange={handleChange}
                             isReadOnly={!isEditEnabled && isFieldReadOnly(field.name)}
                             fontSize={13}
@@ -457,7 +553,7 @@ const PartnerPreferences = () => {
                         <MultiSelect
                             options={field.options ?? []}
                             name={field.name}
-                            value={Array.isArray(profileData[field.name]) ? (profileData[field.name] as string[]) : []}
+                            value={Array.isArray(draftProfileData?.[field.name] ?? profileData[field.name]) ? (draftProfileData?.[field.name] as string[] ?? profileData[field.name] as string[]) : []}
                             onChange={onMultiSelectChange}
                             isReadOnly={!isEditEnabled && isFieldReadOnly(field.name)}
                             fontSize={13}
@@ -473,7 +569,7 @@ const PartnerPreferences = () => {
                     isEditEnabled ? (
                         <TagInput
                             name={field.name}
-                            value={Array.isArray(profileData[field.name]) ? profileData[field.name] as string[] : []}
+                            value={Array.isArray(draftProfileData?.[field.name] ?? profileData[field.name]) ? (draftProfileData?.[field.name] as string[] ?? profileData[field.name] as string[]) : []}
                             onChange={handleChangeTagInput}
                             isReadOnly={!isEditEnabled && isFieldReadOnly(field.name)}
                         />
@@ -482,6 +578,7 @@ const PartnerPreferences = () => {
                         renderFieldReadView(field.label, Array.isArray(profileData[field.name]) ? profileData[field.name].join(", ") : String(profileData[field.name] ?? ""), field.icon, field.name)
                     )
                 );
+            // return "not implemented";
 
             case "checkbox":
                 return (
@@ -489,7 +586,7 @@ const PartnerPreferences = () => {
                         <Checkbox
                             id={field.name}
                             name={field.name}
-                            isChecked={!!profileData[field.name] || false}
+                            isChecked={Boolean(draftProfileData?.[field.name]) ?? !!profileData[field.name] ?? false}
                             onChange={handleChange}
                             isDisabled={!isEditEnabled && isFieldReadOnly(field.name)}
                         >
@@ -501,7 +598,7 @@ const PartnerPreferences = () => {
                 );
 
             case "city":
-                return isEditEnabled ? <CitySelect /> : renderFieldReadView(field.label, String(profileData[field.name] ?? ""), field.icon, field.name);
+                return isEditEnabled ? <CitySelect value={draftProfileData?.[field.name] ?? profileData?.[field.name]} onChangeCity={(location) => onChangeCity(field.name, location)} /> : renderFieldReadView(field.label, String(profileData[field.name] ?? ""), field.icon, field.name);
 
             default:
                 return null;

@@ -23,6 +23,9 @@ const TagInput: React.FC<TagInputProps> = ({ value = [], onChange, name, isReadO
         onChange(name, value.filter((tag) => tag !== tagToRemove));
     };
 
+    console.log(value);
+
+
     return (
         <HStack wrap="wrap" spacing={2} p={2} border="1px solid" borderColor="gray.300" borderRadius="md">
             {value.map((tag, index) => (

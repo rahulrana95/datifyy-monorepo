@@ -326,6 +326,9 @@ const ProfileForm = () => {
         const fields = ["isOfficialEmailVerified", "isAadharVerified", "isPhoneVerified", "officialEmail"];
         return fields.indexOf(fieldName) >= 0;
     }
+
+    const onChangeCity = (city: string) => { }
+
     const renderField = (field: FormField, sectionId: string) => {
         const isEditEnabled = isEditMode[sectionId];
         switch (field.type) {
@@ -377,7 +380,7 @@ const ProfileForm = () => {
                         </Checkbox> : renderFieldReadView(field.label, String(profileData[field.name] ?? ""), field.icon, field.name)
                 );
             case "city":
-                return isEditEnabled ? <CitySelect /> : renderFieldReadView(field.label, String(profileData[field.name] ?? ""), field.icon, field.name);
+                return isEditEnabled ? <CitySelect value={''} onChangeCity={onChangeCity} /> : renderFieldReadView(field.label, String(profileData[field.name] ?? ""), field.icon, field.name);
             case "image":
                 return (
                     <div className="image-upload">

@@ -1,18 +1,18 @@
-import { ChildrenPreference, DatifyyUserPartnerPreferences, DrinkingPreference, GenderPreference, MaritalStatus, SmokingPreference } from "./types";
+import { ChildrenPreference, Currency, DatifyyUserPartnerPreferences, DrinkingPreference, GenderPreference, MaritalStatus, SmokingPreference } from "./types";
 
 const emptyPartnerPreferences: DatifyyUserPartnerPreferences = {
   id: 0,
-  genderPreference: GenderPreference.BOTH,
-  minAge: null,
-  maxAge: null,
-  minHeight: null,
-  maxHeight: null,
+  genderPreference: GenderPreference.FEMALE,
+  minAge: 18,
+  maxAge: 50,
+  minHeight: 150,
+  maxHeight: 175,
   religion: null,
   educationLevel: [],
   profession: [],
-  minIncome: null,
-  maxIncome: null,
-  currency: null,
+  minIncome: 2,
+  maxIncome: 100,
+  currency: Currency.INR,
   locationPreference: null,
   smokingPreference: SmokingPreference.NO,
   drinkingPreference: DrinkingPreference.NO,

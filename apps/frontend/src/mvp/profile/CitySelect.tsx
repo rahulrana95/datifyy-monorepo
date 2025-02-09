@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Select, FormControl, FormLabel, Input, Box, Spinner, FormHelperText } from '@chakra-ui/react';
 
-const CitySelect = () => {
+const apiKey = process.env.REACT_APP_GEO_API;
+
+
+const CitySelect = ({ value, onChangeCity }: { value: any, onChangeCity: (lcoation: string) => void }) => {
     const [cities, setCities] = useState<{ label: string; value: string }[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -9,11 +12,11 @@ const CitySelect = () => {
     // Function to fetch cities from an API
     const fetchCities = async (search: string) => {
         setLoading(true);
-        const response = await fetch(`https://api.example.com/cities?search=${search}`);
+        const response = await fetch(`https://api.geoapify.com/v1/geocode/autocomplete?text=${search}&apiKey=${apiKey}`);
         const data = await response.json();
-        const cityOptions = data.map((city: { name: string }) => ({
-            label: city.name,
-            value: city.name,
+        const cityOptions = data.features.map((feature: { properties: { formatted: string } }) => ({
+            label: feature.properties.formatted,
+            value: feature.properties.formatted,
         }));
         setCities(cityOptions);
         setLoading(false);
@@ -30,17 +33,20 @@ const CitySelect = () => {
         }
     };
 
+    const onSelect = (location: any) => {
+        onChangeCity(location.target.value);
+    }
+
     return (
         <Box width="100%">
             <FormControl>
-                <FormLabel htmlFor="city">City</FormLabel>
                 <Input
                     id="city"
                     placeholder="Search for a city..."
                     value={searchTerm}
                     onChange={handleSearchChange}
                 />
-                <Select placeholder="Select city" isDisabled={loading}>
+                <Select placeholder="Select city" isDisabled={loading} onChange={onSelect}>
                     {loading ? (
                         <option value="" disabled>
                             <Spinner size="sm" />
@@ -54,7 +60,6 @@ const CitySelect = () => {
                         ))
                     )}
                 </Select>
-                <FormHelperText>Select a city from the list</FormHelperText>
             </FormControl>
         </Box>
     );
