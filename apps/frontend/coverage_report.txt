@@ -1,0 +1,10 @@
+
+> frontend@0.1.0 test
+> react-scripts test --coverage
+
+No tests found related to files changed since last commit.
+----------|---------|----------|---------|---------|-------------------
+File      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+----------|---------|----------|---------|---------|-------------------
+All files |       0 |        0 |       0 |       0 |
+----------|---------|----------|---------|---------|-------------------
