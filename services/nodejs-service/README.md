@@ -13,3 +13,15 @@ SELECT conname AS constraint_name,
 FROM pg_constraint
 WHERE conrelid = 'datifyy_events'::regclass;
 This will display all constraints on the datifyy_events table, including any CHECK constraints that define specific allowed values. Look in the constraint_definition column for those constraints that specify allowed values.
+
+
+├── controllers/     (HTTP layer - req/res handling only)
+├── services/        (Business logic)
+├── repositories/    (Data access layer)
+├── dto/            (Data Transfer Objects)
+├── mappers/        (Entity <-> DTO mapping)
+├── validators/     (Input validation)
+├── middleware/     (Cross-cutting concerns)
+├── errors/         (Custom error types)
+├── utils/          (Shared utilities)
+└── di/             (Dependency injection setup)
