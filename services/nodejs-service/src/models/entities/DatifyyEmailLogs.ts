@@ -1,5 +1,4 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
-import { DatifyyUsersLogin } from "./DatifyyUsersLogin";
+import { Column, Entity, Index } from "typeorm";
 
 @Index("datifyy_email_logs_pkey", ["id"], { unique: true })
 @Index("idx_email_logs_sent_at", ["sentAt"], {})
@@ -14,8 +13,8 @@ export class DatifyyEmailLogs {
   })
   id: string;
 
-  @Column("integer", { name: "user_id" })
-  userId: number;
+  @Column("integer", { name: "user_id", nullable: true })
+  userId: number | null;
 
   @Column("character varying", { name: "email_type", length: 50 })
   emailType: string;
@@ -35,11 +34,10 @@ export class DatifyyEmailLogs {
   @Column("jsonb", { name: "metadata", nullable: true })
   metadata: object | null;
 
-  @ManyToOne(
-    () => DatifyyUsersLogin,
-    (datifyyUsersLogin) => datifyyUsersLogin.datifyyEmailLogs,
-    { onDelete: "CASCADE" }
-  )
-  @JoinColumn([{ name: "user_id", referencedColumnName: "id" }])
-  user: DatifyyUsersLogin;
+  @Column("character varying", {
+    name: "email",
+    length: 255,
+    default: () => "''",
+  })
+  email: string;
 }

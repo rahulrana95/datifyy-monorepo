@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "..";
+import { DatifyyEmailLogs } from "../models/entities/DatifyyEmailLogs";
 
 const parseEnumValues = (enumString: string): string[] => {
     return enumString.slice(1, -1).split(",");
@@ -108,6 +109,28 @@ export const updateEnums = async (req: Request, res: Response) => {
     } catch (error) {
         console.error("Error updating enums:", error);
         res.status(500).json({ success: false, message: "Internal server error." });
+        return;
+    }
+};
+
+
+export const getUserEmailStatuses = async (req: Request, res: Response) => {
+    try {
+        const emailLogsRepository = AppDataSource.getRepository(DatifyyEmailLogs);
+
+        // Fetch all logs grouped by user email
+        const emailStatuses = await emailLogsRepository
+            .createQueryBuilder("log")
+            .select(["log.email"])
+            .addSelect("jsonb_agg(log) AS logs") // Aggregate all logs per email
+            .groupBy("log.email")
+            .getRawMany();
+
+        res.status(200).json({ success: true, emailStatuses });
+        return;
+    } catch (error) {
+        console.error("Error fetching email statuses:", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
         return;
     }
 };

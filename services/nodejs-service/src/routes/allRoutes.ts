@@ -33,7 +33,7 @@ import { addToWaitlist, getWaitlistCount, getWaitlistData } from "../controllers
 import { authenticateToken, checkIsAdmin } from "../middlewares/authentication";
 import checkEmailExists from "../middlewares/user";
 import { getPartnerPreferences, updatePartnerPreferences } from "../controllers/partnerPreference";
-import { getAllEnums, getAllTables, updateEnums } from "../controllers/adminController";
+import { getAllEnums, getAllTables, getUserEmailStatuses, updateEnums } from "../controllers/adminController";
 
 const router = Router();
 
@@ -93,9 +93,11 @@ router.delete("/user/delete", authenticateToken, deleteUser);
 
 // admin
 
-router.get("/admin/tables", getAllTables);
-router.get("/admin/enums", getAllEnums);
-router.put("/admin/enums", updateEnums);
+router.get("/admin/tables", authenticateToken,checkIsAdmin,getAllTables);
+router.get("/admin/enums", authenticateToken,checkIsAdmin,getAllEnums);
+router.put("/admin/enums",authenticateToken,checkIsAdmin, updateEnums);
+
+router.get("/admin/email-logs", authenticateToken,checkIsAdmin,getUserEmailStatuses);
 
 
 router.get(
