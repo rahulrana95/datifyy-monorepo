@@ -4,7 +4,7 @@ import { Router } from "express";
 import { signup, login, validateToken, logout, verifyEmailCode, forgotPasswordSendCode, forgotPasswordVerifyCode, forgotPasswordReset, deleteUser } from "../controllers/userController";
 import { get } from "http";
 import { getEnumValues } from "../controllers/enumController";
-import { sendSingleEmail } from "../controllers/emailController";
+import { sendBulkEmails, sendSingleEmail } from "../controllers/emailController";
 import {
   createEvent,
   deleteEvent,
@@ -30,9 +30,10 @@ import {
   updateVideoChatSession,
 } from "../controllers/videoChatController";
 import { addToWaitlist, getWaitlistCount, getWaitlistData } from "../controllers/waitListController";
-import { authenticateToken } from "../middlewares/authentication";
+import { authenticateToken, checkIsAdmin } from "../middlewares/authentication";
 import checkEmailExists from "../middlewares/user";
 import { getPartnerPreferences, updatePartnerPreferences } from "../controllers/partnerPreference";
+import { getAllEnums, getAllTables, getUserEmailStatuses, updateEnums } from "../controllers/adminController";
 
 const router = Router();
 
@@ -82,9 +83,22 @@ router.get('/user/partner-preferences', authenticateToken, getPartnerPreferences
 router.put('/user/partner-preferences', authenticateToken, updatePartnerPreferences);
 
 
+// send bulk mails
+router.post('/admin/send-bulk-emails',authenticateToken,checkIsAdmin, sendBulkEmails);
+
+
 // delete user
 
 router.delete("/user/delete", authenticateToken, deleteUser);
+
+// admin
+
+router.get("/admin/tables", authenticateToken,checkIsAdmin,getAllTables);
+router.get("/admin/enums", authenticateToken,checkIsAdmin,getAllEnums);
+router.put("/admin/enums",authenticateToken,checkIsAdmin, updateEnums);
+
+router.get("/admin/email-logs", authenticateToken,checkIsAdmin,getUserEmailStatuses);
+
 
 router.get(
   "/events/:eventId/live/:email/next-user-to-match",

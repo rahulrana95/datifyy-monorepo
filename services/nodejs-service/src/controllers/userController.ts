@@ -259,7 +259,7 @@ export const forgotPasswordSendCode = async (req: Request, res: Response): Promi
       return;
     }
 
-    const code = getCodeForVerifyingEmail({ to: { email } });
+    const code = getCodeForVerifyingEmail(email);
 
 
     await sendEmail(from, [{ email, name: email }], "Reset Your Password", forgotPasswordTemplate(code), forgotPasswordTemplate(code));

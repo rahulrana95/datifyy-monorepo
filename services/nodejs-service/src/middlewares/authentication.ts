@@ -79,3 +79,13 @@ export const authenticateToken = async (req: AuthenticatedRequest, res: Response
     return;
   }
 };
+
+
+
+export const checkIsAdmin = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  if (!req.user || !req.user.isAdmin) {
+    res.status(403).json({ message: 'Access denied, admin privileges required' });
+    return;
+  }
+  next();
+};
