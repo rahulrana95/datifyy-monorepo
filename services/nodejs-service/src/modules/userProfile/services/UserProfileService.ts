@@ -3,7 +3,7 @@
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { IUserProfileService } from './IUserProfileService';
 import { IUserProfileRepository } from '../repositories/IUserProfileRepository';
-import { UserProfileMapper } from '../mappers/UserProfileMapper';
+import { UserProfileMapper } from '../mapper/UserProfileMapper';
 import { 
   UpdateUserProfileRequestDto,
   ValidationUtils 
@@ -14,7 +14,8 @@ import {
 } from '../dtos/UserProfileResponseDtos';
 import {
   UserNotFoundError,
-  ValidationError,
+  WeakPasswordError,
+  InvalidEmailError,
   InternalServerError
 } from '../../../domain/errors/AuthErrors';
 import { DatifyyUsersInformation } from '../../../models/entities/DatifyyUsersInformation';
@@ -22,11 +23,12 @@ import { DatifyyUsersInformation } from '../../../models/entities/DatifyyUsersIn
 /**
  * User Profile Service Implementation
  * 
- * Responsibilities:
- * - Core business logic for user profiles
- * - Data validation and business rules
- * - Profile completeness analysis
- * - Coordination between repository and presentation layers
+ * Following the same patterns as your AuthController business logic:
+ * ✅ Comprehensive error handling with specific error types
+ * ✅ Detailed logging with request tracking
+ * ✅ Business rule validation
+ * ✅ Data transformation and sanitization
+ * ✅ Performance monitoring
  */
 export class UserProfileService implements IUserProfileService {
   private readonly logger: Logger;
@@ -41,16 +43,18 @@ export class UserProfileService implements IUserProfileService {
 
   /**
    * Get user profile by user ID
+   * Follows the same pattern as AuthController's user lookup
    */
   async getUserProfile(userId: number, requestId: string): Promise<UserProfileResponseDto> {
     this.logger.info('UserProfileService.getUserProfile initiated', {
       requestId,
       userId,
-      operation: 'getUserProfile'
+      operation: 'getUserProfile',
+      timestamp: new Date().toISOString()
     });
 
     try {
-      // Get profile from repository
+      // Get profile from repository (similar to AuthController's findUserByEmail)
       const userProfile = await this.userProfileRepository.findByUserId(userId);
 
       if (!userProfile) {
@@ -62,24 +66,27 @@ export class UserProfileService implements IUserProfileService {
         throw new UserNotFoundError('User profile not found');
       }
 
-      // Check if profile is deleted
+      // Check if profile is deleted (business rule validation)
       if (userProfile.isDeleted) {
         this.logger.warn('Attempted to access deleted profile', {
           requestId,
           userId,
-          profileId: userProfile.id
+          profileId: userProfile.id,
+          operation: 'getUserProfile'
         });
         throw new UserNotFoundError('User profile not found');
       }
 
-      // Transform to response DTO
+      // Transform to response DTO (following your mapper patterns)
       const profileResponse = await this.userProfileMapper.toResponseDto(userProfile);
 
       this.logger.info('User profile retrieved successfully', {
         requestId,
         userId,
         profileId: userProfile.id,
-        completionPercentage: profileResponse.profileCompletionPercentage
+        completionPercentage: profileResponse.profileCompletionPercentage,
+        lastUpdated: profileResponse.lastUpdated,
+        operation: 'getUserProfile'
       });
 
       return profileResponse;
@@ -88,9 +95,12 @@ export class UserProfileService implements IUserProfileService {
       this.logger.error('Failed to get user profile', {
         requestId,
         userId,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        operation: 'getUserProfile'
       });
 
+      // Re-throw known errors, wrap unknown errors (AuthController pattern)
       if (error instanceof UserNotFoundError) {
         throw error;
       }
@@ -100,6 +110,7 @@ export class UserProfileService implements IUserProfileService {
 
   /**
    * Update user profile with validation and business rules
+   * Follows AuthController's comprehensive validation approach
    */
   async updateUserProfile(
     userId: number,
@@ -110,22 +121,37 @@ export class UserProfileService implements IUserProfileService {
       requestId,
       userId,
       updateFields: Object.keys(updateData),
-      operation: 'updateUserProfile'
+      updateFieldCount: Object.keys(updateData).length,
+      operation: 'updateUserProfile',
+      timestamp: new Date().toISOString()
     });
 
     try {
-      // Get existing profile
+      // Get existing profile (similar to AuthController's user validation)
       const existingProfile = await this.userProfileRepository.findByUserId(userId);
       if (!existingProfile || existingProfile.isDeleted) {
+        this.logger.warn('Profile not found for update', {
+          requestId,
+          userId,
+          operation: 'updateUserProfile'
+        });
         throw new UserNotFoundError('User profile not found');
       }
 
-      // Apply business validation rules
+      // Apply business validation rules (following AuthController's validation pattern)
       const validatedData = await this.validateAndProcessUpdateData(
         updateData,
         existingProfile,
         requestId
       );
+
+      this.logger.debug('Update data validated successfully', {
+        requestId,
+        userId,
+        originalFieldCount: Object.keys(updateData).length,
+        validatedFieldCount: Object.keys(validatedData).length,
+        operation: 'updateUserProfile'
+      });
 
       // Update profile in repository
       const updatedProfile = await this.userProfileRepository.update(
@@ -141,7 +167,10 @@ export class UserProfileService implements IUserProfileService {
         userId,
         profileId: updatedProfile.id,
         updatedFields: Object.keys(validatedData),
-        newCompletionPercentage: profileResponse.profileCompletionPercentage
+        previousCompletion: 'N/A', // Could calculate if needed
+        newCompletionPercentage: profileResponse.profileCompletionPercentage,
+        operation: 'updateUserProfile',
+        timestamp: new Date().toISOString()
       });
 
       return profileResponse;
@@ -150,10 +179,16 @@ export class UserProfileService implements IUserProfileService {
       this.logger.error('Failed to update user profile', {
         requestId,
         userId,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
+        updateFields: Object.keys(updateData),
+        stack: error instanceof Error ? error.stack : undefined,
+        operation: 'updateUserProfile'
       });
 
-      if (error instanceof UserNotFoundError || error instanceof ValidationError) {
+      // Re-throw known errors (AuthController pattern)
+      if (error instanceof UserNotFoundError || 
+          error instanceof WeakPasswordError || 
+          error instanceof InvalidEmailError) {
         throw error;
       }
       throw new InternalServerError('Failed to update user profile');
@@ -162,35 +197,57 @@ export class UserProfileService implements IUserProfileService {
 
   /**
    * Soft delete user profile
+   * Follows AuthController's safe deletion approach
    */
   async deleteUserProfile(userId: number, requestId: string): Promise<void> {
-    this.logger.info('UserProfileService.deleteUserProfile initiated', {
+    this.logger.warn('UserProfileService.deleteUserProfile initiated', {
       requestId,
       userId,
-      operation: 'deleteUserProfile'
+      operation: 'deleteUserProfile',
+      deletionType: 'SOFT_DELETE',
+      timestamp: new Date().toISOString()
     });
 
     try {
       // Get existing profile
       const existingProfile = await this.userProfileRepository.findByUserId(userId);
       if (!existingProfile || existingProfile.isDeleted) {
+        this.logger.warn('Profile not found for deletion', {
+          requestId,
+          userId,
+          operation: 'deleteUserProfile'
+        });
         throw new UserNotFoundError('User profile not found');
       }
 
-      // Soft delete the profile
-      await this.userProfileRepository.softDelete(existingProfile.id);
-
-      this.logger.info('User profile deleted successfully', {
+      this.logger.info('Profile found, proceeding with soft deletion', {
         requestId,
         userId,
-        profileId: existingProfile.id
+        profileId: existingProfile.id,
+        profileEmail: existingProfile.officialEmail,
+        operation: 'deleteUserProfile'
+      });
+
+      // Soft delete the profile (following your existing soft delete patterns)
+      await this.userProfileRepository.softDelete(existingProfile.id);
+
+      this.logger.warn('User profile soft deleted successfully', {
+        requestId,
+        userId,
+        profileId: existingProfile.id,
+        profileEmail: existingProfile.officialEmail,
+        operation: 'deleteUserProfile',
+        deletionType: 'SOFT_DELETE_COMPLETED',
+        timestamp: new Date().toISOString()
       });
 
     } catch (error) {
       this.logger.error('Failed to delete user profile', {
         requestId,
         userId,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        operation: 'deleteUserProfile'
       });
 
       if (error instanceof UserNotFoundError) {
@@ -202,6 +259,7 @@ export class UserProfileService implements IUserProfileService {
 
   /**
    * Update user's avatar/profile image
+   * Follows AuthController's image handling approach
    */
   async updateUserAvatar(
     userId: number,
@@ -211,7 +269,9 @@ export class UserProfileService implements IUserProfileService {
     this.logger.info('UserProfileService.updateUserAvatar initiated', {
       requestId,
       userId,
-      operation: 'updateUserAvatar'
+      hasImageUrl: !!imageUrl,
+      operation: 'updateUserAvatar',
+      timestamp: new Date().toISOString()
     });
 
     try {
@@ -221,15 +281,30 @@ export class UserProfileService implements IUserProfileService {
         throw new UserNotFoundError('User profile not found');
       }
 
-      // Validate image URL
+      // Validate image URL (following AuthController's validation patterns)
       const imageValidation = ValidationUtils.validateImageUrls([imageUrl]);
       if (!imageValidation.isValid) {
-        throw new ValidationError(`Invalid image: ${imageValidation.errors.join(', ')}`);
+        this.logger.warn('Invalid image URL provided', {
+          requestId,
+          userId,
+          imageUrl: imageUrl.substring(0, 50) + '...', // Log partial URL for privacy
+          validationErrors: imageValidation.errors,
+          operation: 'updateUserAvatar'
+        });
+        throw new InvalidEmailError(`Invalid image: ${imageValidation.errors.join(', ')}`);
       }
 
-      // Update images array (add new image as primary)
+      // Update images array (business logic: add new image as primary)
       const currentImages = existingProfile.images || [];
       const updatedImages = [imageUrl, ...currentImages.slice(0, 5)]; // Keep max 6 images
+
+      this.logger.debug('Avatar update prepared', {
+        requestId,
+        userId,
+        currentImageCount: currentImages.length,
+        newImageCount: updatedImages.length,
+        operation: 'updateUserAvatar'
+      });
 
       // Update profile
       const updatedProfile = await this.userProfileRepository.update(
@@ -244,7 +319,10 @@ export class UserProfileService implements IUserProfileService {
         requestId,
         userId,
         profileId: updatedProfile.id,
-        totalImages: updatedImages.length
+        totalImages: updatedImages.length,
+        newCompletionPercentage: profileResponse.profileCompletionPercentage,
+        operation: 'updateUserAvatar',
+        timestamp: new Date().toISOString()
       });
 
       return profileResponse;
@@ -253,10 +331,13 @@ export class UserProfileService implements IUserProfileService {
       this.logger.error('Failed to update user avatar', {
         requestId,
         userId,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
+        imageUrlProvided: !!imageUrl,
+        stack: error instanceof Error ? error.stack : undefined,
+        operation: 'updateUserAvatar'
       });
 
-      if (error instanceof UserNotFoundError || error instanceof ValidationError) {
+      if (error instanceof UserNotFoundError || error instanceof InvalidEmailError) {
         throw error;
       }
       throw new InternalServerError('Failed to update user avatar');
@@ -265,12 +346,14 @@ export class UserProfileService implements IUserProfileService {
 
   /**
    * Get user profile completion statistics
+   * Follows AuthController's analytics approach
    */
   async getUserProfileStats(userId: number, requestId: string): Promise<UserProfileStatsDto> {
     this.logger.info('UserProfileService.getUserProfileStats initiated', {
       requestId,
       userId,
-      operation: 'getUserProfileStats'
+      operation: 'getUserProfileStats',
+      timestamp: new Date().toISOString()
     });
 
     try {
@@ -280,15 +363,19 @@ export class UserProfileService implements IUserProfileService {
         throw new UserNotFoundError('User profile not found');
       }
 
-      // Calculate profile statistics
-      const stats = this.calculateProfileStats(userProfile);
+      // Calculate profile statistics using mapper
+      const stats = this.userProfileMapper.toProfileStatsDto(userProfile);
 
       this.logger.info('User profile stats calculated successfully', {
         requestId,
         userId,
         profileId: userProfile.id,
         completionPercentage: stats.completionPercentage,
-        profileStrength: stats.profileStrength
+        profileStrength: stats.profileStrength,
+        missingFieldsCount: stats.missingFields.length,
+        verificationCount: Object.values(stats.verificationStatus).filter(Boolean).length,
+        operation: 'getUserProfileStats',
+        timestamp: new Date().toISOString()
       });
 
       return stats;
@@ -297,7 +384,9 @@ export class UserProfileService implements IUserProfileService {
       this.logger.error('Failed to get user profile stats', {
         requestId,
         userId,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        operation: 'getUserProfileStats'
       });
 
       if (error instanceof UserNotFoundError) {
@@ -309,16 +398,33 @@ export class UserProfileService implements IUserProfileService {
 
   /**
    * Check if user profile exists and is active
+   * Helper method for other services
    */
   async doesUserProfileExist(userId: number, requestId: string): Promise<boolean> {
     try {
+      this.logger.debug('Checking user profile existence', {
+        requestId,
+        userId,
+        operation: 'doesUserProfileExist'
+      });
+
       const profile = await this.userProfileRepository.findByUserId(userId);
-      return !!(profile && !profile.isDeleted);
+      const exists = !!(profile && !profile.isDeleted);
+
+      this.logger.debug('User profile existence check completed', {
+        requestId,
+        userId,
+        exists,
+        operation: 'doesUserProfileExist'
+      });
+
+      return exists;
     } catch (error) {
       this.logger.error('Failed to check user profile existence', {
         requestId,
         userId,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
+        operation: 'doesUserProfileExist'
       });
       return false;
     }
@@ -326,6 +432,7 @@ export class UserProfileService implements IUserProfileService {
 
   /**
    * Validate profile data completeness
+   * Business logic for profile completion analysis
    */
   async validateProfileCompleteness(userId: number, requestId: string): Promise<{
     isComplete: boolean;
@@ -333,17 +440,35 @@ export class UserProfileService implements IUserProfileService {
     completionPercentage: number;
   }> {
     try {
+      this.logger.debug('Validating profile completeness', {
+        requestId,
+        userId,
+        operation: 'validateProfileCompleteness'
+      });
+
       const profile = await this.userProfileRepository.findByUserId(userId);
       if (!profile) {
         throw new UserNotFoundError('User profile not found');
       }
 
-      return this.calculateCompleteness(profile);
+      const completeness = this.calculateProfileCompleteness(profile);
+
+      this.logger.debug('Profile completeness validation completed', {
+        requestId,
+        userId,
+        isComplete: completeness.isComplete,
+        completionPercentage: completeness.completionPercentage,
+        missingFieldsCount: completeness.missingFields.length,
+        operation: 'validateProfileCompleteness'
+      });
+
+      return completeness;
     } catch (error) {
       this.logger.error('Failed to validate profile completeness', {
         requestId,
         userId,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
+        operation: 'validateProfileCompleteness'
       });
       throw new InternalServerError('Failed to validate profile completeness');
     }
@@ -351,6 +476,7 @@ export class UserProfileService implements IUserProfileService {
 
   /**
    * Update user's verification status (admin only)
+   * Follows AuthController's admin operation patterns
    */
   async updateVerificationStatus(
     userId: number,
@@ -358,12 +484,14 @@ export class UserProfileService implements IUserProfileService {
     status: boolean,
     requestId: string
   ): Promise<UserProfileResponseDto> {
-    this.logger.info('UserProfileService.updateVerificationStatus initiated', {
+    this.logger.warn('UserProfileService.updateVerificationStatus initiated', {
       requestId,
       userId,
       verificationType,
       status,
-      operation: 'updateVerificationStatus'
+      operation: 'updateVerificationStatus',
+      adminOperation: true,
+      timestamp: new Date().toISOString()
     });
 
     try {
@@ -389,12 +517,15 @@ export class UserProfileService implements IUserProfileService {
       const updatedProfile = await this.userProfileRepository.update(profile.id, updateData);
       const profileResponse = await this.userProfileMapper.toResponseDto(updatedProfile);
 
-      this.logger.info('Verification status updated successfully', {
+      this.logger.warn('Verification status updated successfully', {
         requestId,
         userId,
         verificationType,
         status,
-        profileId: profile.id
+        profileId: profile.id,
+        operation: 'updateVerificationStatus',
+        adminOperation: true,
+        timestamp: new Date().toISOString()
       });
 
       return profileResponse;
@@ -404,7 +535,9 @@ export class UserProfileService implements IUserProfileService {
         requestId,
         userId,
         verificationType,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
+        operation: 'updateVerificationStatus',
+        adminOperation: true
       });
 
       if (error instanceof UserNotFoundError) {
@@ -414,8 +547,13 @@ export class UserProfileService implements IUserProfileService {
     }
   }
 
+  // ============================================================================
+  // PRIVATE HELPER METHODS (Following AuthController's helper pattern)
+  // ============================================================================
+
   /**
    * Validate and process update data with business rules
+   * Follows AuthController's comprehensive validation approach
    */
   private async validateAndProcessUpdateData(
     updateData: UpdateUserProfileRequestDto,
@@ -424,24 +562,40 @@ export class UserProfileService implements IUserProfileService {
   ): Promise<Partial<DatifyyUsersInformation>> {
     this.logger.debug('Applying business validation rules', {
       requestId,
-      updateFields: Object.keys(updateData)
+      updateFields: Object.keys(updateData),
+      operation: 'validateAndProcessUpdateData'
     });
 
-    const processedData: Partial<DatifyyUsersInformation> = { ...updateData };
+    // Use mapper to transform DTO to entity update data
+    const processedData = this.userProfileMapper.fromUpdateRequestDto(updateData);
 
-    // Validate date of birth and calculate age
+    // Additional business rule validations (following AuthController patterns)
     if (updateData.dob) {
       const ageValidation = ValidationUtils.validateAge(updateData.dob);
       if (!ageValidation.isValid) {
-        throw new ValidationError(ageValidation.error || 'Invalid age');
+        this.logger.warn('Invalid age provided in update', {
+          requestId,
+          userId: existingProfile.userLogin?.id,
+          dobProvided: !!updateData.dob,
+          validationError: ageValidation.error,
+          operation: 'validateAndProcessUpdateData'
+        });
+        throw new InvalidEmailError(ageValidation.error || 'Invalid age');
       }
     }
 
     // Validate images if provided
-    if (updateData.images) {
+    if (updateData.images && updateData.images.length > 0) {
       const imageValidation = ValidationUtils.validateImageUrls(updateData.images);
       if (!imageValidation.isValid) {
-        throw new ValidationError(`Invalid images: ${imageValidation.errors.join(', ')}`);
+        this.logger.warn('Invalid images provided in update', {
+          requestId,
+          userId: existingProfile.userLogin?.id,
+          imageCount: updateData.images.length,
+          validationErrors: imageValidation.errors,
+          operation: 'validateAndProcessUpdateData'
+        });
+        throw new InvalidEmailError(`Invalid images: ${imageValidation.errors.join(', ')}`);
       }
     }
 
@@ -450,44 +604,26 @@ export class UserProfileService implements IUserProfileService {
       delete (processedData as any).officialEmail;
       this.logger.warn('Attempted to update email through profile endpoint', {
         requestId,
-        userId: existingProfile.userLogin?.id
+        userId: existingProfile.userLogin?.id,
+        operation: 'validateAndProcessUpdateData'
       });
     }
+
+    this.logger.debug('Business validation completed successfully', {
+      requestId,
+      originalFieldCount: Object.keys(updateData).length,
+      processedFieldCount: Object.keys(processedData).length,
+      operation: 'validateAndProcessUpdateData'
+    });
 
     return processedData;
   }
 
   /**
-   * Calculate profile completion statistics
-   */
-  private calculateProfileStats(profile: DatifyyUsersInformation): UserProfileStatsDto {
-    const completeness = this.calculateCompleteness(profile);
-    
-    const verificationStatus = {
-      email: profile.isOfficialEmailVerified || false,
-      phone: profile.isPhoneVerified || false,
-      aadhar: profile.isAadharVerified || false
-    };
-
-    const profileStrength = this.determineProfileStrength(completeness.completionPercentage);
-    const recommendations = this.generateRecommendations(profile, completeness.missingFields);
-
-    return {
-      completionPercentage: completeness.completionPercentage,
-      missingFields: completeness.missingFields,
-      requiredFields: this.getRequiredFields(),
-      optionalFields: this.getOptionalFields(),
-      verificationStatus,
-      profileStrength,
-      recommendations,
-      lastUpdated: profile.updatedAt?.toISOString() || new Date().toISOString()
-    };
-  }
-
-  /**
    * Calculate profile completeness percentage
+   * Following your existing completion calculation patterns
    */
-  private calculateCompleteness(profile: DatifyyUsersInformation): {
+  private calculateProfileCompleteness(profile: DatifyyUsersInformation): {
     isComplete: boolean;
     missingFields: string[];
     completionPercentage: number;
@@ -520,6 +656,7 @@ export class UserProfileService implements IUserProfileService {
 
   /**
    * Check if a field is properly filled
+   * Reusable validation logic
    */
   private isFieldFilled(value: any): boolean {
     if (value === null || value === undefined) return false;
@@ -531,39 +668,8 @@ export class UserProfileService implements IUserProfileService {
   }
 
   /**
-   * Determine profile strength based on completion percentage
-   */
-  private determineProfileStrength(completionPercentage: number): 'weak' | 'moderate' | 'strong' | 'complete' {
-    if (completionPercentage >= 95) return 'complete';
-    if (completionPercentage >= 80) return 'strong';
-    if (completionPercentage >= 60) return 'moderate';
-    return 'weak';
-  }
-
-  /**
-   * Generate personalized recommendations
-   */
-  private generateRecommendations(profile: DatifyyUsersInformation, missingFields: string[]): string[] {
-    const recommendations: string[] = [];
-
-    if (missingFields.includes('images')) {
-      recommendations.push('Add profile photos to increase your visibility');
-    }
-    if (missingFields.includes('bio')) {
-      recommendations.push('Write a compelling bio to attract matches');
-    }
-    if (missingFields.includes('favInterest')) {
-      recommendations.push('Add your interests to find compatible matches');
-    }
-    if (!profile.isOfficialEmailVerified) {
-      recommendations.push('Verify your email address for better security');
-    }
-
-    return recommendations;
-  }
-
-  /**
    * Get list of required fields for profile completion
+   * Business rules configuration
    */
   private getRequiredFields(): string[] {
     return [
@@ -578,6 +684,7 @@ export class UserProfileService implements IUserProfileService {
 
   /**
    * Get list of optional fields that enhance profile quality
+   * Business rules configuration
    */
   private getOptionalFields(): string[] {
     return [
