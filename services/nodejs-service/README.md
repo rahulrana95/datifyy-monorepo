@@ -25,3 +25,8 @@ This will display all constraints on the datifyy_events table, including any CHE
 ├── errors/         (Custom error types)
 ├── utils/          (Shared utilities)
 └── di/             (Dependency injection setup)
+
+
+
+REDIS: https://cloud.redis.io/#/databases/13372179/subscription/2822371/view-bdb/configuration
+IMAGE: R2 Cloudfront

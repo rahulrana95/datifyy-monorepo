@@ -20,7 +20,6 @@ const SignupForm = ({ onLogin }: { onLogin: () => void }) => {
         try {
             const response = await authService.sendEmailCode({ to: [{ email, name: email }], type: "verifyEmail" });
 
-            console.log(response)
             if (response.error) {
                 setError("Error sending verification code. Please try again.");
                 setLoading(false);
@@ -38,21 +37,22 @@ const SignupForm = ({ onLogin }: { onLogin: () => void }) => {
 
     // Verify the entered code
     const verifyEmail = async () => {
-        setLoading(true);
-        try {
-            const response = await authService.verifyEmailCode({ email, verificationCode: code });
-            if (!response.error) {
-                setIsVerified(true);
-            } else {
-                setError("Invalid code. Please try again.");
-                alert("Invalid code. Please try again.");
-            }
-        } catch (error) {
-            setError("Error verifying code. Please try again.");
-            console.error("Error verifying code:", error);
-        } finally {
-            setLoading(false);
-        }
+        setIsVerified(true);
+        // setLoading(true);
+        // try {
+        //     const response = await authService.verifyEmailCode({ email, verificationCode: code });
+        //     if (!response.error) {
+        //         setIsVerified(true);
+        //     } else {
+        //         setError("Invalid code. Please try again.");
+        //         alert("Invalid code. Please try again.");
+        //     }
+        // } catch (error) {
+        //     setError("Error verifying code. Please try again.");
+        //     console.error("Error verifying code:", error);
+        // } finally {
+        //     setLoading(false);
+        // }
     };
 
     // Handle user signup after email verification
@@ -64,7 +64,7 @@ const SignupForm = ({ onLogin }: { onLogin: () => void }) => {
             alert("Please verify your email before signing up.");
             return;
         }
-        const response = await authService.register(password, email);
+        const response = await authService.register(password, email, code);
 
         if (!response.error) {
             setLoading(false);
