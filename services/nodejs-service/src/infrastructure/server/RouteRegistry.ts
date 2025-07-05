@@ -1,69 +1,35 @@
-import { Express, Router, Request, Response, NextFunction } from 'express';
+import { Express } from 'express';
+import { DataSource } from 'typeorm';
 import { Config } from '../config/Config';
 import { Logger } from '../logging/Logger';
-import { HealthCheckService } from '../../services/health/HealthCheckService';
+import { createAppRoutes } from '../../routes';
 
 export class RouteRegistry {
-  private routes: Map<string, Router> = new Map();
-  
   constructor(
     private readonly config: Config,
     private readonly logger: Logger,
-    private readonly healthCheckService?: HealthCheckService
+    private readonly dataSource: DataSource
   ) {}
 
   register(app: Express): void {
-    // Health check routes
-    app.get('/health', async (req: Request, res: Response): Promise<void> => {
-      try {
-        if (this.healthCheckService) {
-          const health = await this.healthCheckService.getHealth();
-          res.json(health);
-        } else {
-          res.json({ status: 'ok', timestamp: new Date() });
-        }
-      } catch (error) {
-        res.status(503).json({ status: 'unhealthy', error: 'Service unavailable' });
-      }
-    });
-
-    app.get('/ready', (req: Request, res: Response): void => {
-      res.json({ 
-        ready: true, 
-        timestamp: new Date(),
-        version: process.env.npm_package_version || '1.0.0'
-      });
-    });
-    
-    // API routes
+    // API version prefix
     const apiPrefix = this.config.get('api.prefix', '/api/v1');
     
-    // Register all route modules
-    this.routes.forEach((router, path) => {
-      app.use(`${apiPrefix}${path}`, router);
-      this.logger.info(`Registered routes: ${apiPrefix}${path}`);
-    });
+    // Register all application routes with dataSource dependency
+    app.use(apiPrefix, createAppRoutes(this.dataSource));
     
-    // 404 handler
-    app.use('*', (req: Request, res: Response): void => {
+    this.logger.info(`Routes registered with prefix: ${apiPrefix}`);
+    
+    // 404 handler for unmatched routes
+    app.use('*', (req, res) => {
       res.status(404).json({
-        error: 'Not Found',
-        message: `Route ${req.originalUrl} not found`,
-        path: req.originalUrl,
-        method: req.method,
-        timestamp: new Date()
+        success: false,
+        error: {
+          message: `Route ${req.originalUrl} not found`,
+          code: 'ROUTE_NOT_FOUND',
+          timestamp: new Date().toISOString()
+        }
       });
     });
-  }
-
-  addRouter(path: string, router: Router): void {
-    this.routes.set(path, router);
-  }
-
-  // Helper method to create async route handlers with error handling
-  static asyncHandler(fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) {
-    return (req: Request, res: Response, next: NextFunction): void => {
-      Promise.resolve(fn(req, res, next)).catch(next);
-    };
   }
 }
