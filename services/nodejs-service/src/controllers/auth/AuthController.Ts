@@ -12,11 +12,23 @@ import {
   UserAlreadyExistsError, 
   WeakPasswordError, 
   InvalidEmailError,
-  InternalServerError, 
+  InternalServerError,
+  UserNotFoundError,
+  InvalidVerificationCodeError,
+  VerificationCodeExpiredError,
   InvalidCredentialsError
 } from '../../domain/errors/AuthErrors';
-import { SignupRequestDto, LoginRequestDto } from '../../application/dtos/AuthDtos';
+import { 
+  SignupRequestDto, 
+  LoginRequestDto, 
+  ForgotPasswordRequestDto,
+  ResetPasswordRequestDto,
+  VerifyEmailRequestDto 
+} from '../../application/dtos/AuthDtos';
 import { AuthResponse, AuthResponseCreator } from '../../application/responses/ApiResponse';
+import { getCodeForVerifyingEmail, verifyCodeForEmail } from '../../methods/code-verify/code-verifying';
+import { sendEmail, from } from '../emailController';
+import forgotPasswordTemplate from '../../methods/templates/forgotPassword';
 
 export class AuthController {
   private readonly logger: Logger;
@@ -324,15 +336,6 @@ export class AuthController {
   }
 
   /**
-   * Validate email domain (can be extended with allowed domains list)
-   */
-  private isValidEmailDomain(email: string): boolean {
-    // Add domain validation logic here
-    // For now, accept all domains
-    return true;
-  }
-
-  /**
    * User login with credential validation
    */
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -563,6 +566,253 @@ export class AuthController {
   }
 
   /**
+   * Send verification code for email verification
+   */
+  async verifyEmail(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const requestId = (req as any).id || uuidv4();
+
+    try {
+      this.logger.info('Email verification initiated', {
+        requestId,
+        email: req.body.email,
+        timestamp: new Date().toISOString()
+      });
+
+      const { email, verificationCode } = req.body as VerifyEmailRequestDto;
+
+      // Verify the code
+      const isCodeValid = verifyCodeForEmail({ email, code: verificationCode });
+
+      if (!isCodeValid) {
+        throw new InvalidVerificationCodeError('Invalid or expired verification code');
+      }
+
+      // Update user's email verification status
+      await this.updateEmailVerificationStatus(email, requestId);
+
+      this.logger.info('Email verification completed successfully', {
+        requestId,
+        email,
+        timestamp: new Date().toISOString()
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Email verified successfully',
+        requestId,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      this.logger.error('Email verification failed', {
+        requestId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        email: req.body?.email
+      });
+
+      next(error);
+    }
+  }
+
+  /**
+   * Send password reset code via email
+   */
+  async forgotPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const requestId = (req as any).id || uuidv4();
+
+    try {
+      this.logger.info('Forgot password initiated', {
+        requestId,
+        email: req.body.email,
+        timestamp: new Date().toISOString()
+      });
+
+      const { email } = req.body as ForgotPasswordRequestDto;
+
+      // Check if user exists
+      const user = await this.findUserByEmail(email, requestId);
+      if (!user) {
+        // Don't reveal if user exists or not for security
+        this.logger.warn('Password reset requested for non-existent user', {
+          requestId,
+          email
+        });
+      }
+
+      // Generate verification code (always generate to prevent timing attacks)
+      const verificationCode = getCodeForVerifyingEmail(email);
+
+      // Send email only if user exists
+      if (user && user.isactive) {
+        await this.sendPasswordResetEmail(email, verificationCode, requestId);
+        
+        this.logger.info('Password reset email sent successfully', {
+          requestId,
+          email,
+          userId: user.id
+        });
+      } else {
+        this.logger.warn('Password reset email not sent - user inactive or non-existent', {
+          requestId,
+          email
+        });
+      }
+
+      // Always return success to prevent user enumeration
+      res.status(200).json({
+        success: true,
+        message: 'If an account with that email exists, a password reset code has been sent',
+        requestId,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      this.logger.error('Forgot password failed', {
+        requestId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        email: req.body?.email
+      });
+
+      next(error);
+    }
+  }
+
+  /**
+   * Reset password with verification code
+   */
+  async resetPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const requestId = (req as any).id || uuidv4();
+
+    try {
+      this.logger.info('Password reset initiated', {
+        requestId,
+        email: req.body.email,
+        timestamp: new Date().toISOString()
+      });
+
+      const { email, resetCode, newPassword } = req.body as ResetPasswordRequestDto;
+
+      // Verify the reset code
+      const isCodeValid = verifyCodeForEmail({ email, code: resetCode });
+      if (!isCodeValid) {
+        throw new InvalidVerificationCodeError('Invalid or expired reset code');
+      }
+
+      // Find user
+      const user = await this.findUserByEmail(email, requestId);
+      if (!user) {
+        throw new UserNotFoundError('User not found');
+      }
+
+      if (!user.isactive) {
+        throw new UserNotFoundError('Account is deactivated');
+      }
+
+      // Hash new password
+      const hashedPassword = await this.hashPassword(newPassword, requestId);
+
+      // Update password in database
+      await this.updateUserPassword(user, hashedPassword, requestId);
+
+      this.logger.info('Password reset completed successfully', {
+        requestId,
+        email,
+        userId: user.id,
+        timestamp: new Date().toISOString()
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Password reset successfully',
+        requestId,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      this.logger.error('Password reset failed', {
+        requestId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        email: req.body?.email
+      });
+
+      next(error);
+    }
+  }
+
+  /**
+   * Update user's email verification status
+   */
+  private async updateEmailVerificationStatus(email: string, requestId: string): Promise<void> {
+    this.logger.debug('Updating email verification status', { requestId, email });
+
+    try {
+      const userInfoRepository = this.dataSource.getRepository(DatifyyUsersInformation);
+      
+      await userInfoRepository.update(
+        { officialEmail: email.toLowerCase() },
+        { isOfficialEmailVerified: true }
+      );
+
+    } catch (error) {
+      this.logger.error('Failed to update email verification status', {
+        requestId,
+        email,
+        error
+      });
+      throw new InternalServerError('Failed to update email verification status');
+    }
+  }
+
+  /**
+   * Send password reset email
+   */
+  private async sendPasswordResetEmail(email: string, code: string, requestId: string): Promise<void> {
+    this.logger.debug('Sending password reset email', { requestId, email });
+
+    try {
+      await sendEmail(
+        from,
+        [{ email, name: email }],
+        'Reset Your Password',
+        forgotPasswordTemplate(code),
+        forgotPasswordTemplate(code)
+      );
+
+    } catch (error) {
+      this.logger.error('Failed to send password reset email', {
+        requestId,
+        email,
+        error
+      });
+      throw new InternalServerError('Failed to send password reset email');
+    }
+  }
+
+  /**
+   * Update user password in database
+   */
+  private async updateUserPassword(user: DatifyyUsersLogin, hashedPassword: string, requestId: string): Promise<void> {
+    this.logger.debug('Updating user password', {
+      requestId,
+      userId: user.id
+    });
+
+    try {
+      const userRepository = this.dataSource.getRepository(DatifyyUsersLogin);
+      user.password = hashedPassword;
+      await userRepository.save(user);
+
+    } catch (error) {
+      this.logger.error('Failed to update user password', {
+        requestId,
+        userId: user.id,
+        error
+      });
+      throw new InternalServerError('Failed to update password');
+    }
+  }
+
+  /**
    * Extract token from request (header or cookie)
    */
   private extractToken(req: Request): string | null {
@@ -583,6 +833,15 @@ export class AuthController {
     }
     
     return null;
+  }
+
+  /**
+   * Validate email domain (can be extended with allowed domains list)
+   */
+  private isValidEmailDomain(email: string): boolean {
+    // Add domain validation logic here
+    // For now, accept all domains
+    return true;
   }
 
   /**

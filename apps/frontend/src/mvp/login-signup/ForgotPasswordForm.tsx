@@ -28,27 +28,28 @@ const ForgotPasswordForm = ({ onLogin }: { onLogin: () => void }) => {
     };
 
     const handleVerifyCode = async () => {
-        setLoading(true);
-        setError("");
-        try {
-            const response = await authService.verifyForgotPasswordCode({ email, verificationCode: code });
-            if (response.error) {
-                setError("Invalid code. Please try again.");
-            } else {
-                setStep(3);
-            }
-        } catch (error) {
-            setError("Error verifying code. Please try again.");
-        } finally {
-            setLoading(false);
-        }
+        // setLoading(true);
+        // setError("");
+        // try {
+        //     const response = await authService.verifyForgotPasswordCode({ email, verificationCode: code });
+        //     if (response.error) {
+        //         setError("Invalid code. Please try again.");
+        //     } else {
+        //         setStep(3);
+        //     }
+        // } catch (error) {
+        //     setError("Error verifying code. Please try again.");
+        // } finally {
+        //     setLoading(false);
+        // }
+        setStep(3);
     };
 
     const handleResetPassword = async () => {
         setLoading(true);
         setError("");
         try {
-            const response = await authService.resetPassword({ email, password });
+            const response = await authService.resetPassword({ email, newPassword: password, resetCode: code });
             if (response.error) {
                 setError("Error resetting password. Please try again.");
                 return;

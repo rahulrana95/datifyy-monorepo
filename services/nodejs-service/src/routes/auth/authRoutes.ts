@@ -59,38 +59,38 @@ export function createAuthRoutes(dataSource: DataSource): Router {
     })
   );
 
-//   /**
-//    * POST /verify-email
-//    * Verify user email with verification code
-//    */
-//   router.post('/verify-email',
-//     validateVerifyEmail,
-//     asyncHandler(async (req, res, next) => {
-//       await authController.verifyEmail(req, res, next);
-//     })
-//   );
+  /**
+   * POST /verify-email
+   * Verify user email with verification code
+   */
+  router.post('/verify-email',
+    validateVerifyEmail,
+    asyncHandler(async (req, res, next) => {
+      await authController.verifyEmail(req, res, next);
+    })
+  );
 
-//   /**
-//    * POST /forgot-password
-//    * Send password reset code to user email
-//    */
-//   router.post('/forgot-password',
-//     validateForgotPassword,
-//     asyncHandler(async (req, res, next) => {
-//       await authController.forgotPassword(req, res, next);
-//     })
-//   );
+  /**
+   * POST /forgot-password
+   * Send password reset code to user email
+   */
+  router.post('/forgot-password',
+    validateForgotPassword,
+    asyncHandler(async (req, res, next) => {
+      await authController.forgotPassword(req, res, next);
+    })
+  );
 
-//   /**
-//    * POST /reset-password
-//    * Reset user password with verification code
-//    */
-//   router.post('/reset-password',
-//     validateResetPassword,
-//     asyncHandler(async (req, res, next) => {
-//       await authController.resetPassword(req, res, next);
-//     })
-//   );
+  /**
+   * POST /reset-password
+   * Reset user password with verification code
+   */
+  router.post('/reset-password',
+    validateResetPassword,
+    asyncHandler(async (req, res, next) => {
+      await authController.resetPassword(req, res, next);
+    })
+  );
 
   /**
    * POST /validate-token

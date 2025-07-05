@@ -11,8 +11,8 @@ import { DatifyyEmailLogs } from "../models/entities/DatifyyEmailLogs";
 const MAILERSEND_API_KEY = process.env.MAILER_SEND_KEY ?? "na";
 
 export const from = {
-  email: "rahulranarr@datifyy.com",
-  name: "Rahul Rana (Founder of Datifyy)",
+  email: "rahulrana@datifyy.com",
+  name: "Rahul Rana (Founder,CEO of Datifyy)",
 };
 
 interface EmailUser {
@@ -57,8 +57,11 @@ export const sendEmail = async (
   html: string
 ) => {
   const mailer = new MailerSend({
-    apiKey: MAILERSEND_API_KEY,
+    apiKey: 'mlsn.c19f3b079cb226180d40339125da2dc1b5b581d7e478635a79bec6048244c435',
   });
+
+  console.log('-----')
+  console.log(MAILERSEND_API_KEY)
 
   const sentFrom = new Sender(from.email, from.name);
 
@@ -175,6 +178,7 @@ export const sendBulkEmails = async (req: Request, res: Response) => {
           continue;
         }
 
+        console.log('---- sending email now');
         // Send email
         await sendEmail(
           from,
