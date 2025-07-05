@@ -57,7 +57,7 @@ const AuthModal = () => {
                 <ModalCloseButton />
 
                 <ModalBody>
-                    {isLoginView && <LoginForm onSignup={() => setView(LoginSignupView.LOGIN)} onForgotPassword={() => setView(LoginSignupView.FORGOT_PASSWORD)} />}
+                    {isLoginView && <LoginForm onSignup={() => setView(LoginSignupView.SIGNUP)} onForgotPassword={() => setView(LoginSignupView.FORGOT_PASSWORD)} />}
                     {isSignupView && <SignupForm onLogin={() => setView(LoginSignupView.LOGIN)} />}
                     {isForgotPasswordView && <ForgotPasswordForm onLogin={() => setView(LoginSignupView.LOGIN)} />}
                 </ModalBody>

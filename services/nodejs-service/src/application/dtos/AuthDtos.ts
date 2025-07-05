@@ -1,4 +1,4 @@
-// src/application/dtos/AuthDtos.ts
+// src/application/dtos/AuthDtos.ts - Updated with verification code support
 
 import { 
   IsEmail, 
@@ -19,6 +19,21 @@ const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@
 // Transform decorators for cleaning input
 const trimTransform = Transform(({ value }) => typeof value === 'string' ? value.trim() : value);
 const lowerCaseTransform = Transform(({ value }) => typeof value === 'string' ? value.toLowerCase() : value);
+
+export class SendVerificationCodeRequestDto {
+  @IsEmail({}, { 
+    message: 'Please provide a valid email address' 
+  })
+  @IsNotEmpty({ 
+    message: 'Email is required' 
+  })
+  @MaxLength(255, { 
+    message: 'Email must not exceed 255 characters' 
+  })
+  @trimTransform
+  @lowerCaseTransform
+  email: string;
+}
 
 export class SignupRequestDto {
   @IsEmail({}, { 
@@ -50,6 +65,18 @@ export class SignupRequestDto {
     message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)'
   })
   password: string;
+
+  @IsString({ 
+    message: 'Verification code must be a string' 
+  })
+  @IsNotEmpty({ 
+    message: 'Verification code is required' 
+  })
+  @Matches(/^\d{6}$/, { 
+    message: 'Verification code must be exactly 6 digits' 
+  })
+  @trimTransform
+  verificationCode: string;
 }
 
 export class LoginRequestDto {
@@ -150,8 +177,6 @@ export class ResetPasswordRequestDto {
 }
 
 // Validation middleware factory
-
-
 export function validateDto<T extends object>(DtoClass: new () => T) {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -198,6 +223,7 @@ function formatValidationErrors(errors: ValidationError[]): any[] {
 }
 
 // Export validation middleware for each DTO
+export const validateSendVerificationCode = validateDto(SendVerificationCodeRequestDto);
 export const validateSignup = validateDto(SignupRequestDto);
 export const validateLogin = validateDto(LoginRequestDto);
 export const validateVerifyEmail = validateDto(VerifyEmailRequestDto);

@@ -23,7 +23,8 @@ import {
   LoginRequestDto, 
   ForgotPasswordRequestDto,
   ResetPasswordRequestDto,
-  VerifyEmailRequestDto 
+  VerifyEmailRequestDto,
+  SendVerificationCodeRequestDto 
 } from '../../application/dtos/AuthDtos';
 import { AuthResponse, AuthResponseCreator } from '../../application/responses/ApiResponse';
 import { getCodeForVerifyingEmail, verifyCodeForEmail } from '../../methods/code-verify/code-verifying';
@@ -48,7 +49,62 @@ export class AuthController {
   }
 
   /**
-   * User signup with comprehensive validation and transaction management
+   * Send verification code for signup
+   */
+  async sendVerificationCode(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const requestId = (req as any).id || uuidv4();
+
+    try {
+      this.logger.info('Send verification code initiated', {
+        requestId,
+        email: req.body.email,
+        timestamp: new Date().toISOString()
+      });
+
+      const { email } = req.body as SendVerificationCodeRequestDto;
+
+      // Check if user already exists
+      const existingUser = await this.findUserByEmail(email, requestId);
+      if (existingUser) {
+        throw new UserAlreadyExistsError('User already exists with this email', { email });
+      }
+
+      // Generate verification code
+      const verificationCode = getCodeForVerifyingEmail(email);
+
+      // Send verification email
+      await this.sendVerificationEmail(email, verificationCode, requestId);
+
+      this.logger.info('Verification code sent successfully', {
+        requestId,
+        email,
+        timestamp: new Date().toISOString()
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Verification code sent to your email',
+        data: {
+          email,
+          expiresIn: '5 minutes'
+        },
+        requestId,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      this.logger.error('Send verification code failed', {
+        requestId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        email: req.body?.email
+      });
+
+      next(error);
+    }
+  }
+
+  /**
+   * User signup with email verification code
    */
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
     const requestId = (req as any).id || uuidv4();
@@ -62,8 +118,14 @@ export class AuthController {
       });
 
       // Extract and validate data
-      const { email, password } = req.body as SignupRequestDto;
+      const { email, password, verificationCode } = req.body as SignupRequestDto;
       
+      // Verify the email verification code first
+      const isCodeValid = verifyCodeForEmail({ email, code: verificationCode });
+      if (!isCodeValid) {
+        throw new InvalidVerificationCodeError('Invalid or expired verification code');
+      }
+
       // Additional validation
       await this.validateSignupData({ email, password });
 
@@ -74,7 +136,7 @@ export class AuthController {
 
       this.logger.debug('Database transaction started', { requestId });
 
-      // Check if user already exists
+      // Check if user already exists (double-check after code verification)
       const existingUser = await this.checkUserExists(queryRunner, email, requestId);
       if (existingUser) {
         throw new UserAlreadyExistsError('User already exists with this email', { email });
@@ -89,10 +151,11 @@ export class AuthController {
         password: hashedPassword
       }, requestId);
 
-      // Create user information record
+      // Create user information record with verified email
       const userInformation = await this.createUserInformation(queryRunner, {
         email,
-        userLogin
+        userLogin,
+        isEmailVerified: true // Mark as verified since code was validated
       }, requestId);
 
       // Generate JWT token
@@ -142,7 +205,7 @@ export class AuthController {
   /**
    * Validate signup data beyond DTO validation
    */
-  private async validateSignupData(data: SignupRequestDto): Promise<void> {
+  private async validateSignupData(data: { email: string; password: string }): Promise<void> {
     const { email, password } = data;
 
     // Additional email validation
@@ -229,7 +292,7 @@ export class AuthController {
    */
   private async createUserInformation(
     queryRunner: QueryRunner,
-    userData: { email: string; userLogin: DatifyyUsersLogin },
+    userData: { email: string; userLogin: DatifyyUsersLogin; isEmailVerified?: boolean },
     requestId: string
   ): Promise<DatifyyUsersInformation> {
     this.logger.debug('Creating user information record', { 
@@ -242,12 +305,12 @@ export class AuthController {
       firstName: '',
       lastName: '',
       gender: 'male',
-      officialEmail: userData.email.toLowerCase(),
+      officialEmail: '', // this is business or work office email id
       userLogin: userData.userLogin,
       bio: null,
       images: null,
       dob: null,
-      isOfficialEmailVerified: false, // Should be verified via email
+      isOfficialEmailVerified: false, // this is business or work office email id
       isAadharVerified: false,
       isPhoneVerified: false,
       height: null,
@@ -279,7 +342,8 @@ export class AuthController {
     this.logger.info('User information record created', {
       requestId,
       userInfoId: savedUserInfo.id,
-      userId: userData.userLogin.id
+      userId: userData.userLogin.id,
+      emailVerified: userData.isEmailVerified
     });
 
     return savedUserInfo;
@@ -333,6 +397,15 @@ export class AuthController {
       maxAge: 48 * 60 * 60 * 1000, // 48 hours
       path: '/'
     });
+  }
+
+  /**
+   * Validate email domain (can be extended with allowed domains list)
+   */
+  private isValidEmailDomain(email: string): boolean {
+    // Add domain validation logic here
+    // For now, accept all domains
+    return true;
   }
 
   /**
@@ -764,6 +837,34 @@ export class AuthController {
   }
 
   /**
+   * Send verification email for signup
+   */
+  private async sendVerificationEmail(email: string, code: string, requestId: string): Promise<void> {
+    this.logger.debug('Sending verification email', { requestId, email });
+
+    try {
+      // Import verification email template
+      const verifyEmailTemplate = (await import('../../methods/templates/verifyEmail')).default;
+      
+      await sendEmail(
+        from,
+        [{ email, name: email }],
+        'Verify Your Email',
+        verifyEmailTemplate(code),
+        verifyEmailTemplate(code)
+      );
+
+    } catch (error) {
+      this.logger.error('Failed to send verification email', {
+        requestId,
+        email,
+        error
+      });
+      throw new InternalServerError('Failed to send verification email');
+    }
+  }
+
+  /**
    * Send password reset email
    */
   private async sendPasswordResetEmail(email: string, code: string, requestId: string): Promise<void> {
@@ -833,15 +934,6 @@ export class AuthController {
     }
     
     return null;
-  }
-
-  /**
-   * Validate email domain (can be extended with allowed domains list)
-   */
-  private isValidEmailDomain(email: string): boolean {
-    // Add domain validation logic here
-    // For now, accept all domains
-    return true;
   }
 
   /**

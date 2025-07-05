@@ -20,7 +20,6 @@ const SignupForm = ({ onLogin }: { onLogin: () => void }) => {
         try {
             const response = await authService.sendEmailCode({ to: [{ email, name: email }], type: "verifyEmail" });
 
-            console.log(response)
             if (response.error) {
                 setError("Error sending verification code. Please try again.");
                 setLoading(false);

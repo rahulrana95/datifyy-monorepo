@@ -60,9 +60,6 @@ export const sendEmail = async (
     apiKey: 'mlsn.c19f3b079cb226180d40339125da2dc1b5b581d7e478635a79bec6048244c435',
   });
 
-  console.log('-----')
-  console.log(MAILERSEND_API_KEY)
-
   const sentFrom = new Sender(from.email, from.name);
 
   const recipients = to.map(({ email, name }) => new Recipient(email, name));

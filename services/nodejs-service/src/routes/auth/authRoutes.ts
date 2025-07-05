@@ -1,3 +1,5 @@
+// src/routes/auth/authRoutes.ts
+
 import { Router } from 'express';
 import { DataSource } from 'typeorm';
 import { AuthController } from '../../controllers/auth/AuthController';
@@ -6,7 +8,8 @@ import {
   validateLogin,
   validateVerifyEmail,
   validateForgotPassword,
-  validateResetPassword 
+  validateResetPassword,
+  validateSendVerificationCode 
 } from '../../application/dtos/AuthDtos';
 import { asyncHandler } from '../../infrastructure/utils/asyncHandler';
 import { authRateLimiter } from '../../infrastructure/middleware/rateLimiter';
@@ -28,11 +31,22 @@ export function createAuthRoutes(dataSource: DataSource): Router {
   router.use(authRateLimiter); // Rate limiting for auth endpoints
 
   /**
+   * POST /send-verification-code
+   * Send verification code to email for signup
+   */
+  router.post('/send-verification-code',
+    validateSendVerificationCode, // DTO validation middleware
+    asyncHandler(async (req, res, next) => {
+      await authController.sendVerificationCode(req, res, next);
+    })
+  );
+
+  /**
    * POST /signup
-   * Register a new user account
+   * Register a new user account with email verification code
    */
   router.post('/signup', 
-    validateSignup, // DTO validation middleware
+    validateSignup, // DTO validation middleware (includes verificationCode)
     asyncHandler(async (req, res, next) => {
       await authController.signup(req, res, next);
     })
