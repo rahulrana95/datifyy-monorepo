@@ -12,7 +12,8 @@ import {
   UserAlreadyExistsError, 
   WeakPasswordError, 
   InvalidEmailError,
-  InternalServerError 
+  InternalServerError, 
+  InvalidCredentialsError
 } from '../../domain/errors/AuthErrors';
 import { SignupRequestDto, LoginRequestDto } from '../../application/dtos/AuthDtos';
 import { AuthResponse, AuthResponseCreator } from '../../application/responses/ApiResponse';
@@ -329,6 +330,259 @@ export class AuthController {
     // Add domain validation logic here
     // For now, accept all domains
     return true;
+  }
+
+  /**
+   * User login with credential validation
+   */
+  async login(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const requestId = (req as any).id || uuidv4();
+
+    try {
+      this.logger.info('Login attempt initiated', {
+        requestId,
+        email: req.body.email,
+        timestamp: new Date().toISOString()
+      });
+
+      // Extract and validate data
+      const { email, password } = req.body as LoginRequestDto;
+
+      // Find user by email
+      const user = await this.findUserByEmail(email, requestId);
+      if (!user) {
+        throw new InvalidCredentialsError('Invalid email or password', { email });
+      }
+
+      // Verify user is active
+      if (!user.isactive) {
+        this.logger.warn('Login attempt for inactive user', {
+          requestId,
+          email,
+          userId: user.id
+        });
+        throw new InvalidCredentialsError('Account is deactivated', { email });
+      }
+
+      // Verify password
+      const isPasswordValid = await this.verifyPassword(password, user.password, requestId);
+      if (!isPasswordValid) {
+        this.logger.warn('Invalid password attempt', {
+          requestId,
+          email,
+          userId: user.id
+        });
+        throw new InvalidCredentialsError('Invalid email or password', { email });
+      }
+
+      // Update last login timestamp
+      await this.updateLastLogin(user, requestId);
+
+      // Generate authentication response
+      const authResponse = await this.generateAuthResponse(user, requestId);
+
+      this.logger.info('User login completed successfully', {
+        requestId,
+        userId: user.id,
+        email: user.email,
+        timestamp: new Date().toISOString()
+      });
+
+      // Set secure cookie
+      this.setAuthCookie(res, authResponse.token);
+
+      // Send success response
+      const response = AuthResponseCreator.loginSuccess(authResponse, requestId);
+      res.status(200).json(response);
+
+    } catch (error) {
+      this.logger.error('Login failed', {
+        requestId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        email: req.body?.email
+      });
+
+      next(error);
+    }
+  }
+
+  /**
+   * User logout - clear authentication cookie
+   */
+  async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const requestId = (req as any).id || uuidv4();
+
+    try {
+      this.logger.info('Logout initiated', {
+        requestId,
+        timestamp: new Date().toISOString()
+      });
+
+      // Clear authentication cookie
+      this.clearAuthCookie(res);
+
+      this.logger.info('User logout completed successfully', {
+        requestId,
+        timestamp: new Date().toISOString()
+      });
+
+      // Send success response
+      const response = AuthResponseCreator.logoutSuccess(requestId);
+      res.status(200).json(response);
+
+    } catch (error) {
+      this.logger.error('Logout failed', {
+        requestId,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+
+      next(error);
+    }
+  }
+
+  /**
+   * Validate JWT token and return user info
+   */
+  async validateToken(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const requestId = (req as any).id || uuidv4();
+
+    try {
+      // Extract token from header or cookies
+      const token = this.extractToken(req);
+      
+      if (!token) {
+        throw new InvalidCredentialsError('No token provided');
+      }
+
+      // Verify and decode token
+      const decoded = jwt.verify(token, this.jwtSecret) as any;
+
+      this.logger.debug('Token validation successful', {
+        requestId,
+        userId: decoded.id,
+        email: decoded.email
+      });
+
+      res.status(200).json({
+        success: true,
+        data: {
+          valid: true,
+          user: {
+            id: decoded.id,
+            email: decoded.email,
+            isAdmin: decoded.isadmin || false
+          }
+        },
+        requestId,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      if (error instanceof jwt.JsonWebTokenError) {
+        this.logger.warn('Invalid token provided', { requestId });
+        next(new InvalidCredentialsError('Invalid token'));
+      } else if (error instanceof jwt.TokenExpiredError) {
+        this.logger.warn('Expired token provided', { requestId });
+        next(new InvalidCredentialsError('Token expired'));
+      } else {
+        this.logger.error('Token validation failed', {
+          requestId,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
+        next(error);
+      }
+    }
+  }
+
+  /**
+   * Find user by email
+   */
+  private async findUserByEmail(email: string, requestId: string): Promise<DatifyyUsersLogin | null> {
+    this.logger.debug('Finding user by email', { requestId, email });
+
+    const userRepository = this.dataSource.getRepository(DatifyyUsersLogin);
+    const user = await userRepository.findOne({
+      where: { email: email.toLowerCase() }
+    });
+
+    if (!user) {
+      this.logger.warn('User not found', { requestId, email });
+    }
+
+    return user;
+  }
+
+  /**
+   * Verify password against hash
+   */
+  private async verifyPassword(password: string, hashedPassword: string, requestId: string): Promise<boolean> {
+    this.logger.debug('Verifying password', { requestId });
+
+    try {
+      return await bcrypt.compare(password, hashedPassword);
+    } catch (error) {
+      this.logger.error('Password verification failed', { requestId, error });
+      throw new InternalServerError('Failed to verify password');
+    }
+  }
+
+  /**
+   * Update user's last login timestamp
+   */
+  private async updateLastLogin(user: DatifyyUsersLogin, requestId: string): Promise<void> {
+    this.logger.debug('Updating last login timestamp', {
+      requestId,
+      userId: user.id
+    });
+
+    try {
+      const userRepository = this.dataSource.getRepository(DatifyyUsersLogin);
+      user.lastlogin = new Date();
+      await userRepository.save(user);
+    } catch (error) {
+      // Don't fail login if we can't update timestamp
+      this.logger.warn('Failed to update last login timestamp', {
+        requestId,
+        userId: user.id,
+        error
+      });
+    }
+  }
+
+  /**
+   * Clear authentication cookie
+   */
+  private clearAuthCookie(res: Response): void {
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/'
+    });
+  }
+
+  /**
+   * Extract token from request (header or cookie)
+   */
+  private extractToken(req: Request): string | null {
+    // Check Authorization header
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith('Bearer ')) {
+      return authHeader.substring(7);
+    }
+    
+    // Check cookies
+    if (req.cookies?.token) {
+      return req.cookies.token;
+    }
+    
+    // Check Authorization header without Bearer prefix (for backward compatibility)
+    if (authHeader) {
+      return authHeader;
+    }
+    
+    return null;
   }
 
   /**

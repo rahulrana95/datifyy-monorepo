@@ -38,26 +38,26 @@ export function createAuthRoutes(dataSource: DataSource): Router {
     })
   );
 
-//   /**
-//    * POST /login
-//    * Authenticate user and return JWT token
-//    */
-//   router.post('/login',
-//     validateLogin, // DTO validation middleware
-//     asyncHandler(async (req, res, next) => {
-//       await authController.login(req, res, next);
-//     })
-//   );
+  /**
+   * POST /login
+   * Authenticate user and return JWT token
+   */
+  router.post('/login',
+    validateLogin, // DTO validation middleware
+    asyncHandler(async (req, res, next) => {
+      await authController.login(req, res, next);
+    })
+  );
 
-//   /**
-//    * POST /logout
-//    * Clear authentication cookie and invalidate session
-//    */
-//   router.post('/logout',
-//     asyncHandler(async (req, res, next) => {
-//       await authController.logout(req, res, next);
-//     })
-//   );
+  /**
+   * POST /logout
+   * Clear authentication cookie and invalidate session
+   */
+  router.post('/logout',
+    asyncHandler(async (req, res, next) => {
+      await authController.logout(req, res, next);
+    })
+  );
 
 //   /**
 //    * POST /verify-email
@@ -92,15 +92,15 @@ export function createAuthRoutes(dataSource: DataSource): Router {
 //     })
 //   );
 
-//   /**
-//    * POST /validate-token
-//    * Validate JWT token and return user info
-//    */
-//   router.post('/validate-token',
-//     asyncHandler(async (req, res, next) => {
-//       await authController.validateToken(req, res, next);
-//     })
-//   );
+  /**
+   * POST /validate-token
+   * Validate JWT token and return user info
+   */
+  router.post('/validate-token',
+    asyncHandler(async (req, res, next) => {
+      await authController.validateToken(req, res, next);
+    })
+  );
 
   // Log route registration
   logger.info('Auth routes registered successfully', {
