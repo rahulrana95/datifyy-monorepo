@@ -53,12 +53,14 @@ export const verifyToken = async () => {
   }
 };
 
-export const register = async (password: string, email: string) => {
+export const register = async (password: string, email: string, verificationCode: string) => {
   try {
     const response = await apiService.post(`${AUTH_API_PREFIX}/signup`, {
       password,
       email,
+      verificationCode
     });
+      
     if (response.error) {
       return { response: null, error: "Registration failed" };
     }
@@ -112,7 +114,7 @@ export const sendEmailCode = async ({
   type: "verifyEmail" | "forgotPassword";
 }) => {
   try {
-    const response = await apiService.post("/send-emails", { to, type });
+    const response = await apiService.post(`${AUTH_API_PREFIX}/send-verification-code`, { email: to[0].email});
     if (response.error) {
       return { response: null, error: "Something is wrong." };
     }

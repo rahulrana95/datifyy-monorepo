@@ -76,6 +76,11 @@ export const sendEmail = async (
 
     return response;
   } catch (error: any) {
+    console.log('--- sendEmail error')
+    console.log(error);
+
+
+    
     if (error instanceof Error) {
       throw new Error(`Error sending email: ${error.message}`);
     } else {

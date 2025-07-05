@@ -63,9 +63,9 @@ export class AuthController {
 
       const { email } = req.body as SendVerificationCodeRequestDto;
 
-      // Check if user already exists
-      const existingUser = await this.findUserByEmail(email, requestId);
-      if (existingUser) {
+      // Check if user already exists in either table
+      const userExists = await this.checkUserExistsForVerification(email, requestId);
+      if (userExists) {
         throw new UserAlreadyExistsError('User already exists with this email', { email });
       }
 
@@ -103,6 +103,25 @@ export class AuthController {
     }
   }
 
+    private async checkUserExistsForVerification(email: string, requestId: string): Promise<boolean> {
+  // Gets repositories for both tables
+  const userLoginRepo = this.dataSource.getRepository(DatifyyUsersLogin);
+  const userInfoRepo = this.dataSource.getRepository(DatifyyUsersInformation);
+
+  // Checks both tables simultaneously 
+  const [userLogin, userInfo] = await Promise.all([
+    userLoginRepo.findOne({ where: { email: email.toLowerCase() } }),
+    userInfoRepo.findOne({ where: { officialEmail: email.toLowerCase() } })
+  ]);
+
+  // Returns true if user exists in either table
+  if (userLogin || userInfo) {
+    return true;
+  }
+
+  return false;
+    }
+    
   /**
    * User signup with email verification code
    */
@@ -137,8 +156,8 @@ export class AuthController {
       this.logger.debug('Database transaction started', { requestId });
 
       // Check if user already exists (double-check after code verification)
-      const existingUser = await this.checkUserExists(queryRunner, email, requestId);
-      if (existingUser) {
+      const userExists = await this.checkUserExists(queryRunner, email, requestId);
+      if (userExists) {
         throw new UserAlreadyExistsError('User already exists with this email', { email });
       }
 
@@ -305,12 +324,12 @@ export class AuthController {
       firstName: '',
       lastName: '',
       gender: 'male',
-      officialEmail: '', // this is business or work office email id
+      officialEmail: userData.email.toLowerCase(),
       userLogin: userData.userLogin,
       bio: null,
       images: null,
       dob: null,
-      isOfficialEmailVerified: false, // this is business or work office email id
+      isOfficialEmailVerified: userData.isEmailVerified || false,
       isAadharVerified: false,
       isPhoneVerified: false,
       height: null,
@@ -846,6 +865,8 @@ export class AuthController {
       // Import verification email template
       const verifyEmailTemplate = (await import('../../methods/templates/verifyEmail')).default;
       
+        console.log('----')
+        console.log(email);
       await sendEmail(
         from,
         [{ email, name: email }],
@@ -855,6 +876,7 @@ export class AuthController {
       );
 
     } catch (error) {
+        console.log(error);
       this.logger.error('Failed to send verification email', {
         requestId,
         email,
