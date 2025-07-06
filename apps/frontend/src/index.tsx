@@ -11,8 +11,6 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <HelmetProvider>
-    <Theme accentColor="crimson" grayColor="sand" radius="medium" scaling="100%">
       <App />
-    </Theme>
   </HelmetProvider>
 );

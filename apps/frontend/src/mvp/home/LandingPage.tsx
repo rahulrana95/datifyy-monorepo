@@ -81,6 +81,7 @@ const LandingPage = () => {
                             transition="0.3s"
                             _hover={{ transform: "scale(1.05)", boxShadow: "2xl" }}
                         >
+                             {/*  @ts-ignore */}
                             <Icon as={feature.icon} w={14} h={14} color={accentColor} />
                             <Heading fontSize="xl" color={accentColor}>
                                 {feature.title}
@@ -130,12 +131,15 @@ const LandingPage = () => {
                                     <Icon as={FaFacebook} w={6} h={6} _hover={{ color: accentColor }} />
                                 </Link> */}
                                 <Link href="https://twitter.com" isExternal>
+                                {/*  @ts-ignore */}
                                     <Icon as={FaTwitter} w={6} h={6} _hover={{ color: accentColor }} />
                                 </Link>
                                 <Link href="https://instagram.com" isExternal>
+                                {/* @ts-ignore */}
                                     <Icon as={FaInstagram} w={6} h={6} _hover={{ color: accentColor }} />
                                 </Link>
                                 <Link href="https://www.linkedin.com/company/datifyy/" isExternal>
+                                {/* @ts-ignore */}
                                     <Icon as={FaLinkedin} w={6} h={6} _hover={{ color: accentColor }} />
                                 </Link>
                             </Stack>

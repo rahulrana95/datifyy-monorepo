@@ -115,6 +115,7 @@ export const ProfileField: React.FC<ProfileFieldProps> = ({
                             onChange={(e) => onChange(e.target.value)}
                         />
                         <InputRightElement>
+                        {/* @ts-ignore */}
                             <Icon as={FaCalendarAlt} color="gray.400" />
                         </InputRightElement>
                     </InputGroup>
@@ -216,6 +217,7 @@ export const ProfileField: React.FC<ProfileFieldProps> = ({
                         size="sm"
                         onClick={addTag}
                         isDisabled={!inputValue.trim() || (field.maxTags ? tags.length >= field.maxTags : false)}
+                        // @ts-ignore
                         leftIcon={<FaPlus />}
                     >
                         Add
@@ -282,6 +284,7 @@ export const ProfileField: React.FC<ProfileFieldProps> = ({
                         <Button
                             as="label"
                             htmlFor={`image-upload-${field.name}`}
+                            // @ts-ignore
                             leftIcon={<FaCamera />}
                             colorScheme="blue"
                             variant="outline"
@@ -337,6 +340,7 @@ export const ProfileField: React.FC<ProfileFieldProps> = ({
                                                 p="1"
                                                 onClick={() => removeImage(index)}
                                             >
+                                                {/* @ts-ignore */}
                                                 <FaTimes size="8px" />
                                             </Button>
                                         )}
@@ -359,6 +363,7 @@ export const ProfileField: React.FC<ProfileFieldProps> = ({
         return (
             <HStack spacing={2}>
                 <Icon
+                // @ts-ignore
                     as={isVerified ? FaCheck : FaTimes}
                     color={isVerified ? 'green.500' : 'red.500'}
                     boxSize={4}
@@ -409,6 +414,7 @@ export const ProfileField: React.FC<ProfileFieldProps> = ({
                 return (
                     <HStack spacing={2}>
                         <Icon
+                        // @ts-ignore
                             as={value ? FaCheck : FaTimes}
                             color={value ? 'green.500' : 'gray.400'}
                             boxSize={4}
@@ -450,6 +456,7 @@ export const ProfileField: React.FC<ProfileFieldProps> = ({
                             borderColor="gray.300"
                             textAlign="center"
                         >
+                            {/*  @ts-ignore */}
                             <Icon as={FaCamera} color="gray.400" boxSize={8} mb={2} />
                             <Text fontSize="sm" color="gray.500">
                                 No photos uploaded

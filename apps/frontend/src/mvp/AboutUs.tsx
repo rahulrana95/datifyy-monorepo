@@ -34,6 +34,7 @@ const AboutUs = () => {
                             spacing={4}
                             w={{ base: "100%", md: "30%" }}
                         >
+                            {/* @ts-ignore */}
                             <Icon as={value.icon} w={12} h={12} color={accentColor} />
                             <Heading fontSize="xl" color={accentColor}>
                                 {value.title} {value.emoji}

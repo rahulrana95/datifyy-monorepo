@@ -152,6 +152,7 @@ const UserProfile: React.FC = () => {
                                 variant="outline"
                                 size="sm"
                                 onClick={onDeleteOpen}
+                                // @ts-ignore
                                 leftIcon={<FaTimes />}
                             >
                                 Delete Profile

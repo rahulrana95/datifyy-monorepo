@@ -22,5 +22,12 @@
   },
   "include": [
     "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "../../services/**/*",
+    "../../libs/*/node_modules"
   ]
 }

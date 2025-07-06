@@ -2,19 +2,21 @@
   "name": "@monorepo-datifyy/source",
   "version": "0.0.0",
   "license": "MIT",
+  "private": true,
   "workspaces": [
     "apps/*",
     "services/*",
     "libs/*"
   ],
   "scripts": {
-    "build:shared": "npm run build --workspace=libs/shared-types && npm run build --workspace=libs/shared-validation && npm run build --workspace=libs/shared-constants",
-    "build:all": "npm run build:shared && npm run build --workspace=apps/frontend && npm run build --workspace=services/nodejs-service",
-    "dev:shared": "npm run dev --workspace=libs/shared-types & npm run dev --workspace=libs/shared-validation",
-    "type-check": "npm run type-check --workspaces",
-    "clean:shared": "npm run clean --workspace=libs/shared-types && npm run clean --workspace=libs/shared-validation && npm run clean --workspace=libs/shared-constants"
+    "build:shared": "yarn workspace @datifyy/shared-types build && yarn workspace @datifyy/shared-validation build && yarn workspace @datifyy/shared-constants build",
+    "build:all": "yarn build:shared && yarn workspace frontend build && yarn workspace nodejs-service build",
+    "dev:shared": "yarn workspace @datifyy/shared-types dev & yarn workspace @datifyy/shared-validation dev",
+    "type-check": "yarn workspaces run type-check",
+    "clean:shared": "yarn workspace @datifyy/shared-types clean && yarn workspace @datifyy/shared-validation clean && yarn workspace @datifyy/shared-constants clean",
+    "start:frontend": "yarn workspace frontend start",
+    "start:backend": "yarn workspace nodejs-service dev"
   },
-  "private": true,
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
@@ -27,6 +29,10 @@
   "devDependencies": {
     "@nx/workspace": "20.0.6",
     "nx": "20.0.6",
-     "typescript": "^5.0.0"
+    "typescript": "^4.9.5"
+  },
+  "resolutions": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }

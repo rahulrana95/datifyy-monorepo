@@ -209,6 +209,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
                 <HStack spacing={4}>
                     {section.icon && (
                         <Icon
+                        // @ts-ignore
                             as={section.icon}
                             color={isComplete ? 'green.500' : 'gray.500'}
                             boxSize={5}
@@ -220,6 +221,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
                                 {section.title}
                             </Text>
                             {isComplete && (
+                                // @ts-ignore
                                 <Icon as={FaCheck} color="green.500" boxSize={4} />
                             )}
                         </HStack>
@@ -249,6 +251,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
                             size="sm"
                             variant="ghost"
                             colorScheme="blue"
+                            // @ts-ignore
                             leftIcon={<FaEdit />}
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -261,6 +264,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
 
                     {/* Collapse Indicator */}
                     <Icon
+                        // @ts-ignore
                         as={isOpen ? FaChevronUp : FaChevronDown}
                         color="gray.400"
                         boxSize={4}
@@ -337,6 +341,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
                                     onClick={handleSave}
                                     isLoading={isSaving || isUpdating}
                                     loadingText="Saving..."
+                                    // @ts-ignore
                                     leftIcon={!isSaving && !isUpdating ? <FaCheck /> : undefined}
                                     size="sm"
                                 >

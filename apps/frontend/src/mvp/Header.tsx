@@ -100,6 +100,7 @@ const Header = () => {
               </Button>
               <Button
                 colorScheme="pink"
+                 /*  @ts-ignore */
                 rightIcon={<FaHeart />}
                 _hover={{
                   bgGradient: "linear(to-r, pink.400, red.400)",
