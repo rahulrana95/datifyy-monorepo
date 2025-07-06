@@ -4,6 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+     "@datifyy/shared-types": "file:../../libs/shared-types",
+    "@datifyy/shared-validation": "file:../../libs/shared-validation",
+    "@datifyy/shared-constants": "file:../../libs/shared-constants",
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "@types/helmet": "^4.0.0",

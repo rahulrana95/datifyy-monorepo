@@ -1,0 +1,20 @@
+{
+  "name": "@datifyy/shared-types",
+  "version": "1.0.0",
+  "description": "Shared TypeScript types and enums for Datifyy monorepo",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {},
+  "files": [
+    "dist"
+  ]
+}

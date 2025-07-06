@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@datifyy/shared-types": "file:../../libs/shared-types",
+    "@datifyy/shared-validation": "file:../../libs/shared-validation",
+    "@datifyy/shared-constants": "file:../../libs/shared-constants",
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "2",
     "@emotion/react": "^11.14.0",

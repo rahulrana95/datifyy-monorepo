@@ -2,7 +2,18 @@
   "name": "@monorepo-datifyy/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "libs/*"
+  ],
+  "scripts": {
+    "build:shared": "npm run build --workspace=libs/shared-types && npm run build --workspace=libs/shared-validation && npm run build --workspace=libs/shared-constants",
+    "build:all": "npm run build:shared && npm run build --workspace=apps/frontend && npm run build --workspace=services/nodejs-service",
+    "dev:shared": "npm run dev --workspace=libs/shared-types & npm run dev --workspace=libs/shared-validation",
+    "type-check": "npm run type-check --workspaces",
+    "clean:shared": "npm run clean --workspace=libs/shared-types && npm run clean --workspace=libs/shared-validation && npm run clean --workspace=libs/shared-constants"
+  },
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.13.3",
@@ -15,6 +26,7 @@
   },
   "devDependencies": {
     "@nx/workspace": "20.0.6",
-    "nx": "20.0.6"
+    "nx": "20.0.6",
+     "typescript": "^5.0.0"
   }
 }
