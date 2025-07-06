@@ -1,9 +1,9 @@
 {
-  "name": "@datifyy/shared-constants", 
+  "name": "@datifyy/shared-constants",
   "version": "1.0.0",
   "description": "Shared constants for Datifyy monorepo",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts", 
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -13,7 +13,6 @@
   "devDependencies": {
     "typescript": "^5.0.0"
   },
-  "dependencies": {},
   "files": [
     "dist"
   ]
