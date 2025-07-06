@@ -22,6 +22,19 @@ FROM pg_constraint
 WHERE conrelid = 'datifyy_user_partner_preferences'::regclass;
 
 
+rm -rf yarn.lock
+rm -rf node_modules
+rm -rf apps/*/node_modules
+rm -rf libs/*/node_modules
+rm -rf services/*/node_modules
+
+# Clear Yarn cache
+yarn cache clean
+
+# Reinstall everything fresh
+yarn install
+
+
 ## for deployment 
 1. frontend:
 2. backend:
@@ -36,3 +49,4 @@ https://chakra-ui.com/docs/components/concepts/server-components
 
 IMG
 https://console.cloudinary.com/pm/c-f5ac5a4804e8739afce3f12a95b672/getting-started
+
