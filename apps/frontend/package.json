@@ -3,6 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@datifyy/shared-types": "workspace:*",
+    "@datifyy/shared-validation": "workspace:*", 
+    "@datifyy/shared-constants": "workspace:*",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-scripts": "5.0.1",
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "2",
     "@emotion/react": "^11.14.0",
@@ -29,56 +35,26 @@
     "@types/uuid": "^10.0.0",
     "@videosdk.live/react-sdk": "^0.1.102",
     "add": "^2.0.6",
-    "autoprefixer": "^10.4.20",
     "axios": "^1.7.7",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "framer-motion": "^12.0.6",
     "googleapis": "^144.0.0",
     "logrocket": "^9.0.2",
-    "postcss-cli": "^11.0.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
     "react-ga4": "^2.1.0",
     "react-helmet-async": "^2.0.5",
     "react-icons": "^5.4.0",
     "react-player": "^2.16.0",
     "react-router-dom": "^6.27.0",
-    "react-scripts": "5.0.1",
-    "tailwind": "^4.0.0",
-    "tailwindcss": "^4.0.1",
     "typescript": "^4.9.5",
     "uuid": "^11.0.2",
     "web-vitals": "^4.2.4",
-    "yarn": "^1.22.22",
     "zustand": "^5.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && yarn sentry:sourcemaps",
+    "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org datifyy --project datifyy-frontend ./build && sentry-cli sourcemaps upload --org datifyy --project datifyy-frontend ./build"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "postcss": "^8.5.1"
+    "eject": "react-scripts eject"
   }
 }

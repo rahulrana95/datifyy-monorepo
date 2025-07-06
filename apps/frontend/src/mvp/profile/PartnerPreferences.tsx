@@ -671,6 +671,7 @@ const PartnerPreferences = () => {
                                     <FormLabel fontSize="lg" fontWeight="bold">
                                         {section.section}
                                     </FormLabel>
+                                            {/* @ts-ignore */}
                                     {!isEditMode[section.section] && <Box _hover={{ cursor: 'pointer' }} as={FaEdit} color={theme.colors.accent[500]} onClick={() => handleEdit(section.section)} />}
                                 </Flex>
 

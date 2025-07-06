@@ -36,7 +36,7 @@ export const authenticateAdmin = async (req: Request, res: Response, next: NextF
 
 
 
-interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest extends Request {
   user?: any;
 }
 

@@ -51,6 +51,7 @@ const HeaderWithTabs: React.FC = () => {
 
                 >
                     <Tab _selected={selectedTabStyle} padding="10px" _hover={{ ...hovercursor }}>
+                        {/* @ts-ignore */}
                         <FaRegUser style={{ marginRight: '8px' }} />
                         <Text display={{ base: 'none', md: 'inline' }}>Personal Info</Text>
                     </Tab>
@@ -78,6 +79,7 @@ const HeaderWithTabs: React.FC = () => {
                         borderTop="1px solid #e2e8f0"
                     >
                         <Tab _selected={selectedTabStyle} padding={2} flex="1" display="flex" justifyContent="center">
+                            {/* @ts-ignore */}
                             <FaRegUser />
                         </Tab>
                         <Tab _selected={selectedTabStyle} padding={2} flex="1" display="flex" justifyContent="center">

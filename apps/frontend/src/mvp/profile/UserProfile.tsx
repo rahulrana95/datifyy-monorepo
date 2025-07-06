@@ -1,504 +1,473 @@
-import React, { useEffect, useState } from "react";
+// apps/frontend/src/mvp/profile/UserProfile.tsx
+
+import React from "react";
 import {
-    Select,
-    FormControl,
-    FormLabel,
-    Input,
-    Button,
-    VStack,
-    HStack,
     Box,
-    Checkbox,
+    VStack,
     useTheme,
-    Image,
-    SimpleGrid,
+    Spinner,
+    Alert,
+    AlertIcon,
     Text,
-    Flex,
-    useToast,
+    Button,
+    HStack,
+    useDisclosure,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalCloseButton,
+    ModalBody,
+    ModalFooter,
 } from "@chakra-ui/react";
-import { FaUser, FaBirthdayCake, FaEnvelope, FaCheckCircle, FaIdCard, FaPhone, FaRuler, FaDumbbell, FaBeer, FaSmoking, FaHeart, FaCity, FaHome, FaCalendarAlt, FaBaby, FaBabyCarriage, FaTransgender, FaCamera, FaEdit } from "react-icons/fa";
-import CitySelect from "./CitySelect";
-import MalePreview from "../../assets/images/male-preview.jpeg";
-import FemalePreview from "../../assets/images/female-preview.jpeg";
-import ImageUploadButton from "./ImageUploadButton";
-import userProfileService from "../../service/userService/userProfileService";
-import { DatifyyUsersInformation, Gender } from "../../service/userService/UserProfileTypes";
-import { Toast } from "@radix-ui/react-toast";
-import { set } from "date-fns";
-import { get } from "http";
+import { FaEdit, FaCheck, FaTimes, FaUser } from "react-icons/fa";
 
+// Custom hooks
+import { useUserProfile } from "./hooks/useUserProfile";
+import { useProfileValidation } from "./hooks/useProfileValidation";
 
-const fieldIcons = {
-    firstName: FaUser,
-    lastName: FaUser,
-    dob: FaBirthdayCake,
-    officialEmail: FaEnvelope,
-    isOfficialEmailVerified: FaCheckCircle,
-    isAadharVerified: FaIdCard,
-    isPhoneVerified: FaPhone,
-    height: FaRuler,
-    exercise: FaDumbbell,
-    drinking: FaBeer,
-    smoking: FaSmoking,
-    lookingFor: FaHeart,
-    currentCity: FaCity,
-    hometown: FaHome,
-    settleDownInMonths: FaCalendarAlt,
-    haveKids: FaBaby,
-    wantsKids: FaBabyCarriage,
-    starSign: FaCamera,
-    pronoun: FaTransgender,
-    profileImage: FaCamera
+// Components
+import { ProfileSection } from "./components/ProfileSection";
+// import { ProfileImageUpload } from "./components/ProfileImageUpload";
+import { ErrorBoundary } from "../common/ErrorBoundary";
+
+// Types
+import { DatifyyUsersInformation } from "../../service/userService/UserProfileTypes";
+import { FormFieldConfig, FormSectionConfig } from "./types/ProfileFormTypes";
+import { LoadingSpinner, ProfileCompletionBanner } from "./components/ProfileCompletionBanner";
+
+/**
+ * Enhanced User Profile Component
+ * 
+ * Features:
+ * - Optimistic updates for better UX
+ * - Section-wise editing with validation
+ * - Profile completion tracking
+ * - Image upload with preview
+ * - Real-time validation feedback
+ * - Responsive design with accessibility
+ */
+const UserProfile: React.FC = () => {
+    const theme = useTheme();
+    const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
+
+    // Custom hooks for state management
+    const {
+        profile,
+        loading,
+        error,
+        updateProfile,
+        deleteProfile,
+        refreshProfile,
+        completionStats,
+        isUpdating,
+        lastUpdated
+    } = useUserProfile();
+
+    const {
+        validateSection,
+        getFieldError,
+        clearErrors
+    } = useProfileValidation();
+
+    // Loading state
+    if (loading) {
+        return <LoadingSpinner message="Loading your profile..." />;
+    }
+
+    // Error state
+    if (error) {
+        return (
+            <Box maxW="900px" margin="0 auto" pt={8}>
+                <Alert status="error" borderRadius="md">
+                    <AlertIcon />
+                    <VStack align="start" spacing={2}>
+                        <Text fontWeight="semibold">Unable to load profile</Text>
+                        <Text fontSize="sm">{error}</Text>
+                        <Button size="sm" onClick={refreshProfile} colorScheme="red" variant="outline">
+                            Retry
+                        </Button>
+                    </VStack>
+                </Alert>
+            </Box>
+        );
+    }
+
+    return (
+        <ErrorBoundary>
+            <Box
+                maxW="900px"
+                margin="0 auto"
+                pt={8}
+                px={{ base: 4, md: 0 }}
+                minH="100vh"
+            >
+                <VStack spacing={6} align="stretch">
+
+                    {/* Profile Completion Banner */}
+                    {completionStats && (
+                        <ProfileCompletionBanner
+                            stats={completionStats}
+                            onActionClick={(field) => {
+                                // Scroll to field and highlight it
+                                const element = document.getElementById(`field-${field}`);
+                                element?.scrollIntoView({ behavior: 'smooth' });
+                                element?.focus();
+                            }}
+                        />
+                    )}
+
+                    {/* Profile Sections */}
+                    {FORM_SECTIONS.map((section) => (
+                        <ProfileSection
+                            key={section.id}
+                            section={section}
+                            profile={profile}
+                            onUpdate={updateProfile}
+                            onValidate={validateSection}
+                            getFieldError={getFieldError}
+                            clearErrors={clearErrors}
+                            isUpdating={isUpdating}
+                            theme={theme}
+                        />
+                    ))}
+
+                    {/* Danger Zone */}
+                    <Box
+                        bg="red.50"
+                        p={6}
+                        borderRadius="lg"
+                        border="1px solid"
+                        borderColor="red.200"
+                    >
+                        <VStack spacing={4} align="start">
+                            <Text fontSize="lg" fontWeight="bold" color="red.600">
+                                Danger Zone
+                            </Text>
+                            <Text fontSize="sm" color="red.600">
+                                Once you delete your profile, there is no going back. Please be certain.
+                            </Text>
+                            <Button
+                                colorScheme="red"
+                                variant="outline"
+                                size="sm"
+                                onClick={onDeleteOpen}
+                                // @ts-ignore
+                                leftIcon={<FaTimes />}
+                            >
+                                Delete Profile
+                            </Button>
+                        </VStack>
+                    </Box>
+
+                    {/* Last Updated Info */}
+                    {lastUpdated && (
+                        <Text fontSize="xs" color="gray.500" textAlign="center">
+                            Last updated: {new Date(lastUpdated).toLocaleString()}
+                        </Text>
+                    )}
+                </VStack>
+
+                {/* Delete Confirmation Modal */}
+                <Modal isOpen={isDeleteOpen} onClose={onDeleteClose} isCentered>
+                    <ModalOverlay />
+                    <ModalContent>
+                        <ModalHeader color="red.600">Delete Profile</ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody>
+                            <VStack spacing={4} align="start">
+                                <Text>
+                                    Are you absolutely sure you want to delete your profile?
+                                    This action cannot be undone.
+                                </Text>
+                                <Box bg="red.50" p={4} borderRadius="md" w="full">
+                                    <Text fontSize="sm" color="red.600">
+                                        <strong>This will permanently:</strong>
+                                    </Text>
+                                    <VStack align="start" spacing={1} mt={2}>
+                                        <Text fontSize="sm" color="red.600">• Delete all your profile information</Text>
+                                        <Text fontSize="sm" color="red.600">• Remove you from all matches</Text>
+                                        <Text fontSize="sm" color="red.600">• Cancel any active conversations</Text>
+                                    </VStack>
+                                </Box>
+                            </VStack>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button variant="ghost" mr={3} onClick={onDeleteClose}>
+                                Cancel
+                            </Button>
+                            <Button
+                                colorScheme="red"
+                                onClick={async () => {
+                                    await deleteProfile();
+                                    onDeleteClose();
+                                }}
+                                isLoading={isUpdating}
+                            >
+                                Yes, Delete Profile
+                            </Button>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
+            </Box>
+        </ErrorBoundary>
+    );
 };
 
-const enums = {
-    gender: [Gender.Male, "Female", "Other"],
-    exercise: ["Heavy", "Light", "Moderate", "None"],
-    educationLevel: ["Graduate", "High School", "Postgraduate", "Undergraduate"],
-    drinking: ["Never", "Occasionally", "Regularly"],
-    smoking: ["Never", "Occasionally", "Regularly"],
-    lookingFor: ["Casual", "Friendship", "Relationship"],
-    settleDownInMonths: ["0-6", "6-12", "12-24", "24+"],
-    starSign: [
-        "Aquarius",
-        "Aries",
-        "Cancer",
-        "Capricorn",
-        "Gemini",
-        "Leo",
-        "Libra",
-        "Pisces",
-        "Sagittarius",
-        "Scorpio",
-        "Taurus",
-        "Virgo",
-    ],
-    pronoun: ["He/Him", "She/Her", "They/Them", "Other"],
-};
-
-export interface FormField {
-    name: keyof DatifyyUsersInformation;
-    label: string;
-    icon?: any;
-    type: "text" | "email" | "date" | "select" | "checkbox" | "city" | "image";
-    options?: string[];
-}
-
-interface FormSection {
-    section: string;
-    fields: FormField[][];
-}
-
-const formConfig: FormSection[] = [
+// Form configuration - moved to separate constant for maintainability
+const FORM_SECTIONS: FormSectionConfig[] = [
     {
-        section: "Personal Information",
+        id: "personal-information",
+        title: "Personal Information",
+        description: "Basic information about yourself",
+        icon: FaUser,
         fields: [
             [
-                { name: "firstName", label: "First Name", type: "text", icon: fieldIcons.firstName },
-                { name: "lastName", label: "Last Name", type: "text", icon: fieldIcons.lastName },
-                { name: "dob", label: "Date of Birth", type: "date", icon: fieldIcons.dob },
+                {
+                    name: "firstName",
+                    label: "First Name",
+                    type: "text",
+                    required: true,
+                    placeholder: "Enter your first name",
+                    maxLength: 50
+                },
+                {
+                    name: "lastName",
+                    label: "Last Name",
+                    type: "text",
+                    required: true,
+                    placeholder: "Enter your last name",
+                    maxLength: 50
+                },
+                {
+                    name: "dob",
+                    label: "Date of Birth",
+                    type: "date",
+                    required: true,
+                    helpText: "You must be at least 18 years old"
+                },
                 {
                     name: "gender",
                     label: "Gender",
                     type: "select",
-                    icon: fieldIcons.profileImage,
-                    options: enums.gender,
+                    required: true,
+                    options: ["Male", "Female", "Other"]
                 },
             ],
             [
                 {
                     name: "images",
-                    label: "Profile Image",
-                    icon: fieldIcons.profileImage,
+                    label: "Profile Images",
                     type: "image",
+                    helpText: "Add up to 6 photos to showcase your personality"
                 },
             ],
         ],
     },
     {
-        section: "Contact Details",
+        id: "contact-details",
+        title: "Contact & Verification",
+        description: "Your contact information and verification status",
+        icon: FaCheck,
         fields: [
             [
-                { name: "officialEmail", label: "Email", type: "email", icon: fieldIcons.officialEmail },
+                {
+                    name: "officialEmail",
+                    label: "Email Address",
+                    type: "email",
+                    required: true,
+                    readOnly: true,
+                    helpText: "Email cannot be changed here. Contact support if needed."
+                },
                 {
                     name: "isOfficialEmailVerified",
                     label: "Email Verified",
-                    type: "checkbox",
-                    icon: fieldIcons.isOfficialEmailVerified,
+                    type: "verification",
+                    readOnly: true
                 },
                 {
                     name: "isAadharVerified",
                     label: "Aadhar Verified",
-                    type: "checkbox",
-                    icon: fieldIcons.isAadharVerified,
+                    type: "verification",
+                    readOnly: true
                 },
-                { name: "isPhoneVerified", label: "Phone Verified", type: "checkbox", icon: fieldIcons.isPhoneVerified },
+                {
+                    name: "isPhoneVerified",
+                    label: "Phone Verified",
+                    type: "verification",
+                    readOnly: true
+                },
             ],
         ],
     },
     {
-        section: "Lifestyle & Preferences",
+        id: "physical-attributes",
+        title: "Physical Attributes",
+        description: "Help others know more about your physical characteristics",
         fields: [
             [
-                { name: "height", label: "Height", type: "text" },
                 {
-                    name: "exercise",
-                    label: "Exercise",
-                    type: "select",
-                    icon: fieldIcons.exercise,
-                    options: enums.exercise,
+                    name: "height",
+                    label: "Height (cm)",
+                    type: "number",
+                    min: 100,
+                    max: 250,
+                    placeholder: "Enter height in centimeters"
                 },
                 {
-                    name: "drinking",
-                    label: "Drinking",
-                    icon: fieldIcons.drinking,
+                    name: "exercise",
+                    label: "Exercise Frequency",
                     type: "select",
-                    options: enums.drinking,
+                    options: ["None", "Light", "Moderate", "Heavy"]
+                },
+            ],
+        ],
+    },
+    {
+        id: "lifestyle-preferences",
+        title: "Lifestyle & Preferences",
+        description: "Your lifestyle choices and what you're looking for",
+        fields: [
+            [
+                {
+                    name: "drinking",
+                    label: "Drinking Habits",
+                    type: "select",
+                    options: ["Never", "Occasionally", "Regularly"]
                 },
                 {
                     name: "smoking",
-                    label: "Smoking",
+                    label: "Smoking Habits",
                     type: "select",
-                    icon: fieldIcons.smoking,
-                    options: enums.smoking,
+                    options: ["Never", "Occasionally", "Regularly"]
                 },
                 {
                     name: "lookingFor",
                     label: "Looking For",
                     type: "select",
-                    icon: fieldIcons.lookingFor,
-                    options: enums.lookingFor,
+                    required: true,
+                    options: ["Friendship", "Casual", "Relationship"]
                 },
             ],
         ],
     },
     {
-        section: "Location",
-        fields: [
-            [
-                { name: "currentCity", label: "Current City", type: "city", icon: fieldIcons.currentCity },
-                { name: "hometown", label: "Hometown", type: "city", icon: fieldIcons.hometown },
-            ],
-        ],
-    },
-    {
-        section: "Additional Information",
+        id: "location-information",
+        title: "Location Information",
+        description: "Where you're from and where you live",
         fields: [
             [
                 {
-                    name: "settleDownInMonths",
-                    label: "Settle Down In",
-                    icon: fieldIcons.settleDownInMonths,
-                    type: "select",
-                    options: enums.settleDownInMonths,
+                    name: "currentCity",
+                    label: "Current City",
+                    type: "city",
+                    required: true,
+                    placeholder: "Search for your city..."
                 },
-                { name: "haveKids", label: "Have Kids", type: "checkbox", icon: fieldIcons.haveKids },
-                { name: "wantsKids", label: "Wants Kids", type: "checkbox", icon: fieldIcons.wantsKids },
+                {
+                    name: "hometown",
+                    label: "Hometown",
+                    type: "city",
+                    placeholder: "Search for your hometown..."
+                },
+            ],
+        ],
+    },
+    {
+        id: "personal-details",
+        title: "Personal Details",
+        description: "Additional information about yourself",
+        fields: [
+            [
+                {
+                    name: "bio",
+                    label: "Bio",
+                    type: "textarea",
+                    placeholder: "Tell others about yourself...",
+                    maxLength: 500,
+                    helpText: "Write a compelling bio to attract compatible matches"
+                },
+            ],
+            [
+                {
+                    name: "educationLevel",
+                    label: "Education Level",
+                    type: "select",
+                    options: ["High School", "Undergraduate", "Graduate", "Postgraduate"]
+                },
+                {
+                    name: "settleDownInMonths",
+                    label: "Looking to Settle Down",
+                    type: "select",
+                    options: ["0-6", "6-12", "12-24", "24+"]
+                },
+                {
+                    name: "haveKids",
+                    label: "Have Kids",
+                    type: "checkbox"
+                },
+                {
+                    name: "wantsKids",
+                    label: "Want Kids",
+                    type: "checkbox"
+                },
+            ],
+            [
                 {
                     name: "starSign",
                     label: "Star Sign",
                     type: "select",
-                    icon: fieldIcons.starSign,
-                    options: enums.starSign,
+                    options: [
+                        "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+                        "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+                    ]
+                },
+                {
+                    name: "religion",
+                    label: "Religion",
+                    type: "text",
+                    placeholder: "Your religious beliefs (optional)"
                 },
                 {
                     name: "pronoun",
-                    label: "Pronoun",
+                    label: "Pronouns",
                     type: "select",
-                    icon: fieldIcons.pronoun,
-                    options: enums.pronoun,
+                    options: ["He/Him", "She/Her", "They/Them", "Other"]
+                },
+            ],
+        ],
+    },
+    {
+        id: "interests-hobbies",
+        title: "Interests & Hobbies",
+        description: "What you love doing and what you care about",
+        fields: [
+            [
+                {
+                    name: "favInterest",
+                    label: "Favorite Interests",
+                    type: "tag-input",
+                    placeholder: "Add your interests...",
+                    maxTags: 10,
+                    helpText: "Add interests to find people with similar hobbies"
+                },
+                {
+                    name: "causesYouSupport",
+                    label: "Causes You Support",
+                    type: "tag-input",
+                    placeholder: "Add causes you care about...",
+                    maxTags: 5
+                },
+                {
+                    name: "qualityYouValue",
+                    label: "Qualities You Value",
+                    type: "tag-input",
+                    placeholder: "Add qualities you value in others...",
+                    maxTags: 5
                 },
             ],
         ],
     },
 ];
 
-const ProfileForm = () => {
-    const theme = useTheme();
-    const toast = useToast();
-    const [profileData, setProfileData] = useState<DatifyyUsersInformation>({
-        id: "",
-        firstName: "",
-        lastName: "",
-        updatedAt: null,
-        bio: null,
-        images: null,
-        dob: null,
-        gender: null,
-        officialEmail: "",
-        isOfficialEmailVerified: false,
-        isAadharVerified: false,
-        isPhoneVerified: false,
-        height: null,
-        exercise: null,
-        drinking: null,
-        smoking: null,
-        lookingFor: null,
-        currentCity: null,
-        hometown: null,
-        settleDownInMonths: null,
-        haveKids: false,
-        wantsKids: false,
-        starSign: null,
-        pronoun: null,
-        favInterest: null,
-        causesYouSupport: null,
-        qualityYouValue: null,
-        prompts: null,
-        educationLevel: null,
-        religion: null,
-        education: null,
-        birthTime: null,
-        kundliBeliever: null,
-        isDeleted: false,
-        userLoginId: null,
-    });
-    const [draftProfileData, setDraftProfileData] = useState<Partial<DatifyyUsersInformation> | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [isEditMode, setIsEditMode] = useState<{
-        [key: string]: boolean;
-    }>({});
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        fetchUserDetails();
-    }, [])
-
-    const fetchUserDetails = () => {
-        setLoading(true);
-        userProfileService.getUserProfile().then((response) => {
-            if (response.error || !response?.response) {
-                console.error(response.error);
-                setLoading(false);
-            } else {
-                setProfileData(response.response);
-                setLoading(false);
-            }
-        });
-    }
-
-
-
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-    ) => {
-        const { name, value, type, checked } = e.target as HTMLInputElement;
-        setDraftProfileData((prev: Partial<DatifyyUsersInformation> | null) => ({
-            ...prev,
-            [name]: type === "checkbox" ? checked : value,
-        }));
-    };
-
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setImagePreview(imageUrl);
-        }
-    };
-
-    const renderFieldReadView = (text: string, value: string, icon: any, fieldName: string) => {
-        let newValue = value;
-        if (fieldName === "dob") {
-            const calculateAge = (dob: string) => {
-                const birthDate = new Date(value);
-                const today = new Date();
-                let age = today.getFullYear() - birthDate.getFullYear();
-                const monthDifference = today.getMonth() - birthDate.getMonth();
-                if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
-                    age--;
-                }
-                return age;
-            };
-
-            newValue = `${value} (${calculateAge(value)} years)`;
-        }
-        return <Flex justifyContent="space-between" alignItems={"center"} border={"1px solid"} padding={4} pt={2} pb={2} borderColor={"gray.200"} borderRadius={8} fontSize={12} width={"100%"}>
-            <HStack>
-                <Box as={icon} mr={2} />
-                <Text>{text}</Text>
-            </HStack>
-            <Text>{newValue ?? value}</Text>
-        </Flex>
-    }
-
-    const isFieldReadOnly = (fieldName: string) => {
-        const fields = ["isOfficialEmailVerified", "isAadharVerified", "isPhoneVerified", "officialEmail"];
-        return fields.indexOf(fieldName) >= 0;
-    }
-
-    const onChangeCity = (city: string) => { }
-
-    const renderField = (field: FormField, sectionId: string) => {
-        const isEditEnabled = isEditMode[sectionId];
-        switch (field.type) {
-            case "text":
-            case "email":
-            case "date":
-                return (
-                    isEditEnabled ?
-                        <Input
-                            fontSize={13}
-                            id={field.name}
-                            name={field.name}
-                            type={field.type}
-                            value={String(draftProfileData?.[field.name] ?? profileData[field.name] ?? "")}
-                            onChange={handleChange}
-                            disabled={!isEditEnabled || isFieldReadOnly(field.name)}
-                            isReadOnly={!isEditEnabled || isFieldReadOnly(field.name)}
-                        /> : renderFieldReadView(field.label, String(profileData[field.name] ?? ""), field.icon, field.name)
-                );
-            case "select":
-                return (
-                    isEditEnabled ?
-                        <Select
-                            id={field.name}
-                            name={field.name}
-                            value={String(profileData[field.name] ?? "")}
-                            onChange={handleChange}
-                            isReadOnly={!isEditEnabled && isFieldReadOnly(field.name)}
-                            fontSize={13}
-                        >
-                            {field.options?.map((option) => (
-                                <option key={option} value={option}>
-                                    {option}
-                                </option>
-                            ))}
-                        </Select> : renderFieldReadView(field.label, String(profileData[field.name] ?? ""), field.icon, field.name)
-                );
-            case "checkbox":
-                return (
-                    isEditEnabled ?
-                        <Checkbox
-                            id={field.name}
-                            name={field.name}
-                            isChecked={!!profileData[field.name] || false}
-                            onChange={handleChange}
-                            isDisabled={!isEditEnabled && isFieldReadOnly(field.name)}
-                        >
-                            {field.label}
-                        </Checkbox> : renderFieldReadView(field.label, String(profileData[field.name] ?? ""), field.icon, field.name)
-                );
-            case "city":
-                return isEditEnabled ? <CitySelect value={''} onChangeCity={onChangeCity} /> : renderFieldReadView(field.label, String(profileData[field.name] ?? ""), field.icon, field.name);
-            case "image":
-                return (
-                    <div className="image-upload">
-                        <Box className="image-preview" mb={6}>
-                            {!imagePreview ? (
-                                <img src={MalePreview} width="200px" alt="Male Preview" />
-                            ) : (
-                                <Image
-                                    src={imagePreview ?? ""}
-                                    boxSize="100px"
-                                    objectFit="cover"
-                                />
-                            )}
-                        </Box>
-                        {isEditEnabled && (
-                            <ImageUploadButton handleImageUpload={handleImageUpload} />
-                        )}
-                    </div>
-                );
-            default:
-                return null;
-        }
-    };
-
-    const handleSave = (sectionId: string) => {
-        setLoading(true);
-        userProfileService.updateUserProfile(draftProfileData ?? {}).then((response) => {
-            if (response.error || !response?.response) {
-                toast({
-                    title: "Error",
-                    description: "Failed to update profile",
-                    status: "error",
-                    duration: 1000,
-                    isClosable: true,
-                });
-                setLoading(false);
-            } else {
-                setIsEditMode((isEditMode) => ({ ...isEditMode, [sectionId]: false }));
-                toast({
-                    title: "Success",
-                    description: "Profile updated successfully",
-                    status: "success",
-                    duration: 1000,
-                    isClosable: true,
-                });
-                fetchUserDetails();
-                setLoading(false);
-            }
-        });
-    };
-
-    const handleDiscard = (sectionId: string) => {
-        setIsEditMode((isEditMode) => ({ ...isEditMode, [sectionId]: false }));
-        // Discard logic goes here (e.g., revert changes)
-    };
-
-    const handleEdit = (sectionId: string) => {
-        setIsEditMode((isEditMode) => ({ ...isEditMode, [sectionId]: true }));
-
-    }
-
-    return (
-        <Box maxW="900px" margin="0 auto" pt={8}>
-            <form>
-                <VStack spacing={6} align="stretch">
-                    {formConfig.map((section) => (
-                        <Box
-                            key={section.section}
-                            bg={theme.colors.white}
-                            p={12}
-                            borderRadius={20}
-                            w="full"
-                            _loading={{ opacity: 0.5 }}
-
-                        >
-                            <Flex justifyContent={"space-between"} alignItems={"center"} mb={4}>
-                                <FormLabel fontSize="lg" fontWeight="bold">
-                                    {section.section}
-                                </FormLabel>
-                                {!isEditMode[section.section] && <Box as={FaEdit} color={theme.colors.accent[500]} onClick={() => handleEdit(section.section)} />}
-                            </Flex>
-
-                            <SimpleGrid
-                                columns={{ base: 1, md: section.fields.length }}
-                                spacing={4}
-                            >
-                                {section.fields.map((fieldCol, colIndex) => (
-                                    <VStack key={colIndex} spacing={4} align="stretch">
-                                        {fieldCol.map((field) => (
-                                            <FormControl key={field.name} isRequired style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                                                {isEditMode[section.section] && ['profileImage'].indexOf(field.name) < 0 && <FormLabel htmlFor={field.name} fontSize={12} width={"40%"} >
-                                                    {field.label}
-                                                </FormLabel>
-                                                }
-                                                {
-                                                    renderField(field, section.section)
-                                                }
-                                            </FormControl>
-                                        ))}
-
-                                    </VStack>
-                                ))}
-                            </SimpleGrid>
-                            {isEditMode[section.section] && (
-                                <HStack spacing={4} mt={6}>
-                                    <Button onClick={() => handleSave(section.section)} size={"sm"} bg={theme.colors.accent[500]} color="white" isLoading={loading}>Save</Button>
-                                    <Button onClick={() => handleDiscard(section.section)} size={"sm"} bg={theme.colors.accent[800]} colorScheme="red">
-                                        Discard
-                                    </Button>
-                                </HStack>
-                            )}
-
-                        </Box>
-                    ))}
-                </VStack>
-            </form>
-        </Box>
-    );
-};
-
-export default ProfileForm;
+export default UserProfile;

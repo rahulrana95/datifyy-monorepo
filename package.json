@@ -2,8 +2,21 @@
   "name": "@monorepo-datifyy/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "libs/*"
+  ],
+  "scripts": {
+    "build:shared": "yarn workspace @datifyy/shared-types build && yarn workspace @datifyy/shared-validation build && yarn workspace @datifyy/shared-constants build",
+    "build:all": "yarn build:shared && yarn workspace frontend build && yarn workspace nodejs-service build",
+    "dev:shared": "yarn workspace @datifyy/shared-types dev & yarn workspace @datifyy/shared-validation dev",
+    "type-check": "yarn workspaces run type-check",
+    "clean:shared": "yarn workspace @datifyy/shared-types clean && yarn workspace @datifyy/shared-validation clean && yarn workspace @datifyy/shared-constants clean",
+    "start:frontend": "yarn workspace frontend start",
+    "start:backend": "yarn workspace nodejs-service dev"
+  },
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
@@ -15,6 +28,11 @@
   },
   "devDependencies": {
     "@nx/workspace": "20.0.6",
-    "nx": "20.0.6"
+    "nx": "20.0.6",
+    "typescript": "^4.9.5"
+  },
+  "resolutions": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }
