@@ -4,6 +4,8 @@ import { PhoneIcon } from '@chakra-ui/icons'; // Chakra UI Icons
 import { FaRegUser } from "react-icons/fa";
 import ProfileForm from './UserProfile';
 import PartnerPreferences from './PartnerPreferences';
+import { PreferenceSection } from './partnerPreferences/components/PreferenceSection';
+import { PartnerPreferencesForm } from './partnerPreferences/components/PartnerPreferencesForm';
 
 const HeaderWithTabs: React.FC = () => {
     const theme = useTheme();
@@ -101,7 +103,8 @@ const HeaderWithTabs: React.FC = () => {
                         <ProfileForm />
                     </TabPanel>
                     <TabPanel _hover={{ ...hovercursor }}>
-                        <Text><PartnerPreferences /></Text>
+                        {/* <Text><PartnerPreferences /></Text> */}
+                        <Text><PartnerPreferencesForm /></Text>
                     </TabPanel>
                     <TabPanel _hover={{ ...hovercursor }}>
                         <Text>Settings content goes here...</Text>
