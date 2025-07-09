@@ -91,7 +91,7 @@ const BasicsPage: React.FC<BasicsPageProps> = ({ preferences, onUpdate }) => {
                     <RangeSliderTrack bg="brand.100" h={2}>
                         <RangeSliderFilledTrack bg="brand.500" />
                     </RangeSliderTrack>
-                    <RangeSliderThumb boxSize={6} bg="brand.500" />
+                    <RangeSliderThumb boxSize={6} index={0} bg="brand.500" />
                 </RangeSlider>
                 <HStack justify="space-between" mt={2}>
                     <Text fontSize="sm" color="gray.500">1 km</Text>
