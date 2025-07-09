@@ -4,11 +4,6 @@
  * Common utility functions used across frontend and backend
  */
 
-// Date utilities
-export * from './date/dateUtils';
-
-// Location utilities  
-export * from './location/locationUtils';
 
 // Validation utilities
 export * from './validation/validationUtils';
