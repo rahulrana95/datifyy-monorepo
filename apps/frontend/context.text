@@ -1,470 +1,212 @@
-# Datifyy Frontend Context Report
+Datifyy Frontend Development Prompt
+Context: You are a world-class frontend engineer with 15+ years of experience building dating apps like Tinder, Bumble, and Hinge. You're working on Datifyy, a serious dating platform focused on meaningful connections.
+🎯 Brand & Design System
+Brand Identity:
 
-## Project Overview
-**Datifyy** is an enterprise-grade React dating application with comprehensive user profiles, partner preferences, and matching capabilities. Built with TypeScript in a monorepo structure.
+Name: Datifyy
+Tagline: "Let's be serious about love"
+Logo: Heart symbol (💕) with pink gradient
+Primary Color: #e85d75 (brand.500)
+Personality: Serious about love, premium, trustworthy, emotional, modern
 
-## Tech Stack & Architecture
+Design Philosophy:
 
-### Core Technologies
-```typescript
-// Primary Stack
-- React 18 + TypeScript
-- Chakra UI (primary), Material-UI, Radix UI
-- Zustand (state management)
-- TanStack React Query (data fetching)
-- React Router DOM (routing)
-- Framer Motion (animations)
-- Create React App (build system)
-- Yarn Berry (package manager)
-```
+Mobile-first: Optimize for dating app users (primarily mobile)
+Emotional design: Colors and interactions that create romantic feelings
+Premium feel: Gradients, shadows, smooth animations
+Trust signals: Verification badges, safety indicators
+Accessibility: WCAG compliant, proper contrast, focus states
 
-### Project Structure
-```
-datifyy-monorepo/
-├── apps/frontend/          # Main React app
-├── libs/
-│   ├── shared-types/       # TypeScript definitions
-│   ├── shared-constants/   # App constants  
-│   └── shared-validation/  # Validation schemas
-```
+🛠 Technical Stack & Architecture
+Framework & Libraries:
 
-## Core Domain Models
+React 18 with TypeScript
+Chakra UI with custom theme system
+Monorepo structure with shared components
+Mobile-optimized responsive design
 
-### User Profile (`DatifyyUsersInformation`)
-```typescript
-interface DatifyyUsersInformation {
-  // Identity
-  id: string;
-  firstName: string;
-  lastName: string;
-  officialEmail: string;
-  
-  // Personal Info
-  dob: string | null;
-  gender: Gender | null;
-  bio: string | null;
-  images: string[] | null;
-  height: number | null;
-  
-  // Location
-  currentCity: string | null;
-  hometown: string | null;
-  
-  // Lifestyle
-  exercise: Exercise | null;
-  drinking: Drinking | null;
-  smoking: Smoking | null;
-  educationLevel: EducationLevel | null;
-  lookingFor: LookingFor | null;
-  
-  // Verification Status
-  isOfficialEmailVerified: boolean | null;
-  isAadharVerified: boolean | null;
-  isPhoneVerified: boolean | null;
-  
-  // Arrays/Complex
-  favInterest: string[] | null;
-  causesYouSupport: string[] | null;
-  qualityYouValue: string[] | null;
-}
-```
+Project Structure:
+apps/frontend/src/
+├── theme/                    # Custom Chakra UI theme
+│   ├── foundations/         # Colors, typography, spacing
+│   ├── components/          # Component themes
+│   └── styles/             # Global styles & animations
+├── mvp/                     # Main application pages
+├── components/              # Reusable UI components
+├── hooks/                   # Custom React hooks
+└── utils/                   # Utility functions
+Custom Theme System:
 
-### Partner Preferences (`DatifyyUserPartnerPreferences`)
-```typescript
-interface DatifyyUserPartnerPreferences {
-  // Basic Criteria
-  genderPreference: GenderPreference;
-  minAge: number | null;
-  maxAge: number | null;
-  minHeight: number | null;
-  maxHeight: number | null;
-  
-  // Location & Finance
-  locationPreference: string | null;
-  locationPreferenceRadius: number | null;
-  minIncome: number | null;
-  maxIncome: number | null;
-  currency: Currency | null;
-  
-  // Lifestyle Preferences
-  smokingPreference: SmokingPreference;
-  drinkingPreference: DrinkingPreference;
-  maritalStatus: MaritalStatus;
-  childrenPreference: ChildrenPreference;
-  
-  // Arrays for Multi-Select
-  educationLevel: string[];
-  profession: string[];
-  hobbies: string[];
-  interests: string[];
-  personalityTraits: string[];
-  
-  // Free Text Arrays
-  booksReading: string[];
-  music: string[];
-  movies: string[];
-  travel: string[];
-  
-  // Goals & Compatibility
-  relationshipGoals: RelationshipGoals | null;
-  activityLevel: ActivityLevel | null;
-  petPreference: PetPreference | null;
-  whatOtherPersonShouldKnow: string | null;
-}
-```
+Colors: Brand colors (#e85d75), swipe actions (like/nope/superlike), status indicators
+Components: 25+ custom variants (Button, Card, Badge, Avatar, Input, Modal)
+Animations: Heart beat, swipe gestures, match celebrations, floating effects
+Typography: Mobile-optimized text scales, dating-specific text styles
 
-## Key Services & APIs
+🎨 Design & Component Guidelines
+Color Usage:
+typescript// Primary brand colors
+brand.500    // Main pink (#e85d75)
+brand.50     // Light backgrounds
+brand.700    // Dark text/accents
 
-### API Service (`apiService.ts`)
-```typescript
-class ApiService {
-  // Base configuration
-  private axiosInstance: AxiosInstance;
-  private authToken: string;
-  private prefixPath = '/api/v1';
-  
-  // Core methods
-  async get<T>(path: string, config?: AxiosRequestConfig)
-  async post<T>(path: string, data?: unknown, config?: AxiosRequestConfig)
-  async put<T>(path: string, data?: unknown, config?: AxiosRequestConfig)
-  async delete<T>(path: string, config?: AxiosRequestConfig)
-  
-  // Authentication
-  async setAuthToken(token: string)
-  async setTokenFromCookies()
-  async clearToken()
-}
-```
+// Dating actions
+swipe.like.500     // Green for like actions
+swipe.nope.500     // Red for pass actions  
+swipe.superLike.500 // Blue for super like
+swipe.boost.500    // Gold for boost/premium
 
-### Auth Service Endpoints
-```typescript
-// Authentication endpoints
-POST /api/v1/auth/login
-POST /api/v1/auth/signup  
-POST /api/v1/auth/logout
-POST /api/v1/auth/validate-token
-POST /api/v1/auth/send-verification-code
-POST /api/v1/auth/forgot-password
-POST /api/v1/auth/reset-password
+// Status indicators
+status.online      // Green dot for online
+status.verified    // Blue for verified users
+status.premium     // Purple for premium features
+Component Variants:
+typescript// Buttons
+<Button variant="love">        // Gradient love button
+<Button variant="swipeLike">   // Circular like button
+<Button variant="premium">     // Premium shimmer effect
 
-// Profile endpoints  
-GET /api/v1/user-profile
-PUT /api/v1/user-profile
-GET /api/v1/partner-preferences
-PUT /api/v1/partner-preferences
-```
+// Cards  
+<Card variant="profile">       // Swipeable profile cards
+<Card variant="match">         // Match celebration cards
+<Card variant="floating">      // Elevated premium cards
 
-## State Management Patterns
+// Badges
+<Badge variant="verified">     // Blue checkmark
+<Badge variant="premium">      // Purple crown
+<Badge variant="online">       // Pulsing green dot
+Animation Classes:
+css.heart-beat         // Like button animations
+.swipe-right        // Swipe to like gesture
+.love-pulse         // Romantic pulsing effect
+.match-celebration  // Match success animation
+.float              // Floating FAB animation
+.fade-in           // Content entrance
+📱 Dating App Best Practices
+User Experience:
 
-### Zustand Store Example (`authStore`)
-```typescript
-interface AuthState {
-  user?: UserData | null;
-  isLoginOpen: boolean;
-  isSignupOpen: boolean;
-  isAuthenticated: boolean;
-  isAdmin: boolean;
-  
-  // Actions
-  setUserData: (user: UserData) => void;
-  showHideLogin: (val: boolean) => void;
-  setIsAuthenticated: (val: boolean) => void;
+Touch-friendly: Minimum 44px touch targets
+Gesture-based: Swipe interactions, pull-to-refresh
+Emotional moments: Celebrate matches, likes, connections
+Progressive disclosure: Don't overwhelm, reveal gradually
+Safety first: Clear privacy controls, reporting features
+
+Mobile Optimization:
+
+Performance: Lazy loading, optimized images, smooth 60fps
+Gestures: Swipe cards, pinch-to-zoom photos
+Safe areas: Handle notches, home indicators
+Offline support: Cache profiles, queue actions
+Push notifications: Real-time match/message alerts
+
+Conversion Optimization:
+
+Clear CTAs: Prominent sign-up buttons with emotional copy
+Social proof: User counts, success stories, testimonials
+FOMO elements: Limited-time offers, premium features
+Onboarding flow: Simple, engaging profile creation
+Trust signals: Verification badges, safety features
+
+🧩 Component Development Standards
+File Structure Pattern:
+typescriptComponentName/
+├── index.ts              // Barrel export
+├── ComponentName.tsx     // Main component
+├── ComponentName.types.ts // TypeScript interfaces
+├── ComponentName.test.tsx // Unit tests
+└── components/           // Sub-components if needed
+Component Template:
+typescript// Import types from shared libs when possible
+import { SomeType } from '@datifyy/shared-types';
+
+interface ComponentProps {
+  // Use descriptive prop names
+  isLiked?: boolean;
+  onLike?: () => void;
+  user: UserProfile;
+  variant?: 'standard' | 'premium' | 'verified';
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  // State initialization
-  // Action implementations
-}));
-```
-
-### React Query Pattern
-```typescript
-// Custom hook with React Query
-export const usePartnerPreferences = () => {
-  const {
-    data: preferences,
-    isLoading,
-    isError,
-    error,
-    refetch
-  } = useQuery({
-    queryKey: ['partner-preferences'],
-    queryFn: async () => {
-      const result = await userProfileService.getPartnerPreferences();
-      if (result.error) throw new Error(result.error.message);
-      return result.response;
-    }
-  });
+const Component: React.FC<ComponentProps> = ({
+  isLiked = false,
+  onLike,
+  user,
+  variant = 'standard'
+}) => {
+  // Use Chakra UI responsive values
+  const size = useBreakpointValue({ base: 'sm', md: 'md' });
   
-  const updateMutation = useMutation({
-    mutationFn: (data: Partial<DatifyyUserPartnerPreferences>) => 
-      userProfileService.updatePartnerPreferences(data),
-    onSuccess: () => queryClient.invalidateQueries(['partner-preferences'])
-  });
-  
-  return { preferences, isLoading, updatePreferences: updateMutation.mutateAsync };
+  return (
+    <Card variant={variant} className="interactive">
+      {/* Component content */}
+    </Card>
+  );
 };
-```
 
-## UI Component Patterns
-
-### Form Configuration System
-```typescript
-interface FormField {
-  name: keyof DatifyyUserPartnerPreferences;
-  label: string;
-  type: FormFieldType;
-  icon?: IconType;
-  validation?: ValidationRule;
-  options?: readonly string[];
-  priority: 'high' | 'medium' | 'low';
-}
-
-interface FormSection {
-  id: string;
-  title: string;
-  description: string;
-  priority: 'essential' | 'important' | 'optional';
-  fields: FormField[];
-}
-```
-
-### Validation Hook Pattern
-```typescript
-export const usePreferenceValidation = () => {
-  const [errors, setErrors] = useState<ValidationError[]>([]);
-  
-  const validateField = useCallback((field: FormField, value: any) => {
-    // Validation logic with caching
-  }, []);
-  
-  const validateCrossField = useCallback((data) => {
-    // Cross-field validation (age ranges, etc.)
-  }, []);
-  
-  return {
-    errors,
-    validateField,
-    validateSection,
-    clearErrors
-  };
-};
-```
-
-## Styling & Theme
-
-### Chakra UI Theme
-```typescript
-const theme = extendTheme({
-  colors: {
-    accent: {
-      500: "rgba(214, 77, 131, 1)", // Main accent
-      600: "rgba(180, 60, 110, 1)",
-      // ... gradient scale
-    },
-    lightBg: "rgb(244, 241, 243)",
-  }
-});
-```
-
-### Responsive Design Patterns
-```typescript
-// Chakra UI responsive props
-<Box 
-  px={{ base: 4, md: 6 }} 
-  py={{ base: 2, md: 4 }}
-  fontSize={{ base: 'sm', md: 'md' }}
+export default Component;
+Responsive Patterns:
+typescript// Use Chakra's responsive syntax
+<Box
+  display={{ base: 'none', md: 'block' }}
+  fontSize={{ base: 'sm', md: 'md', lg: 'lg' }}
+  p={{ base: 4, md: 6, lg: 8 }}
 />
 
 // Responsive hooks
 const isMobile = useBreakpointValue({ base: true, md: false });
 const columns = useBreakpointValue({ base: 1, md: 2, lg: 3 });
-```
+🎭 Key Implementation Principles
+Code Quality:
 
-## Business Logic Patterns
+TypeScript strict mode: Full type safety
+Component composition: Small, reusable components
+Performance: React.memo, useMemo, useCallback where needed
+Accessibility: ARIA labels, keyboard navigation, screen reader support
+Testing: Unit tests for complex logic, integration tests for user flows
 
-### Multi-Step Form Flow
-```typescript
-// Partner preferences form with progressive disclosure
-const sections = [
-  { priority: 'essential', fields: [...] },   // Must complete
-  { priority: 'important', fields: [...] },   // Recommended  
-  { priority: 'optional', fields: [...] }     // Enhancement
-];
+State Management:
 
-// Completion tracking
-const completionStats = {
-  overallCompletion: number;
-  essentialCompletion: number;
-  canProceed: boolean;
-};
-```
+Local state: useState for component state
+Shared state: Context API for theme, auth, user data
+Server state: React Query for API data management
+Form state: React Hook Form for complex forms
 
-### Validation Business Rules
-```typescript
-const BUSINESS_RULES = {
-  AGE_RANGE_MAX_SPAN: 20,
-  HEIGHT_RANGE_MAX_SPAN: 50,
-  MAX_HOBBIES: 10,
-  MIN_DESCRIPTION_LENGTH: 20
-};
+Error Handling:
 
-// Cross-field validation examples
-if (data.minAge >= data.maxAge) {
-  errors.push('Maximum age must be greater than minimum age');
-}
+Graceful degradation: Fallback UI for errors
+User feedback: Toast notifications, error boundaries
+Logging: Structured logging for debugging
+Retry mechanisms: Auto-retry failed requests
 
-if (ageSpan > BUSINESS_RULES.AGE_RANGE_MAX_SPAN) {
-  warnings.push('Age range seems too wide');
-}
-```
+🚀 When Working on Complex Features
+Process:
 
-## Error Handling Patterns
+Analyze requirements - Understand dating app context
+Design component API - TypeScript interfaces first
+Mobile-first implementation - Start with mobile, enhance for desktop
+Theme integration - Use custom variants and animations
+Accessibility review - Ensure usable by all users
+Performance optimization - Measure and optimize
 
-### Service Layer Error Handling
-```typescript
-async function apiCall() {
-  try {
-    const response = await api.get('endpoint');
-    return { response: response.data, error: null };
-  } catch (error) {
-    return {
-      error: {
-        code: error?.response?.status || 500,
-        message: error?.response?.data?.message || 'An error occurred'
-      }
-    };
-  }
-}
-```
+Always Consider:
 
-### Component Error Boundaries
-```typescript
-export class ErrorBoundary extends React.Component {
-  state = { hasError: false };
-  
-  static getDerivedStateFromError(): { hasError: boolean } {
-    return { hasError: true };
-  }
-  
-  render() {
-    if (this.state.hasError) {
-      return <ErrorFallback onRetry={() => this.setState({ hasError: false })} />;
-    }
-    return this.props.children;
-  }
-}
-```
+Dating app mental model - How do users think about profiles, matches, conversations?
+Emotional journey - What feelings should this interaction create?
+Mobile context - Users are often on-the-go, distracted
+Safety & privacy - Dating apps handle sensitive personal data
+Conversion goals - How does this feature drive sign-ups/engagement?
 
-## File Naming & Organization
+📋 Checklist for Every Component
 
-### Component Structure
-```
-src/mvp/profile/
-├── components/           # Reusable components
-├── hooks/               # Custom hooks  
-├── partnerPreferences/  # Feature module
-│   ├── components/      # Feature components
-│   ├── hooks/          # Feature hooks
-│   └── config/         # Configuration
-├── types/              # Type definitions
-└── constants.ts        # Default values
-```
+ Mobile-first responsive design
+ Uses custom theme variants
+ Proper TypeScript interfaces
+ Accessibility attributes (ARIA, roles)
+ Touch-friendly interaction areas (44px+)
+ Loading and error states
+ Hover/focus/active states
+ Animation/transition effects
+ Fits dating app mental model
+ Matches brand personality
 
-### Naming Conventions
-- **Components**: PascalCase (`UserProfile.tsx`)
-- **Hooks**: camelCase with `use` prefix (`useUserProfile.ts`)
-- **Services**: camelCase with Service suffix (`userProfileService.ts`)
-- **Types**: PascalCase for interfaces (`DatifyyUsersInformation`)
-- **Enums**: PascalCase (`GenderPreference`)
 
-## Environment & Configuration
-
-### Environment Variables
-```typescript
-// API Configuration
-REACT_APP_BACKENDEND_URL_DEV=http://localhost:3453
-REACT_APP_BACKENDEND_URL_PROD=https://api.datifyy.com
-REACT_APP_ENV=dev|prod
-
-// External Services
-REACT_APP_GEO_API=geoapify_api_key
-REACT_APP_GA_ID=google_analytics_id
-REACT_APP_SENTRY_DSN=sentry_dsn
-```
-
-## Common Patterns for New Features
-
-### 1. Creating a New Service
-```typescript
-// Template: src/service/newFeatureService.ts
-class NewFeatureService {
-  async getItems() {
-    return apiService.get('new-feature');
-  }
-  
-  async updateItem(data: UpdateData) {
-    const validationResult = this.validateData(data);
-    if (!validationResult.isValid) {
-      return { error: { code: 400, message: 'Validation failed' } };
-    }
-    return apiService.put('new-feature', data);
-  }
-  
-  private validateData(data: UpdateData) {
-    // Validation logic
-  }
-}
-```
-
-### 2. Creating a Custom Hook
-```typescript
-// Template: src/hooks/useNewFeature.ts
-export const useNewFeature = () => {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['new-feature'],
-    queryFn: () => newFeatureService.getItems()
-  });
-  
-  const updateMutation = useMutation({
-    mutationFn: newFeatureService.updateItem,
-    onSuccess: () => queryClient.invalidateQueries(['new-feature'])
-  });
-  
-  return {
-    data,
-    isLoading,
-    error,
-    updateItem: updateMutation.mutateAsync
-  };
-};
-```
-
-### 3. Creating a Form Component
-```typescript
-// Template: Complex form with validation
-const NewFeatureForm = () => {
-  const { data, updateItem } = useNewFeature();
-  const { validateField, errors } = useValidation();
-  const [formData, setFormData] = useState({});
-  
-  return (
-    <VStack spacing={6}>
-      {fields.map(field => (
-        <FormField 
-          key={field.name}
-          field={field}
-          value={formData[field.name]}
-          onChange={(value) => setFormData(prev => ({ ...prev, [field.name]: value }))}
-          error={errors[field.name]}
-        />
-      ))}
-      <Button onClick={() => updateItem(formData)}>
-        Save
-      </Button>
-    </VStack>
-  );
-};
-```
-
-This context report provides the foundational knowledge needed to understand and extend the Datifyy codebase effectively. Use this as your reference when creating new features or modifying existing functionality.
+Remember: You're building more than an app - you're creating a platform where people find love. Every pixel, interaction, and animation should feel premium, trustworthy, and emotionally engaging. The goal is to help users feel confident and excited about finding their perfect match. 💕

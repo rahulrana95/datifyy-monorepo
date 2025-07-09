@@ -12,7 +12,7 @@ import reportWebVitals from "./reportWebVitals";
 // import Signup from "./mvp/Signup";
 import * as Sentry from "@sentry/react";
 import LogRocket from 'logrocket';
-import { ChakraProvider, } from '@chakra-ui/react'
+import { ChakraProvider, ColorModeScript } from '@chakra-ui/react'
 import theme from "./theme/index";
 import Home from "./mvp/home/home";
 import AdminRoute from "./mvp/admin/AdminRoute";
@@ -107,43 +107,47 @@ function App() {
   };
 
   return (
-    <ChakraProvider theme={theme}>
-      <QueryProvider>
-        <div className="App">
-          <Helmet>
-            <title>Datifyy</title> {/* Dynamically set title */}
-            <meta name="description" content="Datifyy" />{" "}
-            {/* Optional meta tags */}
-          </Helmet>
-          <StatusWrapper isLoading={loading} error={''} p={0} {...StatusWrapperProps}>
-            <Router>
-              <Routes>
-                <Route path="/" element={<Home />}>
-                  {/* Protect Profile Route Inside Home */}
-                  <Route path="/" element={<LandingPage />}></Route>
-                  <Route path="/profile" element={<HeaderWithTabs />}></Route>
-                  <Route path="about-us" element={<AboutUs />} />
-                  <Route path="tnc" element={<TermsAndConditions />} />
-                  <Route path="contact-us" element={<ContactUs />} />
-                  <Route path="privacy-policy" element={<PrivacyPolicy />} />
+    <>
+      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
 
-                </Route>
-                {/* Protect Profile Route */}
+      <ChakraProvider theme={theme}>
+        <QueryProvider>
+          <div className="App">
+            <Helmet>
+              <title>Datifyy</title> {/* Dynamically set title */}
+              <meta name="description" content="Datifyy" />{" "}
+              {/* Optional meta tags */}
+            </Helmet>
+            <StatusWrapper isLoading={loading} error={''} p={0} {...StatusWrapperProps}>
+              <Router>
+                <Routes>
+                  <Route path="/" element={<Home />}>
+                    {/* Protect Profile Route Inside Home */}
+                    <Route path="/" element={<LandingPage />}></Route>
+                    <Route path="/profile" element={<HeaderWithTabs />}></Route>
+                    <Route path="about-us" element={<AboutUs />} />
+                    <Route path="tnc" element={<TermsAndConditions />} />
+                    <Route path="contact-us" element={<ContactUs />} />
+                    <Route path="privacy-policy" element={<PrivacyPolicy />} />
+
+                  </Route>
+                  {/* Protect Profile Route */}
 
 
-                {/* <Route path="/events/:eventId/live" element={<LiveEvent />} />
+                  {/* <Route path="/events/:eventId/live" element={<LiveEvent />} />
             {/* <Route path="/login" element={<Login />} /> */}
-                {/* <Route path="/signup" element={<Signup />} />
+                  {/* <Route path="/signup" element={<Signup />} />
             <Route path="/header" element={<Header />} /> */}
-              </Routes>
-              <AdminRoute />
-            </Router>
+                </Routes>
+                <AdminRoute />
+              </Router>
 
-            {/* <GlobalSnackbar /> */}
-          </StatusWrapper>
-        </div >
-      </QueryProvider>
-    </ChakraProvider>
+              {/* <GlobalSnackbar /> */}
+            </StatusWrapper>
+          </div >
+        </QueryProvider>
+      </ChakraProvider>
+    </>
   );
 }
 
