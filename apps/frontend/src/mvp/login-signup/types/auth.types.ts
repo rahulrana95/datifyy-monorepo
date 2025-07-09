@@ -1,59 +1,34 @@
 // apps/frontend/src/mvp/login-signup/types/auth.types.ts
 /**
- * Authentication related types and enums
- * Centralized type definitions for the auth module
+ * Authentication related types - now importing from shared types
+ * Only frontend-specific types should remain here
  */
+// Re-export from shared types for convenience
+export {
+  AuthView, type ForgotPasswordStep
+} from '@datifyy/shared-types';
+export type {
+  FormFieldErrors,
+  SignupFormData,
+  LoginFormData,
+  ForgotPasswordFormData,
+  AuthStep
+} from '@datifyy/shared-types';
 
-export enum AuthView {
-    LOGIN = "login",
-    SIGNUP = "signup",
-    FORGOT_PASSWORD = "forgotPassword"
-}
-
-export interface FormFieldErrors {
-    email?: string;
-    password?: string;
-    confirmPassword?: string;
-    verificationCode?: string;
-    terms?: string;
-    code?: string;
+// Frontend-specific interfaces only
+export interface AuthFormProps {
+  onLogin?: () => void;
+  onSignup?: () => void;
+  onForgotPassword?: () => void;
 }
 
 export interface PasswordStrength {
-    strength: number;
-    checks: {
-        length: boolean;
-        lowercase: boolean;
-        uppercase: boolean;
-        numbers: boolean;
-        special: boolean;
-    };
+  strength: number;
+  checks: {
+    length: boolean;
+    lowercase: boolean;
+    uppercase: boolean;
+    numbers: boolean;
+    special: boolean;
+  };
 }
-
-export interface AuthFormProps {
-    onLogin?: () => void;
-    onSignup?: () => void;
-    onForgotPassword?: () => void;
-}
-
-export interface SignupFormData {
-    email: string;
-    password: string;
-    confirmPassword: string;
-    agreeToTerms: boolean;
-}
-
-export interface LoginFormData {
-    email: string;
-    password: string;
-}
-
-export interface ForgotPasswordFormData {
-    email: string;
-    code: string;
-    newPassword: string;
-    confirmPassword: string;
-}
-
-export type AuthStep = 'details' | 'verification' | 'password';
-export type ForgotPasswordStep = 'email' | 'code' | 'password';

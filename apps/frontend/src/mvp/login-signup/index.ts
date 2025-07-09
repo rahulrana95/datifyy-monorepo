@@ -13,7 +13,6 @@ export { default as AuthModalHeader } from './components/AuthModalHeader';
 
 // Store
 export { useAuthStore } from './store/authStore';
-export type { UserData, AuthModalState } from './store/authStore';
 
 // Types
 export { 

@@ -1,126 +1,129 @@
+// apps/frontend/src/service/authService.ts
 import apiService from "./apiService";
-import { ErrorObject } from "./ErrorTypes";
+import { 
+  ServiceResponse,
+  LoginRequest,
+  LoginResponse,
+  SignupRequest,
+  SignupResponse,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
+  EmailVerificationRequest,
+  TokenValidationResponse,
+  UserProfileResponse
+} from "@datifyy/shared-types";
 
 const AUTH_API_PREFIX = "auth";
 
-export const login = async (username: string, password: string) => {
+export const login = async (
+  username: string, 
+  password: string
+): Promise<ServiceResponse<LoginResponse>> => {
   try {
-    const response: {
-      response?: {
-        data: {
-          token: string;
-        };
-      };
-      error?: ErrorObject;
-    } = await apiService.post(`${AUTH_API_PREFIX}/login`, {
+    const loginData: LoginRequest = {
       email: username,
       password,
-    });
+    };
 
-    if (!response?.response?.data?.token) {
-      return { response: null, error: "Login failed" };
+    const response = await apiService.post<LoginResponse>(`${AUTH_API_PREFIX}/login`, loginData);
+
+    if (!response?.response?.token) {
+      return { response: undefined, error: { code: 401, message: "Login failed" } };
     }
 
-    const token = response.response.data.token;
-
+    const token = response.response.token;
     apiService.setTokenInCookies(token);
 
-    return { response: response.response.data, error: null };
+    return { response: response.response, error: undefined };
   } catch (error) {
     console.log(error);
-    return { response: null, error: "Login failed" };
+    return { response: undefined, error: { code: 500, message: "Login failed" } };
   }
 };
 
-export const verifyToken = async () => {
+export const verifyToken = async (): Promise<ServiceResponse<TokenValidationResponse>> => {
   try {
     await apiService.getTokenFromCookies();
-    const response: {
-      response?: {
-        id: string;
-        firstName: string;
-        officialEmail: string;
-        isadmin: boolean;
-      };
-      error?: ErrorObject;
-    } = await apiService.post(`${AUTH_API_PREFIX}/validate-token`);
+    const response = await apiService.post<TokenValidationResponse>(`${AUTH_API_PREFIX}/validate-token`);
+    
     if (response.error) {
-      return { response: null, error: "validate-token failed" };
+      return { response: undefined, error: { code: 401, message: "validate-token failed" } };
     }
-    return { response: response.response, error: null };
+    
+    return { response: response.response, error: undefined };
   } catch (error) {
-    return { response: null, error: "validate-token failed" };
+    return { response: undefined, error: { code: 500, message: "validate-token failed" } };
   }
 };
 
-export const register = async (password: string, email: string, verificationCode: string) => {
+export const register = async (
+  password: string, 
+  email: string, 
+  verificationCode: string
+): Promise<ServiceResponse<SignupResponse>> => {
   try {
-    const response = await apiService.post(`${AUTH_API_PREFIX}/signup`, {
+    const signupData: SignupRequest = {
       password,
       email,
       verificationCode
-    });
+    };
+
+    const response = await apiService.post<SignupResponse>(`${AUTH_API_PREFIX}/signup`, signupData);
       
     if (response.error) {
-      return { response: null, error: "Registration failed" };
+      return { response: undefined, error: { code: 400, message: "Registration failed" } };
     }
-    return { response: response.response, error: null };
+    
+    return { response: response.response, error: undefined };
   } catch (error) {
-    return { response: null, error: "Registration failed" };
+    return { response: undefined, error: { code: 500, message: "Registration failed" } };
   }
 };
 
-export const logout = async () => {
+export const logout = async (): Promise<ServiceResponse<any>> => {
   try {
     const response = await apiService.post(`${AUTH_API_PREFIX}/logout`);
 
     if (response.error) {
-      return { response: null, error: "Logout failed." };
+      return { response: undefined, error: { code: 500, message: "Logout failed." } };
     }
 
-    return { response: response.response, error: null };
+    return { response: response.response, error: undefined };
   } catch (error) {
-    return { response: null, error: "Logout failed" };
+    return { response: undefined, error: { code: 500, message: "Logout failed" } };
   }
 };
 
-export const getCurrentUser = async () => {
+export const getCurrentUser = async (): Promise<ServiceResponse<{ data: UserProfileResponse }>> => {
   try {
-    const response: {
-      response?: {
-        data: {
-          id: string;
-          officialEmail: string;
-          firstName: string;
-          isadmin: boolean;
-        };
-      };
-      error?: ErrorObject;
-    } = await apiService.get("user-profile");
+    const response = await apiService.get<{ data: UserProfileResponse }>("user-profile");
+    
     if (response.error) {
-      return { response: null, error: "Failed to fetch current user" };
+      return { response: undefined, error: { code: 404, message: "Failed to fetch current user" } };
     }
-    return { response: response.response, error: null };
+    
+    return { response: response.response, error: undefined };
   } catch (error) {
-    return { response: null, error: "Failed to fetch current user" };
+    return { response: undefined, error: { code: 500, message: "Failed to fetch current user" } };
   }
 };
 
-export const sendEmailCode = async ({
-  to,
-  type,
-}: {
-  to: { email: string; name: string }[];
-  type: "verifyEmail" | "forgotPassword";
-}) => {
+export const sendEmailCode = async (
+  emailData: EmailVerificationRequest
+): Promise<ServiceResponse<any>> => {
   try {
-    const response = await apiService.post(`${AUTH_API_PREFIX}/send-verification-code`, { email: to[0].email});
+    const response = await apiService.post(
+      `${AUTH_API_PREFIX}/send-verification-code`, 
+      { email: emailData.to[0].email }
+    );
+    
     if (response.error) {
-      return { response: null, error: "Something is wrong." };
+      return { response: undefined, error: { code: 400, message: "Something is wrong." } };
     }
-    return { response: response.response, error: null };
+    
+    return { response: response.response, error: undefined };
   } catch (error) {
-    return { response: null, error: "Failed to fetch current user" };
+    return { response: undefined, error: { code: 500, message: "Failed to send verification code" } };
   }
 };
 
@@ -130,33 +133,41 @@ export const verifyEmailCode = async ({
 }: {
   email: string;
   verificationCode: string;
-}) => {
+}): Promise<ServiceResponse<any>> => {
   try {
     const response = await apiService.post("/verify-email-code", {
       email,
       verificationCode,
     });
+    
     if (response.error) {
-      return { response: null, error: "Something is wrong." };
+      return { response: undefined, error: { code: 400, message: "Something is wrong." } };
     }
-    return { response: response.response, error: null };
+    
+    return { response: response.response, error: undefined };
   } catch (error) {
-    return { response: null, error: "Failed to fetch current user" };
+    return { response: undefined, error: { code: 500, message: "Failed to verify email code" } };
   }
 };
 
-export const sendForgotPasswordCode = async (email: string) => {
+export const sendForgotPasswordCode = async (
+  email: string
+): Promise<ServiceResponse<any>> => {
   try {
+    const forgotPasswordData: ForgotPasswordRequest = { email };
+    
     const response = await apiService.post(
       `${AUTH_API_PREFIX}/forgot-password`,
-      { email }
+      forgotPasswordData
     );
+    
     if (response.error) {
-      return { response: null, error: "Something is wrong." };
+      return { response: undefined, error: { code: 400, message: "Something is wrong." } };
     }
-    return { response: response.response, error: null };
+    
+    return { response: response.response, error: undefined };
   } catch (error) {
-    return { response: null, error: "Failed to fetch current user" };
+    return { response: undefined, error: { code: 500, message: "Failed to send forgot password code" } };
   }
 };
 
@@ -166,45 +177,39 @@ export const verifyForgotPasswordCode = async ({
 }: {
   email: string;
   verificationCode: string;
-}) => {
+}): Promise<ServiceResponse<any>> => {
   try {
     const response = await apiService.post(`${AUTH_API_PREFIX}/verify-email`, {
       email,
       verificationCode,
     });
+    
     if (response.error) {
-      return { response: null, error: "Something is wrong." };
+      return { response: undefined, error: { code: 400, message: "Something is wrong." } };
     }
-    return { response: response.response, error: null };
+    
+    return { response: response.response, error: undefined };
   } catch (error) {
-    return { response: null, error: "Failed to fetch current user" };
+    return { response: undefined, error: { code: 500, message: "Failed to verify forgot password code" } };
   }
 };
 
-export const resetPassword = async ({
-  email,
-  newPassword,
-  resetCode,
-}: {
-  email: string;
-  newPassword: string;
-  resetCode: string;
-}) => {
+export const resetPassword = async (
+  resetData: ResetPasswordRequest
+): Promise<ServiceResponse<any>> => {
   try {
     const response = await apiService.post(
       `${AUTH_API_PREFIX}/reset-password`,
-      {
-        email,
-        resetCode,
-        newPassword,
-      }
+      resetData
     );
+    
     if (response.error) {
-      return { response: null, error: "Something is wrong." };
+      return { response: undefined, error: { code: 400, message: "Something is wrong." } };
     }
-    return { response: response.response, error: null };
+    
+    return { response: response.response, error: undefined };
   } catch (error) {
-    return { response: null, error: "Failed to fetch current user" };
+    return { response: undefined, error: { code: 500, message: "Failed to reset password" } };
   }
 };
 

@@ -1980,15 +1980,15 @@ __metadata:
 
 "@datifyy/shared-types@file:../../libs/shared-types::locator=frontend%40workspace%3Aapps%2Ffrontend":
   version: 1.0.0
-  resolution: "@datifyy/shared-types@file:../../libs/shared-types#../../libs/shared-types::hash=2713d5&locator=frontend%40workspace%3Aapps%2Ffrontend"
-  checksum: 10c0/303a3a8a66437c65c361cf9437531b6ce48744be1e0b1741def6826f94cbc8b04096c1eaea7b1df0e95ea0a8a2f9413f8536475587cc37f0a7cf02fb3568e2f3
+  resolution: "@datifyy/shared-types@file:../../libs/shared-types#../../libs/shared-types::hash=6f03cc&locator=frontend%40workspace%3Aapps%2Ffrontend"
+  checksum: 10c0/9f8fb4d52f2d59c1d65350d9664dd1fff24943b39fb4080a1526c61ed35f3d3edf5dcc7c2a5d5337a0a66f998e76ca15dd09a70979ec5ec22f2fc7c7dd13b946
   languageName: node
   linkType: hard
 
 "@datifyy/shared-types@file:../../libs/shared-types::locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service":
   version: 1.0.0
-  resolution: "@datifyy/shared-types@file:../../libs/shared-types#../../libs/shared-types::hash=2713d5&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"
-  checksum: 10c0/303a3a8a66437c65c361cf9437531b6ce48744be1e0b1741def6826f94cbc8b04096c1eaea7b1df0e95ea0a8a2f9413f8536475587cc37f0a7cf02fb3568e2f3
+  resolution: "@datifyy/shared-types@file:../../libs/shared-types#../../libs/shared-types::hash=6f03cc&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"
+  checksum: 10c0/9f8fb4d52f2d59c1d65350d9664dd1fff24943b39fb4080a1526c61ed35f3d3edf5dcc7c2a5d5337a0a66f998e76ca15dd09a70979ec5ec22f2fc7c7dd13b946
   languageName: node
   linkType: hard
 
@@ -2000,25 +2000,48 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@datifyy/shared-utils@file:../../libs/shared-utils::locator=frontend%40workspace%3Aapps%2Ffrontend":
+  version: 1.0.0
+  resolution: "@datifyy/shared-utils@file:../../libs/shared-utils#../../libs/shared-utils::hash=c0c6c9&locator=frontend%40workspace%3Aapps%2Ffrontend"
+  dependencies:
+    date-fns: "npm:^4.1.0"
+  peerDependencies:
+    "@datifyy/shared-types": 1.0.0
+  checksum: 10c0/54ac7de5bb56dab87004cdbb2443cf6c81980cbb536600bd3320e5a2e5d9c71e33b7c01fa6431a5ac8839ab2b3263137a58ab33dc4b8ca8138907f9a34e13707
+  languageName: node
+  linkType: hard
+
+"@datifyy/shared-utils@workspace:libs/shared-utils":
+  version: 0.0.0-use.local
+  resolution: "@datifyy/shared-utils@workspace:libs/shared-utils"
+  dependencies:
+    "@types/node": "npm:^16.18.115"
+    date-fns: "npm:^4.1.0"
+    typescript: "npm:^5.0.0"
+  peerDependencies:
+    "@datifyy/shared-types": 1.0.0
+  languageName: unknown
+  linkType: soft
+
 "@datifyy/shared-validation@file:../../libs/shared-validation::locator=frontend%40workspace%3Aapps%2Ffrontend":
   version: 1.0.0
-  resolution: "@datifyy/shared-validation@file:../../libs/shared-validation#../../libs/shared-validation::hash=fdafca&locator=frontend%40workspace%3Aapps%2Ffrontend"
+  resolution: "@datifyy/shared-validation@file:../../libs/shared-validation#../../libs/shared-validation::hash=94501a&locator=frontend%40workspace%3Aapps%2Ffrontend"
   dependencies:
     zod: "npm:^3.22.0"
   peerDependencies:
     "@datifyy/shared-types": 1.0.0
-  checksum: 10c0/045d4a2b66feb1427358121a801b18654d15e0adbfe64008754c62c55f4f32cd71bb589154b21a7b0aaa88d94d4bfff5b7de90d93a2b6293e4eb5ddbd30bb0ff
+  checksum: 10c0/9be9da9b2adac5b27229d0def69b51e6ab4fcd18d896aefde7bbd1518ecfb4e3980365634af2322947dbc4407dce66f1469542a0fdce132def94b44340f9289d
   languageName: node
   linkType: hard
 
 "@datifyy/shared-validation@file:../../libs/shared-validation::locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service":
   version: 1.0.0
-  resolution: "@datifyy/shared-validation@file:../../libs/shared-validation#../../libs/shared-validation::hash=fdafca&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"
+  resolution: "@datifyy/shared-validation@file:../../libs/shared-validation#../../libs/shared-validation::hash=94501a&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"
   dependencies:
     zod: "npm:^3.22.0"
   peerDependencies:
     "@datifyy/shared-types": 1.0.0
-  checksum: 10c0/045d4a2b66feb1427358121a801b18654d15e0adbfe64008754c62c55f4f32cd71bb589154b21a7b0aaa88d94d4bfff5b7de90d93a2b6293e4eb5ddbd30bb0ff
+  checksum: 10c0/9be9da9b2adac5b27229d0def69b51e6ab4fcd18d896aefde7bbd1518ecfb4e3980365634af2322947dbc4407dce66f1469542a0fdce132def94b44340f9289d
   languageName: node
   linkType: hard
 
@@ -11262,6 +11285,7 @@ __metadata:
     "@chakra-ui/react": "npm:2"
     "@datifyy/shared-constants": "file:../../libs/shared-constants"
     "@datifyy/shared-types": "file:../../libs/shared-types"
+    "@datifyy/shared-utils": "file:../../libs/shared-utils"
     "@datifyy/shared-validation": "file:../../libs/shared-validation"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
@@ -11278,6 +11302,7 @@ __metadata:
     "@sentry/cli": "npm:^2.41.1"
     "@sentry/react": "npm:^8.52.1"
     "@tanstack/react-query": "npm:^5.81.5"
+    "@tanstack/react-query-devtools": "npm:^5.81.5"
     "@testing-library/jest-dom": "npm:^5.17.0"
     "@testing-library/react": "npm:^13.4.0"
     "@testing-library/user-event": "npm:^13.5.0"

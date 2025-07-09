@@ -50,16 +50,7 @@ export interface UserProfile {
   userLoginId: string | null;
 }
 
-/**
- * User profile for API responses (with computed fields)
- */
-export interface UserProfileResponse extends UserProfile {
-  age?: number; // Computed from dob
-  profileCompletionPercentage: number; // Computed
-  lastUpdated: string; // ISO string
-  createdAt: string; // ISO string
-  isVerified: boolean; // Computed from verification fields
-}
+
 
 /**
  * User profile update request (only updatable fields)

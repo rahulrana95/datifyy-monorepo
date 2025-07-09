@@ -101,6 +101,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSignup, onForgotPassword }) => 
                 setUserData({
                     email: userData.officialEmail || email,
                     name: userData.firstName || '',
+                    // @ts-ignore
                     isAdmin: userData.isadmin || false,
                     id: userData.id || ''
                 });

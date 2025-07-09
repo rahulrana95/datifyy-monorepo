@@ -9,11 +9,15 @@
     "libs/*"
   ],
   "scripts": {
-    "build:shared": "yarn workspace @datifyy/shared-types build && yarn workspace @datifyy/shared-validation build && yarn workspace @datifyy/shared-constants build",
+    "clean:shared": "yarn workspace @datifyy/shared-types clean && yarn workspace @datifyy/shared-utils clean && yarn workspace @datifyy/shared-validation clean && yarn workspace @datifyy/shared-constants clean",
+    "build:shared-types": "yarn workspace @datifyy/shared-types build",
+    "build:shared-utils": "yarn workspace @datifyy/shared-utils build",
+    "build:shared-validation": "yarn workspace @datifyy/shared-validation build",
+    "build:shared-constants": "yarn workspace @datifyy/shared-constants build",
+    "build:shared": "yarn build:shared-types && yarn build:shared-utils && yarn build:shared-validation && yarn build:shared-constants",
     "build:all": "yarn build:shared && yarn workspace frontend build && yarn workspace nodejs-service build",
-    "dev:shared": "yarn workspace @datifyy/shared-types dev & yarn workspace @datifyy/shared-validation dev",
+    "dev:shared": "yarn workspace @datifyy/shared-types dev & yarn workspace @datifyy/shared-utils dev & yarn workspace @datifyy/shared-validation dev",
     "type-check": "yarn workspaces run type-check",
-    "clean:shared": "yarn workspace @datifyy/shared-types clean && yarn workspace @datifyy/shared-validation clean && yarn workspace @datifyy/shared-constants clean",
     "start:frontend": "yarn workspace frontend start",
     "start:backend": "yarn workspace nodejs-service dev"
   },
