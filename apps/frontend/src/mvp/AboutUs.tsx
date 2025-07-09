@@ -1,7 +1,7 @@
 import { Box, Button, Container, Flex, Heading, Icon, Stack, Text, VStack } from "@chakra-ui/react";
 import { FaShieldAlt, FaCheckCircle, FaHeart, FaUsers, FaHandshake, FaRocket } from "react-icons/fa";
 import { useTheme } from "@chakra-ui/react";
-import { useAuthStore } from "./login-signup/authStore";
+import { useAuthStore } from "./login-signup";
 
 const AboutUs = () => {
     const theme = useTheme();

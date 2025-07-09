@@ -8,7 +8,6 @@ import { AppDataSource } from "..";
 import { DatifyyUsersLogin } from "../models/entities/DatifyyUsersLogin";
 import { DatifyyEmailLogs } from "../models/entities/DatifyyEmailLogs";
 // Mailersend API Key
-const MAILERSEND_API_KEY = process.env.MAILER_SEND_KEY ?? "na";
 
 export const from = {
   email: "rahulrana@datifyy.com",
@@ -50,14 +49,16 @@ const fetchEmailInfo = (type: EmailType, code?: string, toEmail?: string) => {
 
 // Function to send email
 export const sendEmail = async (
+  key: string,
   from: EmailUser,
   to: EmailUser[],
   subject: string,
   text: string,
   html: string
 ) => {
+
   const mailer = new MailerSend({
-    apiKey: 'mlsn.c19f3b079cb226180d40339125da2dc1b5b581d7e478635a79bec6048244c435',
+    apiKey: key,
   });
 
   const sentFrom = new Sender(from.email, from.name);
@@ -110,7 +111,7 @@ export const sendSingleEmail = async (req: Request, res: Response) => {
   }
 
   try {
-    const result = await sendEmail(from, to, newSub, newTemplate, newTemplate);
+    const result = await sendEmail('',from, to, newSub, newTemplate, newTemplate);
     res.status(200).json({ message: "Email sent successfully", result });
     return;
   } catch (error: any) {
@@ -183,6 +184,7 @@ export const sendBulkEmails = async (req: Request, res: Response) => {
         console.log('---- sending email now');
         // Send email
         await sendEmail(
+          '',
           from,
           [{ email, name: email }],
           fetchEmailInfo(emailType).subject,

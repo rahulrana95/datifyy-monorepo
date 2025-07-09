@@ -11,9 +11,7 @@ import {
   useDisclosure,
   useBreakpointValue,
 } from '@chakra-ui/react';
-import { useAuthStore } from './login-signup/authStore';
 import { useNavigate } from 'react-router-dom';
-import AuthModal from './login-signup/AuthModal';
 import UserMenu from './UserMenu';
 
 // Import smaller components
@@ -21,6 +19,7 @@ import HeaderLogo from './header/HeaderLogo';
 import HeaderNavigation from './header/HeaderNavigation';
 import HeaderAuthButtons from './header/HeaderAuthButtons';
 import HeaderMobileMenu from './header/HeaderMobileMenu';
+import { AuthModal, useAuthStore } from './login-signup';
 
 const Header: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

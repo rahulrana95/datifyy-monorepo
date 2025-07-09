@@ -1,9 +1,9 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
 import AdminDashboard from './AdminDashboard';
-import { useAuthStore } from '../login-signup/authStore';
+import { useAuthStore } from '../login-signup';
 
 function AdminRoute() {
-  const { isAuthenticated, isAdmin } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
 
   // if (!isAuthenticated) {
   //   // Redirect to login if not authenticated
