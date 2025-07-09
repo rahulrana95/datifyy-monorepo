@@ -29,12 +29,10 @@ class UserProfileService {
     try {
       console.log('🔍 Fetching user profile...');
       
+      // @ts-ignore
       const response: {
-        response?: {
-          success?: boolean;
-          data?: DatifyyUsersInformation;
-        };
-        error?: ErrorObject;
+        response: DatifyyUsersInformation,
+        error: ErrorObject
       } = await api.get(`user-profile`);
 
       if (response.error) {
@@ -42,13 +40,13 @@ class UserProfileService {
         return { response: null, error: response.error };
       }
 
-      if (!response.response?.data) {
+      if (!response?.response?.id) {
         console.warn('⚠️ No user profile data found');
         return getResponseNotExistErrorObject();
       }
 
       console.log('✅ User profile fetched successfully');
-      return { response: response.response.data, error: undefined };
+      return { response: response?.response, error: undefined };
       
     } catch (error: any) {
       console.error('❌ User profile fetch error:', error);

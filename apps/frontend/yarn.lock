@@ -2044,30 +2044,30 @@ __metadata:
 
 "@datifyy/shared-types@file:../../libs/shared-types::locator=frontend%40workspace%3A.":
   version: 1.0.0
-  resolution: "@datifyy/shared-types@file:../../libs/shared-types#../../libs/shared-types::hash=6f03cc&locator=frontend%40workspace%3A."
-  checksum: 10c0/9f8fb4d52f2d59c1d65350d9664dd1fff24943b39fb4080a1526c61ed35f3d3edf5dcc7c2a5d5337a0a66f998e76ca15dd09a70979ec5ec22f2fc7c7dd13b946
+  resolution: "@datifyy/shared-types@file:../../libs/shared-types#../../libs/shared-types::hash=491d94&locator=frontend%40workspace%3A."
+  checksum: 10c0/8fa9681b2f220ed659a726600b890b8d72c0d314eaec02b5c1a74f4a4f3611fccacfbc9f6c03b4ecd81bd3d053004e6a6518d5da01a43d8da7a9804a16b5955f
   languageName: node
   linkType: hard
 
 "@datifyy/shared-utils@file:../../libs/shared-utils::locator=frontend%40workspace%3A.":
   version: 1.0.0
-  resolution: "@datifyy/shared-utils@file:../../libs/shared-utils#../../libs/shared-utils::hash=c0c6c9&locator=frontend%40workspace%3A."
+  resolution: "@datifyy/shared-utils@file:../../libs/shared-utils#../../libs/shared-utils::hash=fa9e17&locator=frontend%40workspace%3A."
   dependencies:
     date-fns: "npm:^4.1.0"
   peerDependencies:
     "@datifyy/shared-types": 1.0.0
-  checksum: 10c0/54ac7de5bb56dab87004cdbb2443cf6c81980cbb536600bd3320e5a2e5d9c71e33b7c01fa6431a5ac8839ab2b3263137a58ab33dc4b8ca8138907f9a34e13707
+  checksum: 10c0/49e6c37fd97f45940621e8fb5a951668e18034912965c3ddf824d6406c8aa75133965d79e999654ae853d18f58aa403097cc030b6c5ac8b8e4fd9ec1f88bbcea
   languageName: node
   linkType: hard
 
 "@datifyy/shared-validation@file:../../libs/shared-validation::locator=frontend%40workspace%3A.":
   version: 1.0.0
-  resolution: "@datifyy/shared-validation@file:../../libs/shared-validation#../../libs/shared-validation::hash=94501a&locator=frontend%40workspace%3A."
+  resolution: "@datifyy/shared-validation@file:../../libs/shared-validation#../../libs/shared-validation::hash=0cff03&locator=frontend%40workspace%3A."
   dependencies:
     zod: "npm:^3.22.0"
   peerDependencies:
     "@datifyy/shared-types": 1.0.0
-  checksum: 10c0/9be9da9b2adac5b27229d0def69b51e6ab4fcd18d896aefde7bbd1518ecfb4e3980365634af2322947dbc4407dce66f1469542a0fdce132def94b44340f9289d
+  checksum: 10c0/6558784b3ed0ee807ade8bbdd747076830b00e0e41104cf45590d4ff34d1bcbf354ca22373ce18bc982f2df7efb49264f43b6df41b96c56d80249d612082e58a
   languageName: node
   linkType: hard
 
