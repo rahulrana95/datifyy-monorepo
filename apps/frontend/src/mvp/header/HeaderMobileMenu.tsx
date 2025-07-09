@@ -15,8 +15,8 @@ import {
 } from '@chakra-ui/react';
 import HeaderNavigation from './HeaderNavigation';
 import HeaderAuthButtons from './HeaderAuthButtons';
+import { useAuthStore } from '../login-signup';
 // import UserMenu from '../../UserMenu';
-import { useAuthStore } from '../login-signup/authStore';
 
 interface HeaderMobileMenuProps {
     isOpen: boolean;

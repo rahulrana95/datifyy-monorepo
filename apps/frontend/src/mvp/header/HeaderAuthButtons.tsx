@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button, HStack } from '@chakra-ui/react';
 import { FaHeart } from 'react-icons/fa';
-import { useAuthStore } from '../login-signup/authStore';
+import { useAuthStore } from '../login-signup';
 
 interface HeaderAuthButtonsProps {
     isMobile?: boolean;

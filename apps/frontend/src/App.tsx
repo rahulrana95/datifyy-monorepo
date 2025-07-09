@@ -20,7 +20,6 @@ import HeaderWithTabs from "./mvp/profile/HeaderWithTabs";
 import apiService from "./service/apiService";
 import StatusWrapper from "./mvp/common/StatusWrapper/StatusWrapper";
 import authService from "./service/authService";
-import { useAuthStore } from "./mvp/login-signup/authStore";
 import PrivateRoute from "./mvp/PrivateRoute";
 import AboutUs from "./mvp/AboutUs";
 import LandingPage from "./mvp/home/LandingPage";
@@ -28,6 +27,7 @@ import TermsAndConditions from "./mvp/TNC";
 import ContactUs from "./mvp/ContactUs";
 import PrivacyPolicy from "./mvp/PrivacyPolicy";
 import { QueryProvider } from "./providers/QueryProvider";
+import { useAuthStore } from "./mvp/login-signup";
 
 LogRocket.init('kcpnhr/datifyy-fronend');
 

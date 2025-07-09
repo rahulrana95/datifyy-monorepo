@@ -35,6 +35,7 @@ export class AuthController {
   private readonly logger: Logger;
   private readonly jwtSecret: string;
   private readonly saltRounds: number = 12;
+  private readonly mailerKey: string;
 
   constructor(
     private readonly dataSource: DataSource,
@@ -42,6 +43,7 @@ export class AuthController {
   ) {
     this.logger = logger || Logger.getInstance();
     this.jwtSecret = process.env.JWT_SECRET || 'your_jwt_secret';
+    this.mailerKey = process.env.MAILERSEND_API_KEY ?? '';
     
     if (!process.env.JWT_SECRET) {
       this.logger.warn('JWT_SECRET not set in environment variables');
@@ -864,10 +866,8 @@ export class AuthController {
     try {
       // Import verification email template
       const verifyEmailTemplate = (await import('../../methods/templates/verifyEmail')).default;
-      
-        console.log('----')
-        console.log(email);
       await sendEmail(
+        this.mailerKey,
         from,
         [{ email, name: email }],
         'Verify Your Email',
@@ -894,6 +894,7 @@ export class AuthController {
 
     try {
       await sendEmail(
+        this.mailerKey,
         from,
         [{ email, name: email }],
         'Reset Your Password',
