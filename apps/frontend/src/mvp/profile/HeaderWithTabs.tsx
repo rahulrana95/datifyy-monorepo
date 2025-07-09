@@ -27,7 +27,7 @@ import {
     FaShieldAlt,
     FaChartLine
 } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 // Import existing components
 import UserProfile from './UserProfile';
@@ -102,7 +102,7 @@ const NotificationsPanel: React.FC = () => (
         <Icon as={FaBell} boxSize={12} color="gray.400" />
         <VStack spacing={2} textAlign="center">
             <Text fontSize="xl" fontWeight="bold" color="gray.600">
-                Notification Center
+                Notification Centers
             </Text>
             <Text color="gray.500">
                 Manage your notification preferences and message history
@@ -458,13 +458,11 @@ export const IntegratedProfileTabs: React.FC = () => {
                 {/* Tab Panels */}
                 <TabPanels>
                     {/* @ts-ignore */}
-                    <AnimatePresence mode="wait">
-                        {tabConfigs.map((config, index) => (
-                            <TabPanel key={config.id} p={0}>
-                                {activeTab === index && renderTabContent(config)}
-                            </TabPanel>
-                        ))}
-                    </AnimatePresence>
+                    {tabConfigs.map((config, index) => (
+                        <TabPanel key={config.id} p={0}>
+                            {activeTab === index && renderTabContent(config)}
+                        </TabPanel>
+                    ))}
                 </TabPanels>
             </Tabs>
 

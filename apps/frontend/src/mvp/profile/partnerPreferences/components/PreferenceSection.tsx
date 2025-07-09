@@ -17,7 +17,7 @@ import {
     useColorModeValue
 } from '@chakra-ui/react';
 import { FaEdit, FaCheck, FaTimes, FaChevronDown, FaChevronUp, FaClock, FaInfoCircle } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, } from 'framer-motion';
 
 import { FormSection, FormField } from '../config/preferenceFormConfig';
 import { PreferenceFieldGroup } from './PreferenceFieldGroup';
@@ -227,9 +227,9 @@ export const PreferenceSection: React.FC<PreferenceSectionProps> = ({
     const AnimatedContent = ({ children }: { children: any }) => {
         return (
             // @ts-ignore
-            <AnimatePresence mode="wait">
+            <>
                 {children}
-            </AnimatePresence>
+            </>
         );
     };
 

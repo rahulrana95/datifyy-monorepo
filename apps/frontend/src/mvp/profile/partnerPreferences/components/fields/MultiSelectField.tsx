@@ -37,7 +37,7 @@ import {
     FaSearch,
     FaCheck
 } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, } from 'framer-motion';
 
 // ✅ Fixed import path
 import { Logger } from '../../../../../utils/Logger';
@@ -179,7 +179,7 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
 
     // Filter options based on search term
     const filteredOptions = useMemo(() => {
-        if (!searchable || !searchTerm.trim()) return options;
+        if (!searchable || !searchTerm?.trim()) return options;
 
         return options.filter(option =>
             option.toLowerCase().includes(searchTerm.toLowerCase())
@@ -231,9 +231,9 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
 
     // Handle custom option addition
     const handleCustomOptionAdd = useCallback(() => {
-        if (!allowCustom || !searchTerm.trim() || isMaxReached) return;
+        if (!allowCustom || !searchTerm?.trim() || isMaxReached) return;
 
-        const customOption = searchTerm.trim();
+        const customOption = searchTerm?.trim();
         if (options.includes(customOption) || value.includes(customOption)) return;
 
         handleOptionSelect(customOption);
@@ -264,7 +264,7 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
                 e.preventDefault();
                 if (isOpen && highlightedIndex >= 0 && availableOptions[highlightedIndex]) {
                     handleOptionSelect(availableOptions[highlightedIndex]);
-                } else if (allowCustom && searchTerm.trim()) {
+                } else if (allowCustom && searchTerm?.trim()) {
                     handleCustomOptionAdd();
                 } else {
                     setIsOpen(!isOpen);
@@ -331,7 +331,7 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
                     {value.map((item, index) => (
                         <WrapItem key={`${item}-${index}`}>
                             {/* @ts-ignore */}
-                            <AnimatePresence>
+                            <>
                                 <MotionBox
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}
@@ -356,7 +356,7 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
                                         </Tag>
                                     )}
                                 </MotionBox>
-                            </AnimatePresence>
+                            </>
                         </WrapItem>
                     ))}
                 </Wrap>
@@ -447,7 +447,7 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
 
             {/* Dropdown Options */}
             {/* @ts-ignore */}
-            <AnimatePresence>
+            <>
                 {isOpen && (
                     <Portal>
                         <MotionBox
@@ -515,7 +515,7 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
                         </MotionBox>
                     </Portal>
                 )}
-            </AnimatePresence>
+            </>
         </Box>
     );
 };

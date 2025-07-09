@@ -142,6 +142,27 @@ const formatFieldValue = (field: FormField, value: any): FormattedValue => {
             };
 
         case 'locationPreference':
+            if (typeof value === 'object' && value !== null) {
+                const parts = [];
+                if (value.cities?.length > 0) parts.push(`Cities: ${value.cities.join(', ')}`);
+                if (value.states?.length > 0) parts.push(`States: ${value.states.join(', ')}`);
+                if (value.countries?.length > 0) parts.push(`Countries: ${value.countries.join(', ')}`);
+                if (value.radiusKm) parts.push(`${value.radiusKm}km radius`);
+                if (value.willingToRelocate) parts.push('Willing to relocate');
+
+                return {
+                    display: parts.length > 0 ? parts.join(' • ') : 'No preferences set',
+                    isEmpty: parts.length === 0,
+                    type: 'location',
+                    metadata: { description: 'Location preferences' }
+                };
+            }
+            return {
+                display: String(value),
+                isEmpty: false,
+                type: 'location',
+                metadata: { description: 'Click to view on map' }
+            };
         // @ts-ignore
         case 'currentCity':
         // @ts-ignore

@@ -34,7 +34,7 @@ import {
     FaEyeSlash,
     FaTimes
 } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, } from 'framer-motion';
 
 import { PreferenceSection } from './PreferenceSection';
 import { PARTNER_PREFERENCES_FORM_CONFIG } from '../config/preferenceFormConfig';

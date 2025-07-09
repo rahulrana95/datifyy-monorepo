@@ -36,7 +36,7 @@ import {
     FaUndo,
     FaClock
 } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, } from 'framer-motion';
 
 import { Logger } from '../../../../utils/Logger';
 
@@ -308,7 +308,7 @@ export const PreferenceSaveActions: React.FC<PreferenceSaveActionsProps> = ({
 
         return (
             // @ts-ignore
-            <AnimatePresence>
+            <>
                 <MotionBox
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
@@ -359,7 +359,7 @@ export const PreferenceSaveActions: React.FC<PreferenceSaveActionsProps> = ({
                         </VStack>
                     </Alert>
                 </MotionBox>
-            </AnimatePresence>
+            </>
         );
     };
 
@@ -471,7 +471,7 @@ export const PreferenceSaveActions: React.FC<PreferenceSaveActionsProps> = ({
         case 'floating':
             return (
                 // @ts-ignore
-                <AnimatePresence>
+                <>
                     {(hasChanges || validationState.hasValidationIssues) && (
                         <MotionBox
                             initial={{ opacity: 0, y: 50 }}
@@ -498,7 +498,7 @@ export const PreferenceSaveActions: React.FC<PreferenceSaveActionsProps> = ({
                             </div>
                         </MotionBox>
                     )}
-                </AnimatePresence>
+                </>
             );
 
         case 'sticky':

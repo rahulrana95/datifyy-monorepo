@@ -249,13 +249,13 @@ export const PreferenceFieldGroup: React.FC<PreferenceFieldGroupProps> = memo(({
             case FormFieldType.TOGGLE:
                 return (
                     <HStack justify="space-between" w="full">
-                        <Text fontSize="sm">{field.helpText || 'Enable this preference'}</Text>
+                        {/* <Text fontSize="sm">{field.helpText || 'Enable this preference'}</Text>
                         <Switch
                             isChecked={Boolean(currentValue)}
                             onChange={(e) => handleFieldChange(field, e.target.checked)}
                             isDisabled={isUpdating}
                             colorScheme="pink"
-                        />
+                        /> */}
                     </HStack>
                 );
 

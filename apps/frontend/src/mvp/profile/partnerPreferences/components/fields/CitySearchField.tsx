@@ -30,7 +30,7 @@ import {
     FaGlobeAmericas,
     FaCheck
 } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, } from 'framer-motion';
 
 import { Logger } from '../../../../../utils/Logger';
 
@@ -542,7 +542,7 @@ export const CitySearchField: React.FC<CitySearchFieldProps> = ({
 
     // Show suggestions when input is focused
     const handleFocus = useCallback(() => {
-        if (!searchTerm.trim() && recentSearches.length > 0) {
+        if (!searchTerm?.trim() && recentSearches.length > 0) {
             setResults(recentSearches.slice(0, 5));
             setIsOpen(true);
         }
@@ -624,7 +624,7 @@ export const CitySearchField: React.FC<CitySearchFieldProps> = ({
 
             {/* Results Dropdown */}
             {/* @ts-ignore */}
-            <AnimatePresence>
+            <>
                 {isOpen && (results.length > 0 || isLoading) && (
                     <Portal>
                         <MotionBox
@@ -708,7 +708,7 @@ export const CitySearchField: React.FC<CitySearchFieldProps> = ({
                         </MotionBox>
                     </Portal>
                 )}
-            </AnimatePresence>
+            </>
         </Box>
     );
 };

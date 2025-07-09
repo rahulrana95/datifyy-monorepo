@@ -28,7 +28,7 @@ import {
     FaInfoCircle,
     FaKeyboard
 } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, } from 'framer-motion';
 
 import { Logger } from '../../../../../utils/Logger';
 
@@ -478,7 +478,7 @@ export const MultiSelectTextField: React.FC<MultiSelectTextFieldProps> = ({
                     {value.map((item, index) => (
                         <WrapItem key={`${item}-${index}`}>
                             {/* @ts-ignore */}
-                            <AnimatePresence>
+                            <>
                                 <MotionBox
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}
@@ -504,7 +504,7 @@ export const MultiSelectTextField: React.FC<MultiSelectTextFieldProps> = ({
                                         </Tag>
                                     )}
                                 </MotionBox>
-                            </AnimatePresence>
+                            </>
                         </WrapItem>
                     ))}
                 </Wrap>
@@ -537,7 +537,7 @@ export const MultiSelectTextField: React.FC<MultiSelectTextFieldProps> = ({
 
                         {/* Suggestions Dropdown */}
                         {/* @ts-ignore */}
-                        <AnimatePresence>
+                        <>
                             {showSuggestions && filteredSuggestions.length > 0 && (
                                 <MotionBox
                                     initial={{ opacity: 0, y: -5 }}
@@ -572,7 +572,7 @@ export const MultiSelectTextField: React.FC<MultiSelectTextFieldProps> = ({
                                     ))}
                                 </MotionBox>
                             )}
-                        </AnimatePresence>
+                        </>
                     </Box>
 
                     {/* Add Button */}
