@@ -27,6 +27,7 @@ import LandingPage from "./mvp/home/LandingPage";
 import TermsAndConditions from "./mvp/TNC";
 import ContactUs from "./mvp/ContactUs";
 import PrivacyPolicy from "./mvp/PrivacyPolicy";
+import { QueryProvider } from "./providers/QueryProvider";
 
 LogRocket.init('kcpnhr/datifyy-fronend');
 
@@ -107,40 +108,41 @@ function App() {
 
   return (
     <ChakraProvider theme={theme}>
-      <div className="App">
-        <Helmet>
-          <title>Datifyy</title> {/* Dynamically set title */}
-          <meta name="description" content="Datifyy" />{" "}
-          {/* Optional meta tags */}
-        </Helmet>
-        <StatusWrapper isLoading={loading} error={''} p={0} {...StatusWrapperProps}>
-          <Router>
-            <Routes>
-              <Route path="/" element={<Home />}>
-                {/* Protect Profile Route Inside Home */}
-                <Route path="/" element={<LandingPage />}></Route>
-                <Route path="/profile" element={<HeaderWithTabs />}></Route>
-                <Route path="about-us" element={<AboutUs />} />
-                <Route path="tnc" element={<TermsAndConditions />} />
-                <Route path="contact-us" element={<ContactUs />} />
-                <Route path="privacy-policy" element={<PrivacyPolicy />} />
+      <QueryProvider>
+        <div className="App">
+          <Helmet>
+            <title>Datifyy</title> {/* Dynamically set title */}
+            <meta name="description" content="Datifyy" />{" "}
+            {/* Optional meta tags */}
+          </Helmet>
+          <StatusWrapper isLoading={loading} error={''} p={0} {...StatusWrapperProps}>
+            <Router>
+              <Routes>
+                <Route path="/" element={<Home />}>
+                  {/* Protect Profile Route Inside Home */}
+                  <Route path="/" element={<LandingPage />}></Route>
+                  <Route path="/profile" element={<HeaderWithTabs />}></Route>
+                  <Route path="about-us" element={<AboutUs />} />
+                  <Route path="tnc" element={<TermsAndConditions />} />
+                  <Route path="contact-us" element={<ContactUs />} />
+                  <Route path="privacy-policy" element={<PrivacyPolicy />} />
 
-              </Route>
-              {/* Protect Profile Route */}
+                </Route>
+                {/* Protect Profile Route */}
 
 
-              {/* <Route path="/events/:eventId/live" element={<LiveEvent />} />
+                {/* <Route path="/events/:eventId/live" element={<LiveEvent />} />
             {/* <Route path="/login" element={<Login />} /> */}
-              {/* <Route path="/signup" element={<Signup />} />
+                {/* <Route path="/signup" element={<Signup />} />
             <Route path="/header" element={<Header />} /> */}
-            </Routes>
-            <AdminRoute />
-          </Router>
+              </Routes>
+              <AdminRoute />
+            </Router>
 
-          {/* <GlobalSnackbar /> */}
-        </StatusWrapper>
-
-      </div >
+            {/* <GlobalSnackbar /> */}
+          </StatusWrapper>
+        </div >
+      </QueryProvider>
     </ChakraProvider>
   );
 }
