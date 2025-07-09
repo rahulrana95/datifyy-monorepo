@@ -254,17 +254,7 @@ export const IntegratedProfileTabs: React.FC = () => {
     const renderTabContent = (config: TabConfig) => {
         const Component = config.component;
         return (
-            <MotionBox
-                key={config.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-                w="full"
-                h="full"
-            >
-                <Component />
-            </MotionBox>
+            <Component />
         );
     };
 
@@ -278,51 +268,41 @@ export const IntegratedProfileTabs: React.FC = () => {
             bg="gray.50"
         >
             {/* Header with Overall Progress */}
-            <MotionBox
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                bg={tabBg}
-                p={6}
-                borderRadius="xl"
-                boxShadow="sm"
-                mb={6}
-                border="1px solid"
-                borderColor={borderColor}
-            >
-                <VStack spacing={4}>
-                    <HStack justify="space-between" w="full">
-                        <VStack align="start" spacing={1}>
-                            <Text fontSize="2xl" fontWeight="bold" color="gray.800">
-                                Complete Your Profile
-                            </Text>
-                            <Text color="gray.600">
-                                {completionStats.overall}% completed • Get better matches
-                            </Text>
-                        </VStack>
 
-                        <VStack align="end" spacing={1}>
-                            <HStack>
-                                <Icon as={FaChartLine} color={selectedColor} />
-                                <Text fontSize="3xl" fontWeight="bold" color={selectedColor}>
-                                    {completionStats.overall}%
-                                </Text>
-                            </HStack>
-                            <Text fontSize="sm" color="gray.500">
-                                Profile Strength
-                            </Text>
-                        </VStack>
-                    </HStack>
+            <VStack spacing={4}>
+                <HStack justify="space-between" w="full">
+                    <VStack align="start" spacing={1}>
+                        <Text fontSize="2xl" fontWeight="bold" color="gray.800">
+                            Complete Your Profile
+                        </Text>
+                        <Text color="gray.600">
+                            {completionStats.overall}% completed • Get better matches
+                        </Text>
+                    </VStack>
 
-                    <Progress
-                        value={completionStats.overall}
-                        colorScheme={getCompletionColor(completionStats.overall)}
-                        size="lg"
-                        w="full"
-                        borderRadius="full"
-                        bg="gray.100"
-                    />
-                </VStack>
-            </MotionBox>
+                    <VStack align="end" spacing={1}>
+                        <HStack>
+                            <Icon as={FaChartLine} color={selectedColor} />
+                            <Text fontSize="3xl" fontWeight="bold" color={selectedColor}>
+                                {completionStats.overall}%
+                            </Text>
+                        </HStack>
+                        <Text fontSize="sm" color="gray.500">
+                            Profile Strength
+                        </Text>
+                    </VStack>
+                </HStack>
+
+                <Progress
+                    value={completionStats.overall}
+                    colorScheme={getCompletionColor(completionStats.overall)}
+                    size="lg"
+                    w="full"
+                    borderRadius="full"
+                    bg="gray.100"
+                />
+            </VStack>
+
 
             {/* Main Tabs Interface */}
             <Tabs

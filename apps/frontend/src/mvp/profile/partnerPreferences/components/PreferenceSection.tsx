@@ -234,21 +234,7 @@ export const PreferenceSection: React.FC<PreferenceSectionProps> = ({
     };
 
     return (
-        <MotionBox
-            className={className}
-            bg={bgColor}
-            borderRadius="xl"
-            border="1px solid"
-            borderColor={isComplete ? completeTextColor : borderColor}
-            overflow="hidden"
-            shadow="sm"
-            _hover={{ shadow: 'md' }}
-            // @ts-ignore
-            transition="all 0.2s"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-        >
+        <>
             {/* Section Header */}
             <Box
                 p={6}
@@ -366,58 +352,47 @@ export const PreferenceSection: React.FC<PreferenceSectionProps> = ({
 
                     <AnimatedContent>
                         {sectionState.isEditing ? (
-                            <MotionBox
-                                key="editing"
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                exit={{ opacity: 0, height: 0 }}
-                            >
-                                <VStack spacing={6} align="stretch">
-                                    {/* Form Fields */}
-                                    <PreferenceFieldGroup
-                                        fields={section.fields}
-                                        values={getCurrentValues()}
-                                        isEditing={true}
-                                        onFieldChange={handleFieldChange}
-                                        fieldErrors={getFieldErrors()}
-                                        isUpdating={isUpdating}
-                                    />
 
-                                    {/* Save Actions */}
-                                    <PreferenceSaveActions
-                                        onSave={handleSave}
-                                        onDiscard={handleDiscard}
-                                        hasChanges={sectionState.hasChanges}
-                                        hasErrors={hasErrors}
-                                        isLoading={isUpdating}
-                                        saveText="Save Changes"
-                                        discardText="Cancel"
-                                    />
-                                </VStack>
-                            </MotionBox>
-                        ) : (
-                            <MotionBox
-                                key="viewing"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                            >
-                                {/* Read-only Field Display */}
+                            <VStack spacing={6} align="stretch">
+                                {/* Form Fields */}
                                 <PreferenceFieldGroup
                                     fields={section.fields}
-                                    values={preferences || {}}
-                                    isEditing={false}
-                                    onFieldChange={() => { }} // No-op in read mode
-                                    fieldErrors={{}}
-                                    isUpdating={false}
+                                    values={getCurrentValues()}
+                                    isEditing={true}
+                                    onFieldChange={handleFieldChange}
+                                    fieldErrors={getFieldErrors()}
+                                    isUpdating={isUpdating}
                                 />
-                            </MotionBox>
+
+                                {/* Save Actions */}
+                                <PreferenceSaveActions
+                                    onSave={handleSave}
+                                    onDiscard={handleDiscard}
+                                    hasChanges={sectionState.hasChanges}
+                                    hasErrors={hasErrors}
+                                    isLoading={isUpdating}
+                                    saveText="Save Changes"
+                                    discardText="Cancel"
+                                />
+                            </VStack>
+
+                        ) : (
+
+                            < PreferenceFieldGroup
+                                fields={section.fields}
+                                values={preferences || {}}
+                                isEditing={false}
+                                onFieldChange={() => { }} // No-op in read mode
+                                fieldErrors={{}}
+                                isUpdating={false}
+                            />
+
                         )}
                     </AnimatedContent>
 
                 </Box>
             </Collapse>
-        </MotionBox>
+        </>
     );
 };
 
