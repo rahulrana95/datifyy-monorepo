@@ -1,0 +1,470 @@
+# Datifyy Frontend Context Report
+
+## Project Overview
+**Datifyy** is an enterprise-grade React dating application with comprehensive user profiles, partner preferences, and matching capabilities. Built with TypeScript in a monorepo structure.
+
+## Tech Stack & Architecture
+
+### Core Technologies
+```typescript
+// Primary Stack
+- React 18 + TypeScript
+- Chakra UI (primary), Material-UI, Radix UI
+- Zustand (state management)
+- TanStack React Query (data fetching)
+- React Router DOM (routing)
+- Framer Motion (animations)
+- Create React App (build system)
+- Yarn Berry (package manager)
+```
+
+### Project Structure
+```
+datifyy-monorepo/
+├── apps/frontend/          # Main React app
+├── libs/
+│   ├── shared-types/       # TypeScript definitions
+│   ├── shared-constants/   # App constants  
+│   └── shared-validation/  # Validation schemas
+```
+
+## Core Domain Models
+
+### User Profile (`DatifyyUsersInformation`)
+```typescript
+interface DatifyyUsersInformation {
+  // Identity
+  id: string;
+  firstName: string;
+  lastName: string;
+  officialEmail: string;
+  
+  // Personal Info
+  dob: string | null;
+  gender: Gender | null;
+  bio: string | null;
+  images: string[] | null;
+  height: number | null;
+  
+  // Location
+  currentCity: string | null;
+  hometown: string | null;
+  
+  // Lifestyle
+  exercise: Exercise | null;
+  drinking: Drinking | null;
+  smoking: Smoking | null;
+  educationLevel: EducationLevel | null;
+  lookingFor: LookingFor | null;
+  
+  // Verification Status
+  isOfficialEmailVerified: boolean | null;
+  isAadharVerified: boolean | null;
+  isPhoneVerified: boolean | null;
+  
+  // Arrays/Complex
+  favInterest: string[] | null;
+  causesYouSupport: string[] | null;
+  qualityYouValue: string[] | null;
+}
+```
+
+### Partner Preferences (`DatifyyUserPartnerPreferences`)
+```typescript
+interface DatifyyUserPartnerPreferences {
+  // Basic Criteria
+  genderPreference: GenderPreference;
+  minAge: number | null;
+  maxAge: number | null;
+  minHeight: number | null;
+  maxHeight: number | null;
+  
+  // Location & Finance
+  locationPreference: string | null;
+  locationPreferenceRadius: number | null;
+  minIncome: number | null;
+  maxIncome: number | null;
+  currency: Currency | null;
+  
+  // Lifestyle Preferences
+  smokingPreference: SmokingPreference;
+  drinkingPreference: DrinkingPreference;
+  maritalStatus: MaritalStatus;
+  childrenPreference: ChildrenPreference;
+  
+  // Arrays for Multi-Select
+  educationLevel: string[];
+  profession: string[];
+  hobbies: string[];
+  interests: string[];
+  personalityTraits: string[];
+  
+  // Free Text Arrays
+  booksReading: string[];
+  music: string[];
+  movies: string[];
+  travel: string[];
+  
+  // Goals & Compatibility
+  relationshipGoals: RelationshipGoals | null;
+  activityLevel: ActivityLevel | null;
+  petPreference: PetPreference | null;
+  whatOtherPersonShouldKnow: string | null;
+}
+```
+
+## Key Services & APIs
+
+### API Service (`apiService.ts`)
+```typescript
+class ApiService {
+  // Base configuration
+  private axiosInstance: AxiosInstance;
+  private authToken: string;
+  private prefixPath = '/api/v1';
+  
+  // Core methods
+  async get<T>(path: string, config?: AxiosRequestConfig)
+  async post<T>(path: string, data?: unknown, config?: AxiosRequestConfig)
+  async put<T>(path: string, data?: unknown, config?: AxiosRequestConfig)
+  async delete<T>(path: string, config?: AxiosRequestConfig)
+  
+  // Authentication
+  async setAuthToken(token: string)
+  async setTokenFromCookies()
+  async clearToken()
+}
+```
+
+### Auth Service Endpoints
+```typescript
+// Authentication endpoints
+POST /api/v1/auth/login
+POST /api/v1/auth/signup  
+POST /api/v1/auth/logout
+POST /api/v1/auth/validate-token
+POST /api/v1/auth/send-verification-code
+POST /api/v1/auth/forgot-password
+POST /api/v1/auth/reset-password
+
+// Profile endpoints  
+GET /api/v1/user-profile
+PUT /api/v1/user-profile
+GET /api/v1/partner-preferences
+PUT /api/v1/partner-preferences
+```
+
+## State Management Patterns
+
+### Zustand Store Example (`authStore`)
+```typescript
+interface AuthState {
+  user?: UserData | null;
+  isLoginOpen: boolean;
+  isSignupOpen: boolean;
+  isAuthenticated: boolean;
+  isAdmin: boolean;
+  
+  // Actions
+  setUserData: (user: UserData) => void;
+  showHideLogin: (val: boolean) => void;
+  setIsAuthenticated: (val: boolean) => void;
+}
+
+export const useAuthStore = create<AuthState>((set) => ({
+  // State initialization
+  // Action implementations
+}));
+```
+
+### React Query Pattern
+```typescript
+// Custom hook with React Query
+export const usePartnerPreferences = () => {
+  const {
+    data: preferences,
+    isLoading,
+    isError,
+    error,
+    refetch
+  } = useQuery({
+    queryKey: ['partner-preferences'],
+    queryFn: async () => {
+      const result = await userProfileService.getPartnerPreferences();
+      if (result.error) throw new Error(result.error.message);
+      return result.response;
+    }
+  });
+  
+  const updateMutation = useMutation({
+    mutationFn: (data: Partial<DatifyyUserPartnerPreferences>) => 
+      userProfileService.updatePartnerPreferences(data),
+    onSuccess: () => queryClient.invalidateQueries(['partner-preferences'])
+  });
+  
+  return { preferences, isLoading, updatePreferences: updateMutation.mutateAsync };
+};
+```
+
+## UI Component Patterns
+
+### Form Configuration System
+```typescript
+interface FormField {
+  name: keyof DatifyyUserPartnerPreferences;
+  label: string;
+  type: FormFieldType;
+  icon?: IconType;
+  validation?: ValidationRule;
+  options?: readonly string[];
+  priority: 'high' | 'medium' | 'low';
+}
+
+interface FormSection {
+  id: string;
+  title: string;
+  description: string;
+  priority: 'essential' | 'important' | 'optional';
+  fields: FormField[];
+}
+```
+
+### Validation Hook Pattern
+```typescript
+export const usePreferenceValidation = () => {
+  const [errors, setErrors] = useState<ValidationError[]>([]);
+  
+  const validateField = useCallback((field: FormField, value: any) => {
+    // Validation logic with caching
+  }, []);
+  
+  const validateCrossField = useCallback((data) => {
+    // Cross-field validation (age ranges, etc.)
+  }, []);
+  
+  return {
+    errors,
+    validateField,
+    validateSection,
+    clearErrors
+  };
+};
+```
+
+## Styling & Theme
+
+### Chakra UI Theme
+```typescript
+const theme = extendTheme({
+  colors: {
+    accent: {
+      500: "rgba(214, 77, 131, 1)", // Main accent
+      600: "rgba(180, 60, 110, 1)",
+      // ... gradient scale
+    },
+    lightBg: "rgb(244, 241, 243)",
+  }
+});
+```
+
+### Responsive Design Patterns
+```typescript
+// Chakra UI responsive props
+<Box 
+  px={{ base: 4, md: 6 }} 
+  py={{ base: 2, md: 4 }}
+  fontSize={{ base: 'sm', md: 'md' }}
+/>
+
+// Responsive hooks
+const isMobile = useBreakpointValue({ base: true, md: false });
+const columns = useBreakpointValue({ base: 1, md: 2, lg: 3 });
+```
+
+## Business Logic Patterns
+
+### Multi-Step Form Flow
+```typescript
+// Partner preferences form with progressive disclosure
+const sections = [
+  { priority: 'essential', fields: [...] },   // Must complete
+  { priority: 'important', fields: [...] },   // Recommended  
+  { priority: 'optional', fields: [...] }     // Enhancement
+];
+
+// Completion tracking
+const completionStats = {
+  overallCompletion: number;
+  essentialCompletion: number;
+  canProceed: boolean;
+};
+```
+
+### Validation Business Rules
+```typescript
+const BUSINESS_RULES = {
+  AGE_RANGE_MAX_SPAN: 20,
+  HEIGHT_RANGE_MAX_SPAN: 50,
+  MAX_HOBBIES: 10,
+  MIN_DESCRIPTION_LENGTH: 20
+};
+
+// Cross-field validation examples
+if (data.minAge >= data.maxAge) {
+  errors.push('Maximum age must be greater than minimum age');
+}
+
+if (ageSpan > BUSINESS_RULES.AGE_RANGE_MAX_SPAN) {
+  warnings.push('Age range seems too wide');
+}
+```
+
+## Error Handling Patterns
+
+### Service Layer Error Handling
+```typescript
+async function apiCall() {
+  try {
+    const response = await api.get('endpoint');
+    return { response: response.data, error: null };
+  } catch (error) {
+    return {
+      error: {
+        code: error?.response?.status || 500,
+        message: error?.response?.data?.message || 'An error occurred'
+      }
+    };
+  }
+}
+```
+
+### Component Error Boundaries
+```typescript
+export class ErrorBoundary extends React.Component {
+  state = { hasError: false };
+  
+  static getDerivedStateFromError(): { hasError: boolean } {
+    return { hasError: true };
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      return <ErrorFallback onRetry={() => this.setState({ hasError: false })} />;
+    }
+    return this.props.children;
+  }
+}
+```
+
+## File Naming & Organization
+
+### Component Structure
+```
+src/mvp/profile/
+├── components/           # Reusable components
+├── hooks/               # Custom hooks  
+├── partnerPreferences/  # Feature module
+│   ├── components/      # Feature components
+│   ├── hooks/          # Feature hooks
+│   └── config/         # Configuration
+├── types/              # Type definitions
+└── constants.ts        # Default values
+```
+
+### Naming Conventions
+- **Components**: PascalCase (`UserProfile.tsx`)
+- **Hooks**: camelCase with `use` prefix (`useUserProfile.ts`)
+- **Services**: camelCase with Service suffix (`userProfileService.ts`)
+- **Types**: PascalCase for interfaces (`DatifyyUsersInformation`)
+- **Enums**: PascalCase (`GenderPreference`)
+
+## Environment & Configuration
+
+### Environment Variables
+```typescript
+// API Configuration
+REACT_APP_BACKENDEND_URL_DEV=http://localhost:3453
+REACT_APP_BACKENDEND_URL_PROD=https://api.datifyy.com
+REACT_APP_ENV=dev|prod
+
+// External Services
+REACT_APP_GEO_API=geoapify_api_key
+REACT_APP_GA_ID=google_analytics_id
+REACT_APP_SENTRY_DSN=sentry_dsn
+```
+
+## Common Patterns for New Features
+
+### 1. Creating a New Service
+```typescript
+// Template: src/service/newFeatureService.ts
+class NewFeatureService {
+  async getItems() {
+    return apiService.get('new-feature');
+  }
+  
+  async updateItem(data: UpdateData) {
+    const validationResult = this.validateData(data);
+    if (!validationResult.isValid) {
+      return { error: { code: 400, message: 'Validation failed' } };
+    }
+    return apiService.put('new-feature', data);
+  }
+  
+  private validateData(data: UpdateData) {
+    // Validation logic
+  }
+}
+```
+
+### 2. Creating a Custom Hook
+```typescript
+// Template: src/hooks/useNewFeature.ts
+export const useNewFeature = () => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['new-feature'],
+    queryFn: () => newFeatureService.getItems()
+  });
+  
+  const updateMutation = useMutation({
+    mutationFn: newFeatureService.updateItem,
+    onSuccess: () => queryClient.invalidateQueries(['new-feature'])
+  });
+  
+  return {
+    data,
+    isLoading,
+    error,
+    updateItem: updateMutation.mutateAsync
+  };
+};
+```
+
+### 3. Creating a Form Component
+```typescript
+// Template: Complex form with validation
+const NewFeatureForm = () => {
+  const { data, updateItem } = useNewFeature();
+  const { validateField, errors } = useValidation();
+  const [formData, setFormData] = useState({});
+  
+  return (
+    <VStack spacing={6}>
+      {fields.map(field => (
+        <FormField 
+          key={field.name}
+          field={field}
+          value={formData[field.name]}
+          onChange={(value) => setFormData(prev => ({ ...prev, [field.name]: value }))}
+          error={errors[field.name]}
+        />
+      ))}
+      <Button onClick={() => updateItem(formData)}>
+        Save
+      </Button>
+    </VStack>
+  );
+};
+```
+
+This context report provides the foundational knowledge needed to understand and extend the Datifyy codebase effectively. Use this as your reference when creating new features or modifying existing functionality.
