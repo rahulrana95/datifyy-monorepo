@@ -15,7 +15,6 @@ import LogRocket from 'logrocket';
 import { ChakraProvider, ColorModeScript } from '@chakra-ui/react'
 import theme from "./theme/index";
 import Home from "./mvp/home/home";
-import AdminRoute from "./mvp/admin/AdminRoute";
 import HeaderWithTabs from "./mvp/profile/HeaderWithTabs";
 import apiService from "./service/apiService";
 import StatusWrapper from "./mvp/common/StatusWrapper/StatusWrapper";
@@ -141,7 +140,6 @@ function App() {
                   {/* <Route path="/signup" element={<Signup />} />
             <Route path="/header" element={<Header />} /> */}
                 </Routes>
-                <AdminRoute />
               </Router>
 
               {/* <GlobalSnackbar /> */}

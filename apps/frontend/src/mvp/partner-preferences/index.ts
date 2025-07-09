@@ -4,6 +4,8 @@
  * Clean barrel exports for the partner preferences feature
  */
 
+import LifestylePage from './components/pages/LifestylePage';
+
 // Main Container
 export { default as PartnerPreferencesContainer } from './PartnerPreferencesContainer';
 
@@ -15,7 +17,10 @@ export { default as LoadingSpinner } from './components/LoadingSpinner';
 
 // Pages
 export { default as BasicsPage } from './components/pages/BasicsPage';
-export { LifestylePage, PhysicalPage, ValuesPage } from './components/pages/LifestylePage';
+// export { LifestylePage, PhysicalPage, ValuesPage } from './components/pages/LifestylePage';
+export {default as LifestylePage} from './components/pages/LifestylePage'
+export {default as PhysicalPage} from './components/pages/PhysicalPage'
+export {default as ValuesPage} from './components/pages/ValuesPage'
 
 // Types
 export type { 
