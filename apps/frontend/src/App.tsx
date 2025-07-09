@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-route
 // import Home from "./home/home";
 // import LiveEvent from "./events/liveEvent/LiveEvent";
 // import EventPage from "./admin/events/eventPage";
-import Countdown from "./countdown/countdown";
+// import Countdown from "./countdown/countdown";
 import ReactGA from 'react-ga4';
 import reportWebVitals from "./reportWebVitals";
 // import Login from "./mvp/login/Login";
@@ -13,7 +13,7 @@ import reportWebVitals from "./reportWebVitals";
 import * as Sentry from "@sentry/react";
 import LogRocket from 'logrocket';
 import { ChakraProvider, } from '@chakra-ui/react'
-import theme from "./theme";
+import theme from "./theme/index";
 import Home from "./mvp/home/home";
 import AdminRoute from "./mvp/admin/AdminRoute";
 import HeaderWithTabs from "./mvp/profile/HeaderWithTabs";
@@ -27,6 +27,7 @@ import LandingPage from "./mvp/home/LandingPage";
 import TermsAndConditions from "./mvp/TNC";
 import ContactUs from "./mvp/ContactUs";
 import PrivacyPolicy from "./mvp/PrivacyPolicy";
+import { QueryProvider } from "./providers/QueryProvider";
 
 LogRocket.init('kcpnhr/datifyy-fronend');
 
@@ -90,9 +91,9 @@ function App() {
 
 
 
-  if (isCountdown) {
-    return <Countdown />
-  }
+  // if (isCountdown) {
+  //   return <Countdown />
+  // }
 
   const StatusWrapperProps = loading ? {
     isLoading: loading,
@@ -107,40 +108,41 @@ function App() {
 
   return (
     <ChakraProvider theme={theme}>
-      <div className="App">
-        <Helmet>
-          <title>Datifyy</title> {/* Dynamically set title */}
-          <meta name="description" content="Datifyy" />{" "}
-          {/* Optional meta tags */}
-        </Helmet>
-        <StatusWrapper isLoading={loading} error={''} p={0} {...StatusWrapperProps}>
-          <Router>
-            <Routes>
-              <Route path="/" element={<Home />}>
-                {/* Protect Profile Route Inside Home */}
-                <Route path="/" element={<LandingPage />}></Route>
-                <Route path="/profile" element={<HeaderWithTabs />}></Route>
-                <Route path="about-us" element={<AboutUs />} />
-                <Route path="tnc" element={<TermsAndConditions />} />
-                <Route path="contact-us" element={<ContactUs />} />
-                <Route path="privacy-policy" element={<PrivacyPolicy />} />
+      <QueryProvider>
+        <div className="App">
+          <Helmet>
+            <title>Datifyy</title> {/* Dynamically set title */}
+            <meta name="description" content="Datifyy" />{" "}
+            {/* Optional meta tags */}
+          </Helmet>
+          <StatusWrapper isLoading={loading} error={''} p={0} {...StatusWrapperProps}>
+            <Router>
+              <Routes>
+                <Route path="/" element={<Home />}>
+                  {/* Protect Profile Route Inside Home */}
+                  <Route path="/" element={<LandingPage />}></Route>
+                  <Route path="/profile" element={<HeaderWithTabs />}></Route>
+                  <Route path="about-us" element={<AboutUs />} />
+                  <Route path="tnc" element={<TermsAndConditions />} />
+                  <Route path="contact-us" element={<ContactUs />} />
+                  <Route path="privacy-policy" element={<PrivacyPolicy />} />
 
-              </Route>
-              {/* Protect Profile Route */}
+                </Route>
+                {/* Protect Profile Route */}
 
 
-              {/* <Route path="/events/:eventId/live" element={<LiveEvent />} />
+                {/* <Route path="/events/:eventId/live" element={<LiveEvent />} />
             {/* <Route path="/login" element={<Login />} /> */}
-              {/* <Route path="/signup" element={<Signup />} />
+                {/* <Route path="/signup" element={<Signup />} />
             <Route path="/header" element={<Header />} /> */}
-            </Routes>
-            <AdminRoute />
-          </Router>
+              </Routes>
+              <AdminRoute />
+            </Router>
 
-          {/* <GlobalSnackbar /> */}
-        </StatusWrapper>
-
-      </div >
+            {/* <GlobalSnackbar /> */}
+          </StatusWrapper>
+        </div >
+      </QueryProvider>
     </ChakraProvider>
   );
 }

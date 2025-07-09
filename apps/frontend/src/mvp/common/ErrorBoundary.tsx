@@ -1,6 +1,5 @@
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Button, Text } from "@chakra-ui/react";
 import React from "react";
-import { Button } from "../../common/button/button";
 
 export class ErrorBoundary extends React.Component<
     { children: React.ReactNode },

@@ -45,7 +45,7 @@ const RAW_RUNTIME_STATE =
   "fallbackExclusionList": [\
     ["@datifyy/shared-constants", ["workspace:libs/shared-constants"]],\
     ["@datifyy/shared-types", ["workspace:libs/shared-types"]],\
-    ["@datifyy/shared-validation", ["virtual:de5956fd7127308ddbf74d2ba26d7b0eea7a22465dc9bcbc7a8ebe0a54a778d3e7fe9b873f63e0e7d2be4244c85e1e8a18f8bf183457db0cee4a114cd56f5ad4#workspace:libs/shared-validation", "workspace:libs/shared-validation"]],\
+    ["@datifyy/shared-validation", ["workspace:libs/shared-validation"]],\
     ["@monorepo-datifyy/source", ["workspace:."]],\
     ["frontend", ["workspace:apps/frontend"]],\
     ["nodejs-service", ["workspace:services/nodejs-service"]],\
@@ -65,6 +65,7 @@ const RAW_RUNTIME_STATE =
           ["@mui/material", "virtual:9fbaa0f3d0ddbe5ab9fab24c35226d5d651dc2f4033f442b1c44c52036a81b1d8516b3a7feb0beffe0503e8e12ac74d45c9eaa1daac12cdc22bc396cb3171a39#npm:6.4.12"],\
           ["@nx/workspace", "npm:20.0.6"],\
           ["@radix-ui/react-dialog", "virtual:9fbaa0f3d0ddbe5ab9fab24c35226d5d651dc2f4033f442b1c44c52036a81b1d8516b3a7feb0beffe0503e8e12ac74d45c9eaa1daac12cdc22bc396cb3171a39#npm:1.1.14"],\
+          ["@tanstack/react-query-devtools", "virtual:9fbaa0f3d0ddbe5ab9fab24c35226d5d651dc2f4033f442b1c44c52036a81b1d8516b3a7feb0beffe0503e8e12ac74d45c9eaa1daac12cdc22bc396cb3171a39#npm:5.81.5"],\
           ["empty", "npm:0.10.1"],\
           ["nx", "virtual:4f7f400e4523ea77bcb21b74773cd5f31588a113b896cf03c0a392fdfc2145fe0d5ad478ec99d6abc94736fe38a0947f96b122ba0b0f5a4919443ddcc7d1e43b#npm:20.0.6"],\
           ["react-router-dom", "virtual:9fbaa0f3d0ddbe5ab9fab24c35226d5d651dc2f4033f442b1c44c52036a81b1d8516b3a7feb0beffe0503e8e12ac74d45c9eaa1daac12cdc22bc396cb3171a39#npm:6.30.1"],\
@@ -3832,10 +3833,17 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@datifyy/shared-constants", [\
-      ["file:../../libs/shared-constants#../../libs/shared-constants::hash=7f316f&locator=frontend%40workspace%3Aapps%2Ffrontend", {\
-        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-constants-file-5722f66880-10c0.zip/node_modules/@datifyy/shared-constants/",\
+      ["file:../../libs/shared-constants#../../libs/shared-constants::hash=be07dd&locator=frontend%40workspace%3Aapps%2Ffrontend", {\
+        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-constants-file-c9ef3b8fd8-10c0.zip/node_modules/@datifyy/shared-constants/",\
         "packageDependencies": [\
-          ["@datifyy/shared-constants", "file:../../libs/shared-constants#../../libs/shared-constants::hash=7f316f&locator=frontend%40workspace%3Aapps%2Ffrontend"]\
+          ["@datifyy/shared-constants", "file:../../libs/shared-constants#../../libs/shared-constants::hash=be07dd&locator=frontend%40workspace%3Aapps%2Ffrontend"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["file:../../libs/shared-constants#../../libs/shared-constants::hash=be07dd&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service", {\
+        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-constants-file-78c90cd22a-10c0.zip/node_modules/@datifyy/shared-constants/",\
+        "packageDependencies": [\
+          ["@datifyy/shared-constants", "file:../../libs/shared-constants#../../libs/shared-constants::hash=be07dd&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"]\
         ],\
         "linkType": "HARD"\
       }],\
@@ -3849,10 +3857,17 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@datifyy/shared-types", [\
-      ["file:../../libs/shared-types#../../libs/shared-types::hash=0df6c1&locator=frontend%40workspace%3Aapps%2Ffrontend", {\
-        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-types-file-4a5b7e669d-10c0.zip/node_modules/@datifyy/shared-types/",\
+      ["file:../../libs/shared-types#../../libs/shared-types::hash=2713d5&locator=frontend%40workspace%3Aapps%2Ffrontend", {\
+        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-types-file-a225ef3c4e-10c0.zip/node_modules/@datifyy/shared-types/",\
         "packageDependencies": [\
-          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=0df6c1&locator=frontend%40workspace%3Aapps%2Ffrontend"]\
+          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=2713d5&locator=frontend%40workspace%3Aapps%2Ffrontend"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["file:../../libs/shared-types#../../libs/shared-types::hash=2713d5&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service", {\
+        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-types-file-cf78449ded-10c0.zip/node_modules/@datifyy/shared-types/",\
+        "packageDependencies": [\
+          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=2713d5&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"]\
         ],\
         "linkType": "HARD"\
       }],\
@@ -3866,18 +3881,25 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@datifyy/shared-validation", [\
-      ["file:../../libs/shared-validation#../../libs/shared-validation::hash=2f38aa&locator=frontend%40workspace%3Aapps%2Ffrontend", {\
-        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-validation-file-6e8c00596f-10c0.zip/node_modules/@datifyy/shared-validation/",\
+      ["file:../../libs/shared-validation#../../libs/shared-validation::hash=fdafca&locator=frontend%40workspace%3Aapps%2Ffrontend", {\
+        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-validation-file-5a8d667b02-10c0.zip/node_modules/@datifyy/shared-validation/",\
         "packageDependencies": [\
-          ["@datifyy/shared-validation", "file:../../libs/shared-validation#../../libs/shared-validation::hash=2f38aa&locator=frontend%40workspace%3Aapps%2Ffrontend"]\
+          ["@datifyy/shared-validation", "file:../../libs/shared-validation#../../libs/shared-validation::hash=fdafca&locator=frontend%40workspace%3Aapps%2Ffrontend"]\
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#file:../../libs/shared-validation#../../libs/shared-validation::hash=2f38aa&locator=frontend%40workspace%3Aapps%2Ffrontend", {\
-        "packageLocation": "./.yarn/__virtual__/@datifyy-shared-validation-virtual-3b98b1c93b/3/.yarn/berry/cache/@datifyy-shared-validation-file-6e8c00596f-10c0.zip/node_modules/@datifyy/shared-validation/",\
+      ["file:../../libs/shared-validation#../../libs/shared-validation::hash=fdafca&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service", {\
+        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-validation-file-8193ec1c73-10c0.zip/node_modules/@datifyy/shared-validation/",\
         "packageDependencies": [\
-          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=0df6c1&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
-          ["@datifyy/shared-validation", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#file:../../libs/shared-validation#../../libs/shared-validation::hash=2f38aa&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
+          ["@datifyy/shared-validation", "file:../../libs/shared-validation#../../libs/shared-validation::hash=fdafca&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#file:../../libs/shared-validation#../../libs/shared-validation::hash=fdafca&locator=frontend%40workspace%3Aapps%2Ffrontend", {\
+        "packageLocation": "./.yarn/__virtual__/@datifyy-shared-validation-virtual-a8ffb580cf/3/.yarn/berry/cache/@datifyy-shared-validation-file-5a8d667b02-10c0.zip/node_modules/@datifyy/shared-validation/",\
+        "packageDependencies": [\
+          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=2713d5&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
+          ["@datifyy/shared-validation", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#file:../../libs/shared-validation#../../libs/shared-validation::hash=fdafca&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
           ["@types/datifyy__shared-types", null],\
           ["zod", "npm:3.25.74"]\
         ],\
@@ -3887,20 +3909,19 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["virtual:de5956fd7127308ddbf74d2ba26d7b0eea7a22465dc9bcbc7a8ebe0a54a778d3e7fe9b873f63e0e7d2be4244c85e1e8a18f8bf183457db0cee4a114cd56f5ad4#workspace:libs/shared-validation", {\
-        "packageLocation": "./.yarn/__virtual__/@datifyy-shared-validation-virtual-3cf577d798/1/libs/shared-validation/",\
+      ["virtual:de5956fd7127308ddbf74d2ba26d7b0eea7a22465dc9bcbc7a8ebe0a54a778d3e7fe9b873f63e0e7d2be4244c85e1e8a18f8bf183457db0cee4a114cd56f5ad4#file:../../libs/shared-validation#../../libs/shared-validation::hash=fdafca&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service", {\
+        "packageLocation": "./.yarn/__virtual__/@datifyy-shared-validation-virtual-d1e1467d9b/3/.yarn/berry/cache/@datifyy-shared-validation-file-8193ec1c73-10c0.zip/node_modules/@datifyy/shared-validation/",\
         "packageDependencies": [\
-          ["@datifyy/shared-types", "workspace:libs/shared-types"],\
-          ["@datifyy/shared-validation", "virtual:de5956fd7127308ddbf74d2ba26d7b0eea7a22465dc9bcbc7a8ebe0a54a778d3e7fe9b873f63e0e7d2be4244c85e1e8a18f8bf183457db0cee4a114cd56f5ad4#workspace:libs/shared-validation"],\
+          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=2713d5&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
+          ["@datifyy/shared-validation", "virtual:de5956fd7127308ddbf74d2ba26d7b0eea7a22465dc9bcbc7a8ebe0a54a778d3e7fe9b873f63e0e7d2be4244c85e1e8a18f8bf183457db0cee4a114cd56f5ad4#file:../../libs/shared-validation#../../libs/shared-validation::hash=fdafca&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
           ["@types/datifyy__shared-types", null],\
-          ["typescript", "patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>::version=5.8.3&hash=5786d5"],\
           ["zod", "npm:3.25.74"]\
         ],\
         "packagePeers": [\
           "@datifyy/shared-types",\
           "@types/datifyy__shared-types"\
         ],\
-        "linkType": "SOFT"\
+        "linkType": "HARD"\
       }],\
       ["workspace:libs/shared-validation", {\
         "packageLocation": "./libs/shared-validation/",\
@@ -5265,6 +5286,7 @@ const RAW_RUNTIME_STATE =
           ["@mui/material", "virtual:9fbaa0f3d0ddbe5ab9fab24c35226d5d651dc2f4033f442b1c44c52036a81b1d8516b3a7feb0beffe0503e8e12ac74d45c9eaa1daac12cdc22bc396cb3171a39#npm:6.4.12"],\
           ["@nx/workspace", "npm:20.0.6"],\
           ["@radix-ui/react-dialog", "virtual:9fbaa0f3d0ddbe5ab9fab24c35226d5d651dc2f4033f442b1c44c52036a81b1d8516b3a7feb0beffe0503e8e12ac74d45c9eaa1daac12cdc22bc396cb3171a39#npm:1.1.14"],\
+          ["@tanstack/react-query-devtools", "virtual:9fbaa0f3d0ddbe5ab9fab24c35226d5d651dc2f4033f442b1c44c52036a81b1d8516b3a7feb0beffe0503e8e12ac74d45c9eaa1daac12cdc22bc396cb3171a39#npm:5.81.5"],\
           ["empty", "npm:0.10.1"],\
           ["nx", "virtual:4f7f400e4523ea77bcb21b74773cd5f31588a113b896cf03c0a392fdfc2145fe0d5ad478ec99d6abc94736fe38a0947f96b122ba0b0f5a4919443ddcc7d1e43b#npm:20.0.6"],\
           ["react-router-dom", "virtual:9fbaa0f3d0ddbe5ab9fab24c35226d5d651dc2f4033f442b1c44c52036a81b1d8516b3a7feb0beffe0503e8e12ac74d45c9eaa1daac12cdc22bc396cb3171a39#npm:6.30.1"],\
@@ -8880,6 +8902,74 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@swc/helpers", "npm:0.5.15"],\
           ["tslib", "npm:2.8.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@tanstack/query-core", [\
+      ["npm:5.81.5", {\
+        "packageLocation": "../../.yarn/berry/cache/@tanstack-query-core-npm-5.81.5-69e034b9d3-10c0.zip/node_modules/@tanstack/query-core/",\
+        "packageDependencies": [\
+          ["@tanstack/query-core", "npm:5.81.5"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@tanstack/query-devtools", [\
+      ["npm:5.81.2", {\
+        "packageLocation": "../../.yarn/berry/cache/@tanstack-query-devtools-npm-5.81.2-c915f58496-10c0.zip/node_modules/@tanstack/query-devtools/",\
+        "packageDependencies": [\
+          ["@tanstack/query-devtools", "npm:5.81.2"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@tanstack/react-query", [\
+      ["npm:5.81.5", {\
+        "packageLocation": "../../.yarn/berry/cache/@tanstack-react-query-npm-5.81.5-d56b4796ee-10c0.zip/node_modules/@tanstack/react-query/",\
+        "packageDependencies": [\
+          ["@tanstack/react-query", "npm:5.81.5"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#npm:5.81.5", {\
+        "packageLocation": "./.yarn/__virtual__/@tanstack-react-query-virtual-74b86e9a93/3/.yarn/berry/cache/@tanstack-react-query-npm-5.81.5-d56b4796ee-10c0.zip/node_modules/@tanstack/react-query/",\
+        "packageDependencies": [\
+          ["@tanstack/query-core", "npm:5.81.5"],\
+          ["@tanstack/react-query", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#npm:5.81.5"],\
+          ["@types/react", "npm:18.3.23"],\
+          ["react", "npm:18.3.1"]\
+        ],\
+        "packagePeers": [\
+          "@types/react",\
+          "react"\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@tanstack/react-query-devtools", [\
+      ["npm:5.81.5", {\
+        "packageLocation": "../../.yarn/berry/cache/@tanstack-react-query-devtools-npm-5.81.5-4c09da9f77-10c0.zip/node_modules/@tanstack/react-query-devtools/",\
+        "packageDependencies": [\
+          ["@tanstack/react-query-devtools", "npm:5.81.5"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:9fbaa0f3d0ddbe5ab9fab24c35226d5d651dc2f4033f442b1c44c52036a81b1d8516b3a7feb0beffe0503e8e12ac74d45c9eaa1daac12cdc22bc396cb3171a39#npm:5.81.5", {\
+        "packageLocation": "./.yarn/__virtual__/@tanstack-react-query-devtools-virtual-c7f0eba477/3/.yarn/berry/cache/@tanstack-react-query-devtools-npm-5.81.5-4c09da9f77-10c0.zip/node_modules/@tanstack/react-query-devtools/",\
+        "packageDependencies": [\
+          ["@tanstack/query-devtools", "npm:5.81.2"],\
+          ["@tanstack/react-query", null],\
+          ["@tanstack/react-query-devtools", "virtual:9fbaa0f3d0ddbe5ab9fab24c35226d5d651dc2f4033f442b1c44c52036a81b1d8516b3a7feb0beffe0503e8e12ac74d45c9eaa1daac12cdc22bc396cb3171a39#npm:5.81.5"],\
+          ["@types/react", null],\
+          ["@types/tanstack__react-query", null],\
+          ["react", null]\
+        ],\
+        "packagePeers": [\
+          "@tanstack/react-query",\
+          "@types/react",\
+          "@types/tanstack__react-query",\
+          "react"\
         ],\
         "linkType": "HARD"\
       }]\
@@ -15905,9 +15995,9 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@chakra-ui/icons", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#npm:2.2.6"],\
           ["@chakra-ui/react", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#npm:2.10.9"],\
-          ["@datifyy/shared-constants", "file:../../libs/shared-constants#../../libs/shared-constants::hash=7f316f&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
-          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=0df6c1&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
-          ["@datifyy/shared-validation", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#file:../../libs/shared-validation#../../libs/shared-validation::hash=2f38aa&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
+          ["@datifyy/shared-constants", "file:../../libs/shared-constants#../../libs/shared-constants::hash=be07dd&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
+          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=2713d5&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
+          ["@datifyy/shared-validation", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#file:../../libs/shared-validation#../../libs/shared-validation::hash=fdafca&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
           ["@emotion/react", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#npm:11.14.0"],\
           ["@emotion/styled", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#npm:11.14.1"],\
           ["@mui/icons-material", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#npm:6.4.12"],\
@@ -15922,6 +16012,7 @@ const RAW_RUNTIME_STATE =
           ["@radix-ui/themes", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#npm:3.2.1"],\
           ["@sentry/cli", "npm:2.46.0"],\
           ["@sentry/react", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#npm:8.55.0"],\
+          ["@tanstack/react-query", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#npm:5.81.5"],\
           ["@testing-library/jest-dom", "npm:5.17.0"],\
           ["@testing-library/react", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#npm:13.4.0"],\
           ["@testing-library/user-event", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#npm:13.5.0"],\
@@ -20632,9 +20723,9 @@ const RAW_RUNTIME_STATE =
       ["workspace:services/nodejs-service", {\
         "packageLocation": "./services/nodejs-service/",\
         "packageDependencies": [\
-          ["@datifyy/shared-constants", "workspace:libs/shared-constants"],\
-          ["@datifyy/shared-types", "workspace:libs/shared-types"],\
-          ["@datifyy/shared-validation", "virtual:de5956fd7127308ddbf74d2ba26d7b0eea7a22465dc9bcbc7a8ebe0a54a778d3e7fe9b873f63e0e7d2be4244c85e1e8a18f8bf183457db0cee4a114cd56f5ad4#workspace:libs/shared-validation"],\
+          ["@datifyy/shared-constants", "file:../../libs/shared-constants#../../libs/shared-constants::hash=be07dd&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
+          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=2713d5&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
+          ["@datifyy/shared-validation", "virtual:de5956fd7127308ddbf74d2ba26d7b0eea7a22465dc9bcbc7a8ebe0a54a778d3e7fe9b873f63e0e7d2be4244c85e1e8a18f8bf183457db0cee4a114cd56f5ad4#file:../../libs/shared-validation#../../libs/shared-validation::hash=fdafca&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
           ["@types/bcrypt", "npm:5.0.2"],\
           ["@types/bcryptjs", "npm:2.4.6"],\
           ["@types/compression", "npm:1.8.1"],\

@@ -37,7 +37,7 @@ import {
     FaSearch,
     FaCheck
 } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, } from 'framer-motion';
 
 // ✅ Fixed import path
 import { Logger } from '../../../../../utils/Logger';
@@ -179,7 +179,7 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
 
     // Filter options based on search term
     const filteredOptions = useMemo(() => {
-        if (!searchable || !searchTerm.trim()) return options;
+        if (!searchable) return options;
 
         return options.filter(option =>
             option.toLowerCase().includes(searchTerm.toLowerCase())
@@ -231,9 +231,9 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
 
     // Handle custom option addition
     const handleCustomOptionAdd = useCallback(() => {
-        if (!allowCustom || !searchTerm.trim() || isMaxReached) return;
+        if (!allowCustom || isMaxReached) return;
 
-        const customOption = searchTerm.trim();
+        const customOption = searchTerm;
         if (options.includes(customOption) || value.includes(customOption)) return;
 
         handleOptionSelect(customOption);
@@ -264,7 +264,7 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
                 e.preventDefault();
                 if (isOpen && highlightedIndex >= 0 && availableOptions[highlightedIndex]) {
                     handleOptionSelect(availableOptions[highlightedIndex]);
-                } else if (allowCustom && searchTerm.trim()) {
+                } else if (allowCustom) {
                     handleCustomOptionAdd();
                 } else {
                     setIsOpen(!isOpen);
@@ -331,32 +331,27 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
                     {value.map((item, index) => (
                         <WrapItem key={`${item}-${index}`}>
                             {/* @ts-ignore */}
-                            <AnimatePresence>
-                                <MotionBox
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.8 }}
-                                    transition={{ duration: 0.15 }}
-                                >
-                                    {renderSelectedItem ? (
-                                        renderSelectedItem(item, () => handleOptionRemove(item))
-                                    ) : (
-                                        <Tag
-                                            size={config.tagSize}
-                                            colorScheme={colorScheme}
-                                            borderRadius="full"
-                                        >
-                                            <TagLabel>{item}</TagLabel>
-                                            {!isDisabled && (
-                                                <TagCloseButton
-                                                    onClick={() => handleOptionRemove(item)}
-                                                    aria-label={`Remove ${item}`}
-                                                />
-                                            )}
-                                        </Tag>
-                                    )}
-                                </MotionBox>
-                            </AnimatePresence>
+                            <>
+
+                                {renderSelectedItem ? (
+                                    renderSelectedItem(item, () => handleOptionRemove(item))
+                                ) : (
+                                    <Tag
+                                        size={config.tagSize}
+                                        colorScheme={colorScheme}
+                                        borderRadius="full"
+                                    >
+                                        <TagLabel>{item}</TagLabel>
+                                        {!isDisabled && (
+                                            <TagCloseButton
+                                                onClick={() => handleOptionRemove(item)}
+                                                aria-label={`Remove ${item}`}
+                                            />
+                                        )}
+                                    </Tag>
+                                )}
+
+                            </>
                         </WrapItem>
                     ))}
                 </Wrap>
@@ -447,28 +442,10 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
 
             {/* Dropdown Options */}
             {/* @ts-ignore */}
-            <AnimatePresence>
+            <>
                 {isOpen && (
                     <Portal>
-                        <MotionBox
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.15 }}
-                            position="absolute"
-                            top="100%"
-                            left={0}
-                            right={0}
-                            zIndex={1000}
-                            bg={bgColor}
-                            border="1px solid"
-                            borderColor={borderColor}
-                            borderRadius="md"
-                            boxShadow="lg"
-                            maxH="200px"
-                            overflowY="auto"
-                            mt={1}
-                        >
+                        <>
                             {/* Search Results Header */}
                             {searchable && searchTerm && (
                                 <Box px={3} py={2} borderBottom="1px solid" borderColor={borderColor}>
@@ -512,10 +489,10 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
                                     </Box>
                                 )}
                             </List>
-                        </MotionBox>
+                        </>
                     </Portal>
                 )}
-            </AnimatePresence>
+            </>
         </Box>
     );
 };

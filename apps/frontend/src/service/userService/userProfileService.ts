@@ -14,6 +14,8 @@ import { DatifyyUsersInformation } from "./UserProfileTypes";
  * Handles both user profile and partner preferences with proper error handling and logging
  */
 class UserProfileService {
+
+  prefix = "/user/partner-preferences"
   
   // ===== USER PROFILE METHODS =====
 
@@ -33,7 +35,7 @@ class UserProfileService {
           data?: DatifyyUsersInformation;
         };
         error?: ErrorObject;
-      } = await api.get("user-profile");
+      } = await api.get(`user-profile`);
 
       if (response.error) {
         console.error('❌ Failed to fetch user profile:', response.error);
@@ -122,7 +124,7 @@ class UserProfileService {
           data?: DatifyyUserPartnerPreferences;
         };
         error?: ErrorObject;
-      } = await api.get("partner-preferences");
+      } = await api.get(`${this.prefix}`);
 
       if (response.error) {
         console.error('❌ Failed to fetch partner preferences:', response.error);
@@ -172,7 +174,7 @@ class UserProfileService {
           data?: DatifyyUserPartnerPreferences;
         };
         error?: ErrorObject;
-      } = await api.put("partner-preferences", data);
+      } = await api.put(`${this.prefix}`, data);
 
       if (response.error) {
         console.error('❌ Failed to update partner preferences:', response.error);
@@ -220,7 +222,7 @@ class UserProfileService {
           data?: DatifyyUserPartnerPreferences;
         };
         error?: ErrorObject;
-      } = await api.post("partner-preferences", data);
+      } = await api.post(`${this.prefix}`, data);
 
       if (response.error) {
         console.error('❌ Failed to create partner preferences:', response.error);

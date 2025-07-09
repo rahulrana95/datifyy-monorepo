@@ -36,7 +36,7 @@ import {
     FaUndo,
     FaClock
 } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, } from 'framer-motion';
 
 import { Logger } from '../../../../utils/Logger';
 
@@ -308,58 +308,52 @@ export const PreferenceSaveActions: React.FC<PreferenceSaveActionsProps> = ({
 
         return (
             // @ts-ignore
-            <AnimatePresence>
-                <MotionBox
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
+            <>
+                <Alert
+                    // @ts-ignore
+                    status={validationState.severity}
+                    variant="left-accent"
+                    borderRadius="md"
+                    mb={config.spacing}
                 >
-                    <Alert
-                        // @ts-ignore
-                        status={validationState.severity}
-                        variant="left-accent"
-                        borderRadius="md"
-                        mb={config.spacing}
-                    >
-                        <AlertIcon />
-                        <VStack align="start" spacing={1} flex="1">
-                            <AlertTitle fontSize={config.fontSize}>
-                                {validationState.errorCount > 0
-                                    ? `${validationState.errorCount} error${validationState.errorCount > 1 ? 's' : ''} found`
-                                    : `${validationState.warningCount} warning${validationState.warningCount > 1 ? 's' : ''}`
-                                }
-                            </AlertTitle>
+                    <AlertIcon />
+                    <VStack align="start" spacing={1} flex="1">
+                        <AlertTitle fontSize={config.fontSize}>
+                            {validationState.errorCount > 0
+                                ? `${validationState.errorCount} error${validationState.errorCount > 1 ? 's' : ''} found`
+                                : `${validationState.warningCount} warning${validationState.warningCount > 1 ? 's' : ''}`
+                            }
+                        </AlertTitle>
 
-                            {actionState.validationExpanded && (
-                                <VStack align="start" spacing={1} w="full">
-                                    {errors.map((error, index) => (
-                                        <Text key={`error-${index}`} fontSize="sm" color="red.600">
-                                            • {error}
-                                        </Text>
-                                    ))}
-                                    {warnings.map((warning, index) => (
-                                        <Text key={`warning-${index}`} fontSize="sm" color="orange.600">
-                                            • {warning}
-                                        </Text>
-                                    ))}
-                                </VStack>
-                            )}
+                        {actionState.validationExpanded && (
+                            <VStack align="start" spacing={1} w="full">
+                                {errors.map((error, index) => (
+                                    <Text key={`error-${index}`} fontSize="sm" color="red.600">
+                                        • {error}
+                                    </Text>
+                                ))}
+                                {warnings.map((warning, index) => (
+                                    <Text key={`warning-${index}`} fontSize="sm" color="orange.600">
+                                        • {warning}
+                                    </Text>
+                                ))}
+                            </VStack>
+                        )}
 
-                            {(errors.length > 0 || warnings.length > 0) && (
-                                <Button
-                                    size="xs"
-                                    variant="ghost"
-                                    onClick={toggleValidationDetails}
-                                    rightIcon={<FaInfoCircle />}
-                                >
-                                    {actionState.validationExpanded ? 'Hide details' : 'Show details'}
-                                </Button>
-                            )}
-                        </VStack>
-                    </Alert>
-                </MotionBox>
-            </AnimatePresence>
+                        {(errors.length > 0 || warnings.length > 0) && (
+                            <Button
+                                size="xs"
+                                variant="ghost"
+                                onClick={toggleValidationDetails}
+                                rightIcon={<FaInfoCircle />}
+                            >
+                                {actionState.validationExpanded ? 'Hide details' : 'Show details'}
+                            </Button>
+                        )}
+                    </VStack>
+                </Alert>
+
+            </>
         );
     };
 
@@ -471,34 +465,22 @@ export const PreferenceSaveActions: React.FC<PreferenceSaveActionsProps> = ({
         case 'floating':
             return (
                 // @ts-ignore
-                <AnimatePresence>
+                <>
                     {(hasChanges || validationState.hasValidationIssues) && (
-                        <MotionBox
-                            initial={{ opacity: 0, y: 50 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 50 }}
+                        <div
                             style={{
-                                position: 'fixed',
-                                bottom: '20px',
-                                right: '20px',
-                                zIndex: 1000,
-                                maxWidth: '400px'
+                                background: bgColor,
+                                border: `1px solid ${borderColor}`,
+                                borderRadius: '12px',
+                                padding: config.padding * 4,
+                                boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)'
                             }}
                         >
-                            <div
-                                style={{
-                                    background: bgColor,
-                                    border: `1px solid ${borderColor}`,
-                                    borderRadius: '12px',
-                                    padding: config.padding * 4,
-                                    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)'
-                                }}
-                            >
-                                {renderContent()}
-                            </div>
-                        </MotionBox>
+                            {renderContent()}
+                        </div>
+
                     )}
-                </AnimatePresence>
+                </>
             );
 
         case 'sticky':

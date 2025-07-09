@@ -28,7 +28,7 @@ import {
     FaInfoCircle,
     FaKeyboard
 } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, } from 'framer-motion';
 
 import { Logger } from '../../../../../utils/Logger';
 
@@ -478,33 +478,28 @@ export const MultiSelectTextField: React.FC<MultiSelectTextFieldProps> = ({
                     {value.map((item, index) => (
                         <WrapItem key={`${item}-${index}`}>
                             {/* @ts-ignore */}
-                            <AnimatePresence>
-                                <MotionBox
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.8 }}
-                                    transition={{ duration: 0.15 }}
-                                >
-                                    {renderTag ? (
-                                        renderTag(item, () => removeItem(index))
-                                    ) : (
-                                        <Tag
-                                            size={config.tagSize}
-                                            colorScheme={colorScheme}
-                                            borderRadius="full"
-                                            variant="solid"
-                                        >
-                                            <TagLabel>{item}</TagLabel>
-                                            {!isDisabled && (
-                                                <TagCloseButton
-                                                    onClick={() => removeItem(index)}
-                                                    aria-label={`Remove ${item}`}
-                                                />
-                                            )}
-                                        </Tag>
-                                    )}
-                                </MotionBox>
-                            </AnimatePresence>
+                            <>
+
+                                {renderTag ? (
+                                    renderTag(item, () => removeItem(index))
+                                ) : (
+                                    <Tag
+                                        size={config.tagSize}
+                                        colorScheme={colorScheme}
+                                        borderRadius="full"
+                                        variant="solid"
+                                    >
+                                        <TagLabel>{item}</TagLabel>
+                                        {!isDisabled && (
+                                            <TagCloseButton
+                                                onClick={() => removeItem(index)}
+                                                aria-label={`Remove ${item}`}
+                                            />
+                                        )}
+                                    </Tag>
+                                )}
+
+                            </>
                         </WrapItem>
                     ))}
                 </Wrap>
@@ -537,26 +532,9 @@ export const MultiSelectTextField: React.FC<MultiSelectTextFieldProps> = ({
 
                         {/* Suggestions Dropdown */}
                         {/* @ts-ignore */}
-                        <AnimatePresence>
+                        <>
                             {showSuggestions && filteredSuggestions.length > 0 && (
-                                <MotionBox
-                                    initial={{ opacity: 0, y: -5 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -5 }}
-                                    position="absolute"
-                                    top="100%"
-                                    left={0}
-                                    right={0}
-                                    zIndex={1000}
-                                    bg={suggestionBg}
-                                    border="1px solid"
-                                    borderColor={borderColor}
-                                    borderRadius="md"
-                                    boxShadow="md"
-                                    mt={1}
-                                    maxH="150px"
-                                    overflowY="auto"
-                                >
+                                <>
                                     {filteredSuggestions.map((suggestion, index) => (
                                         <Box
                                             key={suggestion}
@@ -570,9 +548,9 @@ export const MultiSelectTextField: React.FC<MultiSelectTextFieldProps> = ({
                                             {suggestion}
                                         </Box>
                                     ))}
-                                </MotionBox>
+                                </>
                             )}
-                        </AnimatePresence>
+                        </>
                     </Box>
 
                     {/* Add Button */}

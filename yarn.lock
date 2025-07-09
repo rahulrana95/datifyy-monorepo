@@ -1958,12 +1958,19 @@ __metadata:
 
 "@datifyy/shared-constants@file:../../libs/shared-constants::locator=frontend%40workspace%3Aapps%2Ffrontend":
   version: 1.0.0
-  resolution: "@datifyy/shared-constants@file:../../libs/shared-constants#../../libs/shared-constants::hash=7f316f&locator=frontend%40workspace%3Aapps%2Ffrontend"
-  checksum: 10c0/f00a7f17da4bfa07efc55b947595ff1ee3e0aa53c8c18f670f3e1efe80f98379d08a277fcef541933ad065569ad6cb470737cea63b091bb7bb0f15485e7d64f5
+  resolution: "@datifyy/shared-constants@file:../../libs/shared-constants#../../libs/shared-constants::hash=be07dd&locator=frontend%40workspace%3Aapps%2Ffrontend"
+  checksum: 10c0/85b9327d3d9b9f99d0d3caa7df883f089ca03f2379eb342ce417725517893c0df8ac65c2b617633d0a4e4da4525f882798047ff811aada37a7b451b08f804f5e
   languageName: node
   linkType: hard
 
-"@datifyy/shared-constants@npm:1.0.0, @datifyy/shared-constants@workspace:libs/shared-constants":
+"@datifyy/shared-constants@file:../../libs/shared-constants::locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service":
+  version: 1.0.0
+  resolution: "@datifyy/shared-constants@file:../../libs/shared-constants#../../libs/shared-constants::hash=be07dd&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"
+  checksum: 10c0/85b9327d3d9b9f99d0d3caa7df883f089ca03f2379eb342ce417725517893c0df8ac65c2b617633d0a4e4da4525f882798047ff811aada37a7b451b08f804f5e
+  languageName: node
+  linkType: hard
+
+"@datifyy/shared-constants@workspace:libs/shared-constants":
   version: 0.0.0-use.local
   resolution: "@datifyy/shared-constants@workspace:libs/shared-constants"
   dependencies:
@@ -1973,12 +1980,19 @@ __metadata:
 
 "@datifyy/shared-types@file:../../libs/shared-types::locator=frontend%40workspace%3Aapps%2Ffrontend":
   version: 1.0.0
-  resolution: "@datifyy/shared-types@file:../../libs/shared-types#../../libs/shared-types::hash=0df6c1&locator=frontend%40workspace%3Aapps%2Ffrontend"
-  checksum: 10c0/35342e37ba05d269614f002049ef4b63bc77cd62657e8117884a599e57c8d5d08c90e2bc6e0616a2453f0db4a6bc9de920cc77cad98e2d60105813bad4eb5506
+  resolution: "@datifyy/shared-types@file:../../libs/shared-types#../../libs/shared-types::hash=2713d5&locator=frontend%40workspace%3Aapps%2Ffrontend"
+  checksum: 10c0/303a3a8a66437c65c361cf9437531b6ce48744be1e0b1741def6826f94cbc8b04096c1eaea7b1df0e95ea0a8a2f9413f8536475587cc37f0a7cf02fb3568e2f3
   languageName: node
   linkType: hard
 
-"@datifyy/shared-types@npm:1.0.0, @datifyy/shared-types@workspace:libs/shared-types":
+"@datifyy/shared-types@file:../../libs/shared-types::locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service":
+  version: 1.0.0
+  resolution: "@datifyy/shared-types@file:../../libs/shared-types#../../libs/shared-types::hash=2713d5&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"
+  checksum: 10c0/303a3a8a66437c65c361cf9437531b6ce48744be1e0b1741def6826f94cbc8b04096c1eaea7b1df0e95ea0a8a2f9413f8536475587cc37f0a7cf02fb3568e2f3
+  languageName: node
+  linkType: hard
+
+"@datifyy/shared-types@workspace:libs/shared-types":
   version: 0.0.0-use.local
   resolution: "@datifyy/shared-types@workspace:libs/shared-types"
   dependencies:
@@ -1988,16 +2002,27 @@ __metadata:
 
 "@datifyy/shared-validation@file:../../libs/shared-validation::locator=frontend%40workspace%3Aapps%2Ffrontend":
   version: 1.0.0
-  resolution: "@datifyy/shared-validation@file:../../libs/shared-validation#../../libs/shared-validation::hash=2f38aa&locator=frontend%40workspace%3Aapps%2Ffrontend"
+  resolution: "@datifyy/shared-validation@file:../../libs/shared-validation#../../libs/shared-validation::hash=fdafca&locator=frontend%40workspace%3Aapps%2Ffrontend"
   dependencies:
     zod: "npm:^3.22.0"
   peerDependencies:
     "@datifyy/shared-types": 1.0.0
-  checksum: 10c0/56cad3d53c2593615652827244d28c7a4ea26bff6e08d6e78bf62bf227da0c125d444b58294765b3734b8d847194fc1ec2f0b7fab48f5188ebe9fbdaba61f54b
+  checksum: 10c0/045d4a2b66feb1427358121a801b18654d15e0adbfe64008754c62c55f4f32cd71bb589154b21a7b0aaa88d94d4bfff5b7de90d93a2b6293e4eb5ddbd30bb0ff
   languageName: node
   linkType: hard
 
-"@datifyy/shared-validation@npm:1.0.0, @datifyy/shared-validation@workspace:libs/shared-validation":
+"@datifyy/shared-validation@file:../../libs/shared-validation::locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service":
+  version: 1.0.0
+  resolution: "@datifyy/shared-validation@file:../../libs/shared-validation#../../libs/shared-validation::hash=fdafca&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"
+  dependencies:
+    zod: "npm:^3.22.0"
+  peerDependencies:
+    "@datifyy/shared-types": 1.0.0
+  checksum: 10c0/045d4a2b66feb1427358121a801b18654d15e0adbfe64008754c62c55f4f32cd71bb589154b21a7b0aaa88d94d4bfff5b7de90d93a2b6293e4eb5ddbd30bb0ff
+  languageName: node
+  linkType: hard
+
+"@datifyy/shared-validation@workspace:libs/shared-validation":
   version: 0.0.0-use.local
   resolution: "@datifyy/shared-validation@workspace:libs/shared-validation"
   dependencies:
@@ -3141,6 +3166,7 @@ __metadata:
     "@mui/material": "npm:^6.1.5"
     "@nx/workspace": "npm:20.0.6"
     "@radix-ui/react-dialog": "npm:^1.1.5"
+    "@tanstack/react-query-devtools": "npm:^5.81.5"
     empty: "npm:0.10.1"
     nx: "npm:20.0.6"
     react-router-dom: "npm:^6.28.2"
@@ -5528,6 +5554,43 @@ __metadata:
   dependencies:
     tslib: "npm:^2.8.0"
   checksum: 10c0/33002f74f6f885f04c132960835fdfc474186983ea567606db62e86acd0680ca82f34647e8e610f4e1e422d1c16fce729dde22cd3b797ab1fd9061a825dabca4
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-core@npm:5.81.5":
+  version: 5.81.5
+  resolution: "@tanstack/query-core@npm:5.81.5"
+  checksum: 10c0/8d3af841f0e2f3fba1dfd100a8bbc2d07e7b1d5b8570d3d0d8bba5127601c2788e5f7c84839f93f3b0cbe54f14866c1fef8e3f9e745f02d27afaaeea33b7b755
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-devtools@npm:5.81.2":
+  version: 5.81.2
+  resolution: "@tanstack/query-devtools@npm:5.81.2"
+  checksum: 10c0/f942cba7bd3ecb471063cd472eeebb2ec76005feeb7e0f357b191da5ab9f769aa767bc88d4da82b2b39c4fcbb16dfed38ce3c77b6eea4d4c30405368c1120207
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query-devtools@npm:^5.81.5":
+  version: 5.81.5
+  resolution: "@tanstack/react-query-devtools@npm:5.81.5"
+  dependencies:
+    "@tanstack/query-devtools": "npm:5.81.2"
+  peerDependencies:
+    "@tanstack/react-query": ^5.81.5
+    react: ^18 || ^19
+  checksum: 10c0/6e0c416cea1ae86620be1da882605871ba4c7304cb4789074e59371226492c737e6f051d2bd70f9f1fd5065d9b0bbf56db0987df1e0bf2b35f8c1c66b5620d0c
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.81.5":
+  version: 5.81.5
+  resolution: "@tanstack/react-query@npm:5.81.5"
+  dependencies:
+    "@tanstack/query-core": "npm:5.81.5"
+  peerDependencies:
+    react: ^18 || ^19
+  checksum: 10c0/04803dd7d7d6ac73ba8c55bb25d76aa2f74d173d1574a113c35559bf6a8ac7d04a75db5e470e9a2e4132fee5e0ce1ab23bd8c27d17f70a461aca0e7ae740e76b
   languageName: node
   linkType: hard
 
@@ -11214,6 +11277,7 @@ __metadata:
     "@radix-ui/themes": "npm:^3.2.0"
     "@sentry/cli": "npm:^2.41.1"
     "@sentry/react": "npm:^8.52.1"
+    "@tanstack/react-query": "npm:^5.81.5"
     "@testing-library/jest-dom": "npm:^5.17.0"
     "@testing-library/react": "npm:^13.4.0"
     "@testing-library/user-event": "npm:^13.5.0"
@@ -15451,9 +15515,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "nodejs-service@workspace:services/nodejs-service"
   dependencies:
-    "@datifyy/shared-constants": "npm:1.0.0"
-    "@datifyy/shared-types": "npm:1.0.0"
-    "@datifyy/shared-validation": "npm:1.0.0"
+    "@datifyy/shared-constants": "file:../../libs/shared-constants"
+    "@datifyy/shared-types": "file:../../libs/shared-types"
+    "@datifyy/shared-validation": "file:../../libs/shared-validation"
     "@types/bcrypt": "npm:^5.0.2"
     "@types/bcryptjs": "npm:^2.4.6"
     "@types/compression": "npm:^1.8.1"

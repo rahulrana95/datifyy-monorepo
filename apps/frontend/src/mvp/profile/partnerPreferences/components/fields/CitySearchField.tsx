@@ -30,7 +30,7 @@ import {
     FaGlobeAmericas,
     FaCheck
 } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, } from 'framer-motion';
 
 import { Logger } from '../../../../../utils/Logger';
 
@@ -542,7 +542,7 @@ export const CitySearchField: React.FC<CitySearchFieldProps> = ({
 
     // Show suggestions when input is focused
     const handleFocus = useCallback(() => {
-        if (!searchTerm.trim() && recentSearches.length > 0) {
+        if (recentSearches.length > 0) {
             setResults(recentSearches.slice(0, 5));
             setIsOpen(true);
         }
@@ -624,28 +624,10 @@ export const CitySearchField: React.FC<CitySearchFieldProps> = ({
 
             {/* Results Dropdown */}
             {/* @ts-ignore */}
-            <AnimatePresence>
+            <>
                 {isOpen && (results.length > 0 || isLoading) && (
                     <Portal>
-                        <MotionBox
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.15 }}
-                            position="absolute"
-                            top="100%"
-                            left={0}
-                            right={0}
-                            zIndex={1000}
-                            bg={dropdownBg}
-                            border="1px solid"
-                            borderColor={borderColor}
-                            borderRadius="md"
-                            boxShadow="lg"
-                            maxH="300px"
-                            overflowY="auto"
-                            mt={1}
-                        >
+                        <>
                             {/* Loading State */}
                             {isLoading && (
                                 <HStack p={4} justify="center">
@@ -705,10 +687,10 @@ export const CitySearchField: React.FC<CitySearchFieldProps> = ({
                                     ))}
                                 </List>
                             )}
-                        </MotionBox>
+                        </>
                     </Portal>
                 )}
-            </AnimatePresence>
+            </>
         </Box>
     );
 };

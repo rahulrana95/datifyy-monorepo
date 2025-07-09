@@ -34,7 +34,6 @@ import {
     FaEyeSlash,
     FaTimes
 } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
 
 import { PreferenceSection } from './PreferenceSection';
 import { PARTNER_PREFERENCES_FORM_CONFIG } from '../config/preferenceFormConfig';
@@ -97,7 +96,6 @@ interface SectionProgress {
     priority: 'essential' | 'important' | 'optional';
 }
 
-const MotionBox = motion(Box);
 const logger = new Logger('PartnerPreferencesForm');
 
 export const PartnerPreferencesForm: React.FC<PartnerPreferencesFormProps> = ({
@@ -375,90 +373,82 @@ export const PartnerPreferencesForm: React.FC<PartnerPreferencesFormProps> = ({
         <Box className={className} bg={bgColor} minH="100vh">
             {/* Form Header */}
             {showHeader && (
-                <MotionBox
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    bg={cardBg}
-                    borderBottom="1px solid"
-                    borderColor={borderColor}
-                    p={6}
-                >
-                    <VStack spacing={4} align="stretch">
-                        {/* Title and Description */}
-                        <Flex justify="space-between" align="center">
-                            <VStack align="start" spacing={1}>
-                                <HStack spacing={3}>
-                                    <Icon as={FaHeart} color="pink.500" boxSize={6} />
-                                    <Text fontSize="2xl" fontWeight="bold" color="gray.800">
-                                        Partner Preferences
-                                    </Text>
-                                </HStack>
-                                <Text fontSize="md" color="gray.600">
-                                    Help us find your perfect match by sharing your preferences
+                <VStack spacing={4} align="stretch">
+                    {/* Title and Description */}
+                    <Flex justify="space-between" align="center">
+                        <VStack align="start" spacing={1}>
+                            <HStack spacing={3}>
+                                <Icon as={FaHeart} color="pink.500" boxSize={6} />
+                                <Text fontSize="2xl" fontWeight="bold" color="gray.800">
+                                    Partner Preferences
                                 </Text>
-                            </VStack>
+                            </HStack>
+                            <Text fontSize="md" color="gray.600">
+                                Help us find your perfect match by sharing your preferences
+                            </Text>
+                        </VStack>
 
-                            {/* Completion Badge */}
-                            <VStack spacing={2}>
-                                <Badge
-                                    colorScheme={overallStats.overallCompletion >= 80 ? 'green' : 'orange'}
-                                    fontSize="lg"
-                                    px={4}
-                                    py={2}
-                                    borderRadius="full"
-                                >
-                                    {overallStats.overallCompletion}% Complete
-                                </Badge>
-                                <Text fontSize="xs" color="gray.500">
-                                    {overallStats.completedSections}/{overallStats.totalSections} sections
-                                </Text>
-                            </VStack>
-                        </Flex>
-
-                        {/* Progress Bar */}
-                        {showProgress && (
-                            <VStack spacing={2} align="stretch">
-                                <HStack justify="space-between">
-                                    <Text fontSize="sm" color="gray.600">
-                                        Overall Progress
-                                    </Text>
-                                    <Text fontSize="sm" color="gray.600">
-                                        Essential: {overallStats.essentialCompletion}%
-                                    </Text>
-                                </HStack>
-                                <Progress
-                                    value={overallStats.overallCompletion}
-                                    colorScheme="pink"
-                                    size="lg"
-                                    borderRadius="full"
-                                    bg="gray.100"
-                                />
-                            </VStack>
-                        )}
-
-                        {/* Validation Summary */}
-                        {(hasErrors || hasWarnings) && (
-                            <Alert
-                                status={hasErrors ? 'error' : 'warning'}
-                                borderRadius="md"
-                                variant="left-accent"
+                        {/* Completion Badge */}
+                        <VStack spacing={2}>
+                            <Badge
+                                colorScheme={overallStats.overallCompletion >= 80 ? 'green' : 'orange'}
+                                fontSize="lg"
+                                px={4}
+                                py={2}
+                                borderRadius="full"
                             >
-                                <AlertIcon />
-                                <VStack align="start" spacing={1}>
-                                    <AlertTitle fontSize="sm">
-                                        {hasErrors ? `${errors.length} error(s) found` : `${warnings.length} warning(s)`}
-                                    </AlertTitle>
-                                    <AlertDescription fontSize="xs">
-                                        {hasErrors
-                                            ? 'Please fix errors before proceeding'
-                                            : 'Consider addressing warnings for better matches'
-                                        }
-                                    </AlertDescription>
-                                </VStack>
-                            </Alert>
-                        )}
-                    </VStack>
-                </MotionBox>
+                                {overallStats.overallCompletion}% Complete
+                            </Badge>
+                            <Text fontSize="xs" color="gray.500">
+                                {overallStats.completedSections}/{overallStats.totalSections} sections
+                            </Text>
+                        </VStack>
+                    </Flex>
+
+                    {/* Progress Bar */}
+                    {showProgress && (
+                        <VStack spacing={2} align="stretch">
+                            <HStack justify="space-between">
+                                <Text fontSize="sm" color="gray.600">
+                                    Overall Progress
+                                </Text>
+                                <Text fontSize="sm" color="gray.600">
+                                    Essential: {overallStats.essentialCompletion}%
+                                </Text>
+                            </HStack>
+                            <Progress
+                                value={overallStats.overallCompletion}
+                                colorScheme="pink"
+                                size="lg"
+                                borderRadius="full"
+                                bg="gray.100"
+                            />
+                        </VStack>
+                    )}
+
+                    {/* Validation Summary */}
+                    {(hasErrors || hasWarnings) && (
+                        <Alert
+                            status={hasErrors ? 'error' : 'warning'}
+                            borderRadius="md"
+                            variant="left-accent"
+                        >
+                            <AlertIcon />
+                            <VStack align="start" spacing={1}>
+                                <AlertTitle fontSize="sm">
+                                    {hasErrors ? `${errors.length} error(s) found` : `${warnings.length} warning(s)`}
+                                </AlertTitle>
+                                <AlertDescription fontSize="xs">
+                                    {hasErrors
+                                        ? 'Please fix errors before proceeding'
+                                        : 'Consider addressing warnings for better matches'
+                                    }
+                                </AlertDescription>
+                            </VStack>
+                        </Alert>
+                    )}
+                </VStack>
+
             )}
 
             {/* Form Content */}
@@ -557,80 +547,68 @@ export const PartnerPreferencesForm: React.FC<PartnerPreferencesFormProps> = ({
                     </VStack>
 
                     {/* Form Actions */}
-                    <MotionBox
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.5 }}
-                        position="sticky"
-                        bottom={0}
-                        bg={cardBg}
-                        borderTop="1px solid"
-                        borderColor={borderColor}
-                        p={6}
-                        borderRadius="lg"
-                        boxShadow="lg"
-                    >
-                        <VStack spacing={4}>
-                            {/* Summary */}
-                            <HStack justify="space-between" w="full" fontSize="sm" color="gray.600">
+
+                    <VStack spacing={4}>
+                        {/* Summary */}
+                        <HStack justify="space-between" w="full" fontSize="sm" color="gray.600">
+                            <Text>
+                                Progress: {overallStats.overallCompletion}% •
+                                Errors: {errors.length} •
+                                Warnings: {warnings.length}
+                            </Text>
+                            {enableAutoSave && formState.lastAutoSave && (
                                 <Text>
-                                    Progress: {overallStats.overallCompletion}% •
-                                    Errors: {errors.length} •
-                                    Warnings: {warnings.length}
+                                    Last saved: {new Date(formState.lastAutoSave).toLocaleTimeString()}
                                 </Text>
-                                {enableAutoSave && formState.lastAutoSave && (
-                                    <Text>
-                                        Last saved: {new Date(formState.lastAutoSave).toLocaleTimeString()}
-                                    </Text>
-                                )}
-                            </HStack>
+                            )}
+                        </HStack>
 
-                            {/* Action Buttons */}
-                            <HStack spacing={4} w="full" justify="center">
-                                {onCancel && (
-                                    <Button
-                                        variant="outline"
-                                        colorScheme="gray"
-                                        onClick={onCancel}
-                                        isDisabled={isUpdating}
-                                        leftIcon={<FaTimes />}
-                                    >
-                                        Cancel
-                                    </Button>
-                                )}
-
+                        {/* Action Buttons */}
+                        <HStack spacing={4} w="full" justify="center">
+                            {onCancel && (
                                 <Button
                                     variant="outline"
                                     colorScheme="gray"
-                                    onClick={handleFormReset}
+                                    onClick={onCancel}
                                     isDisabled={isUpdating}
-                                    leftIcon={<FaUndo />}
+                                    leftIcon={<FaTimes />}
                                 >
-                                    Reset
+                                    Cancel
                                 </Button>
+                            )}
 
-                                <Button
-                                    colorScheme="pink"
-                                    onClick={handleFormComplete}
-                                    isLoading={isUpdating}
-                                    isDisabled={!overallStats.canProceed}
-                                    leftIcon={<FaSave />}
-                                    size="lg"
-                                    px={8}
-                                >
-                                    {overallStats.overallCompletion >= 80 ? 'Complete Preferences' : 'Save Progress'}
-                                </Button>
-                            </HStack>
+                            <Button
+                                variant="outline"
+                                colorScheme="gray"
+                                onClick={handleFormReset}
+                                isDisabled={isUpdating}
+                                leftIcon={<FaUndo />}
+                            >
+                                Reset
+                            </Button>
 
-                            {/* Help Text */}
-                            <Text fontSize="xs" color="gray.500" textAlign="center">
-                                {!overallStats.canProceed
-                                    ? 'Complete essential sections and fix errors to proceed'
-                                    : 'Your preferences look great! Click complete to find matches.'
-                                }
-                            </Text>
-                        </VStack>
-                    </MotionBox>
+                            <Button
+                                colorScheme="pink"
+                                onClick={handleFormComplete}
+                                isLoading={isUpdating}
+                                isDisabled={!overallStats.canProceed}
+                                leftIcon={<FaSave />}
+                                size="lg"
+                                px={8}
+                            >
+                                {overallStats.overallCompletion >= 80 ? 'Complete Preferences' : 'Save Progress'}
+                            </Button>
+                        </HStack>
+
+                        {/* Help Text */}
+                        <Text fontSize="xs" color="gray.500" textAlign="center">
+                            {!overallStats.canProceed
+                                ? 'Complete essential sections and fix errors to proceed'
+                                : 'Your preferences look great! Click complete to find matches.'
+                            }
+                        </Text>
+                    </VStack>
+
                 </VStack>
             </Box>
         </Box>
