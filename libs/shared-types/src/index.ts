@@ -5,6 +5,9 @@ export * from './enums';
 // Export all interfaces
 export * from './interfaces';
 
+// Export storage interfaces (NEW)
+export * from './interfaces/storage.interfaces';
+
 // Explicit exports to ensure they're available
 export {
   AuthView,
@@ -48,3 +51,22 @@ export {
   type UpdatePartnerPreferencesRequest,
   type ErrorResponse,
 } from './interfaces/api.interfaces';
+
+// Explicit storage exports (NEW)
+export {
+  type StorageUploadOptions,
+  type StorageUploadResult,
+  type StorageListOptions,
+  type StorageListResult,
+  type StorageFileInfo,
+  type StorageHealthCheck,
+  type StorageConfig,
+  type ImageProcessingOptions,
+  type UploadProgress,
+  type FileValidationResult,
+  type IClientStorageProvider,
+  StorageError,
+  StorageQuotaExceededError,
+  StorageFileTooLargeError,
+  StorageInvalidFileTypeError
+} from './interfaces/storage.interfaces';

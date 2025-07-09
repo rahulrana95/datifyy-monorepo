@@ -484,19 +484,19 @@ __metadata:
 
 "@datifyy/shared-types@file:../../libs/shared-types::locator=nodejs-service%40workspace%3A.":
   version: 1.0.0
-  resolution: "@datifyy/shared-types@file:../../libs/shared-types#../../libs/shared-types::hash=2713d5&locator=nodejs-service%40workspace%3A."
-  checksum: 10c0/303a3a8a66437c65c361cf9437531b6ce48744be1e0b1741def6826f94cbc8b04096c1eaea7b1df0e95ea0a8a2f9413f8536475587cc37f0a7cf02fb3568e2f3
+  resolution: "@datifyy/shared-types@file:../../libs/shared-types#../../libs/shared-types::hash=491d94&locator=nodejs-service%40workspace%3A."
+  checksum: 10c0/8fa9681b2f220ed659a726600b890b8d72c0d314eaec02b5c1a74f4a4f3611fccacfbc9f6c03b4ecd81bd3d053004e6a6518d5da01a43d8da7a9804a16b5955f
   languageName: node
   linkType: hard
 
 "@datifyy/shared-validation@file:../../libs/shared-validation::locator=nodejs-service%40workspace%3A.":
   version: 1.0.0
-  resolution: "@datifyy/shared-validation@file:../../libs/shared-validation#../../libs/shared-validation::hash=fdafca&locator=nodejs-service%40workspace%3A."
+  resolution: "@datifyy/shared-validation@file:../../libs/shared-validation#../../libs/shared-validation::hash=0cff03&locator=nodejs-service%40workspace%3A."
   dependencies:
     zod: "npm:^3.22.0"
   peerDependencies:
     "@datifyy/shared-types": 1.0.0
-  checksum: 10c0/045d4a2b66feb1427358121a801b18654d15e0adbfe64008754c62c55f4f32cd71bb589154b21a7b0aaa88d94d4bfff5b7de90d93a2b6293e4eb5ddbd30bb0ff
+  checksum: 10c0/6558784b3ed0ee807ade8bbdd747076830b00e0e41104cf45590d4ff34d1bcbf354ca22373ce18bc982f2df7efb49264f43b6df41b96c56d80249d612082e58a
   languageName: node
   linkType: hard
 
@@ -1191,7 +1191,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^22.8.1":
+"@types/node@npm:*":
   version: 22.8.1
   resolution: "@types/node@npm:22.8.1"
   dependencies:
@@ -1204,6 +1204,15 @@ __metadata:
   version: 12.20.55
   resolution: "@types/node@npm:12.20.55"
   checksum: 10c0/3b190bb0410047d489c49bbaab592d2e6630de6a50f00ba3d7d513d59401d279972a8f5a598b5bb8ddc1702f8a2f4ec57a65d93852f9c329639738e7053637d1
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^24.0.12":
+  version: 24.0.12
+  resolution: "@types/node@npm:24.0.12"
+  dependencies:
+    undici-types: "npm:~7.8.0"
+  checksum: 10c0/333777c3416b758bbdb72a09e9db5599ff7789dca519d3fcf8150a1c56c79d808e0009e92d52016e80033b3c52724def08aad2c5b396e28f00dbdfe40a1756a4
   languageName: node
   linkType: hard
 
@@ -5265,7 +5274,7 @@ __metadata:
     "@types/jest": "npm:^29.5.14"
     "@types/jsonwebtoken": "npm:^9.0.7"
     "@types/morgan": "npm:^1.9.9"
-    "@types/node": "npm:^22.8.1"
+    "@types/node": "npm:^24.0.12"
     "@types/nodemailer": "npm:^6.4.16"
     "@types/supertest": "npm:^6.0.2"
     axios: "npm:^1.7.9"
@@ -7249,6 +7258,13 @@ __metadata:
   version: 6.19.8
   resolution: "undici-types@npm:6.19.8"
   checksum: 10c0/078afa5990fba110f6824823ace86073b4638f1d5112ee26e790155f481f2a868cc3e0615505b6f4282bdf74a3d8caad715fd809e870c2bb0704e3ea6082f344
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~7.8.0":
+  version: 7.8.0
+  resolution: "undici-types@npm:7.8.0"
+  checksum: 10c0/9d9d246d1dc32f318d46116efe3cfca5a72d4f16828febc1918d94e58f6ffcf39c158aa28bf5b4fc52f410446bc7858f35151367bd7a49f21746cab6497b709b
   languageName: node
   linkType: hard
 
