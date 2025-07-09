@@ -1,4 +1,4 @@
-// apps/frontend/src/mvp/components/header/HeaderNavigation.tsx
+// apps/frontend/src/mvp/header/HeaderNavigation.tsx
 import React from 'react';
 import { Box, Button, HStack, VStack } from '@chakra-ui/react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -23,10 +23,11 @@ const HeaderNavigation: React.FC<HeaderNavigationProps> = ({
     // Your existing active link logic
     const isActive = (path: string) => location.pathname === path;
 
-    // Your existing navigation items
+    // Updated navigation items with Partner Preferences
     const navItems: NavItem[] = [
         { label: 'Home', path: '/' },
         { label: 'About Us', path: '/about-us' },
+        { label: 'Partner Preferences', path: '/partner-preferences' },
     ];
 
     const handleNavClick = (item: NavItem) => {
