@@ -1,24 +1,7 @@
 // apps/frontend/src/mvp/login-signup/store/authStore.ts
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-
-export interface UserData {
-  id: string;
-  email: string;
-  isAdmin: boolean;
-  name: string;
-  avatar?: string;
-  isVerified?: boolean;
-  profileCompletion?: number;
-}
-
-export interface AuthModalState {
-  isLoginOpen: boolean;
-  isSignupOpen: boolean;
-  isForgotPasswordOpen: boolean;
-  isLoading: boolean;
-  error: string | null;
-}
+import { UserData, AuthModalState, AuthView } from "@datifyy/shared-types";
 
 interface AuthState extends AuthModalState {
   // User state

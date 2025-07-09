@@ -1,4 +1,6 @@
+// apps/frontend/src/service/apiService.ts
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import { ApiResponse, ServiceResponse } from "@datifyy/shared-types";
 
 class ApiService {
   private axiosInstance: AxiosInstance;
@@ -26,13 +28,10 @@ class ApiService {
         "Content-Type": "application/json",
         Authorization: this.authToken,
       },
-    //   withCredentials: true, // Ensures cookies (e.g., JWT tokens) are sent
     });
 
     this.setupInterceptors();
   }
-
-
 
   private setupInterceptors() {
     this.axiosInstance.interceptors.response.use(
@@ -45,37 +44,51 @@ class ApiService {
   }
 
   private async handleRequest<T>(
-    request: Promise<AxiosResponse<T>>
-  ): Promise<{ response?: T; error?: { code: number; message: string } }> {
+    request: Promise<AxiosResponse<ApiResponse<T>>>
+  ): Promise<ServiceResponse<T>> {
     try {
       const { data } = await request;
-      return { response: data };
+      return { response: data.data };
     } catch (error: any) {
       return {
         error: {
           code: error?.response?.status || 500,
-          message: error?.response?.data?.message || "An error occurred",
+          message: error?.response?.data?.message || error?.message || "An error occurred",
         },
       };
     }
   }
 
-  async get<T>(path: string, config?: AxiosRequestConfig) {
-    return this.handleRequest<T>(this.axiosInstance.get<T>(`${this.prefixPath}/${path}`, config));
-  }
-
-  async post<T>(path: string, data?: unknown, config?: AxiosRequestConfig) {
+  async get<T>(path: string, config?: AxiosRequestConfig): Promise<ServiceResponse<T>> {
     return this.handleRequest<T>(
-      this.axiosInstance.post<T>(`${this.prefixPath}/${path}`, data, config)
+      this.axiosInstance.get<ApiResponse<T>>(`${this.prefixPath}/${path}`, config)
     );
   }
 
-  async put<T>(path: string, data?: unknown, config?: AxiosRequestConfig) {
-    return this.handleRequest<T>(this.axiosInstance.put<T>(`${this.prefixPath}/${path}`, data, config));
+  async post<T>(
+    path: string, 
+    data?: unknown, 
+    config?: AxiosRequestConfig
+  ): Promise<ServiceResponse<T>> {
+    return this.handleRequest<T>(
+      this.axiosInstance.post<ApiResponse<T>>(`${this.prefixPath}/${path}`, data, config)
+    );
   }
 
-  async delete<T>(path: string, config?: AxiosRequestConfig) {
-    return this.handleRequest<T>(this.axiosInstance.delete<T>(`${this.prefixPath}/${path}`, config));
+  async put<T>(
+    path: string, 
+    data?: unknown, 
+    config?: AxiosRequestConfig
+  ): Promise<ServiceResponse<T>> {
+    return this.handleRequest<T>(
+      this.axiosInstance.put<ApiResponse<T>>(`${this.prefixPath}/${path}`, data, config)
+    );
+  }
+
+  async delete<T>(path: string, config?: AxiosRequestConfig): Promise<ServiceResponse<T>> {
+    return this.handleRequest<T>(
+      this.axiosInstance.delete<ApiResponse<T>>(`${this.prefixPath}/${path}`, config)
+    );
   }
 
   async setAuthToken(token: string) {
@@ -83,7 +96,7 @@ class ApiService {
     this.axiosInstance.defaults.headers.Authorization = `${token}`;
   }
 
-  async setTokenFromCookies() { 
+  async setTokenFromCookies(): Promise<boolean> { 
     const token = await this.getTokenFromCookies();
     this.setTokenInCookies(token);
     if (token) {
@@ -97,14 +110,13 @@ class ApiService {
     this.setAuthToken(token);
   }
 
-
-   async getTokenFromCookies() { 
+  async getTokenFromCookies(): Promise<string> { 
     const match = document.cookie.match(new RegExp('(^| )Authorization=([^;]+)'));
     if (match) {
       this.setAuthToken(match[2]);
     }
     return match?.[2] ?? '';
-   }
+  }
   
   async clearToken() {
     this.authToken = "";

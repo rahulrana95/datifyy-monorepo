@@ -7,6 +7,7 @@
     "@chakra-ui/react": "2",
     "@datifyy/shared-constants": "file:../../libs/shared-constants",
     "@datifyy/shared-types": "file:../../libs/shared-types",
+    "@datifyy/shared-utils": "file:../../libs/shared-utils",
     "@datifyy/shared-validation": "file:../../libs/shared-validation",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",

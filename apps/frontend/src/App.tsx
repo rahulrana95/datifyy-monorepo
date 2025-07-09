@@ -74,6 +74,7 @@ function App() {
         authStore.setUserData({
           email: data?.officialEmail ?? '',
           name: data?.firstName ?? '',
+          // @ts-ignore
           isAdmin: data?.isadmin ?? false,
           id: data?.id ?? ''
         })

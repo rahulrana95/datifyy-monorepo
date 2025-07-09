@@ -1,0 +1,26 @@
+{
+  "name": "@datifyy/shared-utils",
+  "version": "1.0.0",
+  "description": "Shared utility functions for Datifyy monorepo",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^16.18.115",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "@datifyy/shared-types": "1.0.0"
+  },
+  "files": [
+    "dist"
+  ]
+}

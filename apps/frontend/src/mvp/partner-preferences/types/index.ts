@@ -1,37 +1,38 @@
 // apps/frontend/src/mvp/partner-preferences/types/index.ts
+/**
+ * Partner Preferences Types - now using shared types
+ * Only frontend-specific component types remain here
+ */
 
-export interface PartnerPreferences {
-  id?: string;
-  minAge?: number;
-  maxAge?: number;
-  maxDistance?: number;
-  interests?: string[];
-  dealBreakers?: string[];
-  education?: string[];
-  lifestyle?: string[];
-  bodyType?: string[];
-  ethnicity?: string[];
-  religion?: string[];
-  smoking?: string;
-  drinking?: string;
-  hasKids?: string;
-  wantsKids?: string;
-  height?: {
-    min?: number;
-    max?: number;
-  };
-  income?: {
-    min?: number;
-    max?: number;
-  };
+import { PartnerPreferences, PreferencePage } from '@datifyy/shared-types';
+
+// Re-export from shared types
+export type {
+  PartnerPreferences,
+  PreferencePage,
+  PreferenceCategory,
+  DatifyyUserPartnerPreferences
+} from '@datifyy/shared-types';
+
+// Frontend-specific component props
+export interface PreferencesHeaderProps {
+  currentPage: PreferencePage;
+  onSave: () => void;
+  saving: boolean;
 }
 
-export interface PreferenceCategory {
-  id: string;
-  title: string;
-  icon: string;
-  description: string;
-  options: string[];
+export interface PreferencesNavigationProps {
+  currentPage: PreferencePage;
+  onPageChange: (page: PreferencePage) => void;
 }
 
-export type PreferencePage = 'basics' | 'lifestyle' | 'physical' | 'values';
+export interface PreferencesContentProps {
+  currentPage: PreferencePage;
+  preferences: PartnerPreferences;
+  onUpdate: (updates: Partial<PartnerPreferences>) => void;
+}
+
+export interface PreferencesPageProps {
+  preferences: PartnerPreferences;
+  onUpdate: (updates: Partial<PartnerPreferences>) => void;
+}
