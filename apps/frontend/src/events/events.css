@@ -1,8 +1,0 @@
-.events__list {
-    max-height: 450px;
-    margin:0px;
-    display: flex !important;
-    justify-content: center;
-    overflow-x: scroll;
-    flex-wrap: unset !important;
-}

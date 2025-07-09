@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-route
 // import Home from "./home/home";
 // import LiveEvent from "./events/liveEvent/LiveEvent";
 // import EventPage from "./admin/events/eventPage";
-import Countdown from "./countdown/countdown";
+// import Countdown from "./countdown/countdown";
 import ReactGA from 'react-ga4';
 import reportWebVitals from "./reportWebVitals";
 // import Login from "./mvp/login/Login";
@@ -13,7 +13,7 @@ import reportWebVitals from "./reportWebVitals";
 import * as Sentry from "@sentry/react";
 import LogRocket from 'logrocket';
 import { ChakraProvider, } from '@chakra-ui/react'
-import theme from "./theme";
+import theme from "./theme/index";
 import Home from "./mvp/home/home";
 import AdminRoute from "./mvp/admin/AdminRoute";
 import HeaderWithTabs from "./mvp/profile/HeaderWithTabs";
@@ -91,9 +91,9 @@ function App() {
 
 
 
-  if (isCountdown) {
-    return <Countdown />
-  }
+  // if (isCountdown) {
+  //   return <Countdown />
+  // }
 
   const StatusWrapperProps = loading ? {
     isLoading: loading,
