@@ -93,11 +93,23 @@ export class Config {
       fromEmail: process.env.FROM_EMAIL || 'noreply@datifyy.com',
       fromName: process.env.FROM_NAME || 'Datifyy',
     });
+
+    this.config.set('redis', {
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT,
+      password: process.env.REDIS_PASSWORD,
+      db: 0,
+      keyPrefix: 'datifyy-backend:'
+    })
   }
 
   private parseArrayFromEnv(key: string, defaultValue: string[] = []): string[] {
     const value = process.env[key];
     if (!value) return defaultValue;
     return value.split(',').map(item => item.trim());
+  }
+
+  getRedisConfig() {
+    return this.config.get('redis');
   }
 }

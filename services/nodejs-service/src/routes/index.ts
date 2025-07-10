@@ -8,6 +8,7 @@ import { Logger } from "../infrastructure/logging/Logger";
 import { createAuthRoutes } from "./auth/authRoutes";
 import { createUserProfileRoutes } from "./userProfile/userProfileRoutes";
 import { createPartnerPreferencesRoutes } from "../modules/partnerPreferences/routes/partnerPreferencesRoutes";
+import { createAdminAuthRoutes } from "../modules/admin/routes/AdminAuthRoutes";
 
 // Import existing routes (keeping backward compatibility)
 import allRoutes from "./allRoutes";
@@ -55,6 +56,10 @@ export function createAppRoutes(dataSource: DataSource): Router {
   router.use("/auth", createAuthRoutes(dataSource));
   logger.info("✅ Auth routes registered at /auth");
 
+  // Admin Authentication routes (new enterprise admin system)
+  router.use("/admin/auth", createAdminAuthRoutes(dataSource));
+  logger.info("✅ Admin Auth routes registered at /admin/auth");
+
   // User Profile routes (new module following established patterns)
   router.use("/user-profile", createUserProfileRoutes(dataSource));
   logger.info("✅ User Profile routes registered at /user-profile");
@@ -82,6 +87,18 @@ export function createAppRoutes(dataSource: DataSource): Router {
   // API documentation endpoint (helpful for development)
   router.get("/routes", (req, res) => {
     const availableRoutes = {
+      admin: {
+        "POST /admin/auth/login": "Admin login with 2FA support",
+        "POST /admin/auth/2fa": "Complete 2FA verification",
+        "POST /admin/auth/refresh": "Refresh admin access token",
+        "POST /admin/auth/logout": "Admin logout and session termination",
+        "GET /admin/auth/profile": "Get admin profile and permissions",
+        "POST /admin/auth/change-password": "Change admin password",
+        "GET /admin/auth/sessions": "Get active admin sessions",
+        "GET /admin/auth/permissions": "Get admin permissions",
+        "POST /admin/auth/validate-token": "Validate admin JWT token",
+        "GET /admin/auth/health": "Admin auth service health check",
+      },
       authentication: {
         "POST /auth/send-verification-code":
           "Send email verification code for signup",
@@ -100,14 +117,23 @@ export function createAppRoutes(dataSource: DataSource): Router {
         "PATCH /user-profile/avatar": "Update profile image",
         "GET /user-profile/stats": "Get profile completion stats",
       },
+      partnerPreferences: {
+        "GET /user/partner-preferences": "Get partner preferences",
+        "PUT /user/partner-preferences": "Update partner preferences",
+        "POST /user/partner-preferences": "Create partner preferences",
+        "DELETE /user/partner-preferences": "Delete partner preferences",
+      },
+      imageUpload: {
+        "POST /images/upload": "Upload profile images",
+        "GET /images/:id": "Get uploaded image",
+        "DELETE /images/:id": "Delete uploaded image",
+      },
       legacy: {
         "GET /enums": "Get database enums",
         "POST /events": "Create new event",
         "GET /events": "List all events",
         "GET /events/:eventId": "Get specific event",
         "POST /waitlist": "Add to waitlist",
-        "GET /user-profile":
-          "Legacy profile endpoint (use /user-profile instead)",
         // ... other legacy endpoints
       },
       health: {
@@ -133,44 +159,67 @@ export function createAppRoutes(dataSource: DataSource): Router {
     });
   });
 
-  // 404 handler for unmatched routes (should be last)
-  router.use("*", (req, res) => {
-    logger.warn("Route not found", {
-      path: req.originalUrl,
-      method: req.method,
-      ip: req.ip,
-      userAgent: req.get("User-Agent"),
-      requestId: (req as any).id,
-    });
+  /**
+   * Create placeholder routes for future modules
+   * 
+   * Provides informative responses for routes that are planned but not yet implemented.
+   */
+  // function createPlaceholderRoutes(moduleName: string): Router {
+  //   const router = Router();
+  
+  //   router.use('*', (req: Request, res: Response) => {
+  //     res.status(501).json({
+  //       success: false,
+  //       error: {
+  //         code: 'NOT_IMPLEMENTED',
+  //         message: `${moduleName} module is not yet implemented`,
+  //         plannedImplementation: 'Q1 2024'
+  //       },
+  //       metadata: {
+  //         timestamp: new Date().toISOString(),
+  //         module: moduleName,
+  //         requestedPath: req.path,
+  //         method: req.method
+  //       }
+  //     });
+  //   });
 
-    res.status(404).json({
-      success: false,
-      error: {
-        message: `Route ${req.method} ${req.originalUrl} not found`,
-        code: "ROUTE_NOT_FOUND",
-        timestamp: new Date().toISOString(),
-        requestId: (req as any).id,
-        suggestion: "Use GET /routes to see available endpoints",
-      },
-    });
-  });
+  //   return router;
+  // }
 
-  logger.info("🎉 Application Routes initialized successfully", {
-    modules: ["health", "auth", "userProfile", "legacy"],
-    features: [
-      "Health monitoring",
-      "Authentication system",
-      "User profile management",
-      "Backward compatibility",
-      "API documentation",
-      "404 handling",
-    ],
-    timestamp: new Date().toISOString(),
-  });
+  /**
+   * Health check helper functions
+   */
+  async function checkDatabaseHealth(dataSource: DataSource): Promise<boolean> {
+    try {
+      await dataSource.query('SELECT 1');
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async function checkRedisHealth(): Promise<boolean> {
+    try {
+      // TODO: Implement Redis health check when RedisService is available
+      // const redisService = RedisService.getInstance();
+      // await redisService.ping();
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async function checkStorageHealth(): Promise<boolean> {
+    try {
+      // TODO: Implement storage health check when StorageService is available
+      // const storageService = StorageService.getInstance();
+      // await storageService.healthCheck();
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
 
   return router;
 }
-
-// Export for backward compatibility
-export { createAppRoutes as createRoutes };
-export default createAppRoutes;

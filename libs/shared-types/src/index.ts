@@ -8,6 +8,11 @@ export * from './interfaces';
 // Export storage interfaces (NEW)
 export * from './interfaces/storage.interfaces';
 
+export * from './interfaces/admin.interfaces'; 
+export * from './interfaces/api.interfaces';
+export * from './interfaces/user.interfaces';
+export * from './interfaces/storage.interfaces';  // Add this line
+export * from './interfaces/admin.interfaces';    // Add this line if not already there
 // Explicit exports to ensure they're available
 export {
   AuthView,
@@ -70,3 +75,15 @@ export {
   StorageFileTooLargeError,
   StorageInvalidFileTypeError
 } from './interfaces/storage.interfaces';
+
+export {
+  AdminPermissionLevel,
+  AdminPermission,
+  AdminAccountStatus,
+  AdminTwoFactorMethod,
+  AdminSessionStatus,
+  ADMIN_SECURITY_CONSTANTS,
+  ADMIN_ROLE_PERMISSIONS,
+  AdminLoginAttemptResult,
+  AdminRiskLevel
+} from './enums/admin.enum';

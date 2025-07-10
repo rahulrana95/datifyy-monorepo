@@ -7,6 +7,7 @@
 
 // Validation utilities
 export * from './validation/validationUtils';
+export * from './validation/fileValidationUtils';
 
 // Format utilities
 export * from './format/formatUtils';

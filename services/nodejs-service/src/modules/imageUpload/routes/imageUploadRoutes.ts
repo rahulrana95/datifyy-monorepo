@@ -36,6 +36,17 @@ export function createImageUploadRoutes(dataSource: DataSource): Router {
     endpoint: process.env.R2_ENDPOINT || '',
     cdnUrl: process.env.R2_CDN_URL
   }, logger);
+  // https://bbe179caaaed9b90740d122359cba700.r2.cloudflarestorage.com
+
+  access
+  token:  uzsjEeMC3M-VKp2xtuzrGE545v1bsmDk8VI6r51i
+  access key: e5eaf954f677da3950c9b38f8984159b
+
+  secret: 54f968cdf55e3505517578a7ef34df9b7bea65f54831a86ba514aff01fbe1b92
+
+  https://bbe179caaaed9b90740d122359cba700.r2.cloudflarestorage.com
+
+
 
   const imageUploadService = new ImageUploadService(
     storageProvider,

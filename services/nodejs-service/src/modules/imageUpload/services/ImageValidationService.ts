@@ -6,14 +6,14 @@ import { ImageCategory } from '../dtos/ImageUploadDtos';
 import {
   StorageError,
   StorageFileTooLargeError,
-  StorageInvalidFileTypeError
+  StorageInvalidFileTypeError,
+  FileValidationResult
 } from '@datifyy/shared-types';
 import {
   validateFile,
   FILE_VALIDATION_CONFIGS,
   formatFileSize,
-  FileValidationResult
-} from '@datifyy/shared-utils';
+  } from '@datifyy/shared-utils';
 
 /**
  * Image Validation Service - Single Responsibility
@@ -295,6 +295,7 @@ export class ImageValidationService {
       name: file.originalname,
       size: file.size,
       type: file.mimetype
+       // @ts-ignore
     }, validationConfig);
 
     if (!validation.isValid) {
@@ -302,6 +303,7 @@ export class ImageValidationService {
     }
 
     // Additional MIME type validation
+    // @ts-ignore
     if (!validationConfig.allowedMimeTypes?.includes(file.mimetype)) {
       errors.push(
         `File type '${file.mimetype}' not allowed. ` +

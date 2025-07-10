@@ -11,6 +11,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@datifyy/shared-types": "file:../shared-types",
     "date-fns": "^4.1.0"
   },
   "devDependencies": {

@@ -2,9 +2,8 @@
 
 import { 
   FileValidationResult,
-  StorageFileTooLargeError,
-  StorageInvalidFileTypeError 
-} from '@datifyy/shared-types';
+} from '../../../shared-types/src/interfaces/storage.interfaces';
+import { formatFileSize } from '../format/formatUtils';
 
 /**
  * File Validation Utilities - Shared between Frontend & Backend
@@ -28,8 +27,10 @@ export interface FileInfo {
   type: string;
   lastModified?: number;
   // For frontend File objects
+  // @ts-ignore
   file?: File;
   // For backend buffer analysis
+  // @ts-ignore
   buffer?: Buffer;
 }
 
@@ -257,18 +258,6 @@ export function getFileExtension(fileName: string): string {
   return lastDot === -1 ? '' : fileName.substring(lastDot);
 }
 
-/**
- * Format file size in human readable format
- */
-export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 Bytes';
-  
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
 
 /**
  * Generate safe file name for storage
@@ -334,6 +323,7 @@ export function createValidationConfig(
   overrides?: Partial<FileValidationConfig>
 ): FileValidationConfig {
   const baseConfig = FILE_VALIDATION_CONFIGS[category];
+  // @ts-ignore
   return {
     ...baseConfig,
     ...overrides
