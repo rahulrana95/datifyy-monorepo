@@ -2051,12 +2051,12 @@ __metadata:
 
 "@datifyy/shared-utils@file:../../libs/shared-utils::locator=frontend%40workspace%3A.":
   version: 1.0.0
-  resolution: "@datifyy/shared-utils@file:../../libs/shared-utils#../../libs/shared-utils::hash=fa9e17&locator=frontend%40workspace%3A."
+  resolution: "@datifyy/shared-utils@file:../../libs/shared-utils#../../libs/shared-utils::hash=333e4a&locator=frontend%40workspace%3A."
   dependencies:
     date-fns: "npm:^4.1.0"
   peerDependencies:
     "@datifyy/shared-types": 1.0.0
-  checksum: 10c0/49e6c37fd97f45940621e8fb5a951668e18034912965c3ddf824d6406c8aa75133965d79e999654ae853d18f58aa403097cc030b6c5ac8b8e4fd9ec1f88bbcea
+  checksum: 10c0/c4ead9411d608f38ce75ff228c0919ebf43bcbb953465b460a24571b39a6d059edc4346915c2f46f2b1eb450d02c415ae505ce7e9382afeb6f3490d6d532b8e8
   languageName: node
   linkType: hard
 
