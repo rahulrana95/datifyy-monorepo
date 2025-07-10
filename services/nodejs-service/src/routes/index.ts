@@ -11,6 +11,7 @@ import { createPartnerPreferencesRoutes } from "../modules/partnerPreferences/ro
 
 // Import existing routes (keeping backward compatibility)
 import allRoutes from "./allRoutes";
+import { createImageUploadRoutes } from "../modules/imageUpload/routes/imageUploadRoutes";
 
 /**
  * Main Application Routes Factory
@@ -57,6 +58,9 @@ export function createAppRoutes(dataSource: DataSource): Router {
   // User Profile routes (new module following established patterns)
   router.use("/user-profile", createUserProfileRoutes(dataSource));
   logger.info("✅ User Profile routes registered at /user-profile");
+
+  // Add route registration in createAppRoutes function
+  router.use("/images", createImageUploadRoutes(dataSource));
 
   // Add this in your createAppRoutes function
   // Partner Preferences routes (new advanced module)
