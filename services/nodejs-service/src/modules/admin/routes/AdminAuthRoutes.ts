@@ -152,7 +152,8 @@ const adminCors = (req: Request, res: Response, next: NextFunction) => {
   const allowedOrigins = [
     process.env.ADMIN_FRONTEND_URL,
     'https://admin.datifyy.com',
-    'http://localhost:3001' // Admin dashboard dev
+    'https://datifyy.com',
+    'http://localhost' // Admin dashboard dev
   ].filter(Boolean);
 
   const origin = req.headers.origin ?? '';
@@ -235,7 +236,7 @@ export function createAdminAuthRoutes(dataSource: DataSource): Router {
     // POST /api/v1/admin/auth/login - Admin login
     router.post('/login',
       authRateLimiters.login,
-      validateRequest(AdminLoginRequestDto),
+      // validateRequest(AdminLoginRequestDto),
       asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         await adminAuthController.login(req, res, next);
       })

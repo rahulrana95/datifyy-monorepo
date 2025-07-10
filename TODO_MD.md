@@ -3,10 +3,10 @@
 ## 🔐 Phase 1: Admin Authentication & Dashboard (Week 1-2)
 
 ### Admin Authentication System
-- [ ] `POST /api/v1/admin/auth/login` - Admin login with 2FA (4h) 
-- [ ] `POST /api/v1/admin/auth/refresh` - Refresh admin tokens (2h)
-- [ ] `POST /api/v1/admin/auth/logout` - Secure admin logout (1h)
-- [ ] `GET /api/v1/admin/auth/profile` - Get admin profile & permissions (2h)
+- [ ] `POST /api/v1/admin/auth/login` - Admin login with 2FA (4h)  done
+- [ ] `POST /api/v1/admin/auth/refresh` - Refresh admin tokens (2h) done
+- [ ] `POST /api/v1/admin/auth/logout` - Secure admin logout (1h)done
+- [ ] `GET /api/v1/admin/auth/profile` - Get admin profile & permissions (2h)done
 
 ### Admin Dashboard Home
 - [ ] `GET /api/v1/admin/dashboard` - Key metrics overview (6h)
