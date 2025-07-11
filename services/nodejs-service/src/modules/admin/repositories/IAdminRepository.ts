@@ -8,7 +8,6 @@
  * @since 1.0.0
  */
 
-import { AdminUser } from '../../../models/entities/AdminUser';
 import {
   AdminPermissionLevel,
   AdminAccountStatus,
@@ -16,6 +15,7 @@ import {
   AdminCreateRequest,
   AdminUpdateRequest
 } from '@datifyy/shared-types';
+import { DatifyyUsersLogin } from '../../../models/entities/DatifyyUsersLogin';
 
 /**
  * Pagination parameters for list operations
@@ -86,21 +86,21 @@ export interface IAdminRepository {
    * @param id Admin user ID
    * @returns Admin user or null if not found
    */
-  findById(id: number): Promise<AdminUser | null>;
+  findById(id: number): Promise<DatifyyUsersLogin | null>;
 
   /**
    * Find admin by email address
    * @param email Admin email address
    * @returns Admin user or null if not found
    */
-  findByEmail(email: string): Promise<AdminUser | null>;
+  findByEmail(email: string): Promise<DatifyyUsersLogin | null>;
 
   /**
    * Create new admin user
    * @param adminData Admin creation data
    * @returns Created admin user
    */
-  create(adminData: Partial<AdminUser>): Promise<AdminUser>;
+  create(adminData: Partial<DatifyyUsersLogin>): Promise<DatifyyUsersLogin>;
 
   /**
    * Update existing admin user
@@ -108,7 +108,7 @@ export interface IAdminRepository {
    * @param updateData Partial update data
    * @returns Updated admin user
    */
-  update(id: number, updateData: Partial<AdminUser>): Promise<AdminUser>;
+  update(id: number, updateData: Partial<DatifyyUsersLogin>): Promise<DatifyyUsersLogin>;
 
   /**
    * Soft delete admin user
@@ -122,7 +122,7 @@ export interface IAdminRepository {
    * @param admin Admin user entity
    * @returns Saved admin user
    */
-  save(admin: AdminUser): Promise<AdminUser>;
+  save(admin: DatifyyUsersLogin): Promise<DatifyyUsersLogin>;
 
   /**
    * Check if admin exists by email
@@ -139,21 +139,21 @@ export interface IAdminRepository {
    * Find all active admins
    * @returns Array of active admin users
    */
-  findAllActive(): Promise<AdminUser[]>;
+  findAllActive(): Promise<DatifyyUsersLogin[]>;
 
   /**
    * Find admins by permission level
    * @param permissionLevel Admin permission level
    * @returns Array of admin users with specified permission level
    */
-  findByPermissionLevel(permissionLevel: AdminPermissionLevel): Promise<AdminUser[]>;
+  findByPermissionLevel(permissionLevel: AdminPermissionLevel): Promise<DatifyyUsersLogin[]>;
 
   /**
    * Find admins by account status
    * @param accountStatus Admin account status
    * @returns Array of admin users with specified status
    */
-  findByAccountStatus(accountStatus: AdminAccountStatus): Promise<AdminUser[]>;
+  findByAccountStatus(accountStatus: AdminAccountStatus): Promise<DatifyyUsersLogin[]>;
 
   /**
    * Search admins with flexible criteria
@@ -164,7 +164,7 @@ export interface IAdminRepository {
   search(
     criteria: AdminSearchCriteria,
     pagination: PaginationOptions
-  ): Promise<PaginatedResult<AdminUser>>;
+  ): Promise<PaginatedResult<DatifyyUsersLogin>>;
 
   /**
    * Find admins with filters and pagination
@@ -175,7 +175,7 @@ export interface IAdminRepository {
   findWithFilters(
     filters: AdminListFilters,
     pagination: PaginationOptions
-  ): Promise<PaginatedResult<AdminUser>>;
+  ): Promise<PaginatedResult<DatifyyUsersLogin>>;
 
   /**
    * Security & Authentication Operations
@@ -185,39 +185,39 @@ export interface IAdminRepository {
    * Find locked admin accounts
    * @returns Array of currently locked admin users
    */
-  findLockedAccounts(): Promise<AdminUser[]>;
+  findLockedAccounts(): Promise<DatifyyUsersLogin[]>;
 
   /**
    * Find admins with expired passwords
    * @returns Array of admin users with expired passwords
    */
-  findExpiredPasswords(): Promise<AdminUser[]>;
+  findExpiredPasswords(): Promise<DatifyyUsersLogin[]>;
 
   /**
    * Find admins requiring password change
    * @returns Array of admin users who must change password
    */
-  findRequirePasswordChange(): Promise<AdminUser[]>;
+  findRequirePasswordChange(): Promise<DatifyyUsersLogin[]>;
 
   /**
    * Find admins with 2FA enabled
    * @returns Array of admin users with 2FA enabled
    */
-  findWithTwoFactorEnabled(): Promise<AdminUser[]>;
+  findWithTwoFactorEnabled(): Promise<DatifyyUsersLogin[]>;
 
   /**
    * Find admins by last login timeframe
    * @param since Date to check login activity from
    * @returns Array of admin users who logged in since the date
    */
-  findByLastLoginSince(since: Date): Promise<AdminUser[]>;
+  findByLastLoginSince(since: Date): Promise<DatifyyUsersLogin[]>;
 
   /**
    * Find inactive admins (no recent activity)
    * @param inactiveSince Date threshold for inactive status
    * @returns Array of inactive admin users
    */
-  findInactiveAdmins(inactiveSince: Date): Promise<AdminUser[]>;
+  findInactiveAdmins(inactiveSince: Date): Promise<DatifyyUsersLogin[]>;
 
   /**
    * Update admin login information
@@ -233,7 +233,7 @@ export interface IAdminRepository {
       lastLoginUserAgent: string;
       loginCount: number;
     }
-  ): Promise<AdminUser>;
+  ): Promise<DatifyyUsersLogin>;
 
   /**
    * Update admin activity timestamp
@@ -294,7 +294,7 @@ export interface IAdminRepository {
    * @param endDate Range end date
    * @returns Array of admin users created in range
    */
-  findCreatedInDateRange(startDate: Date, endDate: Date): Promise<AdminUser[]>;
+  findCreatedInDateRange(startDate: Date, endDate: Date): Promise<DatifyyUsersLogin[]>;
 
   /**
    * Get login activity report
@@ -322,7 +322,7 @@ export interface IAdminRepository {
    * @param ids Array of admin user IDs
    * @returns Array of found admin users
    */
-  findByIds(ids: number[]): Promise<AdminUser[]>;
+  findByIds(ids: number[]): Promise<DatifyyUsersLogin[]>;
 
   /**
    * Batch update admin status

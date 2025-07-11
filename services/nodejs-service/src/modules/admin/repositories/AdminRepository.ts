@@ -9,7 +9,6 @@
  */
 
 import { Repository, DataSource, QueryRunner, SelectQueryBuilder } from 'typeorm';
-import { AdminUser } from '../../../models/entities/AdminUser';
 import {
   IAdminRepository,
   PaginationOptions,
@@ -24,6 +23,7 @@ import {
   ADMIN_SECURITY_CONSTANTS
 } from '@datifyy/shared-types';
 import { Logger } from '../../../infrastructure/logging/Logger';
+import { DatifyyUsersLogin } from '../../../models/entities/DatifyyUsersLogin';
 
 /**
  * TypeORM implementation of Admin Repository
@@ -32,14 +32,14 @@ import { Logger } from '../../../infrastructure/logging/Logger';
  * Implements all interface methods with optimized queries and logging.
  */
 export class AdminRepository implements IAdminRepository {
-  private readonly repository: Repository<AdminUser>;
+  private readonly repository: Repository<DatifyyUsersLogin>;
   private readonly logger: Logger;
 
   constructor(
     private readonly dataSource: DataSource,
     logger?: Logger
   ) {
-    this.repository = dataSource.getRepository(AdminUser);
+    this.repository = dataSource.getRepository(DatifyyUsersLogin);
     this.logger = logger || Logger.getInstance();
   }
 
@@ -47,12 +47,12 @@ export class AdminRepository implements IAdminRepository {
    * Core CRUD Operations
    */
 
-  async findById(id: number): Promise<AdminUser | null> {
+  async findById(id: number): Promise<DatifyyUsersLogin | null> {
     try {
       this.logger.debug('Finding admin by ID', { adminId: id });
       
       const admin = await this.repository.findOne({
-        where: { id, isActive: true }
+        where: { id, isactive: true }
       });
 
       this.logger.debug('Admin found by ID', { 
@@ -68,12 +68,12 @@ export class AdminRepository implements IAdminRepository {
     }
   }
 
-  async findByEmail(email: string): Promise<AdminUser | null> {
+  async findByEmail(email: string): Promise<DatifyyUsersLogin | null> {
     try {
       this.logger.debug('Finding admin by email', { email });
       
       const admin = await this.repository.findOne({
-        where: { email: email.toLowerCase(), isActive: true }
+        where: { email: email.toLowerCase(), isactive: true }
       });
 
       this.logger.debug('Admin found by email', { 
@@ -89,7 +89,7 @@ export class AdminRepository implements IAdminRepository {
     }
   }
 
-  async create(adminData: Partial<AdminUser>): Promise<AdminUser> {
+  async create(adminData: Partial<DatifyyUsersLogin>): Promise<DatifyyUsersLogin> {
     try {
       this.logger.info('Creating new admin', { 
         email: adminData.email,
@@ -116,7 +116,7 @@ export class AdminRepository implements IAdminRepository {
     }
   }
 
-  async update(id: number, updateData: Partial<AdminUser>): Promise<AdminUser> {
+  async update(id: number, updateData: Partial<DatifyyUsersLogin>): Promise<DatifyyUsersLogin> {
     try {
       this.logger.info('Updating admin', { adminId: id, fields: Object.keys(updateData) });
 
@@ -149,7 +149,7 @@ export class AdminRepository implements IAdminRepository {
       this.logger.info('Soft deleting admin', { adminId: id });
 
       const result = await this.repository.update(id, { 
-        isActive: false,
+        isactive: false,
         accountStatus: AdminAccountStatus.DEACTIVATED,
         updatedAt: new Date()
       });
@@ -165,7 +165,7 @@ export class AdminRepository implements IAdminRepository {
     }
   }
 
-  async save(admin: AdminUser): Promise<AdminUser> {
+  async save(admin: DatifyyUsersLogin): Promise<DatifyyUsersLogin> {
     try {
       this.logger.debug('Saving admin entity', { adminId: admin.id });
       
@@ -183,7 +183,7 @@ export class AdminRepository implements IAdminRepository {
   async existsByEmail(email: string): Promise<boolean> {
     try {
       const count = await this.repository.count({
-        where: { email: email.toLowerCase(), isActive: true }
+        where: { email: email.toLowerCase(), isactive: true }
       });
       
       return count > 0;
@@ -197,13 +197,13 @@ export class AdminRepository implements IAdminRepository {
    * Query & Search Operations
    */
 
-  async findAllActive(): Promise<AdminUser[]> {
+  async findAllActive(): Promise<DatifyyUsersLogin[]> {
     try {
       this.logger.debug('Finding all active admins');
       
       const admins = await this.repository.find({
         where: { 
-          isActive: true,
+          isactive: true,
           accountStatus: AdminAccountStatus.ACTIVE 
         },
         order: { createdAt: 'DESC' }
@@ -218,12 +218,12 @@ export class AdminRepository implements IAdminRepository {
     }
   }
 
-  async findByPermissionLevel(permissionLevel: AdminPermissionLevel): Promise<AdminUser[]> {
+  async findByPermissionLevel(permissionLevel: AdminPermissionLevel): Promise<DatifyyUsersLogin[]> {
     try {
       const admins = await this.repository.find({
         where: { 
           permissionLevel,
-          isActive: true 
+          isactive: true 
         },
         order: { createdAt: 'DESC' }
       });
@@ -238,12 +238,12 @@ export class AdminRepository implements IAdminRepository {
     }
   }
 
-  async findByAccountStatus(accountStatus: AdminAccountStatus): Promise<AdminUser[]> {
+  async findByAccountStatus(accountStatus: AdminAccountStatus): Promise<DatifyyUsersLogin[]> {
     try {
       const admins = await this.repository.find({
         where: { 
           accountStatus,
-          isActive: true 
+          isactive: true 
         },
         order: { createdAt: 'DESC' }
       });
@@ -261,7 +261,7 @@ export class AdminRepository implements IAdminRepository {
   async search(
     criteria: AdminSearchCriteria,
     pagination: PaginationOptions
-  ): Promise<PaginatedResult<AdminUser>> {
+  ): Promise<PaginatedResult<DatifyyUsersLogin>> {
     try {
       this.logger.debug('Searching admins', { criteria, pagination });
 
@@ -281,7 +281,7 @@ export class AdminRepository implements IAdminRepository {
 
       const [data, total] = await queryBuilder.getManyAndCount();
       
-      const result: PaginatedResult<AdminUser> = {
+      const result: PaginatedResult<DatifyyUsersLogin> = {
         data,
         total,
         page,
@@ -308,7 +308,7 @@ export class AdminRepository implements IAdminRepository {
   async findWithFilters(
     filters: AdminListFilters,
     pagination: PaginationOptions
-  ): Promise<PaginatedResult<AdminUser>> {
+  ): Promise<PaginatedResult<DatifyyUsersLogin>> {
     try {
       const criteria: AdminSearchCriteria = {
         permissionLevel: filters.permissionLevel,
@@ -339,16 +339,16 @@ export class AdminRepository implements IAdminRepository {
    * Security & Authentication Operations
    */
 
-  async findLockedAccounts(): Promise<AdminUser[]> {
+  async findLockedAccounts(): Promise<DatifyyUsersLogin[]> {
     try {
       const now = new Date();
       
       const admins = await this.repository.find({
         where: [
-          { accountStatus: AdminAccountStatus.LOCKED, isActive: true },
+          { accountStatus: AdminAccountStatus.LOCKED, isactive: true },
           { 
             lockedAt: new Date(),
-            isActive: true
+            isactive: true
           }
         ]
       });
@@ -373,7 +373,7 @@ export class AdminRepository implements IAdminRepository {
       lastLoginUserAgent: string;
       loginCount: number;
     }
-  ): Promise<AdminUser> {
+  ): Promise<DatifyyUsersLogin> {
     try {
       this.logger.info('Updating admin login info', { adminId: id });
 
@@ -506,16 +506,16 @@ export class AdminRepository implements IAdminRepository {
         adminsLoggedInToday,
         adminsLoggedInThisWeek
       ] = await Promise.all([
-        this.repository.count({ where: { isActive: true } }),
+        this.repository.count({ where: { isactive: true } }),
         this.repository.count({ 
           where: { 
-            isActive: true, 
+            isactive: true, 
             accountStatus: AdminAccountStatus.ACTIVE 
           } 
         }),
         this.repository.count({ 
           where: { 
-            isActive: true, 
+            isactive: true, 
             accountStatus: AdminAccountStatus.LOCKED 
           } 
         }),
@@ -600,10 +600,10 @@ export class AdminRepository implements IAdminRepository {
    */
 
   private applySearchCriteria(
-    queryBuilder: SelectQueryBuilder<AdminUser>,
+    queryBuilder: SelectQueryBuilder<DatifyyUsersLogin>,
     criteria: AdminSearchCriteria
   ): void {
-    queryBuilder.where('admin.isActive = :isActive', { isActive: true });
+    queryBuilder.where('admin.isactive = :isactive', { isactive: true });
 
     if (criteria.email || criteria.firstName || criteria.lastName) {
       const searchConditions: string[] = [];
@@ -675,7 +675,7 @@ export class AdminRepository implements IAdminRepository {
   private async getAdminsLoggedInSince(since: Date): Promise<number> {
     return this.repository.count({
       where: {
-        isActive: true,
+        isactive: true,
         lastLoginAt: new Date() // Use MoreThanOrEqual when imported
       }
     });
@@ -688,7 +688,7 @@ export class AdminRepository implements IAdminRepository {
       for (const level of levels) {
         // @ts-ignore
       counts[level] = await this.repository.count({
-        where: { permissionLevel: level, isActive: true }
+        where: { permissionLevel: level, isactive: true }
       });
     }
 
@@ -708,27 +708,27 @@ export class AdminRepository implements IAdminRepository {
   }
 
   // Implement remaining interface methods...
-  async findExpiredPasswords(): Promise<AdminUser[]> {
+  async findExpiredPasswords(): Promise<DatifyyUsersLogin[]> {
     // TODO: Implement
     return [];
   }
 
-  async findRequirePasswordChange(): Promise<AdminUser[]> {
+  async findRequirePasswordChange(): Promise<DatifyyUsersLogin[]> {
     // TODO: Implement
     return [];
   }
 
-  async findWithTwoFactorEnabled(): Promise<AdminUser[]> {
+  async findWithTwoFactorEnabled(): Promise<DatifyyUsersLogin[]> {
     // TODO: Implement
     return [];
   }
 
-  async findByLastLoginSince(since: Date): Promise<AdminUser[]> {
+  async findByLastLoginSince(since: Date): Promise<DatifyyUsersLogin[]> {
     // TODO: Implement
     return [];
   }
 
-  async findInactiveAdmins(inactiveSince: Date): Promise<AdminUser[]> {
+  async findInactiveAdmins(inactiveSince: Date): Promise<DatifyyUsersLogin[]> {
     // TODO: Implement
     return [];
   }
@@ -738,7 +738,7 @@ export class AdminRepository implements IAdminRepository {
     return 0;
   }
 
-  async findCreatedInDateRange(startDate: Date, endDate: Date): Promise<AdminUser[]> {
+  async findCreatedInDateRange(startDate: Date, endDate: Date): Promise<DatifyyUsersLogin[]> {
     // TODO: Implement
     return [];
   }
@@ -754,7 +754,7 @@ export class AdminRepository implements IAdminRepository {
     return [];
   }
 
-  async findByIds(ids: number[]): Promise<AdminUser[]> {
+  async findByIds(ids: number[]): Promise<DatifyyUsersLogin[]> {
     // TODO: Implement
     return [];
   }

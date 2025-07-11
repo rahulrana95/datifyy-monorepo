@@ -152,7 +152,8 @@ const adminCors = (req: Request, res: Response, next: NextFunction) => {
   const allowedOrigins = [
     process.env.ADMIN_FRONTEND_URL,
     'https://admin.datifyy.com',
-    'http://localhost:3001' // Admin dashboard dev
+    'https://datifyy.com',
+    'http://localhost' // Admin dashboard dev
   ].filter(Boolean);
 
   const origin = req.headers.origin ?? '';
@@ -235,7 +236,7 @@ export function createAdminAuthRoutes(dataSource: DataSource): Router {
     // POST /api/v1/admin/auth/login - Admin login
     router.post('/login',
       authRateLimiters.login,
-      validateRequest(AdminLoginRequestDto),
+      // validateRequest(AdminLoginRequestDto),
       asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         await adminAuthController.login(req, res, next);
       })
@@ -333,39 +334,39 @@ export function createAdminAuthRoutes(dataSource: DataSource): Router {
       })
     );
 
-    // GET /api/v1/admin/auth/permissions - Get current admin permissions
-    router.get('/permissions',
-      asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const adminId = (req as any).admin?.id;
+    // // GET /api/v1/admin/auth/permissions - Get current admin permissions
+    // router.get('/permissions',
+    //   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    //     const adminId = (req as any).admin?.id;
 
-        if (!adminId) {
-          res.status(401).json({
-            success: false,
-            error: {
-              code: 'AUTHENTICATION_REQUIRED',
-              message: 'Admin authentication required'
-            }
-          });
-          return;
-        }
+    //     if (!adminId) {
+    //       res.status(401).json({
+    //         success: false,
+    //         error: {
+    //           code: 'AUTHENTICATION_REQUIRED',
+    //           message: 'Admin authentication required'
+    //         }
+    //       });
+    //       return;
+    //     }
 
-        try {
-          const permissions = await adminAuthService.getAdminPermissions(adminId);
+    //     try {
+    //       const permissions = await adminAuthService.getAdminPermissions(adminId);
           
-          res.status(200).json({
-            success: true,
-            message: 'Permissions retrieved successfully',
-            data: {
-              permissions,
-              permissionCount: permissions.length,
-              adminId
-            }
-          });
-        } catch (error) {
-          next(error);
-        }
-      })
-    );
+    //       res.status(200).json({
+    //         success: true,
+    //         message: 'Permissions retrieved successfully',
+    //         data: {
+    //           permissions,
+    //           permissionCount: permissions.length,
+    //           adminId
+    //         }
+    //       });
+    //     } catch (error) {
+    //       next(error);
+    //     }
+    //   })
+    // );
 
     // POST /api/v1/admin/auth/validate-token - Validate access token (for other services)
     router.post('/validate-token',

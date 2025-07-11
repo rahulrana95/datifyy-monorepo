@@ -362,8 +362,8 @@ export class PartnerPreferencesRepository implements IPartnerPreferencesReposito
           isPhoneVerified: profile.isPhoneVerified || false
         },
         preferences: profile.userLogin!.datifyyUserPartnerPreferences?.[0] || {} as DatifyyUserPartnerPreferences,
-        lastActive: profile.userLogin!.lastlogin || new Date(),
-        isOnline: this.checkIfUserOnline(profile.userLogin!.lastlogin),
+        lastActive: profile.userLogin!.lastLoginAt || new Date(),
+        isOnline: this.checkIfUserOnline(profile.userLogin!.lastLoginAt),
         distance: this.calculateDistance(preferences, profile) // Placeholder for distance calculation
       }));
 

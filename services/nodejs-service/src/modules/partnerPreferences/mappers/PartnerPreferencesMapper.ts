@@ -269,7 +269,7 @@ export class PartnerPreferencesMapper implements IPartnerPreferencesMapper {
           profileCompleteness: this.calculateProfileCompleteness(userProfile),
           preferencesCompleteness: this.calculateCompletionPercentage(entity),
           activityLevel: this.mapActivityLevel(entity.activityLevel),
-          joinDate: userProfile.userLogin?.lastlogin || new Date(),
+          joinDate: userProfile.userLogin?.lastLoginAt || new Date(),
           lastActive: entity.updatedAt || new Date()
         }
       };
