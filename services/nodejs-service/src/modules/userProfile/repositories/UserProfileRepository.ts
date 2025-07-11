@@ -759,13 +759,13 @@ export class UserProfileRepository implements IUserProfileRepository {
     const [newThisMonth, newThisWeek, activeThisMonth] = await Promise.all([
       this.repository.count({
         where: { 
-          userLogin: { lastlogin: { $gte: thisMonth } as any },
+          userLogin: { lastLoginAt: { $gte: thisMonth } as any },
           isDeleted: false 
         }
       }),
       this.repository.count({
         where: { 
-          userLogin: { lastlogin: { $gte: thisWeek } as any },
+          userLogin: { lastLoginAt: { $gte: thisWeek } as any },
           isDeleted: false 
         }
       }),

@@ -11,8 +11,14 @@ import { DatifyyTransactions } from "./DatifyyTransactions";
 import { DatifyyUserPartnerPreferences } from "./DatifyyUserPartnerPreferences";
 import { DatifyyUsersInformation } from "./DatifyyUsersInformation";
 
+@Index("idx_datifyy_users_login_account_status", ["accountStatus"], {})
+@Index("idx_datifyy_users_login_created_at", ["createdAt"], {})
 @Index("datifyy_users_login_email_key", ["email"], { unique: true })
 @Index("datifyy_users_login_pkey", ["id"], { unique: true })
+@Index("idx_datifyy_users_login_last_active_at", ["lastActiveAt"], {})
+@Index("idx_datifyy_users_login_last_login_at", ["lastLoginAt"], {})
+@Index("idx_datifyy_users_login_locked_at", ["lockedAt"], {})
+@Index("idx_datifyy_users_login_permission_level", ["permissionLevel"], {})
 @Entity("datifyy_users_login", { schema: "public" })
 export class DatifyyUsersLogin {
   @PrimaryGeneratedColumn({ type: "integer", name: "id" })
@@ -24,8 +30,11 @@ export class DatifyyUsersLogin {
   @Column("character varying", { name: "password", length: 255 })
   password: string;
 
-  @Column("timestamp without time zone", { name: "lastlogin", nullable: true })
-  lastlogin: Date | null;
+  @Column("timestamp without time zone", {
+    name: "last_login_at",
+    nullable: true,
+  })
+  lastLoginAt: Date | null;
 
   @Column("boolean", {
     name: "isactive",
@@ -48,6 +57,73 @@ export class DatifyyUsersLogin {
     default: () => "'male'",
   })
   gender: string | null;
+
+  @Column("enum", {
+    name: "permission_level",
+    nullable: true,
+    enum: ["admin", "moderator", "owner", "super_admin", "viewer"],
+    default: () => "'viewer'",
+  })
+  permissionLevel:
+    | "admin"
+    | "moderator"
+    | "owner"
+    | "super_admin"
+    | "viewer"
+    | null;
+
+  @Column("enum", {
+    name: "account_status",
+    nullable: true,
+    enum: ["active", "deactivated", "locked", "pending", "suspended"],
+    default: () => "'active'",
+  })
+  accountStatus:
+    | "active"
+    | "deactivated"
+    | "locked"
+    | "pending"
+    | "suspended"
+    | null;
+
+  @Column("integer", { name: "failed_login_attempts", default: () => "0" })
+  failedLoginAttempts: number;
+
+  @Column("timestamp without time zone", { name: "locked_at", nullable: true })
+  lockedAt: Date | null;
+
+  @Column("timestamp without time zone", {
+    name: "lock_expires_at",
+    nullable: true,
+  })
+  lockExpiresAt: Date | null;
+
+  @Column("timestamp without time zone", {
+    name: "last_active_at",
+    nullable: true,
+  })
+  lastActiveAt: Date | null;
+
+  @Column("inet", { name: "last_login_ip", nullable: true })
+  lastLoginIp: string | null;
+
+  @Column("text", { name: "last_login_user_agent", nullable: true })
+  lastLoginUserAgent: string | null;
+
+  @Column("integer", { name: "login_count", default: () => "0" })
+  loginCount: number;
+
+  @Column("timestamp without time zone", {
+    name: "created_at",
+    default: () => "CURRENT_TIMESTAMP",
+  })
+  createdAt: Date;
+
+  @Column("timestamp without time zone", {
+    name: "updated_at",
+    default: () => "CURRENT_TIMESTAMP",
+  })
+  updatedAt: Date;
 
   @OneToMany(() => DatifyyEvents, (datifyyEvents) => datifyyEvents.createdby)
   datifyyEvents: DatifyyEvents[];

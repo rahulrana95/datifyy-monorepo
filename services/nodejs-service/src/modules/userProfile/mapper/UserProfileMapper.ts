@@ -40,7 +40,7 @@ export class UserProfileMapper {
       const age = this.calculateAge(entity.dob);
       const completionPercentage = this.calculateCompletionPercentage(entity);
       const lastUpdated = entity.updatedAt?.toISOString() || new Date().toISOString();
-      const createdAt = entity.userLogin?.lastlogin?.toISOString() || new Date().toISOString();
+      const createdAt = entity.userLogin?.lastLoginAt?.toISOString() || new Date().toISOString();
 
       const responseDto: UserProfileResponseDto = {
         id: entity.id,

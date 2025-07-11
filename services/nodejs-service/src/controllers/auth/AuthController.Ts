@@ -635,7 +635,7 @@ export class AuthController {
 
     try {
       const userRepository = this.dataSource.getRepository(DatifyyUsersLogin);
-      user.lastlogin = new Date();
+      user.lastLoginAt = new Date();
       await userRepository.save(user);
     } catch (error) {
       // Don't fail login if we can't update timestamp
@@ -646,6 +646,7 @@ export class AuthController {
       });
     }
   }
+  
 
   /**
    * Clear authentication cookie

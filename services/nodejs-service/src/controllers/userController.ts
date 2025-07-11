@@ -157,7 +157,7 @@ export const login = async (req: Request, res: Response) => {
     }
 
     // Update last login time
-    user.lastlogin = new Date();
+    user.lastLoginAt = new Date();
     await userRepository.save(user); // Save the last login date
 
     // Create JWT token

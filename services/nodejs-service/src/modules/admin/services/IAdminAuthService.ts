@@ -272,7 +272,7 @@ export interface IAdminAuthService {
    * @param adminId Admin user ID
    * @returns Array of all admin permissions
    */
-  getAdminPermissions(adminId: number): Promise<AdminPermission[]>;
+  // getAdminPermissions(adminId: number): Promise<AdminPermission[]>;
 
   /**
    * Profile & Account Management
