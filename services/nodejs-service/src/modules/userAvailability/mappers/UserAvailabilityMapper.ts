@@ -145,10 +145,10 @@ export class UserAvailabilityMapper {
         // Related user information
         bookedByUser: {
           id: entity.bookedByUser?.id || entity.bookedByUserId,
-          firstName: entity.bookedByUser?.firstName || 'Unknown',
-          lastName: entity.bookedByUser?.lastName || 'User',
-          email: entity.bookedByUser?.officialEmail || '',
-          profileImage: this.extractProfileImage(entity.bookedByUser?.images)
+          firstName: '',//entity.bookedByUser?.firstName || 'Unknown',
+          lastName: '',//entity.bookedByUser?.lastName || 'User',
+          email: '',//entity.bookedByUser?.officialEmail || '',
+          profileImage: '',//this.extractProfileImage(entity.bookedByUser?.images)
         },
         
         // Helper fields
@@ -302,10 +302,10 @@ export class UserAvailabilityMapper {
         // Related user information (if available)
         bookedByUser: entity.bookedByUser ? {
           id: entity.bookedByUser.id,
-          firstName: entity.bookedByUser.firstName,
-          lastName: entity.bookedByUser.lastName,
-          email: entity.bookedByUser.officialEmail,
-          profileImage: this.extractProfileImage(entity.bookedByUser.images)
+          firstName:'', //entity.bookedByUser.firstName,
+          lastName: '',//entity.bookedByUser.lastName,
+          email: '',//entity.bookedByUser.officialEmail,
+          profileImage: '',//this.extractProfileImage(entity.bookedByUser.images)
         } : undefined
       };
 

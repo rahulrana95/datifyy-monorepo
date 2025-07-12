@@ -8,6 +8,7 @@ import {
 import { IAvailabilityBookingService } from '../services/IAvailabilityBookingService';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { UnauthorizedError, ValidationError } from '../../../infrastructure/errors/AppErrors';
+import { BookAvailabilityRequest, UpdateBookingRequest } from '@datifyy/shared-types';
 
 /**
  * Interface for authenticated request with user information
@@ -46,7 +47,7 @@ export class AvailabilityBookingController {
   async bookAvailability(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = this.extractUserId(req);
-      const bookingData = req.body as BookAvailabilityDto;
+      const bookingData = req.body as BookAvailabilityRequest;
 
       this.logger.info('Booking availability slot', { 
         userId, 
@@ -157,7 +158,7 @@ export class AvailabilityBookingController {
     try {
       const userId = this.extractUserId(req);
       const bookingId = this.extractBookingId(req);
-      const updateData = req.body as UpdateBookingDto;
+      const updateData = req.body as UpdateBookingRequest;
 
       this.logger.info('Updating booking', { 
         userId, 
