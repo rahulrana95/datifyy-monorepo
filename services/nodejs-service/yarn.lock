@@ -1156,15 +1156,15 @@ __metadata:
 
 "@datifyy/shared-types@file:../../libs/shared-types::locator=nodejs-service%40workspace%3A.":
   version: 1.0.0
-  resolution: "@datifyy/shared-types@file:../../libs/shared-types#../../libs/shared-types::hash=7b3a9b&locator=nodejs-service%40workspace%3A."
-  checksum: 10c0/157d338bdabcce240e780fbb9e416d0fe516221ce5f5636deecb23a07e5da443223d5e8901447f9f5deda47ecaf236be83bf44139fa662d9a0e5ab2f6dd620dd
+  resolution: "@datifyy/shared-types@file:../../libs/shared-types#../../libs/shared-types::hash=6b9c8a&locator=nodejs-service%40workspace%3A."
+  checksum: 10c0/9e6d1743a0de8f6cde5b04d432111f1b760ed2b85c88dba7c7db8e9bbdf81e42e70befbc275534e0012f51ccddff569e2972f3f6e9ae1d69574f6d7204490c95
   languageName: node
   linkType: hard
 
 "@datifyy/shared-types@file:../shared-types::locator=%40datifyy%2Fshared-utils%40file%3A..%2F..%2Flibs%2Fshared-utils%23..%2F..%2Flibs%2Fshared-utils%3A%3Ahash%3D5b09e2%26locator%3Dnodejs-service%2540workspace%253A.":
   version: 1.0.0
-  resolution: "@datifyy/shared-types@file:../shared-types#../shared-types::hash=7b3a9b&locator=%40datifyy%2Fshared-utils%40file%3A..%2F..%2Flibs%2Fshared-utils%23..%2F..%2Flibs%2Fshared-utils%3A%3Ahash%3D5b09e2%26locator%3Dnodejs-service%2540workspace%253A."
-  checksum: 10c0/157d338bdabcce240e780fbb9e416d0fe516221ce5f5636deecb23a07e5da443223d5e8901447f9f5deda47ecaf236be83bf44139fa662d9a0e5ab2f6dd620dd
+  resolution: "@datifyy/shared-types@file:../shared-types#../shared-types::hash=6b9c8a&locator=%40datifyy%2Fshared-utils%40file%3A..%2F..%2Flibs%2Fshared-utils%23..%2F..%2Flibs%2Fshared-utils%3A%3Ahash%3D5b09e2%26locator%3Dnodejs-service%2540workspace%253A."
+  checksum: 10c0/9e6d1743a0de8f6cde5b04d432111f1b760ed2b85c88dba7c7db8e9bbdf81e42e70befbc275534e0012f51ccddff569e2972f3f6e9ae1d69574f6d7204490c95
   languageName: node
   linkType: hard
 
