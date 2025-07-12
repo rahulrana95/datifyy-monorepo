@@ -2,6 +2,7 @@
 import React from 'react';
 import { Box, Button, HStack, VStack } from '@chakra-ui/react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import AvailabilityNavLink from './AvailabilityNavLink';
 
 interface NavItem {
     label: string;
@@ -78,6 +79,8 @@ const HeaderNavigation: React.FC<HeaderNavigationProps> = ({
                     )}
                 </Box>
             ))}
+            <AvailabilityNavLink variant="button" showBadge={true} />
+
         </Container>
     );
 };

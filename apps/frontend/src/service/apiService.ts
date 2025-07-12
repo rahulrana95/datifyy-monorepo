@@ -33,6 +33,10 @@ class ApiService {
     this.setupInterceptors();
   }
 
+  handleError(error: any) {
+    return error?.message ?? ''
+  }
+
   private setupInterceptors() {
     this.axiosInstance.interceptors.response.use(
       (response: AxiosResponse) => response,
