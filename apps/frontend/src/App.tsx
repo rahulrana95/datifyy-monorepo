@@ -30,6 +30,7 @@ import { useAuthStore } from "./mvp/login-signup";
 import { PartnerPreferencesContainer } from "./mvp/partner-preferences";
 import { AdminLoginPage } from './mvp/admin-v2';
 import AdminLayout from "./mvp/admin-v2/components/AdminLayout";
+import { AvailabilityContainer } from './mvp/availability';
 
 LogRocket.init('kcpnhr/datifyy-fronend');
 
@@ -133,12 +134,14 @@ function App() {
                     <Route path="tnc" element={<TermsAndConditions />} />
                     <Route path="contact-us" element={<ContactUs />} />
                     <Route path="privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="/availability" element={<AvailabilityContainer />} />
 
 
 
 
                   </Route>
                   <Route path="/admin/login" element={<AdminLoginPage />} />
+
                   {/* Protect Profile Route */}
 
 
