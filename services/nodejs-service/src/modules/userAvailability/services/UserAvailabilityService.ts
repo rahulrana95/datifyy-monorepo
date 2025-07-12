@@ -31,7 +31,7 @@ import {
   ScheduleOptimizationResult,
   NearbyAvailableUsersResponse
 } from './IUserAvailabilityService';
-import { NotFoundError, ValidationError } from '../../../infrastructure/errors/AppErrors';
+import { BusinessRuleViolationError, NotFoundError, ValidationError } from '../../../infrastructure/errors/AppErrors';
 
 /**
  * User Availability Service Implementation

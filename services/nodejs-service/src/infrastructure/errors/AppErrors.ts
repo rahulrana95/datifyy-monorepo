@@ -61,6 +61,12 @@ export class NotFoundError extends AppError {
   }
 }
 
+export class BusinessRuleViolationError extends AppError {
+  constructor(message = 'Business rule violation') {
+    super(message, 422, 'BUSINESS_RULE_VIOLATION');
+  }
+}
+
 export class ConflictError extends AppError {
   constructor(message = 'Resource conflict') {
     super(message, 409, 'CONFLICT');
