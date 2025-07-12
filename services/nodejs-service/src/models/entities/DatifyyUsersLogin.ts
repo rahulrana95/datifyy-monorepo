@@ -3,11 +3,16 @@ import {
   Entity,
   Index,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import { DatifyyAvailabilityBookings } from "./DatifyyAvailabilityBookings";
 import { DatifyyEvents } from "./DatifyyEvents";
 import { DatifyyTicketPurchases } from "./DatifyyTicketPurchases";
 import { DatifyyTransactions } from "./DatifyyTransactions";
+import { DatifyyUserAvailability } from "./DatifyyUserAvailability";
+import { DatifyyUserAvailabilityAudit } from "./DatifyyUserAvailabilityAudit";
+import { DatifyyUserAvailabilityPreferences } from "./DatifyyUserAvailabilityPreferences";
 import { DatifyyUserPartnerPreferences } from "./DatifyyUserPartnerPreferences";
 import { DatifyyUsersInformation } from "./DatifyyUsersInformation";
 
@@ -125,6 +130,24 @@ export class DatifyyUsersLogin {
   })
   updatedAt: Date;
 
+  @OneToMany(
+    () => DatifyyAvailabilityBookings,
+    (datifyyAvailabilityBookings) => datifyyAvailabilityBookings.bookedByUser
+  )
+  datifyyAvailabilityBookings: DatifyyAvailabilityBookings[];
+
+  @OneToMany(
+    () => DatifyyAvailabilityBookings,
+    (datifyyAvailabilityBookings) => datifyyAvailabilityBookings.cancelledByUser
+  )
+  datifyyAvailabilityBookings2: DatifyyAvailabilityBookings[];
+
+  @OneToMany(
+    () => DatifyyAvailabilityBookings,
+    (datifyyAvailabilityBookings) => datifyyAvailabilityBookings.confirmedByUser
+  )
+  datifyyAvailabilityBookings3: DatifyyAvailabilityBookings[];
+
   @OneToMany(() => DatifyyEvents, (datifyyEvents) => datifyyEvents.createdby)
   datifyyEvents: DatifyyEvents[];
 
@@ -160,6 +183,31 @@ export class DatifyyUsersLogin {
     (datifyyTransactions) => datifyyTransactions.user_2
   )
   datifyyTransactions4: DatifyyTransactions[];
+
+  @OneToMany(
+    () => DatifyyUserAvailability,
+    (datifyyUserAvailability) => datifyyUserAvailability.user
+  )
+  datifyyUserAvailabilities: DatifyyUserAvailability[];
+
+  @OneToMany(
+    () => DatifyyUserAvailabilityAudit,
+    (datifyyUserAvailabilityAudit) => datifyyUserAvailabilityAudit.adminUser
+  )
+  datifyyUserAvailabilityAudits: DatifyyUserAvailabilityAudit[];
+
+  @OneToMany(
+    () => DatifyyUserAvailabilityAudit,
+    (datifyyUserAvailabilityAudit) => datifyyUserAvailabilityAudit.user
+  )
+  datifyyUserAvailabilityAudits2: DatifyyUserAvailabilityAudit[];
+
+  @OneToOne(
+    () => DatifyyUserAvailabilityPreferences,
+    (datifyyUserAvailabilityPreferences) =>
+      datifyyUserAvailabilityPreferences.user
+  )
+  datifyyUserAvailabilityPreferences: DatifyyUserAvailabilityPreferences;
 
   @OneToMany(
     () => DatifyyUserPartnerPreferences,
