@@ -28,6 +28,8 @@ import PrivacyPolicy from "./mvp/PrivacyPolicy";
 import { QueryProvider } from "./providers/QueryProvider";
 import { useAuthStore } from "./mvp/login-signup";
 import { PartnerPreferencesContainer } from "./mvp/partner-preferences";
+import { AdminLoginPage } from './mvp/admin-v2';
+import AdminLayout from "./mvp/admin-v2/components/AdminLayout";
 
 LogRocket.init('kcpnhr/datifyy-fronend');
 
@@ -132,7 +134,11 @@ function App() {
                     <Route path="contact-us" element={<ContactUs />} />
                     <Route path="privacy-policy" element={<PrivacyPolicy />} />
 
+
+
+
                   </Route>
+                  <Route path="/admin/login" element={<AdminLoginPage />} />
                   {/* Protect Profile Route */}
 
 
@@ -141,9 +147,15 @@ function App() {
                   {/* <Route path="/signup" element={<Signup />} />
             <Route path="/header" element={<Header />} /> */}
                 </Routes>
+
+
+
+
               </Router>
 
               {/* <GlobalSnackbar /> */}
+
+
             </StatusWrapper>
           </div >
         </QueryProvider>
