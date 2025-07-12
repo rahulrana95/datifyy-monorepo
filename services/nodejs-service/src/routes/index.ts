@@ -9,6 +9,7 @@ import { createAuthRoutes } from "./auth/authRoutes";
 import { createUserProfileRoutes } from "./userProfile/userProfileRoutes";
 import { createPartnerPreferencesRoutes } from "../modules/partnerPreferences/routes/partnerPreferencesRoutes";
 import { createAdminAuthRoutes } from "../modules/admin/routes/AdminAuthRoutes";
+import { createUserAvailabilityRoutes } from "../modules/userAvailability/routes/userAvailabilityRoutes";
 
 // Import existing routes (keeping backward compatibility)
 import allRoutes from "./allRoutes";
@@ -63,6 +64,10 @@ export function createAppRoutes(dataSource: DataSource): Router {
   // User Profile routes (new module following established patterns)
   router.use("/user-profile", createUserProfileRoutes(dataSource));
   logger.info("✅ User Profile routes registered at /user-profile");
+
+  // User Availability routes (new module)
+  router.use("/availability", createUserAvailabilityRoutes(dataSource));
+  logger.info("✅ User Availability routes registered at /availability");
 
   // Add route registration in createAppRoutes function
   router.use("/images", createImageUploadRoutes(dataSource));
@@ -123,6 +128,31 @@ export function createAppRoutes(dataSource: DataSource): Router {
         "POST /user/partner-preferences": "Create partner preferences",
         "DELETE /user/partner-preferences": "Delete partner preferences",
       },
+      userAvailability: {
+        "POST /availability": "Create availability slot",
+        "POST /availability/bulk": "Create multiple slots",
+        "GET /availability": "Get user availability (paginated)",
+        "GET /availability/:id": "Get specific slot",
+        "PUT /availability/:id": "Update slot",
+        "POST /availability/:id/cancel": "Cancel slot",
+        "DELETE /availability/:id": "Delete slot",
+        "POST /availability/:id/cancel-recurring": "Cancel recurring slots",
+        "GET /availability/search/users": "Search available users",
+        "POST /availability/check-conflicts": "Check time conflicts",
+        "GET /availability/analytics": "Get detailed analytics",
+        "GET /availability/stats": "Get statistics summary",
+        "GET /availability/calendar/:month": "Get calendar view",
+        "GET /availability/suggestions": "Get AI suggestions",
+        "POST /availability/book": "Book availability slot",
+        "GET /availability/bookings": "Get user bookings",
+        "GET /availability/incoming-bookings": "Get incoming bookings",
+        "GET /availability/bookings/:id": "Get specific booking",
+        "PUT /availability/bookings/:id": "Update booking",
+        "POST /availability/bookings/:id/cancel": "Cancel booking",
+        "POST /availability/bookings/:id/confirm": "Confirm booking",
+        "POST /availability/bookings/:id/complete": "Complete booking",
+        "GET /availability/health": "Availability service health check",
+      },
       imageUpload: {
         "POST /images/upload": "Upload profile images",
         "GET /images/:id": "Get uploaded image",
@@ -161,12 +191,12 @@ export function createAppRoutes(dataSource: DataSource): Router {
 
   /**
    * Create placeholder routes for future modules
-   * 
+   *
    * Provides informative responses for routes that are planned but not yet implemented.
    */
   // function createPlaceholderRoutes(moduleName: string): Router {
   //   const router = Router();
-  
+
   //   router.use('*', (req: Request, res: Response) => {
   //     res.status(501).json({
   //       success: false,
@@ -192,7 +222,7 @@ export function createAppRoutes(dataSource: DataSource): Router {
    */
   async function checkDatabaseHealth(dataSource: DataSource): Promise<boolean> {
     try {
-      await dataSource.query('SELECT 1');
+      await dataSource.query("SELECT 1");
       return true;
     } catch (error) {
       return false;
