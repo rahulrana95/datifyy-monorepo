@@ -1,6 +1,6 @@
 // services/nodejs-service/src/modules/userAvailability/dtos/UserAvailabilityDtos.ts
 
-import { IsString, IsOptional, IsBoolean, IsEnum, IsInt, Min, Max, IsDateString, Matches, IsArray, ValidateNested, IsNumber } from 'class-validator';
+import { IsString, IsOptional, IsBoolean, IsEnum, IsInt,IsIn, Min, Max, IsDateString, Matches, IsArray, ValidateNested, IsNumber } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 import { 
   DateType, 
@@ -30,14 +30,21 @@ export class CreateAvailabilityDto {
    */
   @IsDateString({}, { message: 'Availability date must be in YYYY-MM-DD format' })
   @Transform(({ value }) => {
+    console.log('------ 1')
+    console.log(value);
     const date = new Date(value);
     const today = new Date();
     const maxDate = new Date();
     maxDate.setDate(today.getDate() + 90);
     
+     console.log('------ 2')
+    console.log(date < today);
+    console.log(maxDate);
     if (date < today) {
       throw new Error('Availability date cannot be in the past');
     }
+     console.log('------ 1')
+    console.log(date > maxDate);
     if (date > maxDate) {
       throw new Error('Availability date cannot be more than 90 days in the future');
     }
@@ -74,7 +81,7 @@ export class CreateAvailabilityDto {
   /**
    * Type of date - online or offline
    */
-  @IsEnum(DateType, { message: 'Date type must be either "online" or "offline"' })
+  @IsIn(['online', 'offline'], { message: 'Date type must be either "online" or "offline"' })
   dateType: DateTypeValue;
 
   /**
@@ -184,7 +191,7 @@ export class UpdateAvailabilityDto {
   timezone?: string;
 
   @IsOptional()
-  @IsEnum(DateType, { message: 'Date type must be either "online" or "offline"' })
+  @IsIn(['online', 'offline'], { message: 'Date type must be either "online" or "offline"' })
   dateType?: DateTypeValue;
 
   @IsOptional()

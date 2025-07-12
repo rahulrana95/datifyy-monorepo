@@ -128,51 +128,52 @@ export function createUserAvailabilityRoutes(dataSource: DataSource): Router {
     })
   );
 
-  /**
-   * Get specific availability slot by ID
-   * GET /availability/:id
-   */
-  router.get(
-    '/:id',
-    asyncHandler(async (req, res, next) => {
-      await availabilityController.getAvailabilityById(req, res, next);
-    })
-  );
+  // TODO change the route path
+  // /**
+  //  * Get specific availability slot by ID
+  //  * GET /availability/:id
+  //  */
+  // router.get(
+  //   '/:id',
+  //   asyncHandler(async (req, res, next) => {
+  //     await availabilityController.getAvailabilityById(req, res, next);
+  //   })
+  // );
 
-  /**
-   * Update an existing availability slot
-   * PUT /availability/:id
-   */
-  router.put(
-    '/:id',
-    validationMiddleware(UpdateAvailabilityDto),
-    asyncHandler(async (req, res, next) => {
-      await availabilityController.updateAvailability(req, res, next);
-    })
-  );
+  // /**
+  //  * Update an existing availability slot
+  //  * PUT /availability/:id
+  //  */
+  // router.put(
+  //   '/:id',
+  //   validationMiddleware(UpdateAvailabilityDto),
+  //   asyncHandler(async (req, res, next) => {
+  //     await availabilityController.updateAvailability(req, res, next);
+  //   })
+  // );
 
-  /**
-   * Cancel an availability slot
-   * POST /availability/:id/cancel
-   */
-  router.post(
-    '/:id/cancel',
-    validationMiddleware(CancelAvailabilityDto),
-    asyncHandler(async (req, res, next) => {
-      await availabilityController.cancelAvailability(req, res, next);
-    })
-  );
+  // /**
+  //  * Cancel an availability slot
+  //  * POST /availability/:id/cancel
+  //  */
+  // router.post(
+  //   '/:id/cancel',
+  //   validationMiddleware(CancelAvailabilityDto),
+  //   asyncHandler(async (req, res, next) => {
+  //     await availabilityController.cancelAvailability(req, res, next);
+  //   })
+  // );
 
-  /**
-   * Delete an availability slot
-   * DELETE /availability/:id
-   */
-  router.delete(
-    '/:id',
-    asyncHandler(async (req, res, next) => {
-      await availabilityController.deleteAvailability(req, res, next);
-    })
-  );
+  // /**
+  //  * Delete an availability slot
+  //  * DELETE /availability/:id
+  //  */
+  // router.delete(
+  //   '/:id',
+  //   asyncHandler(async (req, res, next) => {
+  //     await availabilityController.deleteAvailability(req, res, next);
+  //   })
+  // );
 
   /**
    * Cancel all recurring slots generated from a parent slot

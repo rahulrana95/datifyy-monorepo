@@ -53,6 +53,8 @@ export class UserAvailabilityController {
     try {
       const userId = this.extractUserId(req);
       const availabilityData = req.body as CreateAvailabilityRequest;
+      console.log('------------ 1 createAvailability')
+      console.log(availabilityData);
 
       this.logger.info('Creating availability slot', { 
         userId, 
