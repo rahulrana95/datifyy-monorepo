@@ -1,18 +1,23 @@
-// libs/shared-types/src/index.ts
+// libs/shared-types/src/index.ts - Updated with User Availability Types
+
 // Export all enums
 export * from './enums';
 
 // Export all interfaces
 export * from './interfaces';
 
-// Export storage interfaces (NEW)
+// Export storage interfaces
 export * from './interfaces/storage.interfaces';
 
+// Export admin interfaces
 export * from './interfaces/admin.interfaces'; 
 export * from './interfaces/api.interfaces';
 export * from './interfaces/user.interfaces';
-export * from './interfaces/storage.interfaces';  // Add this line
-export * from './interfaces/admin.interfaces';    // Add this line if not already there
+export * from './interfaces/dating.interfaces';
+
+// Export user availability interfaces (NEW)
+export * from './interfaces/userAvailability.interfaces';
+
 // Explicit exports to ensure they're available
 export {
   AuthView,
@@ -57,7 +62,7 @@ export {
   type ErrorResponse,
 } from './interfaces/api.interfaces';
 
-// Explicit storage exports (NEW)
+// Explicit storage exports
 export {
   type StorageUploadOptions,
   type StorageUploadResult,
@@ -76,6 +81,7 @@ export {
   StorageInvalidFileTypeError
 } from './interfaces/storage.interfaces';
 
+// Explicit admin exports
 export {
   AdminPermissionLevel,
   AdminPermission,
@@ -87,3 +93,61 @@ export {
   AdminLoginAttemptResult,
   AdminRiskLevel
 } from './enums/admin.enum';
+
+// Explicit user availability exports (NEW)
+export {
+  // Core types and enums
+  type DateType,
+  type AvailabilityStatus,
+  type RecurrenceType,
+  type CancellationPolicy,
+  type BookingStatus,
+  type SelectedActivity,
+  
+  // Base interfaces
+  type AvailabilitySlot,
+  type AvailabilityBooking,
+  type UserAvailabilityPreferences,
+  
+  // Request DTOs
+  type CreateAvailabilityRequest,
+  type UpdateAvailabilityRequest,
+  type BulkCreateAvailabilityRequest,
+  type GetAvailabilityRequest,
+  type SearchAvailableUsersRequest,
+  type BookAvailabilityRequest,
+  type UpdateBookingRequest,
+  type CancelAvailabilityRequest,
+  type UpdateAvailabilityPreferencesRequest,
+  type GetAvailabilityAnalyticsRequest,
+  
+  // Response DTOs
+  type AvailabilityResponse,
+  type AvailabilityListResponse,
+  type BulkCreateAvailabilityResponse,
+  type AvailableUserResponse,
+  type SearchAvailableUsersResponse,
+  type BookingResponse,
+  type BookingsListResponse,
+  type AvailabilityPreferencesResponse,
+  type AvailabilityAnalyticsResponse,
+  type CalendarViewResponse,
+  type TimeSuggestionsResponse,
+  
+  // API endpoint responses
+  type CreateAvailabilityResponse,
+  type UpdateAvailabilityResponse,
+  type GetAvailabilityResponse,
+  type DeleteAvailabilityResponse,
+  type BookAvailabilityResponse,
+  type UpdateBookingResponse,
+  type CancelBookingResponse,
+  
+  // Utility types
+  type AvailabilityConflict,
+  type SlotCreationResult,
+  type RecurringGenerationOptions,
+  
+  // Validation rules
+  AvailabilityValidationRules
+} from './interfaces/userAvailability.interfaces';
