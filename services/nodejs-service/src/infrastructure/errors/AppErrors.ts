@@ -34,6 +34,15 @@ export class ValidationError extends AppError {
   }
 }
 
+export class UnauthorizedError extends AppError {
+  constructor(message = 'Validation failed', details?: any) {
+    super(message, 400, 'UNAUTHORIZED_ERROR');
+    if (details) {
+      (this as any).details = details;
+    }
+  }
+}
+
 export class AuthenticationError extends AppError {
   constructor(message = 'Authentication failed') {
     super(message, 401, 'AUTHENTICATION_ERROR');

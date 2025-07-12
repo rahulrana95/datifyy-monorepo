@@ -16,7 +16,8 @@ import {
   TimeSuggestionsResponse,
   AvailabilityConflict,
   SlotCreationResult,
-  AvailabilityValidationRules
+  AvailabilityValidationRules,
+  AvailabilityStatus
 } from '@datifyy/shared-types';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { IUserAvailabilityRepository } from '../repositories/IUserAvailabilityRepository';
@@ -30,12 +31,7 @@ import {
   ScheduleOptimizationResult,
   NearbyAvailableUsersResponse
 } from './IUserAvailabilityService';
-import { 
-  NotFoundError, 
-  ValidationError, 
-  ConflictError,
-  BusinessRuleViolationError 
-} from '../../../infrastructure/errors/CustomErrors';
+import { NotFoundError, ValidationError } from '../../../infrastructure/errors/AppErrors';
 
 /**
  * User Availability Service Implementation
@@ -158,7 +154,8 @@ export class UserAvailabilityService implements IUserAvailabilityService {
           created,
           skipped,
           summary
-        }
+        },
+        message: ''
       };
     } catch (error) {
       this.logger.error('Failed to create bulk availability', { userId, error });
@@ -216,7 +213,8 @@ export class UserAvailabilityService implements IUserAvailabilityService {
           ...paginatedResult,
           data: availabilityResponses,
           summary
-        }
+        },
+        message: ''
       };
 
       this.logger.debug('User availability retrieved', { 
@@ -293,7 +291,7 @@ export class UserAvailabilityService implements IUserAvailabilityService {
 
       // 3. Cancel the slot
       const cancelledAvailability = await this.repository.update(availabilityId, {
-        status: 'cancelled'
+        status: AvailabilityStatus.CANCELLED
       });
 
       const response = await this.mapper.toAvailabilityResponse(cancelledAvailability);
@@ -355,6 +353,7 @@ export class UserAvailabilityService implements IUserAvailabilityService {
 
       const response: SearchAvailableUsersResponse = {
         success: true,
+        message: '',
         data: {
           data: [],
           pagination: {
@@ -423,7 +422,8 @@ export class UserAvailabilityService implements IUserAvailabilityService {
 
       const response: AvailabilityAnalyticsResponse = {
         success: true,
-        data: analyticsData
+        data: analyticsData,
+         message: '',
       };
 
       this.logger.debug('Availability analytics calculated', { userId, summary: analyticsData.summary });
@@ -463,7 +463,8 @@ export class UserAvailabilityService implements IUserAvailabilityService {
             totalSlots,
             bookingRate
           }
-        }
+        },
+         message: '',
       };
 
       this.logger.debug('Calendar view generated', { userId, month, totalDaysWithSlots });
@@ -516,7 +517,8 @@ export class UserAvailabilityService implements IUserAvailabilityService {
         data: {
           suggestedSlots,
           optimizedSchedule
-        }
+        },
+         message: '',
       };
 
       this.logger.debug('Time suggestions generated', { userId, suggestionsCount: suggestedSlots.length });

@@ -3,6 +3,7 @@
 // Export all enums
 export * from './enums';
 
+
 // Export all interfaces
 export * from './interfaces';
 
@@ -96,13 +97,29 @@ export {
 
 // Explicit user availability exports (NEW)
 export {
-  // Core types and enums
-  type DateType,
-  type AvailabilityStatus,
-  type RecurrenceType,
-  type CancellationPolicy,
-  type BookingStatus,
-  type SelectedActivity,
+  // Enums
+  DateType,
+  AvailabilityStatus,
+  RecurrenceType,
+  CancellationPolicy,
+  BookingStatus,
+  SelectedActivity,
+  
+  // Type helpers
+  type DateTypeValue,
+  type AvailabilityStatusValue,
+  type RecurrenceTypeValue,
+  type CancellationPolicyValue,
+  type BookingStatusValue,
+  type SelectedActivityValue,
+  
+  // Helper functions
+  getDateTypeValues,
+  getAvailabilityStatusValues,
+  getRecurrenceTypeValues,
+  getCancellationPolicyValues,
+  getBookingStatusValues,
+  getSelectedActivityValues,
   
   // Base interfaces
   type AvailabilitySlot,

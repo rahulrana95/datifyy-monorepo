@@ -13,14 +13,82 @@
 import { ApiResponse, PaginationRequest, PaginationResponse } from './api.interfaces';
 
 /**
- * Core availability types and enums
+ * Type of availability date
  */
-export type DateType = 'online' | 'offline';
-export type AvailabilityStatus = 'active' | 'cancelled' | 'completed' | 'deleted';
-export type RecurrenceType = 'none' | 'weekly' | 'custom';
-export type CancellationPolicy = 'flexible' | '24_hours' | '48_hours' | 'strict';
-export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
-export type SelectedActivity = 'coffee' | 'lunch' | 'dinner' | 'drinks' | 'movie' | 'walk' | 'activity' | 'casual' | 'formal';
+export enum DateType {
+  ONLINE = 'online',
+  OFFLINE = 'offline'
+}
+
+/**
+ * Status of availability slot
+ */
+export enum AvailabilityStatus {
+  ACTIVE = 'active',
+  CANCELLED = 'cancelled',
+  COMPLETED = 'completed',
+  DELETED = 'deleted'
+}
+
+/**
+ * Type of recurrence pattern
+ */
+export enum RecurrenceType {
+  NONE = 'none',
+  WEEKLY = 'weekly',
+  CUSTOM = 'custom'
+}
+
+/**
+ * Cancellation policy for bookings
+ */
+export enum CancellationPolicy {
+  FLEXIBLE = 'flexible',
+  TWENTY_FOUR_HOURS = '24_hours',
+  FORTY_EIGHT_HOURS = '48_hours',
+  STRICT = 'strict'
+}
+
+/**
+ * Status of booking
+ */
+export enum BookingStatus {
+  PENDING = 'pending',
+  CONFIRMED = 'confirmed',
+  CANCELLED = 'cancelled',
+  COMPLETED = 'completed'
+}
+
+/**
+ * Available activities for dates
+ */
+export enum SelectedActivity {
+  COFFEE = 'coffee',
+  LUNCH = 'lunch',
+  DINNER = 'dinner',
+  DRINKS = 'drinks',
+  MOVIE = 'movie',
+  WALK = 'walk',
+  ACTIVITY = 'activity',
+  CASUAL = 'casual',
+  FORMAL = 'formal'
+}
+
+// Export type unions for backward compatibility
+export type DateTypeValue = `${DateType}`;
+export type AvailabilityStatusValue = `${AvailabilityStatus}`;
+export type RecurrenceTypeValue = `${RecurrenceType}`;
+export type CancellationPolicyValue = `${CancellationPolicy}`;
+export type BookingStatusValue = `${BookingStatus}`;
+export type SelectedActivityValue = `${SelectedActivity}`;
+
+// Helper functions to get enum values as arrays
+export const getDateTypeValues = (): string[] => Object.values(DateType);
+export const getAvailabilityStatusValues = (): string[] => Object.values(AvailabilityStatus);
+export const getRecurrenceTypeValues = (): string[] => Object.values(RecurrenceType);
+export const getCancellationPolicyValues = (): string[] => Object.values(CancellationPolicy);
+export const getBookingStatusValues = (): string[] => Object.values(BookingStatus);
+export const getSelectedActivityValues = (): string[] => Object.values(SelectedActivity);
 
 /**
  * Base availability slot interface
