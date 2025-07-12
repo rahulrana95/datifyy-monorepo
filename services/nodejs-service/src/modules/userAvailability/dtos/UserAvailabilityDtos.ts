@@ -348,6 +348,22 @@ export class GetAvailabilityDto {
 }
 
 /**
+ * DTO for age range in searches
+ */
+export class AgeRangeDto {
+  @IsInt({ message: 'Minimum age must be an integer' })
+  @Min(18, { message: 'Minimum age must be at least 18' })
+  @Max(100, { message: 'Minimum age cannot exceed 100' })
+  min: number;
+
+  @IsInt({ message: 'Maximum age must be an integer' })
+  @Min(18, { message: 'Maximum age must be at least 18' })
+  @Max(100, { message: 'Maximum age cannot exceed 100' })
+  max: number;
+}
+
+
+/**
  * DTO for searching available users
  * 
  * @author Datifyy Engineering Team
@@ -442,20 +458,6 @@ export class SearchAvailableUsersDto {
   limit?: number;
 }
 
-/**
- * DTO for age range in searches
- */
-export class AgeRangeDto {
-  @IsInt({ message: 'Minimum age must be an integer' })
-  @Min(18, { message: 'Minimum age must be at least 18' })
-  @Max(100, { message: 'Minimum age cannot exceed 100' })
-  min: number;
-
-  @IsInt({ message: 'Maximum age must be an integer' })
-  @Min(18, { message: 'Maximum age must be at least 18' })
-  @Max(100, { message: 'Maximum age cannot exceed 100' })
-  max: number;
-}
 
 /**
  * DTO for booking an availability slot

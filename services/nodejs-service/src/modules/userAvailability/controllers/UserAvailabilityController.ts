@@ -13,6 +13,7 @@ import {
 import { IUserAvailabilityService } from '../services/IUserAvailabilityService';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { UnauthorizedError, ValidationError } from '../../../infrastructure/errors/AppErrors';
+import { BulkCreateAvailabilityRequest, CreateAvailabilityRequest, GetAvailabilityRequest, SearchAvailableUsersRequest, UpdateAvailabilityRequest } from '@datifyy/shared-types';
 
 /**
  * Interface for authenticated request with user information
@@ -51,7 +52,7 @@ export class UserAvailabilityController {
   async createAvailability(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = this.extractUserId(req);
-      const availabilityData = req.body as CreateAvailabilityDto;
+      const availabilityData = req.body as CreateAvailabilityRequest;
 
       this.logger.info('Creating availability slot', { 
         userId, 
@@ -87,7 +88,7 @@ export class UserAvailabilityController {
   async createBulkAvailability(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = this.extractUserId(req);
-      const bulkData = req.body as BulkCreateAvailabilityDto;
+      const bulkData = req.body as BulkCreateAvailabilityRequest;
 
       this.logger.info('Creating bulk availability slots', { 
         userId, 
@@ -123,7 +124,7 @@ export class UserAvailabilityController {
   async getUserAvailability(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = this.extractUserId(req);
-      const filters = req.query as unknown as GetAvailabilityDto;
+      const filters = req.query as unknown as GetAvailabilityRequest;
 
       this.logger.debug('Getting user availability', { 
         userId, 
@@ -197,7 +198,7 @@ export class UserAvailabilityController {
     try {
       const userId = this.extractUserId(req);
       const availabilityId = this.extractAvailabilityId(req);
-      const updateData = req.body as UpdateAvailabilityDto;
+      const updateData = req.body as UpdateAvailabilityRequest;
 
       this.logger.info('Updating availability slot', { 
         userId, 
@@ -316,7 +317,7 @@ export class UserAvailabilityController {
   async searchAvailableUsers(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = this.extractUserId(req);
-      const searchCriteria = req.query as unknown as SearchAvailableUsersDto;
+      const searchCriteria = req.query as unknown as SearchAvailableUsersRequest;
 
       this.logger.debug('Searching available users', { 
         userId, 
