@@ -4,6 +4,7 @@ import { Router } from 'express';
 import { DataSource } from 'typeorm';
 import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
+import { Request, Response, NextFunction } from 'express';
 import { 
   CreateAvailabilityDto,
   UpdateAvailabilityDto,
@@ -25,6 +26,39 @@ import { UserAvailabilityMapper } from '../mappers/UserAvailabilityMapper';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { authenticate } from '../../../infrastructure/middleware/authentication';
 import { asyncHandler } from '../../../infrastructure/utils/asyncHandler';
+import { ValidationError } from '../../../infrastructure/errors/AppErrors';
+
+
+/**
+ * Validation middleware for request DTOs
+ * @param dtoClass - The DTO class to validate against
+ */
+export function validationMiddleware<T>(dtoClass: new () => T) {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Transform plain object to class instance
+      const dto = plainToClass(dtoClass, req.body);
+      
+      // Validate the DTO
+      const errors = await validate(dto as any);
+      
+      if (errors.length > 0) {
+        // Extract error messages
+        const errorMessages = errors.map(error => 
+          Object.values(error.constraints || {}).join(', ')
+        );
+        
+        throw new ValidationError(`Validation failed: ${errorMessages.join('; ')}`);
+      }
+      
+      // Attach validated DTO to request
+      req.body = dto;
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
+}
 
 /**
  * User Availability Routes
