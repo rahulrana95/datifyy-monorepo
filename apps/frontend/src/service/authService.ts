@@ -25,16 +25,16 @@ export const login = async (
       password,
     };
 
-    const response = await apiService.post<LoginResponse>(`${AUTH_API_PREFIX}/login`, loginData);
+    const { response }: {response?: LoginResponse | undefined} = await apiService.post<LoginResponse>(`${AUTH_API_PREFIX}/login`, loginData);
 
-    if (!response?.response?.token) {
+    if (!response?.token) {
       return { response: undefined, error: { code: 401, message: "Login failed" } };
     }
 
-    const token = response.response.token;
+    const token = response.token;
     apiService.setTokenInCookies(token);
 
-    return { response: response.response, error: undefined };
+    return { response: response, error: undefined };
   } catch (error) {
     console.log(error);
     return { response: undefined, error: { code: 500, message: "Login failed" } };
@@ -44,13 +44,10 @@ export const login = async (
 export const verifyToken = async (): Promise<ServiceResponse<TokenValidationResponse>> => {
   try {
     await apiService.getTokenFromCookies();
-    const response = await apiService.post<TokenValidationResponse>(`${AUTH_API_PREFIX}/validate-token`);
+    const {response} = await apiService.post<TokenValidationResponse>(`${AUTH_API_PREFIX}/validate-token`);
+  
     
-    if (response.error) {
-      return { response: undefined, error: { code: 401, message: "validate-token failed" } };
-    }
-    
-    return { response: response.response, error: undefined };
+    return { response: response, error: undefined };
   } catch (error) {
     return { response: undefined, error: { code: 500, message: "validate-token failed" } };
   }
@@ -68,13 +65,9 @@ export const register = async (
       verificationCode
     };
 
-    const response = await apiService.post<SignupResponse>(`${AUTH_API_PREFIX}/signup`, signupData);
-      
-    if (response.error) {
-      return { response: undefined, error: { code: 400, message: "Registration failed" } };
-    }
+    const {response}: {response?: SignupResponse} = await apiService.post<SignupResponse>(`${AUTH_API_PREFIX}/signup`, signupData);
     
-    return { response: response.response, error: undefined };
+    return { response: response, error: undefined };
   } catch (error) {
     return { response: undefined, error: { code: 500, message: "Registration failed" } };
   }
@@ -82,27 +75,21 @@ export const register = async (
 
 export const logout = async (): Promise<ServiceResponse<any>> => {
   try {
-    const response = await apiService.post(`${AUTH_API_PREFIX}/logout`);
+    const {response} = await apiService.post(`${AUTH_API_PREFIX}/logout`);
 
-    if (response.error) {
-      return { response: undefined, error: { code: 500, message: "Logout failed." } };
-    }
 
-    return { response: response.response, error: undefined };
+    return { response: response, error: undefined };
   } catch (error) {
     return { response: undefined, error: { code: 500, message: "Logout failed" } };
   }
 };
 
-export const getCurrentUser = async (): Promise<ServiceResponse<{ data: UserProfileResponse }>> => {
+export const getCurrentUser = async (): Promise<ServiceResponse<UserProfileResponse>> => {
   try {
-    const response = await apiService.get<{ data: UserProfileResponse }>("user-profile");
+const {response} = await apiService.get<UserProfileResponse>("user-profile");
+  
     
-    if (response.error) {
-      return { response: undefined, error: { code: 404, message: "Failed to fetch current user" } };
-    }
-    
-    return { response: response.response, error: undefined };
+    return { response, error: undefined };
   } catch (error) {
     return { response: undefined, error: { code: 500, message: "Failed to fetch current user" } };
   }
@@ -112,16 +99,12 @@ export const sendEmailCode = async (
   emailData: EmailVerificationRequest
 ): Promise<ServiceResponse<any>> => {
   try {
-    const response = await apiService.post(
+    const {response} = await apiService.post(
       `${AUTH_API_PREFIX}/send-verification-code`, 
       { email: emailData.to[0].email }
     );
     
-    if (response.error) {
-      return { response: undefined, error: { code: 400, message: "Something is wrong." } };
-    }
-    
-    return { response: response.response, error: undefined };
+    return { response: response, error: undefined };
   } catch (error) {
     return { response: undefined, error: { code: 500, message: "Failed to send verification code" } };
   }
@@ -135,16 +118,16 @@ export const verifyEmailCode = async ({
   verificationCode: string;
 }): Promise<ServiceResponse<any>> => {
   try {
-    const response = await apiService.post("/verify-email-code", {
+    const {response} = await apiService.post("/verify-email-code", {
       email,
       verificationCode,
     });
     
-    if (response.error) {
-      return { response: undefined, error: { code: 400, message: "Something is wrong." } };
-    }
+    // if (response.error) {
+    //   return { response: undefined, error: { code: 400, message: "Something is wrong." } };
+    // }
     
-    return { response: response.response, error: undefined };
+    return { response: response, error: undefined };
   } catch (error) {
     return { response: undefined, error: { code: 500, message: "Failed to verify email code" } };
   }

@@ -94,10 +94,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSignup, onForgotPassword }) => 
             }
 
             // Get user data after successful login
-            const response = await authService.getCurrentUser();
-            const userData = response?.response?.data;
+            const { response, error: userApiError } = await authService.getCurrentUser();
+            const userData = response;
 
-            if (!response.error && userData) {
+            if (!userApiError && userData) {
                 setUserData({
                     email: userData.officialEmail || email,
                     name: userData.firstName || '',

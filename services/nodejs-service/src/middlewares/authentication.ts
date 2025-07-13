@@ -60,11 +60,14 @@ export const authenticateToken = async (req: AuthenticatedRequest, res: Response
       return;
     }
 
-    const userProfile = await userProfilesRepository.findOne({
-      where: { userLogin: user, isDeleted: false },
+     const userProfile = await userProfilesRepository.findOne({
+      where: { 
+        userLoginId: user.id,  // Use the foreign key directly
+        isDeleted: false 
+      },
       relations: ["userLogin"],
-    });
-
+     });
+    
     if (!userProfile) {
       res.status(404).json({ message: "User profile not found." });
       return;

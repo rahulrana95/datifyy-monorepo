@@ -78,10 +78,7 @@ class UserProfileService {
       }
 
       const response: {
-        response?: {
-          success?: boolean;
-          data?: DatifyyUsersInformation;
-        };
+        response?: DatifyyUsersInformation;
         error?: ErrorObject;
       } = await api.put("user-profile", data);
 
@@ -90,13 +87,13 @@ class UserProfileService {
         return { response: null, error: response.error };
       }
 
-      if (!response.response?.data) {
+      if (!response.response) {
         console.warn('⚠️ No response data after profile update');
         return getResponseNotExistErrorObject();
       }
 
       console.log('✅ User profile updated successfully');
-      return { response: response.response.data, error: undefined };
+      return { response: response.response, error: undefined };
       
     } catch (error: any) {
       console.error('❌ User profile update error:', error);

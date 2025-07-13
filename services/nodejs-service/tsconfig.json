@@ -10,8 +10,21 @@
     "forceConsistentCasingInFileNames": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "strictPropertyInitialization": false, // This disables the strict property initialization checks
-
+    "strictPropertyInitialization": false, // This disables the strict property initialization checks,
+    "paths": {
+      "@datifyy/shared-constants": [
+        "../../libs/shared-constants/src"
+      ],
+      "@datifyy/shared-types": [
+        "../../libs/shared-types/src"
+      ],
+      "@datifyy/shared-utils": [
+        "../../libs/shared-utils/src"
+      ],
+      "@datifyy/shared-validation": [
+        "../../libs/shared-validation/src"
+      ]
+    }
   },
   "include": [
     "src/**/*"
