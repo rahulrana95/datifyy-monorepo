@@ -12,24 +12,24 @@ import { DatifyyUsersLogin } from "./DatifyyUsersLogin";
 import { DatifyyUserAvailabilityAudit } from "./DatifyyUserAvailabilityAudit";
 
 @Index(
-  "idx_datifyy_user_availability_user_date",
-  ["availabilityDate", "userId"],
-  {}
-)
-@Index("idx_datifyy_user_availability_date", ["availabilityDate"], {})
-@Index(
-  "idx_datifyy_user_availability_active_slots",
-  ["availabilityDate", "status", "userId"],
-  {}
-)
-@Index(
   "idx_datifyy_user_availability_time_overlap",
   ["availabilityDate", "endTime", "startTime", "userId"],
   {}
 )
+@Index("idx_datifyy_user_availability_date", ["availabilityDate"], {})
 @Index(
   "idx_datifyy_user_availability_date_status",
   ["availabilityDate", "status"],
+  {}
+)
+@Index(
+  "idx_datifyy_user_availability_user_date",
+  ["availabilityDate", "userId"],
+  {}
+)
+@Index(
+  "idx_datifyy_user_availability_active_slots",
+  ["availabilityDate", "status", "userId"],
   {}
 )
 @Index("datifyy_user_availability_pkey", ["id"], { unique: true })

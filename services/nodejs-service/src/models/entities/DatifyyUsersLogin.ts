@@ -7,6 +7,10 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { DatifyyAvailabilityBookings } from "./DatifyyAvailabilityBookings";
+import { DatifyyCuratedDateFeedback } from "./DatifyyCuratedDateFeedback";
+import { DatifyyCuratedDates } from "./DatifyyCuratedDates";
+import { DatifyyCurationWorkflow } from "./DatifyyCurationWorkflow";
+import { DatifyyDateSeries } from "./DatifyyDateSeries";
 import { DatifyyEvents } from "./DatifyyEvents";
 import { DatifyyTicketPurchases } from "./DatifyyTicketPurchases";
 import { DatifyyTransactions } from "./DatifyyTransactions";
@@ -14,6 +18,7 @@ import { DatifyyUserAvailability } from "./DatifyyUserAvailability";
 import { DatifyyUserAvailabilityAudit } from "./DatifyyUserAvailabilityAudit";
 import { DatifyyUserAvailabilityPreferences } from "./DatifyyUserAvailabilityPreferences";
 import { DatifyyUserPartnerPreferences } from "./DatifyyUserPartnerPreferences";
+import { DatifyyUserTrustScores } from "./DatifyyUserTrustScores";
 import { DatifyyUsersInformation } from "./DatifyyUsersInformation";
 
 @Index("idx_datifyy_users_login_account_status", ["accountStatus"], {})
@@ -148,6 +153,72 @@ export class DatifyyUsersLogin {
   )
   datifyyAvailabilityBookings3: DatifyyAvailabilityBookings[];
 
+  @OneToMany(
+    () => DatifyyCuratedDateFeedback,
+    (datifyyCuratedDateFeedback) => datifyyCuratedDateFeedback.user
+  )
+  datifyyCuratedDateFeedbacks: DatifyyCuratedDateFeedback[];
+
+  @OneToMany(
+    () => DatifyyCuratedDates,
+    (datifyyCuratedDates) => datifyyCuratedDates.cancelledByUser
+  )
+  datifyyCuratedDates: DatifyyCuratedDates[];
+
+  @OneToMany(
+    () => DatifyyCuratedDates,
+    (datifyyCuratedDates) => datifyyCuratedDates.curatedBy
+  )
+  datifyyCuratedDates2: DatifyyCuratedDates[];
+
+  @OneToMany(
+    () => DatifyyCuratedDates,
+    (datifyyCuratedDates) => datifyyCuratedDates.updatedBy
+  )
+  datifyyCuratedDates3: DatifyyCuratedDates[];
+
+  @OneToMany(
+    () => DatifyyCuratedDates,
+    (datifyyCuratedDates) => datifyyCuratedDates.user1
+  )
+  datifyyCuratedDates4: DatifyyCuratedDates[];
+
+  @OneToMany(
+    () => DatifyyCuratedDates,
+    (datifyyCuratedDates) => datifyyCuratedDates.user2
+  )
+  datifyyCuratedDates5: DatifyyCuratedDates[];
+
+  @OneToMany(
+    () => DatifyyCurationWorkflow,
+    (datifyyCurationWorkflow) => datifyyCurationWorkflow.assignedAdmin
+  )
+  datifyyCurationWorkflows: DatifyyCurationWorkflow[];
+
+  @OneToMany(
+    () => DatifyyCurationWorkflow,
+    (datifyyCurationWorkflow) => datifyyCurationWorkflow.createdBy
+  )
+  datifyyCurationWorkflows2: DatifyyCurationWorkflow[];
+
+  @OneToMany(
+    () => DatifyyDateSeries,
+    (datifyyDateSeries) => datifyyDateSeries.endedByUser
+  )
+  datifyyDateSeries: DatifyyDateSeries[];
+
+  @OneToMany(
+    () => DatifyyDateSeries,
+    (datifyyDateSeries) => datifyyDateSeries.user1
+  )
+  datifyyDateSeries2: DatifyyDateSeries[];
+
+  @OneToMany(
+    () => DatifyyDateSeries,
+    (datifyyDateSeries) => datifyyDateSeries.user2
+  )
+  datifyyDateSeries3: DatifyyDateSeries[];
+
   @OneToMany(() => DatifyyEvents, (datifyyEvents) => datifyyEvents.createdby)
   datifyyEvents: DatifyyEvents[];
 
@@ -214,6 +285,12 @@ export class DatifyyUsersLogin {
     (datifyyUserPartnerPreferences) => datifyyUserPartnerPreferences.user
   )
   datifyyUserPartnerPreferences: DatifyyUserPartnerPreferences[];
+
+  @OneToOne(
+    () => DatifyyUserTrustScores,
+    (datifyyUserTrustScores) => datifyyUserTrustScores.user
+  )
+  datifyyUserTrustScores: DatifyyUserTrustScores;
 
   @OneToMany(
     () => DatifyyUsersInformation,
