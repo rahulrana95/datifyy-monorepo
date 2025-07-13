@@ -1,212 +1,372 @@
-Datifyy Frontend Development Prompt
-Context: You are a world-class frontend engineer with 15+ years of experience building dating apps like Tinder, Bumble, and Hinge. You're working on Datifyy, a serious dating platform focused on meaningful connections.
-🎯 Brand & Design System
-Brand Identity:
+# Datifyy Monorepo - Complete Development Blueprint
 
-Name: Datifyy
-Tagline: "Let's be serious about love"
-Logo: Heart symbol (💕) with pink gradient
-Primary Color: #e85d75 (brand.500)
-Personality: Serious about love, premium, trustworthy, emotional, modern
+## 🏗️ Architecture Overview
 
-Design Philosophy:
+**Datifyy** is a premium dating application built with a sophisticated monorepo architecture using Yarn 4.9.2 workspaces. The system emphasizes type safety, code sharing, and enterprise-grade development practices.
 
-Mobile-first: Optimize for dating app users (primarily mobile)
-Emotional design: Colors and interactions that create romantic feelings
-Premium feel: Gradients, shadows, smooth animations
-Trust signals: Verification badges, safety indicators
-Accessibility: WCAG compliant, proper contrast, focus states
+### Core Philosophy
+- **"Let's be serious about love"** - Premium, trustworthy, emotional, modern dating experience
+- **Mobile-first** progressive enhancement with 60fps animations
+- **Enterprise-grade** TypeScript architecture with end-to-end type safety
+- **Component-driven** development with Chakra UI and custom design system
 
-🛠 Technical Stack & Architecture
-Framework & Libraries:
+## 📁 Monorepo Structure
 
-React 18 with TypeScript
-Chakra UI with custom theme system
-Monorepo structure with shared components
-Mobile-optimized responsive design
+```
+datifyy-monorepo/
+├── apps/frontend/           # React 18 + TypeScript dating app
+├── libs/                    # Shared libraries
+│   ├── shared-types/        # TypeScript interfaces & enums
+│   ├── shared-utils/        # Validation & formatting utilities
+│   ├── shared-validation/   # Zod schemas (placeholder)
+│   └── shared-constants/    # Application constants (placeholder)
+└── package.json            # Workspace configuration
+```
 
-Project Structure:
-apps/frontend/src/
-├── theme/                    # Custom Chakra UI theme
-│   ├── foundations/         # Colors, typography, spacing
-│   ├── components/          # Component themes
-│   └── styles/             # Global styles & animations
-├── mvp/                     # Main application pages
-├── components/              # Reusable UI components
-├── hooks/                   # Custom React hooks
-└── utils/                   # Utility functions
-Custom Theme System:
+## 🎯 Frontend Application (apps/frontend/)
 
-Colors: Brand colors (#e85d75), swipe actions (like/nope/superlike), status indicators
-Components: 25+ custom variants (Button, Card, Badge, Avatar, Input, Modal)
-Animations: Heart beat, swipe gestures, match celebrations, floating effects
-Typography: Mobile-optimized text scales, dating-specific text styles
+### Tech Stack
+- **Framework**: React 18 + TypeScript (CRA)
+- **UI Library**: Chakra UI with comprehensive custom theme
+- **State**: Zustand + React Query (TanStack)
+- **Routing**: React Router DOM v6
+- **Styling**: Chakra UI + CSS-in-JS with design tokens
+- **Package Manager**: Yarn 4.9.2 Berry
 
-🎨 Design & Component Guidelines
-Color Usage:
-typescript// Primary brand colors
-brand.500    // Main pink (#e85d75)
-brand.50     // Light backgrounds
-brand.700    // Dark text/accents
+### Key Features Implemented
+1. **Authentication System**
+   - Login/Signup with email verification
+   - JWT token management with cookie storage
+   - Password reset flow
+   - Form validation with real-time feedback
 
-// Dating actions
-swipe.like.500     // Green for like actions
-swipe.nope.500     // Red for pass actions  
-swipe.superLike.500 // Blue for super like
-swipe.boost.500    // Gold for boost/premium
+2. **User Profile Management**
+   - Comprehensive profile creation (35+ fields)
+   - Image upload support
+   - Demographics, preferences, lifestyle data
+   - Profile completion tracking
 
-// Status indicators
-status.online      // Green dot for online
-status.verified    // Blue for verified users
-status.premium     // Purple for premium features
-Component Variants:
-typescript// Buttons
-<Button variant="love">        // Gradient love button
-<Button variant="swipeLike">   // Circular like button
-<Button variant="premium">     // Premium shimmer effect
+3. **Partner Preferences**
+   - Multi-page preference configuration
+   - Age, location, lifestyle, values filtering
+   - Advanced search criteria
 
-// Cards  
-<Card variant="profile">       // Swipeable profile cards
-<Card variant="match">         // Match celebration cards
-<Card variant="floating">      // Elevated premium cards
+4. **User Availability System** (Comprehensive)
+   - Time slot management for dates
+   - Online/offline date types
+   - Booking system with cancellation policies
+   - Recurring availability patterns
+   - Analytics and conflict detection
 
-// Badges
-<Badge variant="verified">     // Blue checkmark
-<Badge variant="premium">      // Purple crown
-<Badge variant="online">       // Pulsing green dot
-Animation Classes:
-css.heart-beat         // Like button animations
-.swipe-right        // Swipe to like gesture
-.love-pulse         // Romantic pulsing effect
-.match-celebration  // Match success animation
-.float              // Floating FAB animation
-.fade-in           // Content entrance
-📱 Dating App Best Practices
-User Experience:
+5. **Admin Dashboard**
+   - Role-based access control
+   - User management
+   - Content moderation
+   - Security monitoring
 
-Touch-friendly: Minimum 44px touch targets
-Gesture-based: Swipe interactions, pull-to-refresh
-Emotional moments: Celebrate matches, likes, connections
-Progressive disclosure: Don't overwhelm, reveal gradually
-Safety first: Clear privacy controls, reporting features
+## 🎨 Design System
 
-Mobile Optimization:
+### Brand Identity
+- **Primary Color**: #e85d75 (brand.500) - romantic pink
+- **Typography**: Inter font family
+- **Spacing**: 8px grid system
+- **Border Radius**: 12px+ for modern feel
+- **Shadows**: Layered depth with brand-colored glows
 
-Performance: Lazy loading, optimized images, smooth 60fps
-Gestures: Swipe cards, pinch-to-zoom photos
-Safe areas: Handle notches, home indicators
-Offline support: Cache profiles, queue actions
-Push notifications: Real-time match/message alerts
+### Component Categories
+- **Action Buttons**: `swipeLike`, `swipeNope`, `swipeSuperLike`, `boost`, `premium`
+- **Cards**: `profile`, `match`, `floating`, `interactive`
+- **Inputs**: Touch-optimized with 44px minimum targets
+- **Avatars**: Status indicators, verification badges
+- **Animations**: Heart beats, swipe gestures, love pulses
 
-Conversion Optimization:
-
-Clear CTAs: Prominent sign-up buttons with emotional copy
-Social proof: User counts, success stories, testimonials
-FOMO elements: Limited-time offers, premium features
-Onboarding flow: Simple, engaging profile creation
-Trust signals: Verification badges, safety features
-
-🧩 Component Development Standards
-File Structure Pattern:
-typescriptComponentName/
-├── index.ts              // Barrel export
-├── ComponentName.tsx     // Main component
-├── ComponentName.types.ts // TypeScript interfaces
-├── ComponentName.test.tsx // Unit tests
-└── components/           // Sub-components if needed
-Component Template:
-typescript// Import types from shared libs when possible
-import { SomeType } from '@datifyy/shared-types';
-
-interface ComponentProps {
-  // Use descriptive prop names
-  isLiked?: boolean;
-  onLike?: () => void;
-  user: UserProfile;
-  variant?: 'standard' | 'premium' | 'verified';
+### Color System
+```typescript
+// Brand Colors (Pink Gradient)
+brand: {
+  50: '#fef7f7',   // Ultra light backgrounds
+  500: '#e85d75',  // Primary brand color
+  900: '#842439'   // High contrast text
 }
 
-const Component: React.FC<ComponentProps> = ({
-  isLiked = false,
-  onLike,
-  user,
-  variant = 'standard'
-}) => {
-  // Use Chakra UI responsive values
-  const size = useBreakpointValue({ base: 'sm', md: 'md' });
-  
-  return (
-    <Card variant={variant} className="interactive">
-      {/* Component content */}
-    </Card>
-  );
+// Dating Actions
+swipe: {
+  like: '#22c55e',     // Green
+  nope: '#ef4444',     // Red  
+  superLike: '#3b82f6', // Blue
+  boost: '#f59e0b'     // Gold
+}
+```
+
+## 🔧 Development Architecture
+
+### State Management Strategy
+```typescript
+// Zustand for app state
+const useAuthStore = create((set) => ({
+  isAuthenticated: false,
+  userData: null,
+  setAuthenticated: (status) => set({ isAuthenticated: status })
+}));
+
+// React Query for server state
+const { data: profile } = useQuery({
+  queryKey: ['userProfile'],
+  queryFn: () => userService.getProfile(),
+  staleTime: 5 * 60 * 1000
+});
+```
+
+### API Service Layer
+- **Base Service**: Axios with interceptors
+- **Authentication**: JWT with automatic refresh
+- **Error Handling**: Centralized with user-friendly messages
+- **Type Safety**: Full TypeScript coverage
+
+### Validation Strategy
+- **Frontend**: Real-time validation with shared utilities
+- **Shared Types**: Single source of truth for data structures
+- **File Validation**: Comprehensive image/document checking
+
+## 📦 Shared Libraries
+
+### @datifyy/shared-types
+**Purpose**: TypeScript type definitions and enums
+
+**Key Exports**:
+```typescript
+// User & Dating Types
+export interface DatifyyUserProfile {
+  id: string;
+  gender: Gender;
+  age: number;
+  bio: string;
+  // ... 30+ profile fields
+}
+
+// Enums
+export enum Gender {
+  MALE = 'male',
+  FEMALE = 'female', 
+  OTHER = 'other'
+}
+
+// API Contracts
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: { code: string; message: string; };
+}
+
+// User Availability (New Major Feature)
+export interface AvailabilitySlot {
+  dateType: DateType; // 'online' | 'offline'
+  startTime: string;
+  endTime: string;
+  bookingStatus: BookingStatus;
+  // ... comprehensive availability management
+}
+```
+
+### @datifyy/shared-utils
+**Purpose**: Validation and formatting utilities
+
+**Key Functions**:
+```typescript
+// Validation
+export const validateEmail = (email: string): ValidationResult
+export const validateAge = (age: number): ValidationResult
+export const validateHeight = (height: number): ValidationResult
+
+// Formatting  
+export const formatHeight = (heightCm: number): string
+export const formatInterests = (interests: string[]): string
+export const formatName = (name: string): string
+```
+
+## 🛣️ Routing & Navigation
+
+### Route Structure
+```typescript
+// Main App Routes
+<Routes>
+  <Route path="/" element={<Home />}>
+    <Route index element={<LandingPage />} />
+    <Route path="profile" element={<HeaderWithTabs />} />
+    <Route path="partner-preferences" element={<PartnerPreferencesContainer />} />
+    <Route path="availability" element={<AvailabilityContainer />} />
+    <Route path="about-us" element={<AboutUs />} />
+  </Route>
+  <Route path="/admin/login" element={<AdminLoginPage />} />
+</Routes>
+```
+
+### Authentication Flow
+1. Public routes (landing, about, contact)
+2. Protected routes with `<PrivateRoute>` wrapper
+3. Admin routes with role-based access
+4. Automatic token validation on app load
+
+## 🎭 User Experience Patterns
+
+### Mobile-First Design
+- **Touch Targets**: Minimum 44px
+- **Gestures**: Swipe support for profile cards
+- **Performance**: 60fps animations, lazy loading
+- **Accessibility**: WCAG 2.1 AA compliance
+
+### Dating-Specific UX
+- **Emotional Design**: Heart animations, celebration moments
+- **Trust Signals**: Verification badges, safety features
+- **Progressive Disclosure**: Gradual information reveal
+- **Swipe Mechanics**: Like/pass/super like actions
+
+## 🔐 Security & Authentication
+
+### JWT Implementation
+```typescript
+// Token Storage (Secure Cookies)
+document.cookie = `Authorization=${token}; path=/; secure; samesite=strict`;
+
+// Automatic Refresh
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      await refreshToken();
+      return axiosInstance.request(error.config);
+    }
+  }
+);
+```
+
+### Admin Security
+- **Role-based Access**: Hierarchical permission levels
+- **Session Management**: Multiple session tracking
+- **Audit Logging**: Comprehensive action tracking
+- **2FA Support**: Email, SMS, TOTP methods
+
+## 📊 Performance & Monitoring
+
+### Build Optimization
+- **Code Splitting**: Route-based lazy loading
+- **Tree Shaking**: Optimized bundle sizes
+- **Image Optimization**: Responsive images, lazy loading
+- **Caching**: React Query with stale-while-revalidate
+
+### Error Handling
+```typescript
+// Global Error Boundary
+<ErrorBoundary fallback={<ErrorPage />}>
+  <App />
+</ErrorBoundary>
+
+// Service Error Handling  
+const handleApiError = (error) => {
+  const message = error?.response?.data?.message || 'Something went wrong';
+  toast({ title: 'Error', description: message, status: 'error' });
 };
+```
 
-export default Component;
-Responsive Patterns:
-typescript// Use Chakra's responsive syntax
-<Box
-  display={{ base: 'none', md: 'block' }}
-  fontSize={{ base: 'sm', md: 'md', lg: 'lg' }}
-  p={{ base: 4, md: 6, lg: 8 }}
-/>
+## 🚀 Development Workflow
 
-// Responsive hooks
-const isMobile = useBreakpointValue({ base: true, md: false });
-const columns = useBreakpointValue({ base: 1, md: 2, lg: 3 });
-🎭 Key Implementation Principles
-Code Quality:
+### Scripts & Commands
+```bash
+# Development
+yarn dev:shared          # Watch shared libraries
+yarn start:frontend      # Start React app
+yarn start:backend       # Start Node.js service
 
-TypeScript strict mode: Full type safety
-Component composition: Small, reusable components
-Performance: React.memo, useMemo, useCallback where needed
-Accessibility: ARIA labels, keyboard navigation, screen reader support
-Testing: Unit tests for complex logic, integration tests for user flows
+# Building
+yarn build:shared        # Build all shared libs
+yarn build:all          # Build entire monorepo
+yarn type-check         # TypeScript validation
+```
 
-State Management:
+### Code Quality
+- **TypeScript**: Strict mode enabled
+- **ESLint**: Code quality rules
+- **Prettier**: Code formatting
+- **Husky**: Pre-commit hooks
 
-Local state: useState for component state
-Shared state: Context API for theme, auth, user data
-Server state: React Query for API data management
-Form state: React Hook Form for complex forms
+## 🎯 Key Features Deep Dive
 
-Error Handling:
+### 1. User Availability System (Major Feature)
+The availability system is a comprehensive date scheduling platform:
 
-Graceful degradation: Fallback UI for errors
-User feedback: Toast notifications, error boundaries
-Logging: Structured logging for debugging
-Retry mechanisms: Auto-retry failed requests
+**Core Capabilities**:
+- Create time slots for online/offline dates
+- Recurring availability patterns
+- Booking management with confirmation/cancellation
+- Activity selection (coffee, dinner, walks, etc.)
+- Analytics and conflict detection
+- Cancellation policies (flexible to strict)
 
-🚀 When Working on Complex Features
-Process:
+**Technical Implementation**:
+- 20+ TypeScript interfaces
+- Enum-driven type safety
+- Comprehensive validation rules
+- Search and filtering capabilities
 
-Analyze requirements - Understand dating app context
-Design component API - TypeScript interfaces first
-Mobile-first implementation - Start with mobile, enhance for desktop
-Theme integration - Use custom variants and animations
-Accessibility review - Ensure usable by all users
-Performance optimization - Measure and optimize
+### 2. Profile Management
+**35+ Profile Fields**:
+- Demographics (age, height, location)
+- Lifestyle (exercise, drinking, smoking)
+- Values (religion, causes, qualities)
+- Interests and hobbies
+- Education and prompts
 
-Always Consider:
+### 3. Partner Preferences
+**Multi-page Configuration**:
+- Basics: Age range, location radius
+- Lifestyle: Exercise, drinking, smoking preferences  
+- Physical: Height, appearance preferences
+- Values: Religion, family plans, dealbreakers
 
-Dating app mental model - How do users think about profiles, matches, conversations?
-Emotional journey - What feelings should this interaction create?
-Mobile context - Users are often on-the-go, distracted
-Safety & privacy - Dating apps handle sensitive personal data
-Conversion goals - How does this feature drive sign-ups/engagement?
+## 🔮 Extension Patterns
 
-📋 Checklist for Every Component
+### Adding New Features
+1. **Define Types**: Add interfaces to `shared-types`
+2. **Create Service**: Implement API service layer
+3. **Build Components**: Use Chakra UI + design system
+4. **Add Routes**: Integrate with React Router
+5. **State Management**: Zustand store + React Query
 
- Mobile-first responsive design
- Uses custom theme variants
- Proper TypeScript interfaces
- Accessibility attributes (ARIA, roles)
- Touch-friendly interaction areas (44px+)
- Loading and error states
- Hover/focus/active states
- Animation/transition effects
- Fits dating app mental model
- Matches brand personality
+### Scaling Patterns
+```typescript
+// Feature-based Structure
+features/
+├── matching/
+│   ├── components/
+│   ├── hooks/
+│   ├── services/
+│   └── types/
+├── messaging/
+└── video-calling/
+```
 
+## 📚 Context Documentation Structure
 
-Remember: You're building more than an app - you're creating a platform where people find love. Every pixel, interaction, and animation should feel premium, trustworthy, and emotionally engaging. The goal is to help users feel confident and excited about finding their perfect match. 💕
+### Essential Files for Development Context
+```
+apps/frontend/context/
+├── api-contract.md         # Complete API documentation
+├── dev-guidelines.md       # Development standards & patterns
+├── system-design.md        # Design system & brand guidelines
+├── folder-hierarchy.md     # Project structure guide
+├── css-config.md          # Color system & design tokens
+└── typography.md          # Font system & text styles
+```
+
+This documentation provides a complete blueprint for understanding and extending the Datifyy monorepo. The context folder contains all architectural decisions, patterns, and standards needed for seamless development without diving into the actual codebase.
+
+## 🎯 Next Development Priorities
+
+Based on the current architecture, logical next features would be:
+1. **Matching Algorithm**: Compatibility scoring system
+2. **Real-time Messaging**: Chat system with WebSocket
+3. **Video Dating**: WebRTC integration for virtual dates
+4. **Subscription System**: Premium features & billing
+5. **Mobile App**: React Native with shared business logic
+
+The monorepo is expertly architected for rapid feature development with type-safe, scalable patterns already established.
