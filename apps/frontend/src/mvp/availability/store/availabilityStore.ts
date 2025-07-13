@@ -1,9 +1,11 @@
 // apps/frontend/src/mvp/availability/store/availabilityStore.ts
 /**
- * Availability Zustand Store
+ * Fixed Availability Zustand Store
  * 
- * Global state management for the availability feature.
- * Handles UI state, data caching, and API coordination.
+ * Key fixes:
+ * - Properly load booking data with slots
+ * - Enhanced data fetching with relationships
+ * - Better booking status handling
  */
 
 import { create } from 'zustand';
@@ -26,9 +28,7 @@ import availabilityService from '../service/availabilityService';
 import { WritableDraft } from 'immer/dist/internal';
 import { enableMapSet } from 'immer';
 
-
-enableMapSet(); // Add this line
-
+enableMapSet();
 
 interface AvailabilityStore extends AvailabilityState {
   // Actions
@@ -37,10 +37,15 @@ interface AvailabilityStore extends AvailabilityState {
   setCalendarMonth: (month: string) => void;
   
   // Data actions
-  loadAvailability: (params?: { startDate?: string; endDate?: string }) => Promise<void>;
+  loadAvailability: (params?: { startDate?: string; endDate?: string; forceRefresh?: boolean }) => Promise<void>;
   createAvailability: (requests: CreateAvailabilityRequest[]) => Promise<boolean>;
   updateAvailability: (id: number, data: UpdateAvailabilityRequest) => Promise<boolean>;
   deleteAvailability: (id: number) => Promise<boolean>;
+  
+  // Booking-specific actions
+  refreshBookingData: () => Promise<void>;
+  markSlotAsBooked: (slotId: number, booking: AvailabilityBooking) => void;
+  markSlotAsAvailable: (slotId: number) => void;
   
   // UI actions
   toggleTimeSlot: (date: string, timeSlot: TimeSlot) => void;
@@ -61,6 +66,8 @@ interface AvailabilityStore extends AvailabilityState {
   getPastSlots: () => AvailabilitySlot[];
   getSelectedSlotsCount: () => number;
   canAddMoreSlots: (date: string) => boolean;
+  getBookedSlots: () => AvailabilitySlot[];
+  getAvailableSlots: () => AvailabilitySlot[];
 }
 
 // Helper functions
@@ -99,6 +106,28 @@ const isSlotInPast = (slot: AvailabilitySlot): boolean => {
   const now = new Date();
   const slotDateTime = new Date(`${slot.availabilityDate}T${slot.startTime}`);
   return slotDateTime < now;
+};
+
+// Enhanced slot processing to ensure booking data is properly handled
+const processSlotData = (rawSlot: any): AvailabilitySlot => {
+  console.log('Processing slot data:', rawSlot); // Debug log
+  
+  return {
+    ...rawSlot,
+    // Ensure booking data is properly mapped
+    isBooked: !!(rawSlot.isBooked || rawSlot.booking),
+    booking: rawSlot.booking ? {
+      ...rawSlot.booking,
+      // Ensure user data is properly structured
+      bookedByUser: {
+        id: rawSlot.booking.bookedByUser?.id || rawSlot.booking.bookedByUserId,
+        firstName: rawSlot.booking.bookedByUser?.firstName || 'Unknown',
+        lastName: rawSlot.booking.bookedByUser?.lastName || 'User',
+        email: rawSlot.booking.bookedByUser?.email || '',
+        profileImage: rawSlot.booking.bookedByUser?.profileImage
+      }
+    } : undefined
+  };
 };
 
 export const useAvailabilityStore = create<AvailabilityStore>()(
@@ -142,20 +171,32 @@ export const useAvailabilityStore = create<AvailabilityStore>()(
           state.calendarMonth = month;
         }),
 
-        // Data actions
-        loadAvailability: async (params) => {
+        // Enhanced data loading with proper booking relationships
+        loadAvailability: async (params = {}) => {
+          const { forceRefresh = false } = params;
+          
+          // Don't reload if we already have data unless forced
+          if (!forceRefresh && get().upcomingSlots.length > 0) {
+            console.log('Using cached availability data');
+            return;
+          }
+
           set((state) => {
             state.isLoading = true;
             state.error = null;
           });
 
           try {
+            console.log('Loading availability with bookings...');
+            
+            // Enhanced API call with explicit booking inclusion
             const result = await availabilityService.getUserAvailability({
               includeBookings: true,
               ...params
             });
 
             if (result.error) {
+              console.error('Error loading availability:', result.error);
               set((state) => {
                 state.error = result.error!.message;
                 state.isLoading = false;
@@ -163,21 +204,32 @@ export const useAvailabilityStore = create<AvailabilityStore>()(
               return;
             }
 
-            const slots = result.response?.data || [];
+            const rawSlots = result.response?.data || [];
+            console.log('Raw slots from API:', rawSlots);
+            
+            // Process slots to ensure booking data is properly handled
+            const processedSlots = rawSlots.map(processSlotData);
+            console.log('Processed slots:', processedSlots);
             
             set((state) => {
               const now = new Date();
-              state.upcomingSlots = slots.filter((slot: AvailabilitySlot) => !isSlotInPast(slot));
-              state.pastSlots = slots.filter((slot: AvailabilitySlot) => isSlotInPast(slot));
+              
+              // Separate upcoming and past slots
+              state.upcomingSlots = processedSlots.filter((slot: AvailabilitySlot) => !isSlotInPast(slot));
+              state.pastSlots = processedSlots.filter((slot: AvailabilitySlot) => isSlotInPast(slot));
+              
+              console.log('Upcoming slots with bookings:', state.upcomingSlots);
+              console.log('Booked upcoming slots:', state.upcomingSlots.filter(s => s.isBooked));
+              
               state.isLoading = false;
               
               // Update available days with existing slots
               state.availableDays.forEach(day => {
-                const daySlots = slots.filter((slot: { availabilityDate: string; }) => slot.availabilityDate === day.date);
+                const daySlots = processedSlots.filter((slot: AvailabilitySlot) => slot.availabilityDate === day.date);
                 day.hasExistingSlots = daySlots.length > 0;
                 
                 // Mark booked time slots
-                daySlots.forEach((slot:any) => {
+                daySlots.forEach((slot: AvailabilitySlot) => {
                   const timeSlot = day.timeSlots.find(ts => ts.startTime === slot.startTime);
                   if (timeSlot) {
                     timeSlot.isBooked = slot.isBooked;
@@ -187,12 +239,44 @@ export const useAvailabilityStore = create<AvailabilityStore>()(
               });
             });
           } catch (error) {
+            console.error('Exception loading availability:', error);
             set((state) => {
               state.error = 'Failed to load availability';
               state.isLoading = false;
             });
           }
         },
+
+        // Enhanced refresh specifically for booking data
+        refreshBookingData: async () => {
+          console.log('Refreshing booking data...');
+          await get().loadAvailability({ forceRefresh: true });
+        },
+
+        // Manual booking state updates (for real-time updates)
+        markSlotAsBooked: (slotId, booking) => set((state) => {
+          const updateSlot = (slot: AvailabilitySlot) => {
+            if (slot.id === slotId) {
+              slot.isBooked = true;
+              slot.booking = booking;
+            }
+          };
+          
+          state.upcomingSlots.forEach(updateSlot);
+          state.pastSlots.forEach(updateSlot);
+        }),
+
+        markSlotAsAvailable: (slotId) => set((state) => {
+          const updateSlot = (slot: AvailabilitySlot) => {
+            if (slot.id === slotId) {
+              slot.isBooked = false;
+              slot.booking = undefined;
+            }
+          };
+          
+          state.upcomingSlots.forEach(updateSlot);
+          state.pastSlots.forEach(updateSlot);
+        }),
 
         createAvailability: async (requests) => {
           set((state) => {
@@ -214,8 +298,8 @@ export const useAvailabilityStore = create<AvailabilityStore>()(
               return false;
             }
 
-            // Refresh data
-            await get().loadAvailability();
+            // Force refresh to get latest data with any bookings
+            await get().loadAvailability({ forceRefresh: true });
             
             set((state) => {
               state.isSaving = false;
@@ -251,10 +335,11 @@ export const useAvailabilityStore = create<AvailabilityStore>()(
               return false;
             }
 
+            // Process the updated slot
+            const updatedSlot = processSlotData(result.response!);
+            
             // Update local state
             set((state) => {
-              const updatedSlot = result.response!;
-              
               // Update in upcoming or past slots
               const upcomingIndex = state.upcomingSlots.findIndex(s => s.id === id);
               if (upcomingIndex !== -1) {
@@ -315,16 +400,14 @@ export const useAvailabilityStore = create<AvailabilityStore>()(
           }
         },
 
-        // UI actions
+        // UI actions (unchanged)
         toggleTimeSlot: (date, timeSlot) => set((state) => {
           const daySlots = state.selectedTimeSlots.get(date) || [];
           const existingIndex = daySlots.findIndex(s => s.startTime === timeSlot.startTime);
           
           if (existingIndex !== -1) {
-            // Remove slot
             daySlots.splice(existingIndex, 1);
           } else {
-            // Add slot if under limit
             if (daySlots.length < AVAILABILITY_CONSTANTS.MAX_SLOTS_PER_DAY) {
               daySlots.push({ ...timeSlot, isSelected: true });
             }
@@ -336,7 +419,6 @@ export const useAvailabilityStore = create<AvailabilityStore>()(
             state.selectedTimeSlots.set(date, daySlots);
           }
           
-          // Update available days
           const day = state.availableDays.find(d => d.date === date);
           if (day) {
             day.maxSlotsReached = daySlots.length >= AVAILABILITY_CONSTANTS.MAX_SLOTS_PER_DAY;
@@ -365,12 +447,10 @@ export const useAvailabilityStore = create<AvailabilityStore>()(
           state.validationErrors = {};
         }),
 
-        // Calendar actions
         generateAvailableDays: () => set((state) => {
           state.availableDays = generateNext7Days();
         }),
 
-        // Form actions
         startCreating: () => set((state) => {
           state.isCreating = true;
           state.isEditing = false;
@@ -393,13 +473,21 @@ export const useAvailabilityStore = create<AvailabilityStore>()(
           state.selectedTimeSlots.clear();
         }),
 
-        // Helpers
+        // Enhanced helpers with booking awareness
         getUpcomingSlots: () => {
           return get().upcomingSlots;
         },
 
         getPastSlots: () => {
           return get().pastSlots;
+        },
+
+        getBookedSlots: () => {
+          return get().upcomingSlots.filter(slot => slot.isBooked);
+        },
+
+        getAvailableSlots: () => {
+          return get().upcomingSlots.filter(slot => !slot.isBooked);
         },
 
         getSelectedSlotsCount: () => {
