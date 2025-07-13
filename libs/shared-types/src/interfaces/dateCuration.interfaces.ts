@@ -507,7 +507,7 @@ export interface CuratedDateResponse extends CuratedDate {
   readonly dateSeriesInfo?: {
     readonly totalDatesInSeries: number;
     readonly relationshipStage: RelationshipStage;
-    readonly seriesStatus: string;
+    readonly seriesStatus: 'active' | 'paused' | 'ended';
   };
   
   // Helper fields
