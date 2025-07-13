@@ -1,4 +1,4 @@
-// src/routes/index.ts - Updated Main Routes Integration
+// services/nodejs-service/src/routes/index.ts - UPDATED VERSION
 
 import { Router } from "express";
 import { DataSource } from "typeorm";
@@ -14,6 +14,9 @@ import { createUserAvailabilityRoutes } from "../modules/userAvailability/routes
 // Import existing routes (keeping backward compatibility)
 import allRoutes from "./allRoutes";
 import { createImageUploadRoutes } from "../modules/imageUpload/routes/imageUploadRoutes";
+
+// 🎯 NEW: Import Date Curation Routes
+import { createDateCurationRoutes } from "./dateCuration/dateCurationRoutes";
 
 /**
  * Main Application Routes Factory
@@ -69,10 +72,10 @@ export function createAppRoutes(dataSource: DataSource): Router {
   router.use("/availability", createUserAvailabilityRoutes(dataSource));
   logger.info("✅ User Availability routes registered at /availability");
 
-  // Add route registration in createAppRoutes function
+  // Image upload routes
   router.use("/images", createImageUploadRoutes(dataSource));
+  logger.info("✅ Image Upload routes registered at /images");
 
-  // Add this in your createAppRoutes function
   // Partner Preferences routes (new advanced module)
   router.use(
     "/user/partner-preferences",
@@ -81,6 +84,10 @@ export function createAppRoutes(dataSource: DataSource): Router {
   logger.info(
     "✅ Partner Preferences routes registered at /user/partner-preferences"
   );
+
+  // 🎯 NEW: Date Curation routes (MAIN FEATURE)
+  router.use("/date-curation", createDateCurationRoutes(dataSource));
+  logger.info("✅ Date Curation routes registered at /date-curation");
 
   // Existing legacy routes (maintaining backward compatibility)
   // This includes all your existing functionality from allRoutes.ts
@@ -92,6 +99,48 @@ export function createAppRoutes(dataSource: DataSource): Router {
   // API documentation endpoint (helpful for development)
   router.get("/routes", (req, res) => {
     const availableRoutes = {
+      // 🎯 NEW: Date Curation routes added to documentation
+      dateCuration: {
+        // USER ROUTES
+        "GET /date-curation/my-dates": "Get user's curated dates (upcoming, past, pending)",
+        "GET /date-curation/my-dates/:dateId": "Get specific curated date details",
+        "POST /date-curation/my-dates/:dateId/confirm": "User confirms attendance for date",
+        "POST /date-curation/my-dates/:dateId/cancel": "User cancels their curated date",
+        "POST /date-curation/my-dates/:dateId/feedback": "Submit feedback after date completion",
+        "GET /date-curation/my-dates/:dateId/feedback": "Get user's feedback for specific date",
+        "PUT /date-curation/my-dates/:dateId/feedback": "Update feedback within edit window",
+        "GET /date-curation/my-trust-score": "Get user's trust/love score details",
+        "GET /date-curation/my-date-series": "Get all date series (multiple dates with same people)",
+        "GET /date-curation/my-date-series/:seriesId": "Get specific date series details",
+
+        // ADMIN ROUTES
+        "POST /date-curation/admin/curated-dates": "Admin creates curated date between users",
+        "GET /date-curation/admin/curated-dates": "Admin gets all curated dates with filters",
+        "GET /date-curation/admin/curated-dates/:dateId": "Admin gets specific date with full details",
+        "PUT /date-curation/admin/curated-dates/:dateId": "Admin updates curated date details",
+        "DELETE /date-curation/admin/curated-dates/:dateId": "Admin deletes/cancels curated date",
+        "POST /date-curation/admin/search-potential-matches": "Admin searches potential matches for user",
+        "POST /date-curation/admin/curated-dates/bulk-create": "Admin creates multiple dates at once",
+        "GET /date-curation/admin/users/:userId/trust-score": "Admin gets user's trust score",
+        "PUT /date-curation/admin/users/:userId/trust-score": "Admin manually adjusts trust score",
+        "GET /date-curation/admin/date-series": "Admin gets all date series with filters",
+        "PUT /date-curation/admin/date-series/:seriesId": "Admin updates date series stage/notes",
+        "GET /date-curation/admin/analytics/date-curation": "Admin gets comprehensive analytics",
+        "GET /date-curation/admin/dashboard/date-curation": "Admin gets dashboard overview",
+        "GET /date-curation/admin/feedback/all": "Admin gets all date feedback",
+        "GET /date-curation/admin/reports/safety": "Admin gets safety reports from feedback",
+        "POST /date-curation/admin/users/:userId/probation": "Admin manages user probation status",
+
+        // WORKFLOW ROUTES
+        "GET /date-curation/admin/workflow/pending": "Get pending curation workflow tasks",
+        "PUT /date-curation/admin/workflow/:workflowId/complete": "Mark workflow stage complete",
+        "POST /date-curation/admin/workflow/auto-reminders": "Trigger automated date reminders",
+
+        // UTILITY ROUTES
+        "POST /date-curation/check-date-conflicts": "Check for scheduling conflicts",
+        "GET /date-curation/compatibility/:user1Id/:user2Id": "Get compatibility score between users",
+        "GET /date-curation/health": "Date curation service health check"
+      },
       admin: {
         "POST /admin/auth/login": "Admin login with 2FA support",
         "POST /admin/auth/2fa": "Complete 2FA verification",
@@ -186,70 +235,28 @@ export function createAppRoutes(dataSource: DataSource): Router {
         0
       ),
       timestamp: new Date().toISOString(),
+      // 🎯 NEW: Highlight the new Date Curation endpoints
+      newFeatures: {
+        dateCuration: {
+          userEndpoints: 10,
+          adminEndpoints: 15,
+          workflowEndpoints: 3,
+          utilityEndpoints: 4,
+          totalEndpoints: 32,
+          description: "Complete date curation system for admin-managed dating"
+        }
+      }
     });
   });
 
-  /**
-   * Create placeholder routes for future modules
-   *
-   * Provides informative responses for routes that are planned but not yet implemented.
-   */
-  // function createPlaceholderRoutes(moduleName: string): Router {
-  //   const router = Router();
-
-  //   router.use('*', (req: Request, res: Response) => {
-  //     res.status(501).json({
-  //       success: false,
-  //       error: {
-  //         code: 'NOT_IMPLEMENTED',
-  //         message: `${moduleName} module is not yet implemented`,
-  //         plannedImplementation: 'Q1 2024'
-  //       },
-  //       metadata: {
-  //         timestamp: new Date().toISOString(),
-  //         module: moduleName,
-  //         requestedPath: req.path,
-  //         method: req.method
-  //       }
-  //     });
-  //   });
-
-  //   return router;
-  // }
-
-  /**
-   * Health check helper functions
-   */
-  async function checkDatabaseHealth(dataSource: DataSource): Promise<boolean> {
-    try {
-      await dataSource.query("SELECT 1");
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  async function checkRedisHealth(): Promise<boolean> {
-    try {
-      // TODO: Implement Redis health check when RedisService is available
-      // const redisService = RedisService.getInstance();
-      // await redisService.ping();
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  async function checkStorageHealth(): Promise<boolean> {
-    try {
-      // TODO: Implement storage health check when StorageService is available
-      // const storageService = StorageService.getInstance();
-      // await storageService.healthCheck();
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }
-
   return router;
 }
+
+// 🎯 NEW: Add this export for easy access to route count
+export const getRouteStats = () => {
+  return {
+    totalModules: 8, // auth, admin-auth, user-profile, availability, images, partner-prefs, date-curation, legacy
+    dateCurationEndpoints: 32,
+    totalNewEndpoints: 50+ // approximate total of all new endpoints
+  };
+};
