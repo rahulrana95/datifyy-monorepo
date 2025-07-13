@@ -19,6 +19,74 @@ export * from './interfaces/dating.interfaces';
 // Export user availability interfaces (NEW)
 export * from './interfaces/userAvailability.interfaces';
 
+// NEW: Date Curation exports
+export * from './interfaces/dateCuration.interfaces';
+
+// Re-export commonly used types for convenience
+export type {
+  // Date Curation Core Types
+  CuratedDate,
+  DateFeedback,
+  UserTrustScore,
+  DateSeries,
+  PotentialMatchResponse,
+  CuratedDateResponse,
+  
+  // Date Curation Requests
+  CreateCuratedDateRequest,
+  UpdateCuratedDateRequest,
+  ConfirmDateRequest,
+  CancelDateRequest,
+  SubmitDateFeedbackRequest,
+  GetUserDatesRequest,
+  AdminGetDatesRequest,
+  SearchPotentialMatchesRequest,
+  DateCurationAnalyticsRequest,
+  
+  // Date Curation Responses
+  UserDatesResponse,
+  SearchPotentialMatchesResponse,
+  DateFeedbackResponse,
+  UserTrustScoreResponse,
+  DateSeriesResponse,
+  DateCurationAnalyticsResponse,
+  CreateCuratedDateResponse,
+  UpdateCuratedDateResponse,
+  GetCuratedDateResponse,
+  ConfirmDateResponse,
+  CancelDateResponse,
+  SubmitDateFeedbackResponse,
+  GetUserTrustScoreResponse,
+  GetDateSeriesResponse,
+  
+  // Utility Types
+  DateConflict,
+  CompatibilityDetails,
+  DateCreationResult,
+  BulkDateOperationResult
+} from './interfaces/dateCuration.interfaces';
+
+// Export enums for easy access
+export {
+  DateMode,
+  CuratedDateStatus,
+  RelationshipStage,
+  CancellationCategory,
+  CurationWorkflowStage,
+  WorkflowStageStatus,
+  
+  // Helper functions
+  getDateModeValues,
+  getCuratedDateStatusValues,
+  getRelationshipStageValues,
+  getCancellationCategoryValues,
+  getCurationWorkflowStageValues,
+  getWorkflowStageStatusValues,
+  
+  // Validation rules
+  DateCurationValidationRules
+} from './interfaces/dateCuration.interfaces';  
+
 // Explicit exports to ensure they're available
 export {
   AuthView,
