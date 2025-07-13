@@ -163,7 +163,7 @@ export const useAvailabilityStore = create<AvailabilityStore>()(
               return;
             }
 
-            const slots = result.response?.slots || [];
+            const slots = result.response?.data || [];
             
             set((state) => {
               const now = new Date();

@@ -70,8 +70,8 @@ function App() {
       const isTokenExist = await apiService.setTokenFromCookies();
       const { error, response } = await authService.verifyToken();
       if (!error) {
-        const { response } = await authService.getCurrentUser();
-        const data = response?.data;
+        const { response, error } = await authService.getCurrentUser();
+        const data = response;
 
         authStore.setIsAuthenticated(true);
         authStore.setUserData({

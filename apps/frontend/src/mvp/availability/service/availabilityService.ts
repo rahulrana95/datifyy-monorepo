@@ -73,7 +73,7 @@ class AvailabilityService {
    */
   async getUserAvailability(params?: GetAvailabilityParams): Promise<
     ServiceResponse<{
-      slots: AvailabilitySlot[];
+      data: AvailabilitySlot[];
       pagination: {
         page: number;
         limit: number;
@@ -109,7 +109,7 @@ class AvailabilityService {
         ? `${this.baseUrl}?${queryParams}`
         : this.baseUrl;
       const { response } = await apiService.get<{
-        slots: AvailabilitySlot[];
+        data: AvailabilitySlot[];
         pagination: {
           page: number;
           limit: number;
