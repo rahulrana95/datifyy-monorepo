@@ -3,9 +3,10 @@
  * Fixed Availability Zustand Store
  * 
  * Key fixes:
- * - Properly load booking data with slots
- * - Enhanced data fetching with relationships
- * - Better booking status handling
+ * - Ensure includeBookings is always true when loading
+ * - Better error handling for booking data
+ * - Debug logging for booking data
+ * - Force refresh mechanism
  */
 
 import { create } from 'zustand';
@@ -25,7 +26,6 @@ import {
   AvailabilityBooking
 } from '../types';
 import availabilityService from '../service/availabilityService';
-import { WritableDraft } from 'immer/dist/internal';
 import { enableMapSet } from 'immer';
 
 enableMapSet();
@@ -37,7 +37,7 @@ interface AvailabilityStore extends AvailabilityState {
   setCalendarMonth: (month: string) => void;
   
   // Data actions
-  loadAvailability: (params?: { startDate?: string; endDate?: string; forceRefresh?: boolean }) => Promise<void>;
+  loadAvailability: (params?: { startDate?: string; endDate?: string; forceRefresh?: boolean; includeBookings?: boolean }) => Promise<void>;
   createAvailability: (requests: CreateAvailabilityRequest[]) => Promise<boolean>;
   updateAvailability: (id: number, data: UpdateAvailabilityRequest) => Promise<boolean>;
   deleteAvailability: (id: number) => Promise<boolean>;
@@ -108,17 +108,28 @@ const isSlotInPast = (slot: AvailabilitySlot): boolean => {
   return slotDateTime < now;
 };
 
-// Enhanced slot processing to ensure booking data is properly handled
+// Enhanced slot processing with better booking data validation
 const processSlotData = (rawSlot: any): AvailabilitySlot => {
-  console.log('Processing slot data:', rawSlot); // Debug log
+  console.log('Processing raw slot:', rawSlot); // Debug log
   
-  return {
-    ...rawSlot,
-    // Ensure booking data is properly mapped
-    isBooked: !!(rawSlot.isBooked || rawSlot.booking),
-    booking: rawSlot.booking ? {
-      ...rawSlot.booking,
-      // Ensure user data is properly structured
+  // Ensure booking data is properly structured
+  let booking: AvailabilityBooking | undefined = undefined;
+  
+  if (rawSlot.booking) {
+    console.log('Raw booking data:', rawSlot.booking); // Debug log
+    
+    booking = {
+      id: rawSlot.booking.id,
+      availabilityId: rawSlot.booking.availabilityId || rawSlot.id,
+      bookedByUserId: rawSlot.booking.bookedByUserId,
+      bookingStatus: rawSlot.booking.bookingStatus,
+      selectedActivity: rawSlot.booking.selectedActivity,
+      bookingNotes: rawSlot.booking.bookingNotes,
+      confirmedAt: rawSlot.booking.confirmedAt,
+      cancelledAt: rawSlot.booking.cancelledAt,
+      cancellationReason: rawSlot.booking.cancellationReason,
+      createdAt: rawSlot.booking.createdAt,
+      updatedAt: rawSlot.booking.updatedAt,
       bookedByUser: {
         id: rawSlot.booking.bookedByUser?.id || rawSlot.booking.bookedByUserId,
         firstName: rawSlot.booking.bookedByUser?.firstName || 'Unknown',
@@ -126,8 +137,41 @@ const processSlotData = (rawSlot: any): AvailabilitySlot => {
         email: rawSlot.booking.bookedByUser?.email || '',
         profileImage: rawSlot.booking.bookedByUser?.profileImage
       }
-    } : undefined
+    };
+    
+    console.log('Processed booking:', booking); // Debug log
+  }
+  
+  const processedSlot: AvailabilitySlot = {
+    id: rawSlot.id,
+    userId: rawSlot.userId,
+    availabilityDate: rawSlot.availabilityDate,
+    startTime: rawSlot.startTime,
+    endTime: rawSlot.endTime,
+    timezone: rawSlot.timezone,
+    dateType: rawSlot.dateType,
+    status: rawSlot.status,
+    title: rawSlot.title,
+    notes: rawSlot.notes,
+    locationPreference: rawSlot.locationPreference,
+    isRecurring: rawSlot.isRecurring || false,
+    bufferTimeMinutes: rawSlot.bufferTimeMinutes,
+    preparationTimeMinutes: rawSlot.preparationTimeMinutes,
+    createdAt: rawSlot.createdAt,
+    updatedAt: rawSlot.updatedAt,
+    
+    // Computed fields
+    isBooked: !!booking,
+    canEdit: !booking || booking.bookingStatus === 'cancelled',
+    canCancel: !!booking && booking.bookingStatus !== 'cancelled',
+    durationMinutes: 60, // Default 1 hour
+    formattedTime: `${rawSlot.startTime} - ${rawSlot.endTime}`,
+    formattedDate: rawSlot.availabilityDate,
+    booking
   };
+  
+  console.log('Final processed slot:', processedSlot); // Debug log
+  return processedSlot;
 };
 
 export const useAvailabilityStore = create<AvailabilityStore>()(
@@ -171,9 +215,9 @@ export const useAvailabilityStore = create<AvailabilityStore>()(
           state.calendarMonth = month;
         }),
 
-        // Enhanced data loading with proper booking relationships
+        // Enhanced data loading with ALWAYS including bookings
         loadAvailability: async (params = {}) => {
-          const { forceRefresh = false } = params;
+          const { forceRefresh = false, includeBookings = true } = params;
           
           // Don't reload if we already have data unless forced
           if (!forceRefresh && get().upcomingSlots.length > 0) {
@@ -187,11 +231,11 @@ export const useAvailabilityStore = create<AvailabilityStore>()(
           });
 
           try {
-            console.log('Loading availability with bookings...');
+            console.log('Loading availability with bookings...', { includeBookings, ...params });
             
-            // Enhanced API call with explicit booking inclusion
+            // ALWAYS include bookings in the API call
             const result = await availabilityService.getUserAvailability({
-              includeBookings: true,
+              includeBookings: true, // Force to true
               ...params
             });
 
@@ -206,10 +250,12 @@ export const useAvailabilityStore = create<AvailabilityStore>()(
 
             const rawSlots = result.response?.data || [];
             console.log('Raw slots from API:', rawSlots);
+            console.log('Number of slots with bookings:', rawSlots.filter((slot: any) => slot.booking).length);
             
             // Process slots to ensure booking data is properly handled
             const processedSlots = rawSlots.map(processSlotData);
             console.log('Processed slots:', processedSlots);
+            console.log('Number of processed slots marked as booked:', processedSlots.filter(slot => slot.isBooked).length);
             
             set((state) => {
               const now = new Date();
@@ -250,7 +296,7 @@ export const useAvailabilityStore = create<AvailabilityStore>()(
         // Enhanced refresh specifically for booking data
         refreshBookingData: async () => {
           console.log('Refreshing booking data...');
-          await get().loadAvailability({ forceRefresh: true });
+          await get().loadAvailability({ forceRefresh: true, includeBookings: true });
         },
 
         // Manual booking state updates (for real-time updates)
@@ -259,6 +305,8 @@ export const useAvailabilityStore = create<AvailabilityStore>()(
             if (slot.id === slotId) {
               slot.isBooked = true;
               slot.booking = booking;
+              slot.canEdit = false;
+              slot.canCancel = true;
             }
           };
           
@@ -271,6 +319,8 @@ export const useAvailabilityStore = create<AvailabilityStore>()(
             if (slot.id === slotId) {
               slot.isBooked = false;
               slot.booking = undefined;
+              slot.canEdit = true;
+              slot.canCancel = false;
             }
           };
           
@@ -299,7 +349,7 @@ export const useAvailabilityStore = create<AvailabilityStore>()(
             }
 
             // Force refresh to get latest data with any bookings
-            await get().loadAvailability({ forceRefresh: true });
+            await get().loadAvailability({ forceRefresh: true, includeBookings: true });
             
             set((state) => {
               state.isSaving = false;

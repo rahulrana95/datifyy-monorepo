@@ -19,7 +19,7 @@ import {
 } from "../types";
 
 class AvailabilityService {
-  private baseUrl = "/availability";
+  private baseUrl = "availability";
 
   /**
    * Create a single availability slot
@@ -68,11 +68,58 @@ class AvailabilityService {
     }
   }
 
-  /**
-   * Get user's availability slots with filtering
-   */
-  async getUserAvailability(params?: GetAvailabilityParams): Promise<
-    ServiceResponse<{
+ // Quick fix for availabilityService.ts - getUserAvailability method
+// Add this to your existing service file around line 60-80
+
+/**
+ * Get user's availability slots with filtering - ENHANCED VERSION
+ */
+async getUserAvailability(params?: GetAvailabilityParams): Promise<
+  ServiceResponse<{
+    data: AvailabilitySlot[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+      hasNext: boolean;
+      hasPrevious: boolean;
+    };
+    summary: {
+      totalSlots: number;
+      bookedSlots: number;
+      availableSlots: number;
+      upcomingSlots: number;
+    };
+  }>
+> {
+  try {
+    const queryParams = new URLSearchParams();
+
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          if (Array.isArray(value)) {
+            value.forEach((v) => queryParams.append(key, v.toString()));
+          } else {
+            queryParams.append(key, value.toString());
+          }
+        }
+      });
+    }
+
+    // FORCE includeBookings to true if not explicitly set
+    if (!queryParams.has('includeBookings')) {
+      queryParams.append('includeBookings', 'true');
+    }
+
+    const url = queryParams.toString()
+      ? `${this.baseUrl}?${queryParams}`
+      : `${this.baseUrl}?includeBookings=true`; // Fallback
+
+    console.log('API Request URL:', url); // Debug log
+    
+    const { response } = await apiService.get<{
       data: AvailabilitySlot[];
       pagination: {
         page: number;
@@ -88,48 +135,16 @@ class AvailabilityService {
         availableSlots: number;
         upcomingSlots: number;
       };
-    }>
-  > {
-    try {
-      const queryParams = new URLSearchParams();
+    }>(url);
 
-      if (params) {
-        Object.entries(params).forEach(([key, value]) => {
-          if (value !== undefined && value !== null) {
-            if (Array.isArray(value)) {
-              value.forEach((v) => queryParams.append(key, v.toString()));
-            } else {
-              queryParams.append(key, value.toString());
-            }
-          }
-        });
-      }
-
-      const url = queryParams.toString()
-        ? `${this.baseUrl}?${queryParams}`
-        : this.baseUrl;
-      const { response } = await apiService.get<{
-        data: AvailabilitySlot[];
-        pagination: {
-          page: number;
-          limit: number;
-          total: number;
-          totalPages: number;
-          hasNext: boolean;
-          hasPrevious: boolean;
-        };
-        summary: {
-          totalSlots: number;
-          bookedSlots: number;
-          availableSlots: number;
-          upcomingSlots: number;
-        };
-      }>(url);
-      return { response };
-    } catch (error) {
-      return { error: apiService.handleError(error) };
-    }
+    console.log('API Response:', response); // Debug log
+    
+    return { response };
+  } catch (error) {
+    console.error('Service error:', error); // Debug log
+    return { error: apiService.handleError(error) };
   }
+}
 
   /**
    * Get a specific availability slot by ID
@@ -191,7 +206,7 @@ class AvailabilityService {
   ): Promise<ServiceResponse<{ deletedId: number }>> {
     try {
       const { response } = await apiService.delete<{ deletedId: number }>(
-        `${this.baseUrl}/${id}`
+        `${this.baseUrl}/slot/${id}`
       );
       return { response };
     } catch (error) {

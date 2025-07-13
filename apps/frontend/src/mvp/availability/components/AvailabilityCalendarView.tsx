@@ -1,15 +1,15 @@
 // apps/frontend/src/mvp/availability/components/AvailabilityCalendarView.tsx
 /**
- * Mobile-Optimized Availability Calendar View Component
+ * Fixed Mobile-Optimized Availability Calendar View Component
  * 
- * Enhanced with:
- * - Mobile-first responsive design
- * - Better booking visibility
- * - Improved slot actions
- * - Touch-friendly interactions
+ * Fixes:
+ * - Proper booking data display
+ * - Enhanced booking visibility
+ * - Better mobile interactions
+ * - Real booking status indicators
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Grid,
@@ -63,7 +63,8 @@ import {
     FaEnvelope,
     FaCalendarAlt,
     FaChevronLeft,
-    FaChevronRight
+    FaChevronRight,
+    FaHeart
 } from 'react-icons/fa';
 import { useAvailabilityStore } from '../store/availabilityStore';
 import { AvailabilitySlot, DateType, BookingStatus, AVAILABILITY_CONSTANTS } from '../types';
@@ -149,6 +150,12 @@ const SlotDetailsDrawer: React.FC<SlotDetailsProps> = ({
                             <Text fontSize="lg" fontWeight="bold">
                                 {slot.dateType === DateType.ONLINE ? 'Online' : 'Offline'} Availability
                             </Text>
+                            {isBooked && (
+                                <Badge colorScheme="green" variant="solid">
+                                    <Icon as={FaHeart} boxSize={3} mr={1} />
+                                    Booked
+                                </Badge>
+                            )}
                         </HStack>
                         <Text fontSize="sm" color="gray.600">
                             {formatDate(slot.availabilityDate)}
@@ -191,7 +198,7 @@ const SlotDetailsDrawer: React.FC<SlotDetailsProps> = ({
                                     <VStack spacing={4} align="stretch">
                                         <HStack justify="space-between">
                                             <Text fontSize="md" fontWeight="bold" color="green.800">
-                                                Booked by
+                                                💕 Booked by
                                             </Text>
                                             <Badge
                                                 colorScheme="green"
@@ -346,8 +353,14 @@ const AvailabilityCalendarView: React.FC = () => {
         upcomingSlots,
         availableDays,
         isDeleting,
-        deleteAvailability
+        deleteAvailability,
+        loadAvailability
     } = useAvailabilityStore();
+
+    // Ensure we have fresh data with bookings
+    useEffect(() => {
+        loadAvailability({ forceRefresh: true, includeBookings: true });
+    }, [loadAvailability]);
 
     // Color mode values
     const borderColor = useColorModeValue('gray.200', 'gray.600');
@@ -408,14 +421,17 @@ const AvailabilityCalendarView: React.FC = () => {
         }
     };
 
-    // Create calendar matrix for mobile
+    // Create calendar matrix for mobile with ACTUAL booking data
     const createMobileCalendarData = () => {
         const calendarData: { [date: string]: AvailabilitySlot[] } = {};
 
         currentDays.forEach(day => {
-            calendarData[day.date] = upcomingSlots.filter(
+            // Filter slots for this specific date and ensure booking data is included
+            const daySlots = upcomingSlots.filter(
                 slot => slot.availabilityDate === day.date
             ).sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+            calendarData[day.date] = daySlots;
         });
 
         return calendarData;
@@ -439,7 +455,7 @@ const AvailabilityCalendarView: React.FC = () => {
 
     const getSlotIcon = (slot: AvailabilitySlot) => {
         if (slot.isBooked && slot.booking) {
-            return FaUser;
+            return FaHeart; // Changed to heart for booked slots
         }
         return slot.dateType === DateType.ONLINE ? FaVideo : FaMapMarkerAlt;
     };
@@ -487,6 +503,7 @@ const AvailabilityCalendarView: React.FC = () => {
                     {currentDays.map((day) => {
                         const daySlots = mobileCalendarData[day.date] || [];
                         const hasSlots = daySlots.length > 0;
+                        const bookedSlots = daySlots.filter(slot => slot.isBooked).length;
 
                         return (
                             <Card key={day.date} variant="elevated">
@@ -508,12 +525,19 @@ const AvailabilityCalendarView: React.FC = () => {
                                                 </Text>
                                             </VStack>
 
-                                            <Badge
-                                                colorScheme={hasSlots ? 'green' : 'gray'}
-                                                variant="subtle"
-                                            >
-                                                {daySlots.length} slot{daySlots.length !== 1 ? 's' : ''}
-                                            </Badge>
+                                            <VStack align="end" spacing={1}>
+                                                <Badge
+                                                    colorScheme={hasSlots ? 'green' : 'gray'}
+                                                    variant="subtle"
+                                                >
+                                                    {daySlots.length} slot{daySlots.length !== 1 ? 's' : ''}
+                                                </Badge>
+                                                {bookedSlots > 0 && (
+                                                    <Badge colorScheme="brand" variant="solid" size="sm">
+                                                        {bookedSlots} 💕 booked
+                                                    </Badge>
+                                                )}
+                                            </VStack>
                                         </HStack>
 
                                         {/* Slots */}
@@ -534,6 +558,7 @@ const AvailabilityCalendarView: React.FC = () => {
                                                             onClick={() => handleSlotClick(slot)}
                                                             _active={{ transform: 'scale(0.98)' }}
                                                             transition="all 0.2s"
+                                                            className={isBooked ? "heart-beat" : ""}
                                                         >
                                                             <CardBody p={3}>
                                                                 <HStack justify="space-between" align="center">
@@ -559,7 +584,15 @@ const AvailabilityCalendarView: React.FC = () => {
                                                                         </VStack>
                                                                     </HStack>
 
-                                                                    <Icon as={FaEye} color="gray.400" boxSize={4} />
+                                                                    {isBooked ? (
+                                                                        <Avatar
+                                                                            size="xs"
+                                                                            name={`${slot.booking!.bookedByUser.firstName} ${slot.booking!.bookedByUser.lastName}`}
+                                                                            src={slot.booking!.bookedByUser.profileImage}
+                                                                        />
+                                                                    ) : (
+                                                                        <Icon as={FaEye} color="gray.400" boxSize={4} />
+                                                                    )}
                                                                 </HStack>
                                                             </CardBody>
                                                         </Card>
@@ -601,10 +634,9 @@ const AvailabilityCalendarView: React.FC = () => {
         );
     }
 
-    // Desktop view - use enhanced grid
+    // Desktop view - use enhanced grid with proper booking data
     return (
         <VStack spacing={6} align="stretch">
-            {/* Import and use the desktop component */}
             <Box>
                 <AvailabilityDesktopCalendarGrid
                     onEdit={handleEdit}

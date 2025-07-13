@@ -1,11 +1,12 @@
 // apps/frontend/src/mvp/availability/components/AvailabilityUpcomingList.tsx
 /**
- * Updated Availability Upcoming List Component
+ * Fixed Availability Upcoming List Component
  * 
- * Now integrates:
- * - Enhanced mobile calendar view
- * - Desktop grid with booking visibility
- * - Improved slot edit modal
+ * Fixes:
+ * 1. Working calendar/list view toggle
+ * 2. Proper booking data display in calendar
+ * 3. Enhanced list view with better booking visibility
+ * 4. Improved mobile responsiveness
  */
 
 import React, { useState } from 'react';
@@ -22,7 +23,13 @@ import {
     useBreakpointValue,
     Box,
     Icon,
-    ButtonGroup
+    ButtonGroup,
+    Avatar,
+    Divider,
+    SimpleGrid,
+    Flex,
+    Tooltip,
+    useColorModeValue
 } from '@chakra-ui/react';
 import {
     FaCalendarAlt,
@@ -32,10 +39,16 @@ import {
     FaVideo,
     FaMapMarkerAlt,
     FaTh,
-    FaList
+    FaList,
+    FaEdit,
+    FaTrash,
+    FaEye,
+    FaCommentDots,
+    FaPhone,
+    FaEnvelope
 } from 'react-icons/fa';
 import { useAvailabilityStore } from '../store/availabilityStore';
-import { AvailabilitySlot } from '../types';
+import { AvailabilitySlot, DateType, BookingStatus } from '../types';
 import AvailabilityCalendarView from './AvailabilityCalendarView';
 import AvailabilitySlotEditModal from './AvailabilitySlotEditModal';
 
@@ -43,6 +56,8 @@ type ViewMode = 'calendar' | 'list';
 
 const AvailabilityUpcomingList: React.FC = () => {
     const isMobile = useBreakpointValue({ base: true, md: false });
+    const cardBg = useColorModeValue('white', 'gray.800');
+    const borderColor = useColorModeValue('gray.200', 'gray.600');
 
     const [editingSlot, setEditingSlot] = useState<AvailabilitySlot | null>(null);
     const [viewMode, setViewMode] = useState<ViewMode>('calendar');
@@ -50,7 +65,9 @@ const AvailabilityUpcomingList: React.FC = () => {
 
     const {
         upcomingSlots,
-        startCreating
+        startCreating,
+        deleteAvailability,
+        isDeleting
     } = useAvailabilityStore();
 
     const handleEdit = (slot: AvailabilitySlot) => {
@@ -58,10 +75,103 @@ const AvailabilityUpcomingList: React.FC = () => {
         onEditOpen();
     };
 
+    const handleDelete = async (slot: AvailabilitySlot) => {
+        if (!slot.id) return;
+        await deleteAvailability(slot.id);
+    };
+
     const handleSlotUpdated = () => {
         setEditingSlot(null);
         onEditClose();
-        // Optionally refresh data here if needed
+    };
+
+    // Format date and time utilities
+    const formatDateTime = (slot: AvailabilitySlot) => {
+        const date = new Date(slot.availabilityDate + 'T00:00:00');
+        const dateStr = date.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+
+        const startTime = new Date(`2000-01-01T${slot.startTime}`);
+        const endTime = new Date(`2000-01-01T${slot.endTime}`);
+        const timeStr = `${startTime.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        })} - ${endTime.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        })}`;
+
+        return { dateStr, timeStr };
+    };
+
+    // Enhanced List View Component
+    const renderListView = () => {
+        // Group slots by date for better organization
+        const groupedSlots = upcomingSlots.reduce((groups, slot) => {
+            const date = slot.availabilityDate;
+            if (!groups[date]) {
+                groups[date] = [];
+            }
+            groups[date].push(slot);
+            return groups;
+        }, {} as Record<string, AvailabilitySlot[]>);
+
+        const sortedDates = Object.keys(groupedSlots).sort();
+
+        return (
+            <VStack spacing={6} align="stretch">
+                {sortedDates.map(date => {
+                    const daySlots = groupedSlots[date].sort((a, b) =>
+                        a.startTime.localeCompare(b.startTime)
+                    );
+
+                    const dateObj = new Date(date + 'T00:00:00');
+                    const isToday = date === new Date().toISOString().split('T')[0];
+                    const dayLabel = isToday ? 'Today' : dateObj.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+
+                    return (
+                        <Box key={date}>
+                            {/* Date Header */}
+                            <HStack spacing={3} mb={4} align="center">
+                                <Text fontSize="lg" fontWeight="bold" color="gray.800">
+                                    {dayLabel}
+                                </Text>
+                                {isToday && (
+                                    <Badge colorScheme="brand" variant="solid">Today</Badge>
+                                )}
+                                <Badge colorScheme="blue" variant="subtle">
+                                    {daySlots.length} slot{daySlots.length !== 1 ? 's' : ''}
+                                </Badge>
+                                <Box flex={1} height="1px" bg={borderColor} />
+                            </HStack>
+
+                            {/* Slots for this date */}
+                            <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={4}>
+                                {daySlots.map(slot => (
+                                    <SlotListCard
+                                        key={slot.id}
+                                        slot={slot}
+                                        onEdit={handleEdit}
+                                        onDelete={handleDelete}
+                                        isDeleting={isDeleting}
+                                    />
+                                ))}
+                            </SimpleGrid>
+                        </Box>
+                    );
+                })}
+            </VStack>
+        );
     };
 
     // Empty state
@@ -106,7 +216,7 @@ const AvailabilityUpcomingList: React.FC = () => {
                 borderColor="gray.100"
             >
                 <VStack spacing={4}>
-                    <HStack justify="space-between" w="full" align="center">
+                    <HStack justify="space-between" w="full" align="center" flexWrap="wrap" gap={4}>
                         <VStack align="start" spacing={1}>
                             <Text fontSize="lg" fontWeight="bold" color="gray.800">
                                 Your Upcoming Availability
@@ -116,7 +226,7 @@ const AvailabilityUpcomingList: React.FC = () => {
                             </Text>
                         </VStack>
 
-                        <HStack spacing={2}>
+                        <HStack spacing={3} flexWrap="wrap">
                             {/* View Toggle - Desktop only */}
                             {!isMobile && (
                                 <ButtonGroup size="sm" isAttached variant="outline">
@@ -196,10 +306,13 @@ const AvailabilityUpcomingList: React.FC = () => {
                 </VStack>
             </Box>
 
-            {/* Main Content */}
+            {/* Main Content - Conditional Rendering */}
             <Box>
-                {/* Always use calendar view for now - can add list view later */}
-                <AvailabilityCalendarView />
+                {isMobile || viewMode === 'calendar' ? (
+                    <AvailabilityCalendarView />
+                ) : (
+                    renderListView()
+                )}
             </Box>
 
             {/* Edit Modal */}
@@ -212,6 +325,208 @@ const AvailabilityUpcomingList: React.FC = () => {
                 />
             )}
         </VStack>
+    );
+};
+
+// Enhanced Slot List Card Component
+const SlotListCard: React.FC<{
+    slot: AvailabilitySlot;
+    onEdit: (slot: AvailabilitySlot) => void;
+    onDelete: (slot: AvailabilitySlot) => void;
+    isDeleting: boolean;
+}> = ({ slot, onEdit, onDelete, isDeleting }) => {
+    const cardBg = useColorModeValue('white', 'gray.800');
+    const isBooked = slot.isBooked && slot.booking;
+
+    const formatTime = (timeStr: string) => {
+        const time = new Date(`2000-01-01T${timeStr}`);
+        return time.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+    };
+
+    const getStatusColor = () => {
+        if (isBooked) return 'green';
+        return slot.dateType === DateType.ONLINE ? 'blue' : 'orange';
+    };
+
+    return (
+        <Card
+            variant="elevated"
+            className="interactive"
+            _hover={{
+                transform: 'translateY(-2px)',
+                boxShadow: 'lg'
+            }}
+            bg={cardBg}
+            border="1px solid"
+            borderColor={`${getStatusColor()}.200`}
+            position="relative"
+        >
+            <CardBody p={4}>
+                <VStack spacing={4} align="stretch">
+                    {/* Header */}
+                    <HStack justify="space-between" align="start">
+                        <VStack align="start" spacing={1} flex={1}>
+                            <HStack spacing={2}>
+                                <Icon
+                                    as={slot.dateType === DateType.ONLINE ? FaVideo : FaMapMarkerAlt}
+                                    color={`${getStatusColor()}.500`}
+                                />
+                                <Text fontSize="md" fontWeight="bold" color="gray.700">
+                                    {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
+                                </Text>
+                            </HStack>
+                            <Text fontSize="sm" color="gray.500">
+                                {slot.dateType === DateType.ONLINE ? 'Online Date' : 'In-Person Date'}
+                            </Text>
+                        </VStack>
+
+                        <VStack spacing={2} align="end">
+                            <Badge
+                                colorScheme={getStatusColor()}
+                                variant={isBooked ? 'solid' : 'subtle'}
+                                display="flex"
+                                alignItems="center"
+                                gap={1}
+                            >
+                                {isBooked ? (
+                                    <>
+                                        <Icon as={FaUser} boxSize={3} />
+                                        Booked
+                                    </>
+                                ) : (
+                                    <>
+                                        <Icon as={FaClock} boxSize={3} />
+                                        Available
+                                    </>
+                                )}
+                            </Badge>
+                        </VStack>
+                    </HStack>
+
+                    {/* Booking Details */}
+                    {isBooked && slot.booking && (
+                        <>
+                            <Divider />
+                            <Box
+                                bg="green.50"
+                                p={3}
+                                borderRadius="lg"
+                                border="1px solid"
+                                borderColor="green.200"
+                            >
+                                <VStack spacing={3} align="stretch">
+                                    <HStack spacing={3}>
+                                        <Avatar
+                                            size="sm"
+                                            name={`${slot.booking.bookedByUser.firstName} ${slot.booking.bookedByUser.lastName}`}
+                                            src={slot.booking.bookedByUser.profileImage}
+                                        />
+                                        <VStack align="start" spacing={0} flex={1}>
+                                            <Text fontSize="sm" fontWeight="medium" color="green.800">
+                                                {slot.booking.bookedByUser.firstName} {slot.booking.bookedByUser.lastName}
+                                            </Text>
+                                            <Text fontSize="xs" color="green.600">
+                                                Activity: {slot.booking.selectedActivity}
+                                            </Text>
+                                            <Text fontSize="xs" color="gray.500">
+                                                Status: {slot.booking.bookingStatus}
+                                            </Text>
+                                        </VStack>
+                                    </HStack>
+
+                                    {slot.booking.bookingNotes && (
+                                        <Box bg="white" p={2} borderRadius="md" border="1px solid" borderColor="green.200">
+                                            <Text fontSize="xs" color="green.600" mb={1} fontWeight="semibold">
+                                                Their message:
+                                            </Text>
+                                            <Text fontSize="sm" color="green.800" fontStyle="italic">
+                                                "{slot.booking.bookingNotes}"
+                                            </Text>
+                                        </Box>
+                                    )}
+
+                                    {/* Quick Contact Actions */}
+                                    <HStack spacing={2}>
+                                        <Tooltip label="Send message">
+                                            <Button size="xs" colorScheme="blue" leftIcon={<FaEnvelope />}>
+                                                Message
+                                            </Button>
+                                        </Tooltip>
+                                        <Tooltip label="Call them">
+                                            <Button size="xs" colorScheme="green" leftIcon={<FaPhone />}>
+                                                Call
+                                            </Button>
+                                        </Tooltip>
+                                    </HStack>
+                                </VStack>
+                            </Box>
+                        </>
+                    )}
+
+                    {/* Location Preference */}
+                    {slot.locationPreference && (
+                        <>
+                            <Divider />
+                            <HStack spacing={2}>
+                                <Icon as={FaMapMarkerAlt} color="orange.500" boxSize={3} />
+                                <Text fontSize="sm" color="gray.600">
+                                    Preferred location: {slot.locationPreference}
+                                </Text>
+                            </HStack>
+                        </>
+                    )}
+
+                    {/* Notes */}
+                    {slot.notes && (
+                        <>
+                            <Divider />
+                            <HStack spacing={2} align="start">
+                                <Icon as={FaCommentDots} color="gray.400" boxSize={3} mt={0.5} />
+                                <Text fontSize="sm" color="gray.600" lineHeight="relaxed">
+                                    {slot.notes}
+                                </Text>
+                            </HStack>
+                        </>
+                    )}
+
+                    {/* Actions */}
+                    <Divider />
+                    <HStack spacing={2} justify="flex-end">
+                        <Tooltip label="View details">
+                            <Button size="sm" variant="ghost" leftIcon={<FaEye />}>
+                                View
+                            </Button>
+                        </Tooltip>
+                        <Tooltip label="Edit slot">
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                leftIcon={<FaEdit />}
+                                onClick={() => onEdit(slot)}
+                            >
+                                Edit
+                            </Button>
+                        </Tooltip>
+                        <Tooltip label="Delete slot">
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                colorScheme="red"
+                                leftIcon={<FaTrash />}
+                                onClick={() => onDelete(slot)}
+                                isLoading={isDeleting}
+                            >
+                                Delete
+                            </Button>
+                        </Tooltip>
+                    </HStack>
+                </VStack>
+            </CardBody>
+        </Card>
     );
 };
 

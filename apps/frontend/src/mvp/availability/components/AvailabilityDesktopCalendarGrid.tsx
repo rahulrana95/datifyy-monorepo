@@ -1,15 +1,6 @@
-// apps/frontend/src/mvp/availability/components/AvailabilityDesktopCalendarGrid.tsx
-/**
- * Enhanced Desktop Calendar Grid Component
- * 
- * Features:
- * - Full week grid view with time slots
- * - Enhanced booking visibility
- * - Quick actions on hover
- * - Detailed slot information
- */
+// FIXED: AvailabilityDesktopCalendarGrid.tsx - Time Format Issue Resolved
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Grid,
@@ -21,243 +12,21 @@ import {
     Badge,
     Tooltip,
     Icon,
-    IconButton,
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
     useColorModeValue,
     useToast,
     Avatar,
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
-    PopoverHeader,
-    PopoverBody,
-    PopoverArrow,
-    PopoverCloseButton,
-    Button,
-    Divider,
-    Flex
+    Button
 } from '@chakra-ui/react';
 import {
     FaVideo,
     FaMapMarkerAlt,
     FaClock,
-    FaUser,
-    FaCheckCircle,
-    FaUserClock,
-    FaExclamationTriangle,
-    FaEllipsisV,
-    FaEdit,
-    FaTrash,
+    FaHeart,
     FaGlobeAmericas,
-    FaPhone,
-    FaEnvelope,
-    FaEye,
-    FaCalendarAlt,
-    FaHeart
+    FaCalendarAlt
 } from 'react-icons/fa';
 import { useAvailabilityStore } from '../store/availabilityStore';
-import { AvailabilitySlot, DateType, BookingStatus, AVAILABILITY_CONSTANTS } from '../types';
-
-interface CalendarSlot {
-    slot?: AvailabilitySlot;
-    timeSlot: string;
-    date: string;
-    isEmpty: boolean;
-}
-
-interface SlotPopoverProps {
-    slot: AvailabilitySlot;
-    children: React.ReactNode;
-    onEdit: (slot: AvailabilitySlot) => void;
-    onDelete: (slot: AvailabilitySlot) => void;
-}
-
-const SlotPopover: React.FC<SlotPopoverProps> = ({ slot, children, onEdit, onDelete }) => {
-    const isBooked = slot.isBooked && slot.booking;
-    const toast = useToast();
-
-    const formatTime = (timeStr: string) => {
-        const time = new Date(`2000-01-01T${timeStr}`);
-        return time.toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true
-        });
-    };
-
-    const handleContact = (type: 'email' | 'phone') => {
-        if (!isBooked) return;
-
-        toast({
-            title: `${type === 'email' ? 'Email' : 'Call'} ${slot.booking!.bookedByUser.firstName}`,
-            description: `Opening ${type === 'email' ? 'email client' : 'phone app'}...`,
-            status: 'info',
-            duration: 2000,
-        });
-    };
-
-    return (
-        <Popover trigger="hover" placement="auto">
-            <PopoverTrigger>{children}</PopoverTrigger>
-            <PopoverContent w="320px" boxShadow="xl" borderRadius="xl">
-                <PopoverArrow />
-                <PopoverCloseButton />
-                <PopoverHeader borderBottomWidth="1px" bg="gray.50" borderTopRadius="xl">
-                    <VStack spacing={1} align="start">
-                        <HStack spacing={2}>
-                            <Icon
-                                as={slot.dateType === DateType.ONLINE ? FaVideo : FaMapMarkerAlt}
-                                color={slot.dateType === DateType.ONLINE ? 'blue.500' : 'orange.500'}
-                            />
-                            <Text fontWeight="bold">
-                                {slot.dateType === DateType.ONLINE ? 'Online' : 'Offline'} Slot
-                            </Text>
-                        </HStack>
-                        <Text fontSize="sm" color="gray.600">
-                            {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
-                        </Text>
-                    </VStack>
-                </PopoverHeader>
-                <PopoverBody p={4}>
-                    <VStack spacing={4} align="stretch">
-                        {/* Booking Status */}
-                        {isBooked ? (
-                            <Box
-                                bg="green.50"
-                                p={3}
-                                borderRadius="lg"
-                                border="1px solid"
-                                borderColor="green.200"
-                            >
-                                <VStack spacing={3} align="stretch">
-                                    <HStack justify="space-between">
-                                        <Text fontSize="sm" fontWeight="bold" color="green.800">
-                                            Booked by
-                                        </Text>
-                                        <Badge colorScheme="green" size="sm">
-                                            {slot.booking!.bookingStatus}
-                                        </Badge>
-                                    </HStack>
-
-                                    <HStack spacing={3}>
-                                        <Avatar
-                                            size="sm"
-                                            name={`${slot.booking!.bookedByUser.firstName} ${slot.booking!.bookedByUser.lastName}`}
-                                            src={slot.booking!.bookedByUser.profileImage}
-                                        />
-                                        <VStack align="start" spacing={0}>
-                                            <Text fontSize="sm" fontWeight="medium">
-                                                {slot.booking!.bookedByUser.firstName} {slot.booking!.bookedByUser.lastName}
-                                            </Text>
-                                            <Text fontSize="xs" color="green.600">
-                                                {slot.booking!.selectedActivity}
-                                            </Text>
-                                        </VStack>
-                                    </HStack>
-
-                                    {slot.booking!.bookingNotes && (
-                                        <Box bg="white" p={2} borderRadius="md" border="1px solid" borderColor="green.200">
-                                            <Text fontSize="xs" color="green.700" fontStyle="italic">
-                                                "{slot.booking!.bookingNotes}"
-                                            </Text>
-                                        </Box>
-                                    )}
-
-                                    {/* Quick Contact */}
-                                    <HStack spacing={2}>
-                                        <Button
-                                            size="xs"
-                                            colorScheme="blue"
-                                            leftIcon={<FaEnvelope />}
-                                            onClick={() => handleContact('email')}
-                                            flex={1}
-                                        >
-                                            Email
-                                        </Button>
-                                        <Button
-                                            size="xs"
-                                            colorScheme="green"
-                                            leftIcon={<FaPhone />}
-                                            onClick={() => handleContact('phone')}
-                                            flex={1}
-                                        >
-                                            Call
-                                        </Button>
-                                    </HStack>
-                                </VStack>
-                            </Box>
-                        ) : (
-                            <Box
-                                bg="gray.50"
-                                p={3}
-                                borderRadius="lg"
-                                textAlign="center"
-                                border="1px dashed"
-                                borderColor="gray.300"
-                            >
-                                <VStack spacing={2}>
-                                    <Icon as={FaUserClock} color="gray.400" boxSize={5} />
-                                    <Text fontSize="sm" color="gray.600" fontWeight="medium">
-                                        Available for Booking
-                                    </Text>
-                                </VStack>
-                            </Box>
-                        )}
-
-                        {/* Location/Notes */}
-                        {(slot.locationPreference || slot.notes) && (
-                            <>
-                                <Divider />
-                                <VStack spacing={2} align="stretch">
-                                    {slot.locationPreference && (
-                                        <HStack spacing={2}>
-                                            <Icon as={FaMapMarkerAlt} color="orange.500" boxSize={3} />
-                                            <Text fontSize="xs" color="gray.600">
-                                                {slot.locationPreference}
-                                            </Text>
-                                        </HStack>
-                                    )}
-                                    {slot.notes && (
-                                        <Text fontSize="xs" color="gray.600" fontStyle="italic">
-                                            {slot.notes}
-                                        </Text>
-                                    )}
-                                </VStack>
-                            </>
-                        )}
-
-                        {/* Actions */}
-                        <Divider />
-                        <HStack spacing={2}>
-                            <Button
-                                size="xs"
-                                variant="outline"
-                                leftIcon={<FaEdit />}
-                                onClick={() => onEdit(slot)}
-                                flex={1}
-                            >
-                                Edit
-                            </Button>
-                            <Button
-                                size="xs"
-                                variant="outline"
-                                colorScheme="red"
-                                leftIcon={<FaTrash />}
-                                onClick={() => onDelete(slot)}
-                                flex={1}
-                            >
-                                Delete
-                            </Button>
-                        </HStack>
-                    </VStack>
-                </PopoverBody>
-            </PopoverContent>
-        </Popover>
-    );
-};
+import { AvailabilitySlot, DateType, AVAILABILITY_CONSTANTS } from '../types';
 
 interface DesktopCalendarGridProps {
     onEdit: (slot: AvailabilitySlot) => void;
@@ -269,141 +38,251 @@ const AvailabilityDesktopCalendarGrid: React.FC<DesktopCalendarGridProps> = ({
     onDelete
 }) => {
     const toast = useToast();
+    const [debugInfo, setDebugInfo] = useState<any[]>([]);
 
     const {
         upcomingSlots,
-        availableDays,
-        deleteAvailability,
-        isDeleting
+        loadAvailability
     } = useAvailabilityStore();
 
     // Color mode values
     const borderColor = useColorModeValue('gray.200', 'gray.600');
     const timeHeaderBg = useColorModeValue('gray.50', 'gray.700');
     const dayHeaderBg = useColorModeValue('brand.50', 'brand.900');
-    const emptySlotBg = useColorModeValue('white', 'gray.800');
-    const hoverBg = useColorModeValue('gray.50', 'gray.700');
 
-    const handleDeleteSlot = async (slot: AvailabilitySlot) => {
-        if (!slot.id) return;
+    // Force refresh on mount
+    useEffect(() => {
+        console.log('🔄 Desktop calendar mounting, forcing data refresh...');
+        loadAvailability({ forceRefresh: true, includeBookings: true });
+    }, []);
 
-        const success = await deleteAvailability(slot.id);
-        if (success) {
-            toast({
-                title: 'Slot Deleted',
-                description: 'Your availability slot has been removed',
-                status: 'info',
-                duration: 3000,
-                isClosable: true
+    // Debug the slots we receive
+    useEffect(() => {
+        console.log('📊 Desktop calendar received slots:', upcomingSlots);
+        console.log('📊 Booked slots:', upcomingSlots.filter(s => s.isBooked));
+        console.log('📊 Available slots:', upcomingSlots.filter(s => !s.isBooked));
+
+        // Create debug info
+        const debug = upcomingSlots.map(slot => ({
+            id: slot.id,
+            date: slot.availabilityDate,
+            time: slot.startTime,
+            isBooked: slot.isBooked,
+            booking: slot.booking,
+            type: slot.dateType
+        }));
+        setDebugInfo(debug);
+    }, [upcomingSlots]);
+
+    // Generate next 7 days
+    const generateAvailableDays = () => {
+        const days = [];
+        const today = new Date();
+
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+            const dateString = date.toISOString().split('T')[0];
+
+            days.push({
+                date: dateString,
+                dayOfWeek: date.toLocaleDateString('en-US', { weekday: 'short' }),
+                dayNumber: date.getDate(),
+                month: date.toLocaleDateString('en-US', { month: 'short' }),
+                isToday: i === 0
             });
         }
+
+        return days;
     };
 
-    // Create calendar matrix
-    const createCalendarMatrix = (): CalendarSlot[][] => {
-        const matrix: CalendarSlot[][] = [];
+    const days = generateAvailableDays();
 
-        // For each time slot
-        AVAILABILITY_CONSTANTS.TIME_SLOTS.forEach((timeSlot) => {
-            const row: CalendarSlot[] = [];
+    // FIXED: Normalize time format function
+    const normalizeTime = (time: string): string => {
+        // Handle both "09:00:00" and "09:00" formats
+        if (time.includes(':')) {
+            const parts = time.split(':');
+            return `${parts[0]}:${parts[1]}`; // Return HH:MM format
+        }
+        return time;
+    };
 
-            // For each day
-            availableDays.slice(0, 7).forEach((day) => {
-                const existingSlot = upcomingSlots.find(
-                    slot => slot.availabilityDate === day.date && slot.startTime === timeSlot.value
-                );
+    // FIXED: Enhanced slot finder with time normalization
+    const findSlotForCell = (date: string, timeSlot: string) => {
+        console.log(`🔍 Looking for slot: date=${date}, time=${timeSlot}`);
 
-                row.push({
-                    slot: existingSlot,
-                    timeSlot: timeSlot.value,
-                    date: day.date,
-                    isEmpty: !existingSlot
-                });
-            });
+        const normalizedSearchTime = normalizeTime(timeSlot);
 
-            matrix.push(row);
+        const foundSlot = upcomingSlots.find(slot => {
+            const dateMatch = slot.availabilityDate === date;
+            const normalizedSlotTime = normalizeTime(slot.startTime);
+            const timeMatch = normalizedSlotTime === normalizedSearchTime;
+
+            console.log(`  🔎 Checking slot ${slot.id}:`);
+            console.log(`    📅 Slot date: ${slot.availabilityDate} | Search date: ${date} | Match: ${dateMatch}`);
+            console.log(`    ⏰ Slot time: ${slot.startTime} -> ${normalizedSlotTime} | Search time: ${timeSlot} -> ${normalizedSearchTime} | Match: ${timeMatch}`);
+
+            return dateMatch && timeMatch;
         });
 
-        return matrix;
-    };
-
-    const getSlotStyles = (calendarSlot: CalendarSlot) => {
-        if (calendarSlot.isEmpty) {
-            return {
-                bg: emptySlotBg,
-                borderColor: borderColor,
-                _hover: { bg: hoverBg }
-            };
+        if (foundSlot) {
+            console.log(`✅ FOUND SLOT:`, foundSlot);
+        } else {
+            console.log(`❌ NO SLOT FOUND for ${date} ${timeSlot}`);
+            console.log(`   Available slots for ${date}:`, upcomingSlots.filter(s => s.availabilityDate === date));
         }
 
-        const slot = calendarSlot.slot!;
+        return foundSlot;
+    };
+
+    const renderSlotCell = (date: string, timeSlot: string) => {
+        const slot = findSlotForCell(date, timeSlot);
+
+        if (!slot) {
+            return (
+                <Box
+                    key={`${date}-${timeSlot}`}
+                    minH="80px"
+                    border="1px solid"
+                    borderColor={borderColor}
+                    borderRadius="lg"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    bg="white"
+                    _hover={{ bg: 'gray.50' }}
+                >
+                    <Text fontSize="xs" color="gray.400">
+                        Available
+                    </Text>
+                </Box>
+            );
+        }
+
         const isBooked = slot.isBooked && slot.booking;
         const isOnline = slot.dateType === DateType.ONLINE;
 
-        if (isBooked) {
-            return {
-                bg: 'green.50',
-                borderColor: 'green.300',
-                borderWidth: '2px',
-                _hover: {
-                    bg: 'green.100',
-                    transform: 'scale(1.02)'
+        console.log(`🎨 Rendering slot ${slot.id}: isBooked=${isBooked}, isOnline=${isOnline}`);
+
+        return (
+            <Tooltip
+                label={
+                    <VStack spacing={1} textAlign="center">
+                        <Text fontWeight="bold">
+                            {isOnline ? '💻 Online' : '🤝 In-Person'} Slot
+                        </Text>
+                        <Text fontSize="sm">
+                            {normalizeTime(slot.startTime)} - {normalizeTime(slot.endTime)}
+                        </Text>
+                        {isBooked ? (
+                            <Text fontSize="sm" color="green.200">
+                                💕 Booked by {slot.booking!.bookedByUser.firstName}
+                            </Text>
+                        ) : (
+                            <Text fontSize="sm" color="blue.200">
+                                🕐 Available for booking
+                            </Text>
+                        )}
+                    </VStack>
                 }
-            };
-        }
+                placement="top"
+                bg="gray.800"
+                color="white"
+                borderRadius="md"
+                p={2}
+            >
+                <Box
+                    key={`${date}-${timeSlot}`}
+                    minH="80px"
+                    border="2px solid"
+                    borderColor={isBooked ? 'green.400' : (isOnline ? 'blue.400' : 'orange.400')}
+                    borderRadius="lg"
+                    p={3}
+                    bg={isBooked ? 'green.50' : (isOnline ? 'blue.50' : 'orange.50')}
+                    className={isBooked ? "heart-beat" : ""}
+                    position="relative"
+                    cursor="pointer"
+                    _hover={{
+                        transform: 'scale(1.02)',
+                        boxShadow: 'lg',
+                        borderColor: isBooked ? 'green.500' : (isOnline ? 'blue.500' : 'orange.500')
+                    }}
+                    transition="all 0.2s ease"
+                    onClick={() => {
+                        toast({
+                            title: `${isBooked ? '💕 Booked' : '🕐 Available'} Slot`,
+                            description: `${normalizeTime(slot.startTime)} - ${normalizeTime(slot.endTime)} (${isOnline ? 'Online' : 'In-Person'})`,
+                            status: isBooked ? 'success' : 'info',
+                            duration: 3000,
+                            isClosable: true
+                        });
+                    }}
+                >
+                    <VStack spacing={2} h="full" justify="space-between">
+                        {/* Top section - Icon and status */}
+                        <HStack spacing={2} w="full" justify="space-between">
+                            <Icon
+                                as={isBooked ? FaHeart : (isOnline ? FaVideo : FaMapMarkerAlt)}
+                                color={isBooked ? 'green.600' : (isOnline ? 'blue.600' : 'orange.600')}
+                                boxSize={4}
+                            />
+                            {isBooked && (
+                                <Badge colorScheme="green" variant="solid" fontSize="2xs" borderRadius="full">
+                                    💕
+                                </Badge>
+                            )}
+                        </HStack>
 
-        if (isOnline) {
-            return {
-                bg: 'blue.50',
-                borderColor: 'blue.300',
-                borderWidth: '2px',
-                _hover: {
-                    bg: 'blue.100',
-                    transform: 'scale(1.02)'
-                }
-            };
-        }
+                        {/* Middle section - Type */}
+                        <Text fontSize="xs" color="gray.700" textAlign="center" fontWeight="semibold">
+                            {isOnline ? 'Online' : 'In-Person'}
+                        </Text>
 
-        return {
-            bg: 'orange.50',
-            borderColor: 'orange.300',
-            borderWidth: '2px',
-            _hover: {
-                bg: 'orange.100',
-                transform: 'scale(1.02)'
-            }
-        };
-    };
+                        {/* Bottom section - User info if booked or status */}
+                        {isBooked ? (
+                            <VStack spacing={1} w="full">
+                                <Avatar
+                                    size="xs"
+                                    name={`${slot.booking!.bookedByUser.firstName} ${slot.booking!.bookedByUser.lastName}`}
+                                    src={slot.booking!.bookedByUser.profileImage}
+                                />
+                                <Text fontSize="2xs" color="green.700" textAlign="center" noOfLines={1} fontWeight="bold">
+                                    {slot.booking!.bookedByUser.firstName}
+                                </Text>
+                            </VStack>
+                        ) : (
+                            <VStack spacing={1}>
+                                <Text fontSize="2xs" color="gray.600" textAlign="center" fontWeight="medium">
+                                    Available
+                                </Text>
+                                <Text fontSize="2xs" color="gray.500" textAlign="center">
+                                    Click to view
+                                </Text>
+                            </VStack>
+                        )}
 
-    const getSlotIcon = (slot: AvailabilitySlot) => {
-        if (slot.isBooked && slot.booking) {
-            const status = slot.booking.bookingStatus;
-            switch (status) {
-                case BookingStatus.CONFIRMED:
-                    return { icon: FaCheckCircle, color: 'green.600' };
-                case BookingStatus.PENDING:
-                    return { icon: FaUserClock, color: 'yellow.600' };
-                case BookingStatus.CANCELLED:
-                    return { icon: FaExclamationTriangle, color: 'red.500' };
-                default:
-                    return { icon: FaUser, color: 'green.600' };
-            }
-        }
+                        {/* Location indicator */}
+                        {slot.locationPreference && (
+                            <Text fontSize="2xs" color="gray.500" textAlign="center" noOfLines={1}>
+                                📍 {slot.locationPreference}
+                            </Text>
+                        )}
+                    </VStack>
 
-        if (slot.dateType === DateType.ONLINE) {
-            return { icon: FaVideo, color: 'blue.600' };
-        }
-
-        return { icon: FaMapMarkerAlt, color: 'orange.600' };
-    };
-
-    const formatTime = (timeStr: string) => {
-        const time = new Date(`2000-01-01T${timeStr}`);
-        return time.toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true
-        });
+                    {/* Status indicator dot */}
+                    <Box
+                        position="absolute"
+                        top={1}
+                        left={1}
+                        w={3}
+                        h={3}
+                        borderRadius="full"
+                        bg={isBooked ? 'green.500' : (isOnline ? 'blue.500' : 'orange.500')}
+                    />
+                </Box>
+            </Tooltip>
+        );
     };
 
     const formatDate = (dateStr: string) => {
@@ -415,145 +294,20 @@ const AvailabilityDesktopCalendarGrid: React.FC<DesktopCalendarGridProps> = ({
         };
     };
 
-    const renderSlotCell = (calendarSlot: CalendarSlot) => {
-        const cellStyles = getSlotStyles(calendarSlot);
-
-        if (calendarSlot.isEmpty) {
-            return (
-                <Box
-                    key={`${calendarSlot.date}-${calendarSlot.timeSlot}`}
-                    minH="80px"
-                    border="1px solid"
-                    borderRadius="lg"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    cursor="pointer"
-                    transition="all 0.2s ease"
-                    {...cellStyles}
-                >
-                    <Text fontSize="xs" color="gray.400">
-                        Available
-                    </Text>
-                </Box>
-            );
-        }
-
-        const slot = calendarSlot.slot!;
-        const iconInfo = getSlotIcon(slot);
-        const isBooked = slot.isBooked && slot.booking;
-
+    if (upcomingSlots.length === 0) {
         return (
-            <SlotPopover
-                key={`${calendarSlot.date}-${calendarSlot.timeSlot}`}
-                slot={slot}
-                onEdit={onEdit}
-                onDelete={handleDeleteSlot}
-            >
-                <Box
-                    position="relative"
-                    minH="80px"
-                    border="1px solid"
-                    borderRadius="lg"
-                    p={3}
-                    cursor="pointer"
-                    transition="all 0.2s ease"
-                    {...cellStyles}
-                    role="group"
-                >
-                    <VStack spacing={2} h="full" justify="space-between">
-                        {/* Top section - Icon and status */}
-                        <HStack spacing={2} w="full" justify="space-between">
-                            <Icon as={iconInfo.icon} color={iconInfo.color} boxSize={4} />
-                            {isBooked && (
-                                <Badge
-                                    size="xs"
-                                    colorScheme="green"
-                                    variant="solid"
-                                    fontSize="2xs"
-                                    borderRadius="full"
-                                >
-                                    ✓
-                                </Badge>
-                            )}
-                        </HStack>
-
-                        {/* Middle section - Type */}
-                        <Text fontSize="xs" color="gray.600" textAlign="center" fontWeight="medium">
-                            {slot.dateType === DateType.ONLINE ? 'Online' : 'In-person'}
-                        </Text>
-
-                        {/* Bottom section - User info if booked */}
-                        {isBooked ? (
-                            <VStack spacing={1} w="full">
-                                <Avatar
-                                    size="xs"
-                                    name={`${slot.booking!.bookedByUser.firstName} ${slot.booking!.bookedByUser.lastName}`}
-                                    src={slot.booking!.bookedByUser.profileImage}
-                                />
-                                <Text fontSize="2xs" color="green.700" textAlign="center" noOfLines={1} fontWeight="medium">
-                                    {slot.booking!.bookedByUser.firstName}
-                                </Text>
-                            </VStack>
-                        ) : (
-                            <Text fontSize="2xs" color="gray.500" textAlign="center">
-                                Open
-                            </Text>
-                        )}
-
-                        {/* Location indicator */}
-                        {slot.locationPreference && (
-                            <Text fontSize="2xs" color="gray.400" textAlign="center" noOfLines={1}>
-                                📍 {slot.locationPreference}
-                            </Text>
-                        )}
-                    </VStack>
-
-                    {/* Quick action menu - appears on hover */}
-                    <Menu>
-                        <MenuButton
-                            as={IconButton}
-                            icon={<FaEllipsisV />}
-                            variant="ghost"
-                            size="xs"
-                            position="absolute"
-                            top={1}
-                            right={1}
-                            isDisabled={isDeleting}
-                            opacity={0}
-                            _groupHover={{ opacity: 1 }}
-                            _hover={{ opacity: 1 }}
-                            bg="white"
-                            boxShadow="sm"
-                        />
-                        <MenuList fontSize="sm">
-                            <MenuItem icon={<FaEye />} fontSize="sm">
-                                View Details
-                            </MenuItem>
-                            <MenuItem icon={<FaEdit />} fontSize="sm" onClick={() => onEdit(slot)}>
-                                Edit Slot
-                            </MenuItem>
-                            <MenuItem
-                                icon={<FaTrash />}
-                                fontSize="sm"
-                                color="red.500"
-                                onClick={() => handleDeleteSlot(slot)}
-                                _hover={{ bg: 'red.50' }}
-                            >
-                                Delete Slot
-                            </MenuItem>
-                        </MenuList>
-                    </Menu>
-                </Box>
-            </SlotPopover>
+            <Box textAlign="center" py={8}>
+                <VStack spacing={4}>
+                    <Text fontSize="lg" color="gray.600">Loading calendar...</Text>
+                    <Text fontSize="sm" color="gray.500">Getting your availability slots with booking data</Text>
+                </VStack>
+            </Box>
         );
-    };
-
-    const calendarMatrix = createCalendarMatrix();
-    const days = availableDays.slice(0, 7);
+    }
 
     return (
-        <Box overflow="auto" maxW="full">
+        <Box>
+            {/* Calendar Grid */}
             <Card variant="elevated" boxShadow="lg">
                 <CardBody p={0}>
                     <VStack spacing={0} align="stretch">
@@ -584,7 +338,7 @@ const AvailabilityDesktopCalendarGrid: React.FC<DesktopCalendarGridProps> = ({
                                     <HStack spacing={1}>
                                         <Icon as={FaGlobeAmericas} color="gray.500" boxSize={3} />
                                         <Text fontSize="xs" color="gray.500">
-                                            {Intl.DateTimeFormat().resolvedOptions().timeZone.split('/')[1] || 'Local'}
+                                            Local
                                         </Text>
                                     </HStack>
                                 </VStack>
@@ -621,17 +375,17 @@ const AvailabilityDesktopCalendarGrid: React.FC<DesktopCalendarGridProps> = ({
                                             <VStack spacing={1}>
                                                 {day.isToday && (
                                                     <Badge colorScheme="brand" size="sm" variant="solid">
-                                                        Today
+                                                        TODAY
                                                     </Badge>
                                                 )}
                                                 {daySlots.length > 0 && (
                                                     <HStack spacing={1}>
                                                         <Badge colorScheme="blue" size="sm" variant="subtle">
-                                                            {daySlots.length} slot{daySlots.length !== 1 ? 's' : ''}
+                                                            {daySlots.length} SLOTS
                                                         </Badge>
                                                         {bookedSlots > 0 && (
                                                             <Badge colorScheme="green" size="sm" variant="solid">
-                                                                {bookedSlots} <Icon as={FaHeart} boxSize={2} ml={1} />
+                                                                {bookedSlots} 💕
                                                             </Badge>
                                                         )}
                                                     </HStack>
@@ -643,16 +397,16 @@ const AvailabilityDesktopCalendarGrid: React.FC<DesktopCalendarGridProps> = ({
                             })}
                         </Grid>
 
-                        {/* Time rows */}
-                        {calendarMatrix.map((row, timeIndex) => (
+                        {/* Time rows - Show all time slots */}
+                        {AVAILABILITY_CONSTANTS.TIME_SLOTS.map((timeSlot, timeIndex) => (
                             <Grid
-                                key={AVAILABILITY_CONSTANTS.TIME_SLOTS[timeIndex].value}
+                                key={timeSlot.value}
                                 templateColumns={`120px repeat(${days.length}, 1fr)`}
                                 gap={0}
                                 borderBottom="1px solid"
                                 borderColor={borderColor}
-                                _last={{ borderBottom: 'none' }}
                                 minH="80px"
+                                _last={{ borderBottom: 'none' }}
                             >
                                 {/* Time label */}
                                 <Box
@@ -666,7 +420,7 @@ const AvailabilityDesktopCalendarGrid: React.FC<DesktopCalendarGridProps> = ({
                                 >
                                     <VStack spacing={1}>
                                         <Text fontSize="md" fontWeight="bold" color="gray.700">
-                                            {AVAILABILITY_CONSTANTS.TIME_SLOTS[timeIndex].label}
+                                            {timeSlot.label}
                                         </Text>
                                         <Text fontSize="xs" color="gray.500">
                                             1 hour
@@ -675,7 +429,7 @@ const AvailabilityDesktopCalendarGrid: React.FC<DesktopCalendarGridProps> = ({
                                 </Box>
 
                                 {/* Slot cells */}
-                                {row.map((calendarSlot, dayIndex) => (
+                                {days.map((day, dayIndex) => (
                                     <Box
                                         key={`${dayIndex}-${timeIndex}`}
                                         borderRight="1px solid"
@@ -683,7 +437,7 @@ const AvailabilityDesktopCalendarGrid: React.FC<DesktopCalendarGridProps> = ({
                                         p={2}
                                         _last={{ borderRight: 'none' }}
                                     >
-                                        {renderSlotCell(calendarSlot)}
+                                        {renderSlotCell(day.date, timeSlot.value)}
                                     </Box>
                                 ))}
                             </Grid>
