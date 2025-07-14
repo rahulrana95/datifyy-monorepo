@@ -40,6 +40,7 @@ export class DateCurationMapper {
       meetingLink: date.meetingLink || undefined,
       meetingId: date.meetingId || undefined,
       meetingPassword: date.meetingPassword || undefined,
+      // @ts-ignore
       status: date.status as CuratedDateStatus,
       dateSeriesId: date.dateSeriesId || undefined,
       dateNumberInSeries: date.dateNumberInSeries ?? 0,

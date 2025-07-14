@@ -23,6 +23,7 @@ import {
 import { DateCurationRepository } from '../repositories/DateCurationRepository';
 import { DateCurationMapper } from '../mappers/DateCurationMapper';
 import { DateCurationService, IDateCurationService } from '../services/DateCurationService';
+import { GetUserDatesRequest } from '@datifyy/shared-types';
 
 export class DateCurationController {
   private dateCurationService: IDateCurationService;
@@ -85,7 +86,7 @@ export class DateCurationController {
       const userId = req.user!.id;
       
       // ✅ Query params are already validated and typed as GetUserDatesQueryDto
-      const filters: GetUserDatesQueryDto = {
+      const filters: GetUserDatesRequest = {
         page: parseInt(req.query.page as string) || 1,
         limit: parseInt(req.query.limit as string) || 10,
         status: req.query.status ? (req.query.status as string).split(',') as any : undefined,
