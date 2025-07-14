@@ -385,7 +385,7 @@ export class AdminAuthService implements IAdminAuthService {
       const payload = jwt.verify(token, this.jwtSecret) as AdminTokenPayload;
       
       // Get admin from database
-      const admin = await this.adminRepository.findById(parseInt(payload.sub));
+      const admin = await this.adminRepository.findById(parseInt(payload.id));
       
       if (!admin || !admin.isactive || admin.accountStatus !== AdminAccountStatus.ACTIVE) {
         return {
@@ -395,13 +395,13 @@ export class AdminAuthService implements IAdminAuthService {
       }
 
       // Check session validity
-      const sessionExists = await this.redisService.exists(`session:${payload.sessionId}`);
-      if (!sessionExists) {
-        return {
-          isValid: false,
-          invalidReason: 'Session has expired'
-        };
-      }
+      // const sessionExists = await this.redisService.exists(`session:${payload.sessionId}`);
+      // if (!sessionExists) {
+      //   return {
+      //     isValid: false,
+      //     invalidReason: 'Session has expired'
+      //   };
+      // }
 
       // Update admin activity
       await this.updateAdminActivity(admin.id);

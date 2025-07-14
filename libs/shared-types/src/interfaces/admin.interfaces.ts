@@ -366,7 +366,7 @@ export interface AdminUpdateRequest {
  * Claims included in admin access tokens
  */
 export interface AdminTokenPayload {
-  readonly sub: string; // Admin ID
+  readonly id: string; // Admin ID
   readonly email: string;
   readonly permissionLevel: AdminPermissionLevel;
   readonly permissions: AdminPermission[];

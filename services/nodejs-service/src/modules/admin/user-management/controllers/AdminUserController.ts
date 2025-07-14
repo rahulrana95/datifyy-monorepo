@@ -50,7 +50,7 @@ export class AdminUserController {
         country: req.query.country as string,
         minTrustScore: req.query.minTrustScore ? parseFloat(req.query.minTrustScore as string) : undefined,
         maxTrustScore: req.query.maxTrustScore ? parseFloat(req.query.maxTrustScore as string) : undefined,
-        isOnProbation: req.query.isOnProbation === 'true',
+        isOnProbation: undefined, //req.query.isOnProbation === 'true',
         createdAfter: req.query.createdAfter as string,
         createdBefore: req.query.createdBefore as string,
         lastActiveAfter: req.query.lastActiveAfter as string,

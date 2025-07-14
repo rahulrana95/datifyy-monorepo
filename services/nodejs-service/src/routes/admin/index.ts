@@ -13,6 +13,7 @@ import { authenticateToken, checkIsAdmin } from '../../middlewares/authenticatio
 
 // Import all admin route modules
 import { createAdminDashboardRoutes } from './adminDashboardRoutes';
+import { createAdminUserManagementRoutes } from '../../modules/admin/user-management/routes';
 // import { createAdminNotificationsRoutes } from './adminNotificationsRoutes';
 // import { createAdminDateCurationRoutes } from './dateCurationRoutes';
 // import { createAdminRevenueAnalyticsRoutes } from './revenueAnalyticsRoutes';
@@ -89,6 +90,10 @@ export function createAdminRoutes(dataSource: DataSource): Router {
   // Apply global admin middleware
   router.use(authenticateToken); // Ensure user is authenticated
   router.use(checkIsAdmin);      // Ensure user has admin privileges
+
+    // User management routes (auth required - handled by individual route modules)
+  const userManagementRoutes = createAdminUserManagementRoutes(dataSource);
+  router.use("/user-management", userManagementRoutes);
 
   // =============================================================================
   // ADMIN ROUTE INFORMATION & HEALTH

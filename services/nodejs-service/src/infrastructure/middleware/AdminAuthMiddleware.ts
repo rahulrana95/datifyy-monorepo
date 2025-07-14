@@ -283,7 +283,7 @@ function extractTokenFromRequest(req: Request): string | null {
   }
 
   // Check custom header
-  const customHeader = req.headers['x-admin-token'] as string;
+  const customHeader = req.headers['authorization'] as string;
   if (customHeader) {
     return customHeader;
   }
