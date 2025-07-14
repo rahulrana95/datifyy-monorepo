@@ -44,7 +44,6 @@ export {
   
   // Keep enums without conflicts
   DateMode,
-  CuratedDateStatus,
   RelationshipStage,
   CancellationCategory,
   CurationWorkflowStage,

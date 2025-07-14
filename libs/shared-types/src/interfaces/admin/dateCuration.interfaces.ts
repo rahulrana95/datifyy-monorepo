@@ -6,6 +6,8 @@
  * @since 1.0.0
  */
 
+import { CuratedDateStatus } from "../dateCuration.interfaces";
+
 // =============================================================================
 // CORE DATE CURATION ENUMS
 // =============================================================================
@@ -16,18 +18,6 @@
 export enum DateMode {
   ONLINE = 'online',
   OFFLINE = 'offline',
-}
-
-/**
- * Curated date status
- */
-export enum CuratedDateStatus {
-  PENDING = 'pending',
-  CONFIRMED = 'confirmed',
-  CANCELLED = 'cancelled',
-  COMPLETED = 'completed',
-  NO_SHOW = 'no_show',
-  IN_PROGRESS = 'in_progress',
 }
 
 /**

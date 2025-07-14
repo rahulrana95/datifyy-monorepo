@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import "./App.css";
 import { Helmet } from "react-helmet-async";
-import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useNavigate, Navigate } from "react-router-dom";
 // import Home from "./home/home";
 // import LiveEvent from "./events/liveEvent/LiveEvent";
 // import EventPage from "./admin/events/eventPage";
@@ -32,6 +32,8 @@ import { AdminLoginPage } from './mvp/admin-v2';
 import AdminLayout from "./mvp/admin-v2/components/AdminLayout";
 import { AvailabilityContainer } from './mvp/availability';
 import { DateCurationContainer } from './mvp/date-curation';
+import { DashboardContainer } from "./mvp/admin-v2/dashboard";
+
 
 LogRocket.init('kcpnhr/datifyy-fronend');
 
@@ -142,6 +144,11 @@ function App() {
 
                   </Route>
                   <Route path="/admin/login" element={<AdminLoginPage />} />
+                  <Route path="/admin" element={<AdminLayout />}>
+                    <Route path="dashboard" element={<DashboardContainer />} />
+                    {/* Future admin routes will go here */}
+                    <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                  </Route>
 
                   {/* Protect Profile Route */}
 
