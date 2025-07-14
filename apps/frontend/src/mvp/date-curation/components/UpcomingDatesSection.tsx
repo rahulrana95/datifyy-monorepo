@@ -27,7 +27,7 @@ import {
     FaCheckCircle,
     FaClock
 } from 'react-icons/fa';
-import { CuratedDateCard, DateAction } from '../types';
+import { CancellationCategory, CuratedDateCard, DateAction } from '../types';
 
 interface UpcomingDatesSectionProps {
     dates: CuratedDateCard[];
@@ -301,7 +301,7 @@ const UpcomingDatesSection: React.FC<UpcomingDatesSectionProps> = ({
                                                     onClick={() => handleDateAction({
                                                         type: 'cancel',
                                                         dateId: date.id,
-                                                        category: 'other' // Will be handled by modal later
+                                                        category: CancellationCategory.OTHER // Will be handled by modal later
                                                     })}
                                                     flex={1}
                                                     maxW="200px"

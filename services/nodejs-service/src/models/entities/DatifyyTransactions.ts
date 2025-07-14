@@ -161,9 +161,38 @@ export class DatifyyTransactions {
   @Column("jsonb", { name: "audit_details", nullable: true })
   auditDetails: object | null;
 
+  @Column("character varying", {
+    name: "revenue_category",
+    nullable: true,
+    length: 50,
+  })
+  revenueCategory: string | null;
+
+  @Column("timestamp without time zone", {
+    name: "admin_reviewed_at",
+    nullable: true,
+  })
+  adminReviewedAt: Date | null;
+
+  @Column("character varying", {
+    name: "dispute_status",
+    nullable: true,
+    length: 20,
+    default: () => "'none'",
+  })
+  disputeStatus: string | null;
+
   @ManyToOne(
     () => DatifyyUsersLogin,
     (datifyyUsersLogin) => datifyyUsersLogin.datifyyTransactions,
+    { onDelete: "SET NULL" }
+  )
+  @JoinColumn([{ name: "admin_reviewed_by", referencedColumnName: "id" }])
+  adminReviewedBy: DatifyyUsersLogin;
+
+  @ManyToOne(
+    () => DatifyyUsersLogin,
+    (datifyyUsersLogin) => datifyyUsersLogin.datifyyTransactions2,
     { onDelete: "SET NULL" }
   )
   @JoinColumn([{ name: "authorized_by", referencedColumnName: "id" }])
@@ -171,7 +200,7 @@ export class DatifyyTransactions {
 
   @ManyToOne(
     () => DatifyyUsersLogin,
-    (datifyyUsersLogin) => datifyyUsersLogin.datifyyTransactions2,
+    (datifyyUsersLogin) => datifyyUsersLogin.datifyyTransactions3,
     { onDelete: "SET NULL" }
   )
   @JoinColumn([{ name: "initiated_by", referencedColumnName: "id" }])
@@ -179,7 +208,7 @@ export class DatifyyTransactions {
 
   @ManyToOne(
     () => DatifyyUsersLogin,
-    (datifyyUsersLogin) => datifyyUsersLogin.datifyyTransactions3,
+    (datifyyUsersLogin) => datifyyUsersLogin.datifyyTransactions4,
     { onDelete: "CASCADE" }
   )
   @JoinColumn([{ name: "user_id", referencedColumnName: "id" }])
@@ -187,7 +216,7 @@ export class DatifyyTransactions {
 
   @ManyToOne(
     () => DatifyyUsersLogin,
-    (datifyyUsersLogin) => datifyyUsersLogin.datifyyTransactions4,
+    (datifyyUsersLogin) => datifyyUsersLogin.datifyyTransactions5,
     { onDelete: "CASCADE" }
   )
   @JoinColumn([{ name: "user_id", referencedColumnName: "id" }])

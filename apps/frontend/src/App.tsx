@@ -31,6 +31,7 @@ import { PartnerPreferencesContainer } from "./mvp/partner-preferences";
 import { AdminLoginPage } from './mvp/admin-v2';
 import AdminLayout from "./mvp/admin-v2/components/AdminLayout";
 import { AvailabilityContainer } from './mvp/availability';
+import { DateCurationContainer } from './mvp/date-curation';
 
 LogRocket.init('kcpnhr/datifyy-fronend');
 
@@ -135,7 +136,7 @@ function App() {
                     <Route path="contact-us" element={<ContactUs />} />
                     <Route path="privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/availability" element={<AvailabilityContainer />} />
-
+                    <Route path="/dates" element={<DateCurationContainer />} />
 
 
 

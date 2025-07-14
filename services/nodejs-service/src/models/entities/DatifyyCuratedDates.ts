@@ -12,8 +12,8 @@ import { DatifyyUsersLogin } from "./DatifyyUsersLogin";
 import { DatifyyCurationWorkflow } from "./DatifyyCurationWorkflow";
 
 @Index("idx_curated_dates_series", ["dateSeriesId"], {})
-@Index("idx_curated_dates_datetime_status", ["dateTime", "status"], {})
 @Index("idx_curated_dates_upcoming", ["dateTime"], {})
+@Index("idx_curated_dates_datetime_status", ["dateTime", "status"], {})
 @Index("datifyy_curated_dates_pkey", ["id"], { unique: true })
 @Index("idx_curated_dates_user2_status", ["status", "user2Id"], {})
 @Index("idx_curated_dates_user1_status", ["status", "user1Id"], {})
@@ -210,6 +210,33 @@ export class DatifyyCuratedDates {
     default: () => "CURRENT_TIMESTAMP",
   })
   updatedAt: Date | null;
+
+  @Column("integer", {
+    name: "admin_priority",
+    nullable: true,
+    default: () => "2",
+  })
+  adminPriority: number | null;
+
+  @Column("text", { name: "internal_notes", nullable: true })
+  internalNotes: string | null;
+
+  @Column("numeric", {
+    name: "success_probability",
+    nullable: true,
+    precision: 3,
+    scale: 2,
+  })
+  successProbability: string | null;
+
+  @Column("numeric", {
+    name: "revenue_impact",
+    nullable: true,
+    precision: 10,
+    scale: 2,
+    default: () => "0",
+  })
+  revenueImpact: string | null;
 
   @OneToMany(
     () => DatifyyCuratedDateFeedback,

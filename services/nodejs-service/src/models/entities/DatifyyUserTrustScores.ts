@@ -3,6 +3,7 @@ import {
   Entity,
   Index,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
@@ -183,9 +184,26 @@ export class DatifyyUserTrustScores {
   })
   calculationReason: string | null;
 
-  @OneToOne(
+  @Column("text", { name: "admin_override_reason", nullable: true })
+  adminOverrideReason: string | null;
+
+  @Column("timestamp without time zone", {
+    name: "manual_adjustment_at",
+    nullable: true,
+  })
+  manualAdjustmentAt: Date | null;
+
+  @ManyToOne(
     () => DatifyyUsersLogin,
     (datifyyUsersLogin) => datifyyUsersLogin.datifyyUserTrustScores,
+    { onDelete: "SET NULL" }
+  )
+  @JoinColumn([{ name: "manual_adjustment_by", referencedColumnName: "id" }])
+  manualAdjustmentBy: DatifyyUsersLogin;
+
+  @OneToOne(
+    () => DatifyyUsersLogin,
+    (datifyyUsersLogin) => datifyyUsersLogin.datifyyUserTrustScores2,
     { onDelete: "CASCADE" }
   )
   @JoinColumn([{ name: "user_id", referencedColumnName: "id" }])

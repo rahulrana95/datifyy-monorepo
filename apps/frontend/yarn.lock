@@ -2044,15 +2044,15 @@ __metadata:
 
 "@datifyy/shared-types@file:../../libs/shared-types::locator=frontend%40workspace%3A.":
   version: 1.0.0
-  resolution: "@datifyy/shared-types@file:../../libs/shared-types#../../libs/shared-types::hash=ad85bd&locator=frontend%40workspace%3A."
-  checksum: 10c0/26b1104eab139259021d08f9c786b490795cc5f9989047d10e20e32f19ff091e0f1b0e6d7a3b008a24b6607c343873825f07acdc17836350fe9a408fe38c92d4
+  resolution: "@datifyy/shared-types@file:../../libs/shared-types#../../libs/shared-types::hash=b198fb&locator=frontend%40workspace%3A."
+  checksum: 10c0/a73b8d78127b10a45d9f089f8bf0bcb476847cb5f05f339ce7ce77ccc5a31304ed9dec4e40c6d2e2ab53cee9d3b5da7bd857a545d3c8fd49f2d092f5dc6ead68
   languageName: node
   linkType: hard
 
 "@datifyy/shared-types@file:../shared-types::locator=%40datifyy%2Fshared-utils%40file%3A..%2F..%2Flibs%2Fshared-utils%23..%2F..%2Flibs%2Fshared-utils%3A%3Ahash%3D5b09e2%26locator%3Dfrontend%2540workspace%253A.":
   version: 1.0.0
-  resolution: "@datifyy/shared-types@file:../shared-types#../shared-types::hash=ad85bd&locator=%40datifyy%2Fshared-utils%40file%3A..%2F..%2Flibs%2Fshared-utils%23..%2F..%2Flibs%2Fshared-utils%3A%3Ahash%3D5b09e2%26locator%3Dfrontend%2540workspace%253A."
-  checksum: 10c0/26b1104eab139259021d08f9c786b490795cc5f9989047d10e20e32f19ff091e0f1b0e6d7a3b008a24b6607c343873825f07acdc17836350fe9a408fe38c92d4
+  resolution: "@datifyy/shared-types@file:../shared-types#../shared-types::hash=b198fb&locator=%40datifyy%2Fshared-utils%40file%3A..%2F..%2Flibs%2Fshared-utils%23..%2F..%2Flibs%2Fshared-utils%3A%3Ahash%3D5b09e2%26locator%3Dfrontend%2540workspace%253A."
+  checksum: 10c0/a73b8d78127b10a45d9f089f8bf0bcb476847cb5f05f339ce7ce77ccc5a31304ed9dec4e40c6d2e2ab53cee9d3b5da7bd857a545d3c8fd49f2d092f5dc6ead68
   languageName: node
   linkType: hard
 

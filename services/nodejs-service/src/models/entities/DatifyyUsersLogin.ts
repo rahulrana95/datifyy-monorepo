@@ -6,12 +6,16 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import { DatifyyAdminActivityLogs } from "./DatifyyAdminActivityLogs";
+import { DatifyyAdminNotifications } from "./DatifyyAdminNotifications";
+import { DatifyyAdminSessions } from "./DatifyyAdminSessions";
 import { DatifyyAvailabilityBookings } from "./DatifyyAvailabilityBookings";
 import { DatifyyCuratedDateFeedback } from "./DatifyyCuratedDateFeedback";
 import { DatifyyCuratedDates } from "./DatifyyCuratedDates";
 import { DatifyyCurationWorkflow } from "./DatifyyCurationWorkflow";
 import { DatifyyDateSeries } from "./DatifyyDateSeries";
 import { DatifyyEvents } from "./DatifyyEvents";
+import { DatifyyMatchSuggestions } from "./DatifyyMatchSuggestions";
 import { DatifyyTicketPurchases } from "./DatifyyTicketPurchases";
 import { DatifyyTransactions } from "./DatifyyTransactions";
 import { DatifyyUserAvailability } from "./DatifyyUserAvailability";
@@ -136,6 +140,24 @@ export class DatifyyUsersLogin {
   updatedAt: Date;
 
   @OneToMany(
+    () => DatifyyAdminActivityLogs,
+    (datifyyAdminActivityLogs) => datifyyAdminActivityLogs.adminUser
+  )
+  datifyyAdminActivityLogs: DatifyyAdminActivityLogs[];
+
+  @OneToMany(
+    () => DatifyyAdminNotifications,
+    (datifyyAdminNotifications) => datifyyAdminNotifications.recipientAdmin
+  )
+  datifyyAdminNotifications: DatifyyAdminNotifications[];
+
+  @OneToMany(
+    () => DatifyyAdminSessions,
+    (datifyyAdminSessions) => datifyyAdminSessions.adminUser
+  )
+  datifyyAdminSessions: DatifyyAdminSessions[];
+
+  @OneToMany(
     () => DatifyyAvailabilityBookings,
     (datifyyAvailabilityBookings) => datifyyAvailabilityBookings.bookedByUser
   )
@@ -226,6 +248,18 @@ export class DatifyyUsersLogin {
   datifyyEvents2: DatifyyEvents[];
 
   @OneToMany(
+    () => DatifyyMatchSuggestions,
+    (datifyyMatchSuggestions) => datifyyMatchSuggestions.requestingAdmin
+  )
+  datifyyMatchSuggestions: DatifyyMatchSuggestions[];
+
+  @OneToMany(
+    () => DatifyyMatchSuggestions,
+    (datifyyMatchSuggestions) => datifyyMatchSuggestions.targetUser
+  )
+  datifyyMatchSuggestions2: DatifyyMatchSuggestions[];
+
+  @OneToMany(
     () => DatifyyTicketPurchases,
     (datifyyTicketPurchases) => datifyyTicketPurchases.user
   )
@@ -233,27 +267,33 @@ export class DatifyyUsersLogin {
 
   @OneToMany(
     () => DatifyyTransactions,
-    (datifyyTransactions) => datifyyTransactions.authorizedBy
+    (datifyyTransactions) => datifyyTransactions.adminReviewedBy
   )
   datifyyTransactions: DatifyyTransactions[];
 
   @OneToMany(
     () => DatifyyTransactions,
-    (datifyyTransactions) => datifyyTransactions.initiatedBy
+    (datifyyTransactions) => datifyyTransactions.authorizedBy
   )
   datifyyTransactions2: DatifyyTransactions[];
 
   @OneToMany(
     () => DatifyyTransactions,
-    (datifyyTransactions) => datifyyTransactions.user
+    (datifyyTransactions) => datifyyTransactions.initiatedBy
   )
   datifyyTransactions3: DatifyyTransactions[];
 
   @OneToMany(
     () => DatifyyTransactions,
-    (datifyyTransactions) => datifyyTransactions.user_2
+    (datifyyTransactions) => datifyyTransactions.user
   )
   datifyyTransactions4: DatifyyTransactions[];
+
+  @OneToMany(
+    () => DatifyyTransactions,
+    (datifyyTransactions) => datifyyTransactions.user_2
+  )
+  datifyyTransactions5: DatifyyTransactions[];
 
   @OneToMany(
     () => DatifyyUserAvailability,
@@ -286,11 +326,17 @@ export class DatifyyUsersLogin {
   )
   datifyyUserPartnerPreferences: DatifyyUserPartnerPreferences[];
 
+  @OneToMany(
+    () => DatifyyUserTrustScores,
+    (datifyyUserTrustScores) => datifyyUserTrustScores.manualAdjustmentBy
+  )
+  datifyyUserTrustScores: DatifyyUserTrustScores[];
+
   @OneToOne(
     () => DatifyyUserTrustScores,
     (datifyyUserTrustScores) => datifyyUserTrustScores.user
   )
-  datifyyUserTrustScores: DatifyyUserTrustScores;
+  datifyyUserTrustScores2: DatifyyUserTrustScores;
 
   @OneToMany(
     () => DatifyyUsersInformation,
