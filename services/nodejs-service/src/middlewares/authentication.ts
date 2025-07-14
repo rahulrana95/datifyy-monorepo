@@ -62,7 +62,7 @@ export const authenticateToken = async (req: AuthenticatedRequest, res: Response
 
      const userProfile = await userProfilesRepository.findOne({
       where: { 
-        userLoginId: user.id,  // Use the foreign key directly
+        userLogin: user,  // Use the foreign key directly
         isDeleted: false 
       },
       relations: ["userLogin"],
