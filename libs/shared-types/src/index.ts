@@ -1,73 +1,48 @@
-// libs/shared-types/src/index.ts - Updated with User Availability Types
+// libs/shared-types/src/index.ts - FIXED VERSION
 
 // Export all enums
 export * from './enums';
 
-
-// Export all interfaces
-export * from './interfaces';
-
-// Export storage interfaces
+// Export core interfaces (keeping existing structure)
 export * from './interfaces/storage.interfaces';
-
-// Export admin interfaces
 export * from './interfaces/admin.interfaces'; 
 export * from './interfaces/api.interfaces';
 export * from './interfaces/user.interfaces';
 export * from './interfaces/dating.interfaces';
-
-// Export user availability interfaces (NEW)
 export * from './interfaces/userAvailability.interfaces';
 
-// NEW: Date Curation exports
+// 🎯 NEW: Export admin dashboard interfaces (but avoid conflicts)
+export * from './interfaces/admin/adminDashboard.interfaces';
+export * from './interfaces/admin/revenueAnalytics.interfaces';
+export * from './interfaces/admin/adminNotifications.interfaces';
+export * from './interfaces/admin/matchSuggestions.interfaces';
+
+// 🎯 CONFLICTING: Handle date curation interfaces carefully
+// Export existing date curation interfaces (original)
 export * from './interfaces/dateCuration.interfaces';
 
-// Re-export commonly used types for convenience
-export type {
-  // Date Curation Core Types
-  CuratedDate,
-  DateFeedback,
-  UserTrustScore,
-  DateSeries,
-  PotentialMatchResponse,
-  CuratedDateResponse,
-  
-  // Date Curation Requests
-  CreateCuratedDateRequest,
-  UpdateCuratedDateRequest,
-  ConfirmDateRequest,
-  CancelDateRequest,
-  SubmitDateFeedbackRequest,
-  GetUserDatesRequest,
-  AdminGetDatesRequest,
-  SearchPotentialMatchesRequest,
-  DateCurationAnalyticsRequest,
-  
-  // Date Curation Responses
-  UserDatesResponse,
-  SearchPotentialMatchesResponse,
-  DateFeedbackResponse,
-  UserTrustScoreResponse,
-  DateSeriesResponse,
-  DateCurationAnalyticsResponse,
-  CreateCuratedDateResponse,
-  UpdateCuratedDateResponse,
-  GetCuratedDateResponse,
-  ConfirmDateResponse,
-  CancelDateResponse,
-  SubmitDateFeedbackResponse,
-  GetUserTrustScoreResponse,
-  GetDateSeriesResponse,
-  
-  // Utility Types
-  DateConflict,
-  CompatibilityDetails,
-  DateCreationResult,
-  BulkDateOperationResult
-} from './interfaces/dateCuration.interfaces';
-
-// Export enums for easy access
+// Export admin date curation with specific aliases to avoid conflicts
 export {
+  // Admin-specific date curation interfaces (renamed to avoid conflicts)
+  CuratedDate as AdminCuratedDate,
+  DateFeedback as AdminDateFeedback,
+  UserTrustScore as AdminUserTrustScore,
+  DateSeries as AdminDateSeries,
+  CurationWorkflow as AdminCurationWorkflow,
+  
+  // Admin-specific requests (renamed)
+  CreateCuratedDateRequest as AdminCreateCuratedDateRequest,
+  UpdateCuratedDateRequest as AdminUpdateCuratedDateRequest,
+  AdminGetDatesRequest as AdminGetAllDatesRequest,
+  SearchPotentialMatchesRequest as AdminSearchMatchesRequest,
+  
+  // Admin-specific responses (renamed)
+  CuratedDateResponse as AdminCuratedDateResponse,
+  UserDatesResponse as AdminUserDatesResponse,
+  SearchPotentialMatchesResponse as AdminMatchSearchResponse,
+  DateCurationAnalyticsResponse as AdminDateAnalyticsResponse,
+  
+  // Keep enums without conflicts
   DateMode,
   CuratedDateStatus,
   RelationshipStage,
@@ -75,19 +50,68 @@ export {
   CurationWorkflowStage,
   WorkflowStageStatus,
   
-  // Helper functions
+  // Helper functions with prefixes
   getDateModeValues,
   getCuratedDateStatusValues,
   getRelationshipStageValues,
   getCancellationCategoryValues,
   getCurationWorkflowStageValues,
   getWorkflowStageStatusValues,
+  DateCurationValidationRules as AdminDateCurationValidationRules,
   
-  // Validation rules
-  DateCurationValidationRules
-} from './interfaces/dateCuration.interfaces';  
+} from './interfaces/admin/dateCuration.interfaces';
 
-// Explicit exports to ensure they're available
+// 🔧 FIXED: Export enums from correct files
+export {
+  // Revenue enums - from revenueAnalytics.interfaces
+  RevenueTimePeriod,
+  RevenueCategory,
+  TransactionStatus,
+  PaymentMethod,
+  TrendDirection,
+} from './interfaces/admin/revenueAnalytics.interfaces';
+
+export {
+  // Notification enums - from adminNotifications.interfaces  
+  NotificationChannel,
+  NotificationTriggerEvent,
+  NotificationPriority,
+  NotificationStatus,
+  NotificationFrequency,
+} from './interfaces/admin/adminNotifications.interfaces';
+
+export {
+  // Match suggestion enums - from matchSuggestions.interfaces
+  MatchAlgorithm,
+  CompatibilityFactor,
+  MatchConfidenceLevel,
+  DateSuccessPrediction,
+  MatchSuggestionStatus,
+} from './interfaces/admin/matchSuggestions.interfaces';
+
+// Export constants from correct files
+export {
+  DASHBOARD_REFRESH_INTERVALS,
+  ALERT_SEVERITY_LEVELS,
+  DASHBOARD_METRIC_TYPES,
+} from './interfaces/admin/adminDashboard.interfaces';
+
+export {
+  NOTIFICATION_CONSTANTS,
+  NotificationValidationRules,
+} from './interfaces/admin/adminNotifications.interfaces';
+
+export {
+  MATCH_SUGGESTION_CONSTANTS,
+  MatchSuggestionValidationRules,
+} from './interfaces/admin/matchSuggestions.interfaces';
+
+export {
+  REVENUE_ANALYTICS_CONSTANTS,
+  RevenueValidationRules,
+} from './interfaces/admin/revenueAnalytics.interfaces';
+
+// Explicit dating interface exports (keeping existing)
 export {
   AuthView,
   type UserData,
@@ -115,42 +139,7 @@ export {
   type DistanceInfo,
 } from './interfaces/dating.interfaces';
 
-export {
-  type ApiResponse,
-  type PaginationRequest,
-  type PaginationResponse,
-  type ServiceResponse,
-  type LoginRequest,
-  type LoginResponse,
-  type SignupRequest,
-  type SignupResponse,
-  type UserProfileResponse,
-  type UpdateProfileRequest,
-  type PartnerPreferencesResponse,
-  type UpdatePartnerPreferencesRequest,
-  type ErrorResponse,
-} from './interfaces/api.interfaces';
-
-// Explicit storage exports
-export {
-  type StorageUploadOptions,
-  type StorageUploadResult,
-  type StorageListOptions,
-  type StorageListResult,
-  type StorageFileInfo,
-  type StorageHealthCheck,
-  type StorageConfig,
-  type ImageProcessingOptions,
-  type UploadProgress,
-  type FileValidationResult,
-  type IClientStorageProvider,
-  StorageError,
-  StorageQuotaExceededError,
-  StorageFileTooLargeError,
-  StorageInvalidFileTypeError
-} from './interfaces/storage.interfaces';
-
-// Explicit admin exports
+// Admin permission exports
 export {
   AdminPermissionLevel,
   AdminPermission,
@@ -163,9 +152,8 @@ export {
   AdminRiskLevel
 } from './enums/admin.enum';
 
-// Explicit user availability exports (NEW)
+// User availability exports
 export {
-  // Enums
   DateType,
   AvailabilityStatus,
   RecurrenceType,
@@ -173,66 +161,45 @@ export {
   BookingStatus,
   SelectedActivity,
   
-  // Type helpers
-  type DateTypeValue,
-  type AvailabilityStatusValue,
-  type RecurrenceTypeValue,
-  type CancellationPolicyValue,
-  type BookingStatusValue,
-  type SelectedActivityValue,
-  
-  // Helper functions
-  getDateTypeValues,
-  getAvailabilityStatusValues,
-  getRecurrenceTypeValues,
-  getCancellationPolicyValues,
-  getBookingStatusValues,
-  getSelectedActivityValues,
-  
-  // Base interfaces
   type AvailabilitySlot,
   type AvailabilityBooking,
   type UserAvailabilityPreferences,
-  
-  // Request DTOs
   type CreateAvailabilityRequest,
   type UpdateAvailabilityRequest,
-  type BulkCreateAvailabilityRequest,
   type GetAvailabilityRequest,
   type SearchAvailableUsersRequest,
-  type BookAvailabilityRequest,
-  type UpdateBookingRequest,
-  type CancelAvailabilityRequest,
-  type UpdateAvailabilityPreferencesRequest,
-  type GetAvailabilityAnalyticsRequest,
-  
-  // Response DTOs
   type AvailabilityResponse,
   type AvailabilityListResponse,
-  type BulkCreateAvailabilityResponse,
-  type AvailableUserResponse,
-  type SearchAvailableUsersResponse,
-  type BookingResponse,
-  type BookingsListResponse,
-  type AvailabilityPreferencesResponse,
-  type AvailabilityAnalyticsResponse,
-  type CalendarViewResponse,
-  type TimeSuggestionsResponse,
   
-  // API endpoint responses
-  type CreateAvailabilityResponse,
-  type UpdateAvailabilityResponse,
-  type GetAvailabilityResponse,
-  type DeleteAvailabilityResponse,
-  type BookAvailabilityResponse,
-  type UpdateBookingResponse,
-  type CancelBookingResponse,
-  
-  // Utility types
-  type AvailabilityConflict,
-  type SlotCreationResult,
-  type RecurringGenerationOptions,
-  
-  // Validation rules
   AvailabilityValidationRules
 } from './interfaces/userAvailability.interfaces';
+
+// 🔧 FIXED: Helper function exports from correct files
+export {
+  formatCurrency,
+  calculatePercentageChange,
+  getRevenueCategoryValues,
+  getTransactionStatusValues,
+  getPaymentMethodValues,
+  getRevenueTimePeriodValues,
+} from './interfaces/admin/revenueAnalytics.interfaces';
+
+export {
+  formatNotificationMessage,
+  getNotificationTriggerEventValues,
+  getNotificationChannelValues,
+  getNotificationPriorityValues,
+  getNotificationStatusValues,
+} from './interfaces/admin/adminNotifications.interfaces';
+
+export {
+  getMatchAlgorithmValues,
+  getCompatibilityFactorValues,
+  calculateOverallCompatibilityScore,
+  determineMatchConfidenceLevel,
+  predictDateSuccess,
+} from './interfaces/admin/matchSuggestions.interfaces';
+
+// 🔧 REMOVED THE PROBLEMATIC export type BLOCK
+// The `export *` statements above already handle all type exports
+// Individual type exports are handled within the specific export blocks above
