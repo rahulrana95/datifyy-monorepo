@@ -15,7 +15,7 @@ import {
     HStack,
     Icon,
 } from '@chakra-ui/react';
-import { FaRefresh } from 'react-icons/fa';
+import { FaSyncAlt } from 'react-icons/fa';
 import { useAuthStore } from '../login-signup';
 import StatusWrapper from '../common/StatusWrapper/StatusWrapper';
 import UpcomingDatesSection from './components/UpcomingDatesSection';
@@ -103,7 +103,7 @@ const DateCurationContainer: React.FC = () => {
                         <Button
                             variant="ghost"
                             size="sm"
-                            leftIcon={<Icon as={FaRefresh} />}
+                            leftIcon={<Icon as={FaSyncAlt} />}
                             onClick={refreshDates}
                             isLoading={isLoading}
                             loadingText="Refreshing..."
