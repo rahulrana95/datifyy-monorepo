@@ -4,8 +4,8 @@ import { DatifyyUsersLogin } from "./DatifyyUsersLogin";
 @Index("datifyy_date_series_pkey", ["id"], { unique: true })
 @Index("idx_date_series_last_date", ["lastDateAt"], {})
 @Index("idx_date_series_status", ["seriesStatus"], {})
-@Index("unique_user_pair_series", ["user1Id", "user2Id"], { unique: true })
 @Index("idx_date_series_users", ["user1Id", "user2Id"], {})
+@Index("unique_user_pair_series", ["user1Id", "user2Id"], { unique: true })
 @Entity("datifyy_date_series", { schema: "public" })
 export class DatifyyDateSeries {
   @Column("uuid", {

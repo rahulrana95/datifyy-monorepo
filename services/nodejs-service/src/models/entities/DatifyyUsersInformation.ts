@@ -228,9 +228,6 @@ export class DatifyyUsersInformation {
   })
   isDeleted: boolean | null;
 
-  @Column("integer", { name: "user_login_id", nullable: false })
-  userLoginId: number;
-
   @ManyToOne(
     () => DatifyyUsersLogin,
     (datifyyUsersLogin) => datifyyUsersLogin.datifyyUsersInformations,
