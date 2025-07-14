@@ -27,9 +27,6 @@ import {
   validateCancelDate,
   validateSubmitDateFeedback,
   validateGetUserDates,
-  validateAdminGetDates,
-  validateSearchPotentialMatches,
-  validateDateCurationAnalytics
 } from '../../modules/dateCuration/dtos/validation';
 
 import { asyncHandler } from '../../infrastructure/utils/asyncHandler';
@@ -61,13 +58,13 @@ export function createDateCurationRoutes(dataSource: DataSource): Router {
     })
   );
 
-  router.post('/my-dates/:dateId/cancel',
-    authenticateToken,
-    validateCancelDate,  // ← Specific validation
-    asyncHandler(async (req, res, next) => {
-      await dateCurationController.cancelDate(req as AuthenticatedRequest, res, next);
-    })
-  );
+//   router.post('/my-dates/:dateId/cancel',
+//     authenticateToken,
+//     validateCancelDate,  // ← Specific validation
+//     asyncHandler(async (req, res, next) => {
+//       await dateCurationController.cancelDate(req as AuthenticatedRequest, res, next);
+//     })
+//   );
 
   router.post('/my-dates/:dateId/feedback',
     authenticateToken,
@@ -87,41 +84,41 @@ export function createDateCurationRoutes(dataSource: DataSource): Router {
     })
   );
 
-  router.put('/admin/curated-dates/:dateId',
-    authenticateToken,
-    checkIsAdmin,
-    validateUpdateCuratedDate,  // ← Specific validation
-    asyncHandler(async (req, res, next) => {
-      await dateCurationController.updateCuratedDate(req as AuthenticatedRequest, res, next);
-    })
-  );
+//   router.put('/admin/curated-dates/:dateId',
+//     authenticateToken,
+//     checkIsAdmin,
+//     validateUpdateCuratedDate,  // ← Specific validation
+//     asyncHandler(async (req, res, next) => {
+//       await dateCurationController.updateCuratedDate(req as AuthenticatedRequest, res, next);
+//     })
+//   );
 
-  router.get('/admin/curated-dates',
-    authenticateToken,
-    checkIsAdmin,
-    validateAdminGetDates,  // ← Admin-specific validation
-    asyncHandler(async (req, res, next) => {
-      await dateCurationController.getAdminCuratedDates(req as AuthenticatedRequest, res, next);
-    })
-  );
+//   router.get('/admin/curated-dates',
+//     authenticateToken,
+//     checkIsAdmin,
+//     validateAdminGetDates,  // ← Admin-specific validation
+//     asyncHandler(async (req, res, next) => {
+//       await dateCurationController.getAdminCuratedDates(req as AuthenticatedRequest, res, next);
+//     })
+//   );
 
-  router.post('/admin/search-potential-matches',
-    authenticateToken,
-    checkIsAdmin,
-    validateSearchPotentialMatches,  // ← Complex search validation
-    asyncHandler(async (req, res, next) => {
-      await dateCurationController.searchPotentialMatches(req as AuthenticatedRequest, res, next);
-    })
-  );
+//   router.post('/admin/search-potential-matches',
+//     authenticateToken,
+//     checkIsAdmin,
+//     validateSearchPotentialMatches,  // ← Complex search validation
+//     asyncHandler(async (req, res, next) => {
+//       await dateCurationController.searchPotentialMatches(req as AuthenticatedRequest, res, next);
+//     })
+//   );
 
-  router.get('/admin/analytics/date-curation',
-    authenticateToken,
-    checkIsAdmin,
-    validateDateCurationAnalytics,  // ← Analytics validation
-    asyncHandler(async (req, res, next) => {
-      await dateCurationController.getDateCurationAnalytics(req as AuthenticatedRequest, res, next);
-    })
-  );
+//   router.get('/admin/analytics/date-curation',
+//     authenticateToken,
+//     checkIsAdmin,
+//     validateDateCurationAnalytics,  // ← Analytics validation
+//     asyncHandler(async (req, res, next) => {
+//       await dateCurationController.getDateCurationAnalytics(req as AuthenticatedRequest, res, next);
+//     })
+//   );
 
   return router;
 }

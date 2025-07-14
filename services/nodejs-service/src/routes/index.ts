@@ -252,11 +252,11 @@ export function createAppRoutes(dataSource: DataSource): Router {
   return router;
 }
 
-// 🎯 NEW: Add this export for easy access to route count
-export const getRouteStats = () => {
-  return {
-    totalModules: 8, // auth, admin-auth, user-profile, availability, images, partner-prefs, date-curation, legacy
-    dateCurationEndpoints: 32,
-    totalNewEndpoints: 50+ // approximate total of all new endpoints
-  };
-};
+// // 🎯 NEW: Add this export for easy access to route count
+// export const getRouteStats = () => {
+//   return {
+//     totalModules: 8, // auth, admin-auth, user-profile, availability, images, partner-prefs, date-curation, legacy
+//     dateCurationEndpoints: 32,
+//     totalNewEndpoints: 50+ // approximate total of all new endpoints
+//   };
+// };
