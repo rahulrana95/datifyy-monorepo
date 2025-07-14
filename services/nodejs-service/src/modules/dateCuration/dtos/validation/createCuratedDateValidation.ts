@@ -1,17 +1,13 @@
-// =============================================================================
-// FIXED: dtos/validation/createCuratedDateValidation.ts
-// =============================================================================
+// services/nodejs-service/src/modules/dateCuration/dtos/validation/createCuratedDateValidation.ts
 
-import { body, param, validationResult, ValidationChain } from 'express-validator';
-import { Request, Response, NextFunction, RequestHandler } from 'express'; // ✅ FIXED: Import Express types
+import { Request, Response, NextFunction } from 'express';
+import { body, validationResult, ValidationChain } from 'express-validator';
 import { DateMode } from '@datifyy/shared-types';
-import { VALIDATION_RULES } from '../base/CommonTypes';
 
 /**
- * Validation middleware for creating curated dates
- * ✅ FIXED: Proper Express middleware signature
+ * Validation rules for creating curated dates
  */
-export const validateCreateCuratedDate: (ValidationChain | RequestHandler)[] = [
+const createCuratedDateValidationRules: ValidationChain[] = [
   // Basic user validation
   body('user1Id')
     .isInt({ min: 1 })
@@ -34,24 +30,20 @@ export const validateCreateCuratedDate: (ValidationChain | RequestHandler)[] = [
     .custom((value) => {
       const dateTime = new Date(value);
       const now = new Date();
-      const minAdvance = new Date(now.getTime() + VALIDATION_RULES.dateScheduling.minAdvanceHours * 60 * 60 * 1000);
-      const maxAdvance = new Date(now.getTime() + VALIDATION_RULES.dateScheduling.maxAdvanceDays * 24 * 60 * 60 * 1000);
+      const minAdvance = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours
+      const maxAdvance = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000); // 90 days
       
       if (dateTime < minAdvance) {
-        throw new Error(`Date must be at least ${VALIDATION_RULES.dateScheduling.minAdvanceHours} hours in advance`);
+        throw new Error('Date must be at least 24 hours in advance');
       }
       if (dateTime > maxAdvance) {
-        throw new Error(`Date cannot be more than ${VALIDATION_RULES.dateScheduling.maxAdvanceDays} days in advance`);
+        throw new Error('Date cannot be more than 90 days in advance');
       }
       
-      // Check if time is within allowed hours
+      // Check business hours (9 AM to 10 PM)
       const hours = dateTime.getHours();
-      const minutes = dateTime.getMinutes();
-      const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-      
-      if (timeString < VALIDATION_RULES.dateScheduling.allowedTimeSlots.start || 
-          timeString > VALIDATION_RULES.dateScheduling.allowedTimeSlots.end) {
-        throw new Error(`Date time must be between ${VALIDATION_RULES.dateScheduling.allowedTimeSlots.start} and ${VALIDATION_RULES.dateScheduling.allowedTimeSlots.end}`);
+      if (hours < 9 || hours > 22) {
+        throw new Error('Date time must be between 9:00 AM and 10:00 PM');
       }
       
       return true;
@@ -59,11 +51,8 @@ export const validateCreateCuratedDate: (ValidationChain | RequestHandler)[] = [
     
   body('durationMinutes')
     .optional()
-    .isInt({ 
-      min: VALIDATION_RULES.dateScheduling.minDurationMinutes, 
-      max: VALIDATION_RULES.dateScheduling.maxDurationMinutes 
-    })
-    .withMessage(`Duration must be between ${VALIDATION_RULES.dateScheduling.minDurationMinutes} and ${VALIDATION_RULES.dateScheduling.maxDurationMinutes} minutes`),
+    .isInt({ min: 30, max: 240 })
+    .withMessage('Duration must be between 30 and 240 minutes'),
     
   body('mode')
     .isIn(Object.values(DateMode))
@@ -114,17 +103,20 @@ export const validateCreateCuratedDate: (ValidationChain | RequestHandler)[] = [
   body('adminNotes')
     .optional()
     .isLength({ max: 2000 })
-    .withMessage('Admin notes must be less than 2000 characters'),
+    .withMessage('Admin notes must be less than 2000 characters')
+    .trim(),
     
   body('specialInstructions')
     .optional()
     .isLength({ max: 1000 })
-    .withMessage('Special instructions must be less than 1000 characters'),
+    .withMessage('Special instructions must be less than 1000 characters')
+    .trim(),
     
   body('dressCode')
     .optional()
     .isLength({ max: 200 })
-    .withMessage('Dress code must be less than 200 characters'),
+    .withMessage('Dress code must be less than 200 characters')
+    .trim(),
     
   body('suggestedConversationTopics')
     .optional()
@@ -149,7 +141,8 @@ export const validateCreateCuratedDate: (ValidationChain | RequestHandler)[] = [
   body('matchReason')
     .optional()
     .isLength({ max: 500 })
-    .withMessage('Match reason must be less than 500 characters'),
+    .withMessage('Match reason must be less than 500 characters')
+    .trim(),
     
   body('algorithmConfidence')
     .optional()
@@ -166,23 +159,34 @@ export const validateCreateCuratedDate: (ValidationChain | RequestHandler)[] = [
     .optional()
     .isInt({ min: 0 })
     .withMessage('Token cost for user2 must be non-negative'),
+];
 
-  // ✅ FIXED: Use proper Express types and cleaner middleware definition
-  (req: Request, res: Response, next: NextFunction): void => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      res.status(400).json({
-        success: false,
-        error: {
-          code: 'VALIDATION_ERROR',
-          message: 'Invalid input data',
-          details: errors.array(),
-          timestamp: new Date().toISOString(),
-          requestId: (req as any).id
-        }
-      });
-      return;
-    }
-    next();
+/**
+ * Error handling middleware for validation results
+ */
+const handleValidationErrors = (req: Request, res: Response, next: NextFunction): void => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).json({
+      success: false,
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Invalid input data',
+        details: errors.array(),
+        timestamp: new Date().toISOString(),
+        requestId: (req as any).id
+      }
+    });
+    return;
   }
+  next();
+};
+
+/**
+ * Complete validation middleware for creating curated dates
+ * Following your existing auth validation pattern
+ */
+export const validateCreateCuratedDate = [
+  ...createCuratedDateValidationRules,
+  handleValidationErrors
 ];
