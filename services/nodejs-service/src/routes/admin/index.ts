@@ -13,11 +13,11 @@ import { authenticateToken, checkIsAdmin } from '../../middlewares/authenticatio
 
 // Import all admin route modules
 import { createAdminDashboardRoutes } from './adminDashboardRoutes';
-import { createAdminNotificationsRoutes } from './adminNotificationsRoutes';
-import { createAdminDateCurationRoutes } from './dateCurationRoutes';
-import { createAdminRevenueAnalyticsRoutes } from './revenueAnalyticsRoutes';
-import { createAdminMatchSuggestionsRoutes } from './matchSuggestionsRoutes';
-import { createAdminUserManagementRoutes } from './adminUserManagementRoutes';
+// import { createAdminNotificationsRoutes } from './adminNotificationsRoutes';
+// import { createAdminDateCurationRoutes } from './dateCurationRoutes';
+// import { createAdminRevenueAnalyticsRoutes } from './revenueAnalyticsRoutes';
+// import { createAdminMatchSuggestionsRoutes } from './matchSuggestionsRoutes';
+// import { createAdminUserManagementRoutes } from './adminUserManagementRoutes';
 
 /**
  * Admin route configuration with metadata
@@ -248,34 +248,34 @@ export function createAdminRoutes(dataSource: DataSource): Router {
   }
 
   // Notifications Routes (Slack, Email, SMS management)
-  if (ADMIN_ROUTES_CONFIG.find(r => r.path === '/notifications')?.isEnabled) {
-    router.use('/notifications', createAdminNotificationsRoutes(dataSource));
-    logger.info('Admin Notifications routes registered at /admin/notifications');
-  }
+//   if (ADMIN_ROUTES_CONFIG.find(r => r.path === '/notifications')?.isEnabled) {
+//     router.use('/notifications', createAdminNotificationsRoutes(dataSource));
+//     logger.info('Admin Notifications routes registered at /admin/notifications');
+//   }
 
-  // Date Curation Routes (Date management and matchmaking)
-  if (ADMIN_ROUTES_CONFIG.find(r => r.path === '/date-curation')?.isEnabled) {
-    router.use('/date-curation', createAdminDateCurationRoutes(dataSource));
-    logger.info('Admin Date Curation routes registered at /admin/date-curation');
-  }
+//   // Date Curation Routes (Date management and matchmaking)
+//   if (ADMIN_ROUTES_CONFIG.find(r => r.path === '/date-curation')?.isEnabled) {
+//     router.use('/date-curation', createAdminDateCurationRoutes(dataSource));
+//     logger.info('Admin Date Curation routes registered at /admin/date-curation');
+//   }
 
-  // Revenue Analytics Routes (Financial tracking and reporting)
-  if (ADMIN_ROUTES_CONFIG.find(r => r.path === '/revenue')?.isEnabled) {
-    router.use('/revenue', createAdminRevenueAnalyticsRoutes(dataSource));
-    logger.info('Admin Revenue Analytics routes registered at /admin/revenue');
-  }
+//   // Revenue Analytics Routes (Financial tracking and reporting)
+//   if (ADMIN_ROUTES_CONFIG.find(r => r.path === '/revenue')?.isEnabled) {
+//     router.use('/revenue', createAdminRevenueAnalyticsRoutes(dataSource));
+//     logger.info('Admin Revenue Analytics routes registered at /admin/revenue');
+//   }
 
-  // Match Suggestions Routes (AI-powered matching)
-  if (ADMIN_ROUTES_CONFIG.find(r => r.path === '/match-suggestions')?.isEnabled) {
-    router.use('/match-suggestions', createAdminMatchSuggestionsRoutes(dataSource));
-    logger.info('Admin Match Suggestions routes registered at /admin/match-suggestions');
-  }
+//   // Match Suggestions Routes (AI-powered matching)
+//   if (ADMIN_ROUTES_CONFIG.find(r => r.path === '/match-suggestions')?.isEnabled) {
+//     router.use('/match-suggestions', createAdminMatchSuggestionsRoutes(dataSource));
+//     logger.info('Admin Match Suggestions routes registered at /admin/match-suggestions');
+//   }
 
-  // User Management Routes (User operations and moderation)
-  if (ADMIN_ROUTES_CONFIG.find(r => r.path === '/users')?.isEnabled) {
-    router.use('/users', createAdminUserManagementRoutes(dataSource));
-    logger.info('Admin User Management routes registered at /admin/users');
-  }
+//   // User Management Routes (User operations and moderation)
+//   if (ADMIN_ROUTES_CONFIG.find(r => r.path === '/users')?.isEnabled) {
+//     router.use('/users', createAdminUserManagementRoutes(dataSource));
+//     logger.info('Admin User Management routes registered at /admin/users');
+//   }
 
   // =============================================================================
   // ERROR HANDLING MIDDLEWARE

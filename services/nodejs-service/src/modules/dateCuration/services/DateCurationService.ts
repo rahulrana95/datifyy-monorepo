@@ -158,9 +158,9 @@ export class DateCurationService implements IDateCurationService {
             new Date(d.dateTime) > new Date() &&
             [
               CuratedDateStatus.PENDING,
-              CuratedDateStatus.USER1_CONFIRMED,
-              CuratedDateStatus.USER2_CONFIRMED,
-              CuratedDateStatus.BOTH_CONFIRMED,
+              CuratedDateStatus.CONFIRMED,
+              CuratedDateStatus.CONFIRMED,
+              CuratedDateStatus.CONFIRMED,
             ].includes(d.status as CuratedDateStatus)
         ).length,
         completedDates: dates.filter(
@@ -172,9 +172,9 @@ export class DateCurationService implements IDateCurationService {
         pendingConfirmation: dates.filter(
           (d) =>
             d.status === CuratedDateStatus.PENDING ||
-            (d.status === CuratedDateStatus.USER1_CONFIRMED &&
+            (d.status === CuratedDateStatus.CONFIRMED &&
               d.user2Id === userId) ||
-            (d.status === CuratedDateStatus.USER2_CONFIRMED &&
+            (d.status === CuratedDateStatus.CONFIRMED &&
               d.user1Id === userId)
         ).length,
         awaitingFeedback: dates.filter(
@@ -260,7 +260,7 @@ export class DateCurationService implements IDateCurationService {
     const updatedDate = await this.repository.confirmDate(dateId, userId);
 
     const isBothConfirmed =
-      updatedDate.status === CuratedDateStatus.BOTH_CONFIRMED;
+      updatedDate.status === CuratedDateStatus.CONFIRMED;
     const message = isBothConfirmed
       ? "Date confirmed! Both participants have now confirmed."
       : "Date confirmed! Waiting for your date partner to confirm.";
