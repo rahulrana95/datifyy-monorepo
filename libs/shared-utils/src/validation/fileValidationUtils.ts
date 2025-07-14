@@ -1,9 +1,20 @@
 // libs/shared-utils/src/validation/fileValidationUtils.ts
 
-import { 
-  FileValidationResult,
-} from '../../../shared-types/src/interfaces/storage.interfaces';
+
 import { formatFileSize } from '../format/formatUtils';
+
+
+interface FileValidationResult {
+  isValid: boolean;
+  errors: string[];
+  warnings?: string[];
+  fileInfo?: {
+    size: number;
+    type: string;
+    dimensions?: { width: number; height: number };
+  };
+}
+
 
 /**
  * File Validation Utilities - Shared between Frontend & Backend

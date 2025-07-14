@@ -10,6 +10,10 @@ export class DatifyyUsersInformation {
   @Column("uuid", { primary: true, name: "id" })
   id: string;
 
+  // ADD THIS COLUMN - Missing user_login_id field
+  @Column("integer", { name: "user_login_id", nullable: false })
+  userLoginId: number;
+
   @Column("character varying", { name: "first_name", length: 255 })
   firstName: string;
 

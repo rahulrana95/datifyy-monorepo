@@ -38,6 +38,7 @@ export const authenticateAdmin = async (req: Request, res: Response, next: NextF
 
 export interface AuthenticatedRequest extends Request {
   user?: any;
+  admin?: any;
 }
 
 export const authenticateToken = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -62,7 +63,7 @@ export const authenticateToken = async (req: AuthenticatedRequest, res: Response
 
      const userProfile = await userProfilesRepository.findOne({
       where: { 
-        userLogin: user,  // Use the foreign key directly
+        userLoginId: user.id,  // Use the foreign key directly
         isDeleted: false 
       },
       relations: ["userLogin"],
@@ -74,6 +75,7 @@ export const authenticateToken = async (req: AuthenticatedRequest, res: Response
     }
 
     req.user = { id: user.id, email: user.email, isAdmin: decodedToken.isadmin, profile: userProfile };
+    req.admin = req.user;
 
     next(); // Continue to the next middleware or route handler
   } catch (error) {

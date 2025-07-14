@@ -72,10 +72,6 @@ export function createAppRoutes(dataSource: DataSource): Router {
   router.use("/admin", createAdminRoutes(dataSource));
   logger.info("✅ Admin routes registered at /admin");
 
-  // User management routes (auth required - handled by individual route modules)
-  const userManagementRoutes = createAdminUserManagementRoutes(dataSource);
-  router.use("/admin/user-management", userManagementRoutes);
-
   // User Profile routes (new module following established patterns)
   router.use("/user-profile", createUserProfileRoutes(dataSource));
   logger.info("✅ User Profile routes registered at /user-profile");

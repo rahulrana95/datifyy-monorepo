@@ -35,6 +35,17 @@ export interface AuthenticatedRequest extends Request {
   user: AuthenticatedUser;
 }
 
+
+/**
+ * Authenticated Request Interface
+ * Extends Express Request to include authenticated user data
+ */
+export interface AuthenticatedAdminRequest extends Request {
+  admin: AuthenticatedUser;
+}
+
+
+
 // STEP 1: Add a function to get DataSource
 // This function will try multiple ways to get the DataSource
 function getDataSource(): DataSource {

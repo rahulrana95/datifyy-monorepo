@@ -23,6 +23,7 @@ import {
 } from '../dtos/AdminAuthDtos';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { AuthenticationError, ValidationError } from '../../../infrastructure/errors/AppErrors';
+import { RedisService } from '../../../infrastructure/cache/RedisService';
 
 /**
  * Authenticated request interface with admin context
@@ -67,7 +68,7 @@ export class AdminAuthController {
 
   constructor(
     private readonly adminAuthService: IAdminAuthService,
-    logger?: Logger
+    logger?: Logger,
   ) {
     this.logger = logger || Logger.getInstance();
   }

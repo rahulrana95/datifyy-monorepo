@@ -11,7 +11,7 @@ import { DataSource } from 'typeorm';
 import { Logger } from '../../infrastructure/logging/Logger';
 import { asyncHandler } from '../../infrastructure/utils/asyncHandler';
 import { authenticateToken, checkIsAdmin } from '../../middlewares/authentication';
-import { AuthenticatedRequest } from '../../infrastructure/middleware/authentication';
+import { AuthenticatedAdminRequest } from '../../infrastructure/middleware/authentication';
 
 // Import validation middleware (we'll create these)
 import { 
@@ -49,7 +49,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
   router.get('/overview',
     validateGetDashboardOverview,
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getDashboardOverview(req as AuthenticatedRequest, res, next);
+      await dashboardController.getDashboardOverview(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -60,7 +60,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
   router.get('/metrics/trends',
     validateGetMetricTrends,
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getMetricTrends(req as AuthenticatedRequest, res, next);
+      await dashboardController.getMetricTrends(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -70,7 +70,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/metrics/real-time',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getRealTimeMetrics(req as AuthenticatedRequest, res, next);
+      await dashboardController.getRealTimeMetrics(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -80,7 +80,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/metrics/summary',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getMetricsSummary(req as AuthenticatedRequest, res, next);
+      await dashboardController.getMetricsSummary(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -94,7 +94,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/users/metrics',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getUserMetrics(req as AuthenticatedRequest, res, next);
+      await dashboardController.getUserMetrics(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -104,7 +104,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/users/activity',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getUserActivity(req as AuthenticatedRequest, res, next);
+      await dashboardController.getUserActivity(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -114,7 +114,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/users/verification-status',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getUserVerificationStatus(req as AuthenticatedRequest, res, next);
+      await dashboardController.getUserVerificationStatus(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -124,7 +124,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/users/geographic-distribution',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getUserGeographicDistribution(req as AuthenticatedRequest, res, next);
+      await dashboardController.getUserGeographicDistribution(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -138,7 +138,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/dates/metrics',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getDateMetrics(req as AuthenticatedRequest, res, next);
+      await dashboardController.getDateMetrics(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -148,7 +148,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/dates/success-rates',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getDateSuccessRates(req as AuthenticatedRequest, res, next);
+      await dashboardController.getDateSuccessRates(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -158,7 +158,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/dates/completion-trends',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getDateCompletionTrends(req as AuthenticatedRequest, res, next);
+      await dashboardController.getDateCompletionTrends(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -168,7 +168,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/dates/pending-actions',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getDatesPendingAction(req as AuthenticatedRequest, res, next);
+      await dashboardController.getDatesPendingAction(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -182,7 +182,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/revenue/summary',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getRevenueSummary(req as AuthenticatedRequest, res, next);
+      await dashboardController.getRevenueSummary(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -192,7 +192,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/revenue/trends',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getRevenueTrends(req as AuthenticatedRequest, res, next);
+      await dashboardController.getRevenueTrends(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -202,7 +202,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/revenue/top-performers',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getRevenueTopPerformers(req as AuthenticatedRequest, res, next);
+      await dashboardController.getRevenueTopPerformers(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -217,7 +217,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
   router.get('/admin-activity',
     validateGetAdminActivity,
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getAdminActivity(req as AuthenticatedRequest, res, next);
+      await dashboardController.getAdminActivity(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -227,7 +227,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/admin-activity/recent',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getRecentAdminActivity(req as AuthenticatedRequest, res, next);
+      await dashboardController.getRecentAdminActivity(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -237,7 +237,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/admin-activity/summary',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getAdminActivitySummary(req as AuthenticatedRequest, res, next);
+      await dashboardController.getAdminActivitySummary(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -251,7 +251,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/alerts',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getDashboardAlerts(req as AuthenticatedRequest, res, next);
+      await dashboardController.getDashboardAlerts(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -261,7 +261,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.put('/alerts/:alertId/acknowledge',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.acknowledgeAlert(req as AuthenticatedRequest, res, next);
+      await dashboardController.acknowledgeAlert(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -271,7 +271,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/alerts/critical',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getCriticalAlerts(req as AuthenticatedRequest, res, next);
+      await dashboardController.getCriticalAlerts(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -285,7 +285,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/system/health',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getSystemHealth(req as AuthenticatedRequest, res, next);
+      await dashboardController.getSystemHealth(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -295,7 +295,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/system/performance',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getSystemPerformance(req as AuthenticatedRequest, res, next);
+      await dashboardController.getSystemPerformance(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -305,7 +305,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/system/services-status',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getServicesStatus(req as AuthenticatedRequest, res, next);
+      await dashboardController.getServicesStatus(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -319,7 +319,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.post('/export/metrics',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.exportMetrics(req as AuthenticatedRequest, res, next);
+      await dashboardController.exportMetrics(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -329,7 +329,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/reports/daily-summary',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getDailySummaryReport(req as AuthenticatedRequest, res, next);
+      await dashboardController.getDailySummaryReport(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -339,7 +339,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/reports/weekly-summary',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getWeeklySummaryReport(req as AuthenticatedRequest, res, next);
+      await dashboardController.getWeeklySummaryReport(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -353,7 +353,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.post('/refresh-cache',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.refreshDashboardCache(req as AuthenticatedRequest, res, next);
+      await dashboardController.refreshDashboardCache(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
@@ -363,7 +363,7 @@ export function createAdminDashboardRoutes(dataSource: DataSource): Router {
    */
   router.get('/health',
     asyncHandler(async (req, res, next) => {
-      await dashboardController.getServiceHealth(req as AuthenticatedRequest, res, next);
+      await dashboardController.getServiceHealth(req as AuthenticatedAdminRequest, res, next);
     })
   );
 
