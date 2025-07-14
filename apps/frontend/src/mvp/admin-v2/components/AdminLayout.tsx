@@ -1,141 +1,75 @@
 // apps/frontend/src/mvp/admin-v2/components/AdminLayout.tsx
-import React from 'react';
-import {
-    Box,
-    Flex,
-    VStack,
-    HStack,
-    Text,
-    Button,
-    Avatar,
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
-    MenuDivider,
-    Badge,
-    useToast
-} from '@chakra-ui/react';
-import { ChevronDownIcon, SettingsIcon } from '@chakra-ui/icons';
-import { Outlet, useNavigate } from 'react-router-dom';
-import { useAdminAuthStore } from '../login/store/adminAuthStore';
 
-/**
- * Admin Layout Component
- * Provides consistent layout structure for admin pages
- * 
- * Features:
- * - Navigation header
- * - User menu with logout
- * - Permission level display
- * - Responsive design
- * - Quick actions
- * 
- * @returns {JSX.Element} Admin layout wrapper
- */
+import React, { useState } from 'react';
+import { Box, useColorModeValue } from '@chakra-ui/react';
+import { Outlet, useLocation } from 'react-router-dom';
+import AdminSidebar from './AdminSidebar';
+import AdminHeader from './AdminHeader';
+
 const AdminLayout: React.FC = () => {
-    const { admin, logout } = useAdminAuthStore();
-    const navigate = useNavigate();
-    const toast = useToast();
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const location = useLocation();
 
-    /**
-     * Handle admin logout
-     */
-    const handleLogout = async () => {
-        try {
-            await logout();
+    // Theme colors
+    const mainBg = useColorModeValue('gray.50', 'gray.900');
 
-            toast({
-                title: 'Logged Out',
-                description: 'You have been successfully logged out.',
-                status: 'success',
-                duration: 3000,
-            });
+    // Get page title based on route
+    const getPageTitle = (pathname: string): string => {
+        const routeTitles: Record<string, string> = {
+            '/admin/dashboard': 'Dashboard',
+            '/admin/users': 'User Management',
+            '/admin/dates': 'Date Curation',
+            '/admin/revenue': 'Revenue Analytics',
+            '/admin/analytics': 'Match Analytics',
+            '/admin/moderation': 'Content Moderation',
+            '/admin/communication': 'Communication',
+            '/admin/events': 'Events & Scheduling',
+            '/admin/system': 'System Health',
+            '/admin/settings': 'Settings',
+        };
 
-            navigate('/admin/login', { replace: true });
-
-        } catch (error) {
-            toast({
-                title: 'Logout Error',
-                description: 'There was an error logging out. Please try again.',
-                status: 'error',
-                duration: 5000,
-            });
-        }
+        return routeTitles[pathname] || 'Admin Panel';
     };
 
-    /**
-     * Get permission level color
-     */
-    const getPermissionColor = (level: string) => {
-        switch (level) {
-            case 'owner': return 'purple';
-            case 'super_admin': return 'red';
-            case 'admin': return 'blue';
-            case 'moderator': return 'green';
-            case 'viewer': return 'gray';
-            default: return 'gray';
+    // Get breadcrumb based on route
+    const getBreadcrumb = (pathname: string): string[] => {
+        const segments = pathname.split('/').filter(Boolean);
+        const breadcrumb = ['Admin'];
+
+        if (segments.length > 1) {
+            const pageTitle = getPageTitle(pathname);
+            if (pageTitle !== 'Admin Panel') {
+                breadcrumb.push(pageTitle);
+            }
         }
+
+        return breadcrumb;
+    };
+
+    const handleToggleSidebar = () => {
+        setIsSidebarCollapsed(!isSidebarCollapsed);
     };
 
     return (
-        <Box minH="100vh" bg="gray.50">
+        <Box minH="100vh" bg={mainBg}>
+            {/* Sidebar */}
+            <AdminSidebar isCollapsed={isSidebarCollapsed} />
+
             {/* Header */}
-            <Box bg="white" borderBottom="1px" borderColor="gray.200" px={6} py={4}>
-                <Flex justify="space-between" align="center">
-
-                    {/* Logo/Brand */}
-                    <HStack spacing={3}>
-                        <Text fontSize="xl" fontWeight="bold" color="brand.500">
-                            💕 Datifyy
-                        </Text>
-                        <Badge colorScheme="blue" variant="subtle">
-                            Admin Panel
-                        </Badge>
-                    </HStack>
-
-                    {/* User Menu */}
-                    {admin && (
-                        <Menu>
-                            <MenuButton as={Button} variant="ghost" rightIcon={<ChevronDownIcon />}>
-                                <HStack spacing={3}>
-                                    <Avatar size="sm" name={admin.email} />
-                                    <VStack align="flex-start" spacing={0}>
-                                        <Text fontSize="sm" fontWeight="medium">
-                                            {admin.email}
-                                        </Text>
-                                        <Badge
-                                            size="xs"
-                                            colorScheme={getPermissionColor(admin.permissionLevel)}
-                                            variant="subtle"
-                                        >
-                                            {admin.permissionLevel}
-                                        </Badge>
-                                    </VStack>
-                                </HStack>
-                            </MenuButton>
-
-                            <MenuList>
-                                <MenuItem icon={<SettingsIcon />}>
-                                    Account Settings
-                                </MenuItem>
-                                <MenuDivider />
-                                <MenuItem
-                                    icon={<SettingsIcon />}
-                                    onClick={handleLogout}
-                                    color="red.500"
-                                >
-                                    Logout
-                                </MenuItem>
-                            </MenuList>
-                        </Menu>
-                    )}
-
-                </Flex>
-            </Box>
+            <AdminHeader
+                onToggleSidebar={handleToggleSidebar}
+                isSidebarCollapsed={isSidebarCollapsed}
+                pageTitle={getPageTitle(location.pathname)}
+                breadcrumb={getBreadcrumb(location.pathname)}
+            />
 
             {/* Main Content */}
-            <Box p={6}>
+            <Box
+                ml={isSidebarCollapsed ? '80px' : '280px'}
+                mt="80px" // Height of header
+                transition="margin-left 0.2s"
+                minH="calc(100vh - 80px)"
+            >
                 <Outlet />
             </Box>
         </Box>
@@ -143,5 +77,3 @@ const AdminLayout: React.FC = () => {
 };
 
 export default AdminLayout;
-
-// ========================================

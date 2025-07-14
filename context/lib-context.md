@@ -35,7 +35,18 @@ export enum AdminSessionStatus { ACTIVE = 'active', EXPIRED = 'expired', INVALID
 
 // Date Curation Enums
 export enum DateMode { ONLINE = 'online', OFFLINE = 'offline' }
-export enum CuratedDateStatus { PENDING = 'pending', CONFIRMED = 'confirmed', CANCELLED = 'cancelled', COMPLETED = 'completed', NO_SHOW = 'no_show' }
+/**
+ * Curated date status types
+ */
+export enum CuratedDateStatus {
+  PENDING = 'pending',
+  USER1_CONFIRMED = 'user1_confirmed', 
+  USER2_CONFIRMED = 'user2_confirmed',
+  BOTH_CONFIRMED = 'both_confirmed',
+  CANCELLED = 'cancelled',
+  COMPLETED = 'completed',
+  NO_SHOW = 'no_show'
+}
 export enum RelationshipStage { GETTING_TO_KNOW = 'getting_to_know', BUILDING_CONNECTION = 'building_connection', /* ... */ }
 
 // User Availability Enums

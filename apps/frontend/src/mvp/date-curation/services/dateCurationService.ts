@@ -113,7 +113,7 @@ class DateCurationService {
       }
 
         const paramReq: GetUserDatesRequest = params;
-      const response = await apiService.get<UserDatesResponse>(`${PATH_PREFIX}dates`, { params });
+      const response = await apiService.get<UserDatesResponse>(`${PATH_PREFIX}dates`, { params: paramReq });
 
       if (response.error) {
         console.error('❌ Failed to fetch date history:', response.error);
