@@ -4584,24 +4584,24 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@datifyy/shared-types", [\
-      ["file:../../libs/shared-types#../../libs/shared-types::hash=20b105&locator=frontend%40workspace%3Aapps%2Ffrontend", {\
-        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-types-file-abedd420fd-10c0.zip/node_modules/@datifyy/shared-types/",\
+      ["file:../../libs/shared-types#../../libs/shared-types::hash=b570aa&locator=frontend%40workspace%3Aapps%2Ffrontend", {\
+        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-types-file-dfa182be5f-10c0.zip/node_modules/@datifyy/shared-types/",\
         "packageDependencies": [\
-          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=20b105&locator=frontend%40workspace%3Aapps%2Ffrontend"]\
+          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=b570aa&locator=frontend%40workspace%3Aapps%2Ffrontend"]\
         ],\
         "linkType": "HARD"\
       }],\
-      ["file:../../libs/shared-types#../../libs/shared-types::hash=20b105&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service", {\
-        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-types-file-18eeea3273-10c0.zip/node_modules/@datifyy/shared-types/",\
+      ["file:../../libs/shared-types#../../libs/shared-types::hash=b570aa&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service", {\
+        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-types-file-13c1243a35-10c0.zip/node_modules/@datifyy/shared-types/",\
         "packageDependencies": [\
-          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=20b105&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"]\
+          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=b570aa&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"]\
         ],\
         "linkType": "HARD"\
       }],\
-      ["file:../shared-types#../shared-types::hash=20b105&locator=%40datifyy%2Fshared-utils%40workspace%3Alibs%2Fshared-utils", {\
-        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-types-file-afbc1fc478-10c0.zip/node_modules/@datifyy/shared-types/",\
+      ["file:../shared-types#../shared-types::hash=b570aa&locator=%40datifyy%2Fshared-utils%40workspace%3Alibs%2Fshared-utils", {\
+        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-types-file-a77a9fe492-10c0.zip/node_modules/@datifyy/shared-types/",\
         "packageDependencies": [\
-          ["@datifyy/shared-types", "file:../shared-types#../shared-types::hash=20b105&locator=%40datifyy%2Fshared-utils%40workspace%3Alibs%2Fshared-utils"]\
+          ["@datifyy/shared-types", "file:../shared-types#../shared-types::hash=b570aa&locator=%40datifyy%2Fshared-utils%40workspace%3Alibs%2Fshared-utils"]\
         ],\
         "linkType": "HARD"\
       }],\
@@ -4615,25 +4615,25 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@datifyy/shared-utils", [\
-      ["file:../../libs/shared-utils#../../libs/shared-utils::hash=5b09e2&locator=frontend%40workspace%3Aapps%2Ffrontend", {\
-        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-utils-file-bbfea0846a-10c0.zip/node_modules/@datifyy/shared-utils/",\
+      ["file:../../libs/shared-utils#../../libs/shared-utils::hash=3d0460&locator=frontend%40workspace%3Aapps%2Ffrontend", {\
+        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-utils-file-3ee9e5c8ec-10c0.zip/node_modules/@datifyy/shared-utils/",\
         "packageDependencies": [\
-          ["@datifyy/shared-utils", "file:../../libs/shared-utils#../../libs/shared-utils::hash=5b09e2&locator=frontend%40workspace%3Aapps%2Ffrontend"]\
+          ["@datifyy/shared-utils", "file:../../libs/shared-utils#../../libs/shared-utils::hash=3d0460&locator=frontend%40workspace%3Aapps%2Ffrontend"]\
         ],\
         "linkType": "SOFT"\
       }],\
-      ["file:../../libs/shared-utils#../../libs/shared-utils::hash=5b09e2&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service", {\
-        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-utils-file-86c9251be0-10c0.zip/node_modules/@datifyy/shared-utils/",\
+      ["file:../../libs/shared-utils#../../libs/shared-utils::hash=3d0460&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service", {\
+        "packageLocation": "../../.yarn/berry/cache/@datifyy-shared-utils-file-e80657efff-10c0.zip/node_modules/@datifyy/shared-utils/",\
         "packageDependencies": [\
-          ["@datifyy/shared-utils", "file:../../libs/shared-utils#../../libs/shared-utils::hash=5b09e2&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"]\
+          ["@datifyy/shared-utils", "file:../../libs/shared-utils#../../libs/shared-utils::hash=3d0460&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"]\
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#file:../../libs/shared-utils#../../libs/shared-utils::hash=5b09e2&locator=frontend%40workspace%3Aapps%2Ffrontend", {\
-        "packageLocation": "./.yarn/__virtual__/@datifyy-shared-utils-virtual-cdfb704466/3/.yarn/berry/cache/@datifyy-shared-utils-file-bbfea0846a-10c0.zip/node_modules/@datifyy/shared-utils/",\
+      ["virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#file:../../libs/shared-utils#../../libs/shared-utils::hash=3d0460&locator=frontend%40workspace%3Aapps%2Ffrontend", {\
+        "packageLocation": "./.yarn/__virtual__/@datifyy-shared-utils-virtual-9e13127f08/3/.yarn/berry/cache/@datifyy-shared-utils-file-3ee9e5c8ec-10c0.zip/node_modules/@datifyy/shared-utils/",\
         "packageDependencies": [\
-          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=20b105&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
-          ["@datifyy/shared-utils", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#file:../../libs/shared-utils#../../libs/shared-utils::hash=5b09e2&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
+          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=b570aa&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
+          ["@datifyy/shared-utils", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#file:../../libs/shared-utils#../../libs/shared-utils::hash=3d0460&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
           ["@types/datifyy__shared-types", null],\
           ["date-fns", "npm:4.1.0"]\
         ],\
@@ -4643,11 +4643,11 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["virtual:de5956fd7127308ddbf74d2ba26d7b0eea7a22465dc9bcbc7a8ebe0a54a778d3e7fe9b873f63e0e7d2be4244c85e1e8a18f8bf183457db0cee4a114cd56f5ad4#file:../../libs/shared-utils#../../libs/shared-utils::hash=5b09e2&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service", {\
-        "packageLocation": "./.yarn/__virtual__/@datifyy-shared-utils-virtual-fb7568f0dd/3/.yarn/berry/cache/@datifyy-shared-utils-file-86c9251be0-10c0.zip/node_modules/@datifyy/shared-utils/",\
+      ["virtual:de5956fd7127308ddbf74d2ba26d7b0eea7a22465dc9bcbc7a8ebe0a54a778d3e7fe9b873f63e0e7d2be4244c85e1e8a18f8bf183457db0cee4a114cd56f5ad4#file:../../libs/shared-utils#../../libs/shared-utils::hash=3d0460&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service", {\
+        "packageLocation": "./.yarn/__virtual__/@datifyy-shared-utils-virtual-df0e751b55/3/.yarn/berry/cache/@datifyy-shared-utils-file-e80657efff-10c0.zip/node_modules/@datifyy/shared-utils/",\
         "packageDependencies": [\
-          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=20b105&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
-          ["@datifyy/shared-utils", "virtual:de5956fd7127308ddbf74d2ba26d7b0eea7a22465dc9bcbc7a8ebe0a54a778d3e7fe9b873f63e0e7d2be4244c85e1e8a18f8bf183457db0cee4a114cd56f5ad4#file:../../libs/shared-utils#../../libs/shared-utils::hash=5b09e2&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
+          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=b570aa&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
+          ["@datifyy/shared-utils", "virtual:de5956fd7127308ddbf74d2ba26d7b0eea7a22465dc9bcbc7a8ebe0a54a778d3e7fe9b873f63e0e7d2be4244c85e1e8a18f8bf183457db0cee4a114cd56f5ad4#file:../../libs/shared-utils#../../libs/shared-utils::hash=3d0460&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
           ["@types/datifyy__shared-types", null],\
           ["date-fns", "npm:4.1.0"]\
         ],\
@@ -4660,7 +4660,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:libs/shared-utils", {\
         "packageLocation": "./libs/shared-utils/",\
         "packageDependencies": [\
-          ["@datifyy/shared-types", "file:../shared-types#../shared-types::hash=20b105&locator=%40datifyy%2Fshared-utils%40workspace%3Alibs%2Fshared-utils"],\
+          ["@datifyy/shared-types", "file:../shared-types#../shared-types::hash=b570aa&locator=%40datifyy%2Fshared-utils%40workspace%3Alibs%2Fshared-utils"],\
           ["@datifyy/shared-utils", "workspace:libs/shared-utils"],\
           ["@types/node", "npm:16.18.126"],\
           ["date-fns", "npm:4.1.0"],\
@@ -4687,7 +4687,7 @@ const RAW_RUNTIME_STATE =
       ["virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#file:../../libs/shared-validation#../../libs/shared-validation::hash=4b4f3a&locator=frontend%40workspace%3Aapps%2Ffrontend", {\
         "packageLocation": "./.yarn/__virtual__/@datifyy-shared-validation-virtual-4c8910efb8/3/.yarn/berry/cache/@datifyy-shared-validation-file-1568491cf2-10c0.zip/node_modules/@datifyy/shared-validation/",\
         "packageDependencies": [\
-          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=20b105&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
+          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=b570aa&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
           ["@datifyy/shared-validation", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#file:../../libs/shared-validation#../../libs/shared-validation::hash=4b4f3a&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
           ["@types/datifyy__shared-types", null],\
           ["zod", "npm:3.25.74"]\
@@ -4701,7 +4701,7 @@ const RAW_RUNTIME_STATE =
       ["virtual:de5956fd7127308ddbf74d2ba26d7b0eea7a22465dc9bcbc7a8ebe0a54a778d3e7fe9b873f63e0e7d2be4244c85e1e8a18f8bf183457db0cee4a114cd56f5ad4#file:../../libs/shared-validation#../../libs/shared-validation::hash=4b4f3a&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service", {\
         "packageLocation": "./.yarn/__virtual__/@datifyy-shared-validation-virtual-e036f14e89/3/.yarn/berry/cache/@datifyy-shared-validation-file-5df07d5e62-10c0.zip/node_modules/@datifyy/shared-validation/",\
         "packageDependencies": [\
-          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=20b105&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
+          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=b570aa&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
           ["@datifyy/shared-validation", "virtual:de5956fd7127308ddbf74d2ba26d7b0eea7a22465dc9bcbc7a8ebe0a54a778d3e7fe9b873f63e0e7d2be4244c85e1e8a18f8bf183457db0cee4a114cd56f5ad4#file:../../libs/shared-validation#../../libs/shared-validation::hash=4b4f3a&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
           ["@types/datifyy__shared-types", null],\
           ["zod", "npm:3.25.74"]\
@@ -17803,8 +17803,8 @@ const RAW_RUNTIME_STATE =
           ["@chakra-ui/icons", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#npm:2.2.6"],\
           ["@chakra-ui/react", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#npm:2.10.9"],\
           ["@datifyy/shared-constants", "file:../../libs/shared-constants#../../libs/shared-constants::hash=be07dd&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
-          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=20b105&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
-          ["@datifyy/shared-utils", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#file:../../libs/shared-utils#../../libs/shared-utils::hash=5b09e2&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
+          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=b570aa&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
+          ["@datifyy/shared-utils", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#file:../../libs/shared-utils#../../libs/shared-utils::hash=3d0460&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
           ["@datifyy/shared-validation", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#file:../../libs/shared-validation#../../libs/shared-validation::hash=4b4f3a&locator=frontend%40workspace%3Aapps%2Ffrontend"],\
           ["@emotion/react", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#npm:11.14.0"],\
           ["@emotion/styled", "virtual:d3996bc66f5a97675d735c6457b44af0f25df32a5e5981f61ff7f22e93004839ccc5d56298eff651f971a908820429de35800a3f2669be95e1c0f6bb82e8a700#npm:11.14.1"],\
@@ -22568,8 +22568,8 @@ const RAW_RUNTIME_STATE =
           ["@aws-sdk/client-s3", "npm:3.844.0"],\
           ["@aws-sdk/s3-request-presigner", "npm:3.844.0"],\
           ["@datifyy/shared-constants", "file:../../libs/shared-constants#../../libs/shared-constants::hash=be07dd&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
-          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=20b105&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
-          ["@datifyy/shared-utils", "virtual:de5956fd7127308ddbf74d2ba26d7b0eea7a22465dc9bcbc7a8ebe0a54a778d3e7fe9b873f63e0e7d2be4244c85e1e8a18f8bf183457db0cee4a114cd56f5ad4#file:../../libs/shared-utils#../../libs/shared-utils::hash=5b09e2&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
+          ["@datifyy/shared-types", "file:../../libs/shared-types#../../libs/shared-types::hash=b570aa&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
+          ["@datifyy/shared-utils", "virtual:de5956fd7127308ddbf74d2ba26d7b0eea7a22465dc9bcbc7a8ebe0a54a778d3e7fe9b873f63e0e7d2be4244c85e1e8a18f8bf183457db0cee4a114cd56f5ad4#file:../../libs/shared-utils#../../libs/shared-utils::hash=3d0460&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
           ["@datifyy/shared-validation", "virtual:de5956fd7127308ddbf74d2ba26d7b0eea7a22465dc9bcbc7a8ebe0a54a778d3e7fe9b873f63e0e7d2be4244c85e1e8a18f8bf183457db0cee4a114cd56f5ad4#file:../../libs/shared-validation#../../libs/shared-validation::hash=4b4f3a&locator=nodejs-service%40workspace%3Aservices%2Fnodejs-service"],\
           ["@types/bcrypt", "npm:5.0.2"],\
           ["@types/bcryptjs", "npm:2.4.6"],\

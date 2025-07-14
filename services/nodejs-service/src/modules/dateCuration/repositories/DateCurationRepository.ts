@@ -481,16 +481,16 @@ export class DateCurationRepository implements IDateCurationRepository {
     if (date.user1Id === userId) {
       updateData.user1ConfirmedAt = new Date();
       if (date.user2ConfirmedAt) {
-        updateData.status = CuratedDateStatus.CONFIRMED;
+        updateData.status = CuratedDateStatus.USER2_CONFIRMED;
       } else {
-        updateData.status = CuratedDateStatus.CONFIRMED;
+        updateData.status = CuratedDateStatus.USER1_CONFIRMED;
       }
     } else if (date.user2Id === userId) {
       updateData.user2ConfirmedAt = new Date();
       if (date.user1ConfirmedAt) {
-        updateData.status = CuratedDateStatus.CONFIRMED;
+        updateData.status = CuratedDateStatus.USER1_CONFIRMED;
       } else {
-        updateData.status = CuratedDateStatus.CONFIRMED;
+        updateData.status = CuratedDateStatus.USER2_CONFIRMED;
       }
     } else {
       throw new Error("User not authorized to confirm this date");
@@ -864,12 +864,12 @@ export class DateCurationRepository implements IDateCurationRepository {
       where: [
         {
           dateTime: Between(now, twentyFourHoursFromNow),
-          status: CuratedDateStatus.CONFIRMED,
+          status: CuratedDateStatus.USER1_CONFIRMED,
           reminderSent_24h: false,
         },
         {
           dateTime: Between(now, twoHoursFromNow),
-          status: CuratedDateStatus.CONFIRMED,
+          status: CuratedDateStatus.USER2_CONFIRMED,
           reminderSent_2h: false,
         },
       ],

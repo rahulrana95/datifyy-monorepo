@@ -20,6 +20,7 @@ import { createDateCurationRoutes } from "./dateCuration/dateCurationRoutes";
 
 // 🎯 NEW: Import Admin Routes
 import { createAdminRoutes } from "./admin";
+import { createAdminUserManagementRoutes } from "../modules/admin/user-management/routes";
 
 /**
  * Main Application Routes Factory
@@ -71,6 +72,10 @@ export function createAppRoutes(dataSource: DataSource): Router {
   router.use("/admin", createAdminRoutes(dataSource));
   logger.info("✅ Admin routes registered at /admin");
 
+  // User management routes (auth required - handled by individual route modules)
+  const userManagementRoutes = createAdminUserManagementRoutes(dataSource);
+  router.use("/admin/user-management", userManagementRoutes);
+
   // User Profile routes (new module following established patterns)
   router.use("/user-profile", createUserProfileRoutes(dataSource));
   logger.info("✅ User Profile routes registered at /user-profile");
@@ -111,7 +116,8 @@ export function createAppRoutes(dataSource: DataSource): Router {
         // Dashboard Routes
         "GET /admin/dashboard/overview": "Get comprehensive dashboard overview",
         "GET /admin/dashboard/metrics/trends": "Get metric trends for charts",
-        "GET /admin/dashboard/metrics/real-time": "Get real-time dashboard metrics",
+        "GET /admin/dashboard/metrics/real-time":
+          "Get real-time dashboard metrics",
         "GET /admin/dashboard/users/metrics": "Get user analytics",
         "GET /admin/dashboard/dates/metrics": "Get date analytics",
         "GET /admin/dashboard/revenue/summary": "Get revenue summary",
@@ -128,25 +134,31 @@ export function createAppRoutes(dataSource: DataSource): Router {
         "POST /admin/notifications/email/test-send": "Send test email",
         "GET /admin/notifications/analytics": "Get notification analytics",
 
-        // Date Curation Routes  
+        // Date Curation Routes
         "POST /admin/date-curation/curated-dates": "Create curated date",
         "GET /admin/date-curation/curated-dates": "Get all curated dates",
-        "POST /admin/date-curation/search-potential-matches": "Search potential matches",
-        "GET /admin/date-curation/users/:userId/trust-score": "Get user trust score",
-        "GET /admin/date-curation/analytics/overview": "Get date curation analytics",
+        "POST /admin/date-curation/search-potential-matches":
+          "Search potential matches",
+        "GET /admin/date-curation/users/:userId/trust-score":
+          "Get user trust score",
+        "GET /admin/date-curation/analytics/overview":
+          "Get date curation analytics",
 
         // Revenue Analytics Routes
         "GET /admin/revenue/overview": "Get revenue analytics overview",
         "GET /admin/revenue/real-time": "Get real-time revenue metrics",
         "GET /admin/revenue/transactions": "Get all transactions",
         "POST /admin/revenue/refunds": "Process refund",
-        "GET /admin/revenue/analytics/ltv-analysis": "Get customer LTV analysis",
+        "GET /admin/revenue/analytics/ltv-analysis":
+          "Get customer LTV analysis",
 
         // Match Suggestions Routes
         "POST /admin/match-suggestions/generate": "Generate match suggestions",
         "GET /admin/match-suggestions": "Get match suggestions",
-        "POST /admin/match-suggestions/compatibility-analysis": "Get compatibility analysis",
-        "GET /admin/match-suggestions/algorithms/performance": "Get algorithm performance",
+        "POST /admin/match-suggestions/compatibility-analysis":
+          "Get compatibility analysis",
+        "GET /admin/match-suggestions/algorithms/performance":
+          "Get algorithm performance",
 
         // User Management Routes
         "GET /admin/users": "Get all users with filtering",
@@ -159,44 +171,74 @@ export function createAppRoutes(dataSource: DataSource): Router {
       // Date Curation routes
       dateCuration: {
         // USER ROUTES
-        "GET /date-curation/my-dates": "Get user's curated dates (upcoming, past, pending)",
-        "GET /date-curation/my-dates/:dateId": "Get specific curated date details",
-        "POST /date-curation/my-dates/:dateId/confirm": "User confirms attendance for date",
-        "POST /date-curation/my-dates/:dateId/cancel": "User cancels their curated date",
-        "POST /date-curation/my-dates/:dateId/feedback": "Submit feedback after date completion",
-        "GET /date-curation/my-dates/:dateId/feedback": "Get user's feedback for specific date",
-        "PUT /date-curation/my-dates/:dateId/feedback": "Update feedback within edit window",
-        "GET /date-curation/my-trust-score": "Get user's trust/love score details",
-        "GET /date-curation/my-date-series": "Get all date series (multiple dates with same people)",
-        "GET /date-curation/my-date-series/:seriesId": "Get specific date series details",
+        "GET /date-curation/my-dates":
+          "Get user's curated dates (upcoming, past, pending)",
+        "GET /date-curation/my-dates/:dateId":
+          "Get specific curated date details",
+        "POST /date-curation/my-dates/:dateId/confirm":
+          "User confirms attendance for date",
+        "POST /date-curation/my-dates/:dateId/cancel":
+          "User cancels their curated date",
+        "POST /date-curation/my-dates/:dateId/feedback":
+          "Submit feedback after date completion",
+        "GET /date-curation/my-dates/:dateId/feedback":
+          "Get user's feedback for specific date",
+        "PUT /date-curation/my-dates/:dateId/feedback":
+          "Update feedback within edit window",
+        "GET /date-curation/my-trust-score":
+          "Get user's trust/love score details",
+        "GET /date-curation/my-date-series":
+          "Get all date series (multiple dates with same people)",
+        "GET /date-curation/my-date-series/:seriesId":
+          "Get specific date series details",
 
         // ADMIN ROUTES
-        "POST /date-curation/admin/curated-dates": "Admin creates curated date between users",
-        "GET /date-curation/admin/curated-dates": "Admin gets all curated dates with filters",
-        "GET /date-curation/admin/curated-dates/:dateId": "Admin gets specific date with full details",
-        "PUT /date-curation/admin/curated-dates/:dateId": "Admin updates curated date details",
-        "DELETE /date-curation/admin/curated-dates/:dateId": "Admin deletes/cancels curated date",
-        "POST /date-curation/admin/search-potential-matches": "Admin searches potential matches for user",
-        "POST /date-curation/admin/curated-dates/bulk-create": "Admin creates multiple dates at once",
-        "GET /date-curation/admin/users/:userId/trust-score": "Admin gets user's trust score",
-        "PUT /date-curation/admin/users/:userId/trust-score": "Admin manually adjusts trust score",
-        "GET /date-curation/admin/date-series": "Admin gets all date series with filters",
-        "PUT /date-curation/admin/date-series/:seriesId": "Admin updates date series stage/notes",
-        "GET /date-curation/admin/analytics/date-curation": "Admin gets comprehensive analytics",
-        "GET /date-curation/admin/dashboard/date-curation": "Admin gets dashboard overview",
+        "POST /date-curation/admin/curated-dates":
+          "Admin creates curated date between users",
+        "GET /date-curation/admin/curated-dates":
+          "Admin gets all curated dates with filters",
+        "GET /date-curation/admin/curated-dates/:dateId":
+          "Admin gets specific date with full details",
+        "PUT /date-curation/admin/curated-dates/:dateId":
+          "Admin updates curated date details",
+        "DELETE /date-curation/admin/curated-dates/:dateId":
+          "Admin deletes/cancels curated date",
+        "POST /date-curation/admin/search-potential-matches":
+          "Admin searches potential matches for user",
+        "POST /date-curation/admin/curated-dates/bulk-create":
+          "Admin creates multiple dates at once",
+        "GET /date-curation/admin/users/:userId/trust-score":
+          "Admin gets user's trust score",
+        "PUT /date-curation/admin/users/:userId/trust-score":
+          "Admin manually adjusts trust score",
+        "GET /date-curation/admin/date-series":
+          "Admin gets all date series with filters",
+        "PUT /date-curation/admin/date-series/:seriesId":
+          "Admin updates date series stage/notes",
+        "GET /date-curation/admin/analytics/date-curation":
+          "Admin gets comprehensive analytics",
+        "GET /date-curation/admin/dashboard/date-curation":
+          "Admin gets dashboard overview",
         "GET /date-curation/admin/feedback/all": "Admin gets all date feedback",
-        "GET /date-curation/admin/reports/safety": "Admin gets safety reports from feedback",
-        "POST /date-curation/admin/users/:userId/probation": "Admin manages user probation status",
+        "GET /date-curation/admin/reports/safety":
+          "Admin gets safety reports from feedback",
+        "POST /date-curation/admin/users/:userId/probation":
+          "Admin manages user probation status",
 
         // WORKFLOW ROUTES
-        "GET /date-curation/admin/workflow/pending": "Get pending curation workflow tasks",
-        "PUT /date-curation/admin/workflow/:workflowId/complete": "Mark workflow stage complete",
-        "POST /date-curation/admin/workflow/auto-reminders": "Trigger automated date reminders",
+        "GET /date-curation/admin/workflow/pending":
+          "Get pending curation workflow tasks",
+        "PUT /date-curation/admin/workflow/:workflowId/complete":
+          "Mark workflow stage complete",
+        "POST /date-curation/admin/workflow/auto-reminders":
+          "Trigger automated date reminders",
 
         // UTILITY ROUTES
-        "POST /date-curation/check-date-conflicts": "Check for scheduling conflicts",
-        "GET /date-curation/compatibility/:user1Id/:user2Id": "Get compatibility score between users",
-        "GET /date-curation/health": "Date curation service health check"
+        "POST /date-curation/check-date-conflicts":
+          "Check for scheduling conflicts",
+        "GET /date-curation/compatibility/:user1Id/:user2Id":
+          "Get compatibility score between users",
+        "GET /date-curation/health": "Date curation service health check",
       },
       adminAuth: {
         "POST /admin/auth/login": "Admin login with 2FA support",
@@ -302,7 +344,7 @@ export function createAppRoutes(dataSource: DataSource): Router {
           matchSuggestionsEndpoints: 33,
           userManagementEndpoints: 41,
           totalAdminEndpoints: 218,
-          description: "Complete admin interface for managing dating platform"
+          description: "Complete admin interface for managing dating platform",
         },
         dateCuration: {
           userEndpoints: 10,
@@ -310,9 +352,9 @@ export function createAppRoutes(dataSource: DataSource): Router {
           workflowEndpoints: 3,
           utilityEndpoints: 4,
           totalEndpoints: 32,
-          description: "Complete date curation system for admin-managed dating"
-        }
-      }
+          description: "Complete date curation system for admin-managed dating",
+        },
+      },
     });
   });
 

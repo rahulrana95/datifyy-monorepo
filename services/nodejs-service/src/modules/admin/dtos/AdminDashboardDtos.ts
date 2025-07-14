@@ -108,7 +108,7 @@ function createValidationMiddleware(
       next();
     } catch (error) {
       if (error instanceof ValidationError) {
-        return res.status(400).json({
+        res.status(400).json({
           success: false,
           error: {
             code: error.code,
@@ -116,6 +116,7 @@ function createValidationMiddleware(
             field: error.field,
           },
         });
+        return;
       }
       next(error);
     }
