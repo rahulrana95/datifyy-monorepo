@@ -15,8 +15,11 @@ import { createUserAvailabilityRoutes } from "../modules/userAvailability/routes
 import allRoutes from "./allRoutes";
 import { createImageUploadRoutes } from "../modules/imageUpload/routes/imageUploadRoutes";
 
-// 🎯 NEW: Import Date Curation Routes
+// Import Date Curation Routes
 import { createDateCurationRoutes } from "./dateCuration/dateCurationRoutes";
+
+// 🎯 NEW: Import Admin Routes
+import { createAdminRoutes } from "./admin";
 
 /**
  * Main Application Routes Factory
@@ -64,6 +67,10 @@ export function createAppRoutes(dataSource: DataSource): Router {
   router.use("/admin/auth", createAdminAuthRoutes(dataSource));
   logger.info("✅ Admin Auth routes registered at /admin/auth");
 
+  // 🎯 NEW: Admin Routes (Dashboard, Notifications, Revenue, etc.)
+  router.use("/admin", createAdminRoutes(dataSource));
+  logger.info("✅ Admin routes registered at /admin");
+
   // User Profile routes (new module following established patterns)
   router.use("/user-profile", createUserProfileRoutes(dataSource));
   logger.info("✅ User Profile routes registered at /user-profile");
@@ -85,7 +92,7 @@ export function createAppRoutes(dataSource: DataSource): Router {
     "✅ Partner Preferences routes registered at /user/partner-preferences"
   );
 
-  // 🎯 NEW: Date Curation routes (MAIN FEATURE)
+  // Date Curation routes (MAIN FEATURE)
   router.use("/date-curation", createDateCurationRoutes(dataSource));
   logger.info("✅ Date Curation routes registered at /date-curation");
 
@@ -99,7 +106,57 @@ export function createAppRoutes(dataSource: DataSource): Router {
   // API documentation endpoint (helpful for development)
   router.get("/routes", (req, res) => {
     const availableRoutes = {
-      // 🎯 NEW: Date Curation routes added to documentation
+      // 🎯 NEW: Admin Routes added to documentation
+      admin: {
+        // Dashboard Routes
+        "GET /admin/dashboard/overview": "Get comprehensive dashboard overview",
+        "GET /admin/dashboard/metrics/trends": "Get metric trends for charts",
+        "GET /admin/dashboard/metrics/real-time": "Get real-time dashboard metrics",
+        "GET /admin/dashboard/users/metrics": "Get user analytics",
+        "GET /admin/dashboard/dates/metrics": "Get date analytics",
+        "GET /admin/dashboard/revenue/summary": "Get revenue summary",
+        "GET /admin/dashboard/alerts": "Get dashboard alerts",
+        "GET /admin/dashboard/system/health": "Get system health status",
+
+        // Notifications Routes
+        "POST /admin/notifications": "Create and send notification",
+        "GET /admin/notifications": "Get all notifications with filtering",
+        "POST /admin/notifications/bulk-send": "Send bulk notifications",
+        "GET /admin/notifications/templates": "Get notification templates",
+        "POST /admin/notifications/templates": "Create notification template",
+        "GET /admin/notifications/slack/channels": "Get Slack channels",
+        "POST /admin/notifications/email/test-send": "Send test email",
+        "GET /admin/notifications/analytics": "Get notification analytics",
+
+        // Date Curation Routes  
+        "POST /admin/date-curation/curated-dates": "Create curated date",
+        "GET /admin/date-curation/curated-dates": "Get all curated dates",
+        "POST /admin/date-curation/search-potential-matches": "Search potential matches",
+        "GET /admin/date-curation/users/:userId/trust-score": "Get user trust score",
+        "GET /admin/date-curation/analytics/overview": "Get date curation analytics",
+
+        // Revenue Analytics Routes
+        "GET /admin/revenue/overview": "Get revenue analytics overview",
+        "GET /admin/revenue/real-time": "Get real-time revenue metrics",
+        "GET /admin/revenue/transactions": "Get all transactions",
+        "POST /admin/revenue/refunds": "Process refund",
+        "GET /admin/revenue/analytics/ltv-analysis": "Get customer LTV analysis",
+
+        // Match Suggestions Routes
+        "POST /admin/match-suggestions/generate": "Generate match suggestions",
+        "GET /admin/match-suggestions": "Get match suggestions",
+        "POST /admin/match-suggestions/compatibility-analysis": "Get compatibility analysis",
+        "GET /admin/match-suggestions/algorithms/performance": "Get algorithm performance",
+
+        // User Management Routes
+        "GET /admin/users": "Get all users with filtering",
+        "POST /admin/users/:userId/ban": "Ban user",
+        "POST /admin/users/:userId/verify/email": "Verify user email",
+        "GET /admin/users/verification/pending": "Get pending verifications",
+        "GET /admin/users/analytics/overview": "Get user analytics",
+      },
+
+      // Date Curation routes
       dateCuration: {
         // USER ROUTES
         "GET /date-curation/my-dates": "Get user's curated dates (upcoming, past, pending)",
@@ -141,7 +198,7 @@ export function createAppRoutes(dataSource: DataSource): Router {
         "GET /date-curation/compatibility/:user1Id/:user2Id": "Get compatibility score between users",
         "GET /date-curation/health": "Date curation service health check"
       },
-      admin: {
+      adminAuth: {
         "POST /admin/auth/login": "Admin login with 2FA support",
         "POST /admin/auth/2fa": "Complete 2FA verification",
         "POST /admin/auth/refresh": "Refresh admin access token",
@@ -235,8 +292,18 @@ export function createAppRoutes(dataSource: DataSource): Router {
         0
       ),
       timestamp: new Date().toISOString(),
-      // 🎯 NEW: Highlight the new Date Curation endpoints
+      // Updated features summary
       newFeatures: {
+        admin: {
+          dashboardEndpoints: 28,
+          notificationEndpoints: 50,
+          dateCurationEndpoints: 26,
+          revenueEndpoints: 40,
+          matchSuggestionsEndpoints: 33,
+          userManagementEndpoints: 41,
+          totalAdminEndpoints: 218,
+          description: "Complete admin interface for managing dating platform"
+        },
         dateCuration: {
           userEndpoints: 10,
           adminEndpoints: 15,
@@ -251,12 +318,3 @@ export function createAppRoutes(dataSource: DataSource): Router {
 
   return router;
 }
-
-// // 🎯 NEW: Add this export for easy access to route count
-// export const getRouteStats = () => {
-//   return {
-//     totalModules: 8, // auth, admin-auth, user-profile, availability, images, partner-prefs, date-curation, legacy
-//     dateCurationEndpoints: 32,
-//     totalNewEndpoints: 50+ // approximate total of all new endpoints
-//   };
-// };
