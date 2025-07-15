@@ -1,14 +1,14 @@
 /**
  * Admin Notifications Service
  * Core business logic for notification management
- * 
+ *
  * @author Datifyy Engineering Team
  * @since 1.0.0
  */
 
-import { Logger } from '../../../../infrastructure/logging/Logger';
-import { NotificationRepository } from '../repositories/NotificationRepository';
-import { 
+import { Logger } from "../../../../infrastructure/logging/Logger";
+import { NotificationRepository } from "../repositories/NotificationRepository";
+import {
   CreateNotificationRequest,
   GetNotificationsRequest,
   UpdateNotificationRequest,
@@ -18,8 +18,8 @@ import {
   CreateNotificationTemplateRequest,
   NotificationTemplateResponse,
   TestNotificationRequest,
-  NotificationAnalyticsResponse
-} from '../../../../proto-types/admin/notifications';
+  NotificationAnalyticsResponse,
+} from "../../../../proto-types/admin/notifications";
 
 export class AdminNotificationsService {
   constructor(
@@ -35,10 +35,10 @@ export class AdminNotificationsService {
     adminId: number
   ): Promise<BaseNotification> {
     try {
-      this.logger.info('Creating notification', {
+      this.logger.info("Creating notification", {
         triggerEvent: request.triggerEvent,
         channels: request.channels,
-        adminId
+        adminId,
       });
 
       // TODO: Implement notification creation logic
@@ -50,15 +50,15 @@ export class AdminNotificationsService {
         title: request.title,
         message: request.message,
         metadata: request.metadata,
-        status: 'PENDING' as any,
+        status: "PENDING" as any,
         createdAt: new Date().toISOString(),
         retryCount: 0,
         maxRetries: 3,
         recipientAdminId: adminId,
-        recipientChannel: '',
+        recipientChannel: "",
         sentAt: request.scheduledAt,
         deliveredAt: request.scheduledAt,
-        failureReason: ''
+        failureReason: "",
       };
 
       // Save to database
@@ -68,12 +68,11 @@ export class AdminNotificationsService {
       await this.sendNotification(notification);
 
       return notification;
-
     } catch (error: any) {
-      this.logger.error('Error creating notification', {
+      this.logger.error("Error creating notification", {
         error: error.message,
         adminId,
-        triggerEvent: request.triggerEvent
+        triggerEvent: request.triggerEvent,
       });
       throw error;
     }
@@ -84,20 +83,21 @@ export class AdminNotificationsService {
    */
   async getAllNotifications(query: GetNotificationsRequest): Promise<any> {
     try {
-      this.logger.info('Getting all notifications', { query });
+      this.logger.info("Getting all notifications", { query });
 
       const result = await this.notificationRepository.findAll(query);
-      
+
       return {
         notifications: result.data,
         total: result.total,
         page: query.pagination?.page || 1,
         limit: query.pagination?.limit || 20,
-        totalPages: Math.ceil(result.total / (query.pagination?.limit || 20))
+        totalPages: Math.ceil(result.total / (query.pagination?.limit || 20)),
       };
-
     } catch (error: any) {
-      this.logger.error('Error getting notifications', { error: error.message });
+      this.logger.error("Error getting notifications", {
+        error: error.message,
+      });
       throw error;
     }
   }
@@ -107,17 +107,19 @@ export class AdminNotificationsService {
    */
   async getNotificationById(id: string): Promise<BaseNotification> {
     try {
-      this.logger.info('Getting notification by ID', { id });
+      this.logger.info("Getting notification by ID", { id });
 
       const notification = await this.notificationRepository.findById(id);
       if (!notification) {
-        throw new Error('Notification not found');
+        throw new Error("Notification not found");
       }
 
       return notification;
-
     } catch (error: any) {
-      this.logger.error('Error getting notification by ID', { error: error.message, id });
+      this.logger.error("Error getting notification by ID", {
+        error: error.message,
+        id,
+      });
       throw error;
     }
   }
@@ -131,17 +133,23 @@ export class AdminNotificationsService {
     adminId: number
   ): Promise<BaseNotification> {
     try {
-      this.logger.info('Updating notification', { id, adminId });
+      this.logger.info("Updating notification", { id, adminId });
 
-      const notification = await this.notificationRepository.update(id, request);
+      const notification = await this.notificationRepository.update(
+        id,
+        request
+      );
       if (!notification) {
-        throw new Error('Notification not found');
+        throw new Error("Notification not found");
       }
 
       return notification;
-
     } catch (error: any) {
-      this.logger.error('Error updating notification', { error: error.message, id, adminId });
+      this.logger.error("Error updating notification", {
+        error: error.message,
+        id,
+        adminId,
+      });
       throw error;
     }
   }
@@ -151,15 +159,18 @@ export class AdminNotificationsService {
    */
   async deleteNotification(id: string, adminId: number): Promise<void> {
     try {
-      this.logger.info('Deleting notification', { id, adminId });
+      this.logger.info("Deleting notification", { id, adminId });
 
       const success = await this.notificationRepository.delete(id);
       if (!success) {
-        throw new Error('Notification not found');
+        throw new Error("Notification not found");
       }
-
     } catch (error: any) {
-      this.logger.error('Error deleting notification', { error: error.message, id, adminId });
+      this.logger.error("Error deleting notification", {
+        error: error.message,
+        id,
+        adminId,
+      });
       throw error;
     }
   }
@@ -167,32 +178,40 @@ export class AdminNotificationsService {
   /**
    * Retry failed notification
    */
-  async retryNotification(id: string, adminId: number): Promise<BaseNotification> {
+  async retryNotification(
+    id: string,
+    adminId: number
+  ): Promise<BaseNotification> {
     try {
-      this.logger.info('Retrying notification', { id, adminId });
+      this.logger.info("Retrying notification", { id, adminId });
 
       const notification = await this.notificationRepository.findById(id);
       if (!notification) {
-        throw new Error('Notification not found');
+        throw new Error("Notification not found");
       }
 
       // Update retry count
       notification.retryCount += 1;
-      notification.status = 'PENDING' as any;
+      notification.status = "PENDING" as any;
 
       await this.notificationRepository.update(id, {
         notificationId: id,
         status: notification.status,
-        retryCount: notification.retryCount, failureReason:notification.failureReason, deliveredAt: notification.deliveredAt
+        retryCount: notification.retryCount,
+        failureReason: notification.failureReason,
+        deliveredAt: notification.deliveredAt,
       });
 
       // Resend notification
       await this.sendNotification(notification);
 
       return notification;
-
     } catch (error: any) {
-      this.logger.error('Error retrying notification', { error: error.message, id, adminId });
+      this.logger.error("Error retrying notification", {
+        error: error.message,
+        id,
+        adminId,
+      });
       throw error;
     }
   }
@@ -205,10 +224,10 @@ export class AdminNotificationsService {
     adminId: number
   ): Promise<BulkNotificationResponse> {
     try {
-      this.logger.info('Sending bulk notifications', {
+      this.logger.info("Sending bulk notifications", {
         templateId: request.templateId,
         recipientCount: request.recipients.length,
-        adminId
+        adminId,
       });
 
       const batchId = `batch_${Date.now()}`;
@@ -228,30 +247,33 @@ export class AdminNotificationsService {
         } catch (error: any) {
           failures.push({
             recipient,
-            error: error.message
+            error: error.message,
           });
         }
       }
 
       return {
         success: true,
+        failed: 0,
+        estimatedCost: 0,
         batchId,
         totalRequested: 0,
         successful: 0,
-        message: 'Bulk notifications sent successfully',
-        results: [{
-         recipient: '',
-  notificationId: '',
-  success: true,
-  error: '',
-        }]
+        message: "Bulk notifications sent successfully",
+        results: [
+          {
+            recipient: "",
+            notificationId: "",
+            success: true,
+            error: "",
+          },
+        ],
       };
-
     } catch (error: any) {
-      this.logger.error('Error sending bulk notifications', {
+      this.logger.error("Error sending bulk notifications", {
         error: error.message,
         adminId,
-        templateId: request.templateId
+        templateId: request.templateId,
       });
       throw error;
     }
@@ -260,27 +282,32 @@ export class AdminNotificationsService {
   /**
    * Retry bulk notifications
    */
-  async retryBulkNotifications(notificationIds: string[], adminId: number): Promise<any> {
+  async retryBulkNotifications(
+    notificationIds: string[],
+    adminId: number
+  ): Promise<any> {
     try {
-      this.logger.info('Retrying bulk notifications', { notificationIds, adminId });
+      this.logger.info("Retrying bulk notifications", {
+        notificationIds,
+        adminId,
+      });
 
       const results = [];
       for (const id of notificationIds) {
         try {
           const notification = await this.retryNotification(id, adminId);
-          results.push({ id, status: 'success', notification });
+          results.push({ id, status: "success", notification });
         } catch (error: any) {
-          results.push({ id, status: 'error', error: error.message });
+          results.push({ id, status: "error", error: error.message });
         }
       }
 
       return { results };
-
     } catch (error: any) {
-      this.logger.error('Error retrying bulk notifications', {
+      this.logger.error("Error retrying bulk notifications", {
         error: error.message,
         adminId,
-        notificationIds
+        notificationIds,
       });
       throw error;
     }
@@ -291,15 +318,14 @@ export class AdminNotificationsService {
    */
   async bulkUpdateNotifications(request: any, adminId: number): Promise<any> {
     try {
-      this.logger.info('Bulk updating notifications', { adminId });
+      this.logger.info("Bulk updating notifications", { adminId });
 
       // TODO: Implement bulk update logic
       return { updated: true };
-
     } catch (error: any) {
-      this.logger.error('Error bulk updating notifications', {
+      this.logger.error("Error bulk updating notifications", {
         error: error.message,
-        adminId
+        adminId,
       });
       throw error;
     }
@@ -308,12 +334,14 @@ export class AdminNotificationsService {
   /**
    * Private helper methods
    */
-  private async sendNotification(notification: BaseNotification): Promise<void> {
+  private async sendNotification(
+    notification: BaseNotification
+  ): Promise<void> {
     // TODO: Implement actual notification sending logic
     // This would integrate with email, SMS, Slack, etc. services
-    this.logger.info('Sending notification', {
+    this.logger.info("Sending notification", {
       id: notification.id,
-      channel: notification.channel
+      channel: notification.channel,
     });
   }
 
@@ -326,17 +354,36 @@ export class AdminNotificationsService {
     // TODO: Implement template-based notification creation
     return {
       id: `notif_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
-      triggerEvent: 'TEMPLATE_NOTIFICATION' as any,
+      recipientChannel: '',
+      sentAt: new Date().toISOString(),
+      deliveredAt: new Date().toISOString(),
+      failureReason: '',
+      triggerEvent: "TEMPLATE_NOTIFICATION" as any,
       channel: recipient.channel as any,
-      priority: 'NORMAL' as any,
-      title: 'Template Notification',
-      message: 'Message from template',
-      status: 'PENDING' as any,
+      priority: "NORMAL" as any,
+      title: "Template Notification",
+      message: "Message from template",
+      status: "PENDING" as any,
       createdAt: new Date().toISOString(),
       retryCount: 0,
       maxRetries: 3,
-      metadata: {},
-      recipientAdminId: adminId
+      metadata: {
+        resourceType: "",
+        resourceId: "",
+        userId: 0,
+        userEmail: "",
+        userName: "",
+        adminId: 0,
+        amount: 0,
+        currency: "",
+        city: "",
+        dateTime: "",
+        additionalData: {},
+        templateVariables: {},
+        actionUrl: "",
+        actionText: ""
+      },
+      recipientAdminId: adminId,
     };
   }
 
@@ -345,35 +392,52 @@ export class AdminNotificationsService {
     return [];
   }
 
-  async createTemplate(request: CreateNotificationTemplateRequest, adminId: number): Promise<NotificationTemplateResponse> {
-    throw new Error('Method not implemented');
+  async createTemplate(
+    request: CreateNotificationTemplateRequest,
+    adminId: number
+  ): Promise<NotificationTemplateResponse> {
+    throw new Error("Method not implemented");
   }
 
   async getTemplateById(id: string): Promise<NotificationTemplateResponse> {
-    throw new Error('Method not implemented');
+    throw new Error("Method not implemented");
   }
 
-  async updateTemplate(id: string, request: any, adminId: number): Promise<NotificationTemplateResponse> {
-    throw new Error('Method not implemented');
+  async updateTemplate(
+    id: string,
+    request: any,
+    adminId: number
+  ): Promise<NotificationTemplateResponse> {
+    throw new Error("Method not implemented");
   }
 
   async deleteTemplate(id: string, adminId: number): Promise<void> {
-    throw new Error('Method not implemented');
+    throw new Error("Method not implemented");
   }
 
-  async duplicateTemplate(id: string, name: string, adminId: number): Promise<NotificationTemplateResponse> {
-    throw new Error('Method not implemented');
+  async duplicateTemplate(
+    id: string,
+    name: string,
+    adminId: number
+  ): Promise<NotificationTemplateResponse> {
+    throw new Error("Method not implemented");
   }
 
-  async testTemplate(id: string, request: TestNotificationRequest, adminId: number): Promise<any> {
-    throw new Error('Method not implemented');
+  async testTemplate(
+    id: string,
+    request: TestNotificationRequest,
+    adminId: number
+  ): Promise<any> {
+    throw new Error("Method not implemented");
   }
 
   // Analytics methods (to be implemented)
-  async getNotificationAnalytics(query: any): Promise<NotificationAnalyticsResponse> {
+  async getNotificationAnalytics(
+    query: any
+  ): Promise<NotificationAnalyticsResponse> {
     return {
       success: true,
-      message: 'Analytics retrieved successfully',
+      message: "Analytics retrieved successfully",
       data: {
         totalNotifications: 0,
         totalSent: 0,
@@ -383,8 +447,8 @@ export class AdminNotificationsService {
         averageDeliveryTime: 0,
         channelPerformance: {},
         eventPerformance: {},
-        trends: []
-      }
+        trends: [],
+      },
     };
   }
 

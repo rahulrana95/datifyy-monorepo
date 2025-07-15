@@ -5,6 +5,7 @@ package datifyy.user.profile;
 import "common/base.proto";
 import "common/enums.proto";
 import "user/enums.proto";
+import "admin/revenue.proto";
 
 
 
@@ -100,7 +101,7 @@ message HeightRange {
 message UserAvailability {
   int32 id = 1;
   int32 user_id = 2;
-  datifyy.common.DateType date_type = 3;
+  datifyy.admin.revenue.DateType date_type = 3;
   string start_time = 4;
   string end_time = 5;
   string timezone = 6;

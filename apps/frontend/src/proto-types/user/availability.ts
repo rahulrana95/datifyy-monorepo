@@ -5,14 +5,8 @@
 // source: user/availability.proto
 
 /* eslint-disable */
+import type { DateType } from "../admin/revenue";
 import type { PaginationRequest, PaginationResponse } from "../common/base";
-
-/** Date type for availability */
-export enum AvailabilityDateType {
-  AVAILABILITY_DATE_TYPE_UNSPECIFIED = "AVAILABILITY_DATE_TYPE_UNSPECIFIED",
-  AVAILABILITY_DATE_TYPE_ONLINE = "AVAILABILITY_DATE_TYPE_ONLINE",
-  AVAILABILITY_DATE_TYPE_OFFLINE = "AVAILABILITY_DATE_TYPE_OFFLINE",
-}
 
 /** Availability status */
 export enum AvailabilitySlotStatus {
@@ -67,7 +61,7 @@ export enum SelectedActivity {
 export interface AvailabilitySlot {
   id: string;
   userId: number;
-  dateType: AvailabilityDateType;
+  dateType: DateType;
   status: AvailabilitySlotStatus;
   date?: string | undefined;
   startTime: string;
@@ -124,7 +118,7 @@ export interface AvailabilityBooking {
 export interface UserAvailabilityPreferences {
   userId: number;
   isAvailable: boolean;
-  preferredDateTypes: AvailabilityDateType[];
+  preferredDateTypes: DateType[];
   defaultDurationMinutes: number;
   defaultBufferTimeMinutes: number;
   advanceBookingDays: number;
@@ -144,7 +138,7 @@ export interface UserAvailabilityPreferences {
 
 /** Request messages */
 export interface CreateAvailabilityRequest {
-  dateType: AvailabilityDateType;
+  dateType: DateType;
   date?: string | undefined;
   startTime: string;
   endTime: string;
@@ -167,7 +161,7 @@ export interface CreateAvailabilityRequest {
 
 export interface UpdateAvailabilityRequest {
   availabilitySlotId: string;
-  dateType: AvailabilityDateType;
+  dateType: DateType;
   date?: string | undefined;
   startTime: string;
   endTime: string;
@@ -190,7 +184,7 @@ export interface GetAvailabilityRequest {
   startDate?: string | undefined;
   endDate?: string | undefined;
   statuses: AvailabilitySlotStatus[];
-  dateTypes: AvailabilityDateType[];
+  dateTypes: DateType[];
   includeBooked: boolean;
   includePast: boolean;
   pagination?: PaginationRequest | undefined;
@@ -203,7 +197,7 @@ export interface SearchAvailableUsersRequest {
   timezone: string;
   location: string;
   maxDistanceKm: number;
-  dateTypes: AvailabilityDateType[];
+  dateTypes: DateType[];
   preferredActivities: string[];
   minAge: number;
   maxAge: number;
@@ -240,7 +234,7 @@ export interface CancelAvailabilityRequest {
 
 export interface UpdateAvailabilityPreferencesRequest {
   isAvailable: boolean;
-  preferredDateTypes: AvailabilityDateType[];
+  preferredDateTypes: DateType[];
   defaultDurationMinutes: number;
   defaultBufferTimeMinutes: number;
   advanceBookingDays: number;
@@ -335,7 +329,7 @@ export interface AvailabilityAnalytics {
 }
 
 export interface DateTypeStats {
-  dateType: AvailabilityDateType;
+  dateType: DateType;
   count: number;
   percentage: number;
 }

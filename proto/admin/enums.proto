@@ -204,19 +204,6 @@ enum MatchAlgorithm {
   RULE_BASED = 5;
 }
 
-// Compatibility factors
-enum CompatibilityFactor {
-  COMPATIBILITY_FACTOR_UNSPECIFIED = 0;
-  INTERESTS = 1;
-  LOCATION = 2;
-  AGE = 3;
-  EDUCATION = 4;
-  LIFESTYLE = 5;
-  VALUES = 6;
-  PERSONALITY = 7;
-  COMMUNICATION_STYLE = 8;
-}
-
 // Match confidence levels
 enum MatchConfidenceLevel {
   MATCH_CONFIDENCE_LEVEL_UNSPECIFIED = 0;

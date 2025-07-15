@@ -5,8 +5,9 @@
 // source: dating/curated_dates.proto
 
 /* eslint-disable */
+import type { DateType } from "../admin/revenue";
 import type { Coordinates, PaginationRequest, PaginationResponse } from "../common/base";
-import type { DateType, RelationshipStage } from "../common/enums";
+import type { RelationshipStage } from "./curation";
 
 /** Date status */
 export enum CuratedDateStatus {
@@ -40,6 +41,35 @@ export enum CurationWorkflowStage {
   CURATION_WORKFLOW_STAGE_CONFIRMATION = "CURATION_WORKFLOW_STAGE_CONFIRMATION",
   CURATION_WORKFLOW_STAGE_PAYMENT = "CURATION_WORKFLOW_STAGE_PAYMENT",
   CURATION_WORKFLOW_STAGE_COMPLETED = "CURATION_WORKFLOW_STAGE_COMPLETED",
+}
+
+export enum DateMode {
+  DATE_MODE_UNSPECIFIED = "DATE_MODE_UNSPECIFIED",
+  DATE_MODE_ONLINE = "DATE_MODE_ONLINE",
+  DATE_MODE_OFFLINE = "DATE_MODE_OFFLINE",
+}
+
+/** Enum for sort by options */
+export enum SortBy {
+  SORT_BY_UNSPECIFIED = "SORT_BY_UNSPECIFIED",
+  SORT_BY_DATE_TIME = "SORT_BY_DATE_TIME",
+  SORT_BY_STATUS = "SORT_BY_STATUS",
+  SORT_BY_CREATED_AT = "SORT_BY_CREATED_AT",
+}
+
+/** Enum for sort order */
+export enum SortOrder {
+  SORT_ORDER_UNSPECIFIED = "SORT_ORDER_UNSPECIFIED",
+  SORT_ORDER_ASC = "SORT_ORDER_ASC",
+  SORT_ORDER_DESC = "SORT_ORDER_DESC",
+}
+
+/** Enum for admin priority levels */
+export enum AdminPriority {
+  ADMIN_PRIORITY_UNSPECIFIED = "ADMIN_PRIORITY_UNSPECIFIED",
+  ADMIN_PRIORITY_1 = "ADMIN_PRIORITY_1",
+  ADMIN_PRIORITY_2 = "ADMIN_PRIORITY_2",
+  ADMIN_PRIORITY_3 = "ADMIN_PRIORITY_3",
 }
 
 /** Curated date */
@@ -204,4 +234,51 @@ export interface DateSeriesResponse {
   success: boolean;
   data?: DateSeries | undefined;
   message: string;
+}
+
+/** Get user dates request message with filters */
+export interface GetUserDatesRequest {
+  /** If not provided, use authenticated user */
+  userId?: number | undefined;
+  status: CuratedDateStatus[];
+  /** YYYY-MM-DD */
+  dateFrom?:
+    | string
+    | undefined;
+  /** YYYY-MM-DD */
+  dateTo?: string | undefined;
+  mode?: DateMode | undefined;
+  includeSeriesInfo?: boolean | undefined;
+  includeFeedback?: boolean | undefined;
+  page?: number | undefined;
+  limit?: number | undefined;
+  sortBy?: SortBy | undefined;
+  sortOrder?: SortOrder | undefined;
+}
+
+/** Admin get dates request message with extensive filters */
+export interface AdminGetDatesRequest {
+  status: CuratedDateStatus[];
+  dateFrom?: string | undefined;
+  dateTo?: string | undefined;
+  mode?: DateMode | undefined;
+  city?: string | undefined;
+  adminPriority?: AdminPriority | undefined;
+  curatedBy?: number | undefined;
+  hasUnreadFeedback?: boolean | undefined;
+  requiresFollowUp?: boolean | undefined;
+  seriesId?: string | undefined;
+  user1Id?: number | undefined;
+  user2Id?: number | undefined;
+  minCompatibilityScore?: number | undefined;
+  maxCompatibilityScore?: number | undefined;
+  revenueImpactMin?: number | undefined;
+  revenueImpactMax?: number | undefined;
+  includeCancelledByAdmin?: boolean | undefined;
+  includeWorkflowDetails?: boolean | undefined;
+  includeTrustScores?: boolean | undefined;
+  page?: number | undefined;
+  limit?: number | undefined;
+  sortBy?: string | undefined;
+  sortOrder?: SortOrder | undefined;
 }

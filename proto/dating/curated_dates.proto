@@ -3,7 +3,8 @@ syntax = "proto3";
 package datifyy.dating.curated_dates;
 
 import "common/base.proto";
-import "common/enums.proto";
+import "admin/revenue.proto";
+import "dating/curation.proto";
 
 
 // Date status
@@ -45,7 +46,7 @@ message CuratedDate {
   string id = 1;
   int32 user1_id = 2;
   int32 user2_id = 3;
-  datifyy.common.DateType date_type = 4;
+  datifyy.admin.revenue.DateType date_type = 4;
   CuratedDateStatus status = 5;
   string venue_name = 6;
   string venue_address = 7;
@@ -92,7 +93,7 @@ message DateSeries {
   repeated string curated_date_ids = 6;
   int32 total_dates = 7;
   int32 completed_dates = 8;
-  datifyy.common.RelationshipStage relationship_stage = 9;
+  .dating.curation.RelationshipStage relationship_stage = 9;
   bool is_active = 10;
   string created_at = 11;
   string updated_at = 12;
@@ -120,7 +121,7 @@ message CompatibilityFactorType {
 message CreateCuratedDateRequest {
   int32 user1_id = 1;
   int32 user2_id = 2;
-  datifyy.common.DateType date_type = 3;
+  datifyy.admin.revenue.DateType date_type = 3;
   string preferred_date = 4;
   string preferred_time = 5;
   string preferred_venue_type = 6;
@@ -202,4 +203,75 @@ message DateSeriesResponse {
   bool success = 1;
   DateSeries data = 2;
   string message = 3;
+}
+
+enum DateMode {
+  DATE_MODE_UNSPECIFIED = 0;
+  DATE_MODE_ONLINE = 1;
+  DATE_MODE_OFFLINE = 2;
+}
+
+// Get user dates request message with filters
+message GetUserDatesRequest {
+  optional int32 user_id = 1; // If not provided, use authenticated user
+  repeated CuratedDateStatus status = 2;
+  optional string date_from = 3; // YYYY-MM-DD
+  optional string date_to = 4; // YYYY-MM-DD
+  optional DateMode mode = 5;
+  optional bool include_series_info = 6;
+  optional bool include_feedback = 7;
+  optional int32 page = 8;
+  optional int32 limit = 9;
+  optional SortBy sort_by = 10;
+  optional SortOrder sort_order = 11;
+}
+
+// Enum for sort by options
+enum SortBy {
+  SORT_BY_UNSPECIFIED = 0;
+  SORT_BY_DATE_TIME = 1;
+  SORT_BY_STATUS = 2;
+  SORT_BY_CREATED_AT = 3;
+}
+
+// Enum for sort order
+enum SortOrder {
+  SORT_ORDER_UNSPECIFIED = 0;
+  SORT_ORDER_ASC = 1;
+  SORT_ORDER_DESC = 2;
+}
+
+// Enum for admin priority levels
+enum AdminPriority {
+  ADMIN_PRIORITY_UNSPECIFIED = 0;
+  ADMIN_PRIORITY_1 = 1;
+  ADMIN_PRIORITY_2 = 2;
+  ADMIN_PRIORITY_3 = 3;
+}
+
+// Admin get dates request message with extensive filters
+message AdminGetDatesRequest {
+  repeated CuratedDateStatus status = 1;
+  optional string date_from = 2;
+  optional string date_to = 3;
+  optional DateMode mode = 4;
+  optional string city = 5;
+  optional AdminPriority admin_priority = 6;
+  optional int32 curated_by = 7;
+  optional bool has_unread_feedback = 8;
+  optional bool requires_follow_up = 9;
+  optional string series_id = 10;
+  optional int32 user1_id = 11;
+  optional int32 user2_id = 12;
+  optional double min_compatibility_score = 13;
+  optional double max_compatibility_score = 14;
+  optional double revenue_impact_min = 15;
+  optional double revenue_impact_max = 16;
+  optional bool include_cancelled_by_admin = 17;
+  optional bool include_workflow_details = 18;
+  optional bool include_trust_scores = 19;
+  optional int32 page = 20;
+  optional int32 limit = 21;
+  optional string sort_by = 22;
+  optional SortOrder sort_order = 23;
 }

@@ -5,8 +5,9 @@
 // source: user/profile.proto
 
 /* eslint-disable */
+import type { DateType } from "../admin/revenue";
 import type { LocationInfo } from "../common/base";
-import type { DateType, UserStatus } from "../common/enums";
+import type { UserStatus } from "../common/enums";
 import type { EducationLevel, Gender } from "./enums";
 
 /** Religion */

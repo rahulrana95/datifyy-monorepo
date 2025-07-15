@@ -4,13 +4,7 @@ package user.availability;
 
 import "google/protobuf/timestamp.proto";
 import "common/base.proto";
-
-// Date type for availability
-enum AvailabilityDateType {
-  AVAILABILITY_DATE_TYPE_UNSPECIFIED = 0;
-  AVAILABILITY_DATE_TYPE_ONLINE = 1;
-  AVAILABILITY_DATE_TYPE_OFFLINE = 2;
-}
+import "admin/revenue.proto";
 
 // Availability status
 enum AvailabilitySlotStatus {
@@ -65,7 +59,7 @@ enum SelectedActivity {
 message AvailabilitySlot {
   string id = 1;
   int32 user_id = 2;
-  AvailabilityDateType date_type = 3;
+  datifyy.admin.revenue.DateType date_type = 3;
   AvailabilitySlotStatus status = 4;
   google.protobuf.Timestamp date = 5;
   string start_time = 6;
@@ -122,7 +116,7 @@ message AvailabilityBooking {
 message UserAvailabilityPreferences {
   int32 user_id = 1;
   bool is_available = 2;
-  repeated AvailabilityDateType preferred_date_types = 3;
+  repeated datifyy.admin.revenue.DateType preferred_date_types = 3;
   int32 default_duration_minutes = 4;
   int32 default_buffer_time_minutes = 5;
   int32 advance_booking_days = 6;
@@ -142,7 +136,7 @@ message UserAvailabilityPreferences {
 
 // Request messages
 message CreateAvailabilityRequest {
-  AvailabilityDateType date_type = 1;
+  datifyy.admin.revenue.DateType date_type = 1;
   google.protobuf.Timestamp date = 2;
   string start_time = 3;
   string end_time = 4;
@@ -165,7 +159,7 @@ message CreateAvailabilityRequest {
 
 message UpdateAvailabilityRequest {
   string availability_slot_id = 1;
-  AvailabilityDateType date_type = 2;
+  datifyy.admin.revenue.DateType date_type = 2;
   google.protobuf.Timestamp date = 3;
   string start_time = 4;
   string end_time = 5;
@@ -188,7 +182,7 @@ message GetAvailabilityRequest {
   google.protobuf.Timestamp start_date = 2;
   google.protobuf.Timestamp end_date = 3;
   repeated AvailabilitySlotStatus statuses = 4;
-  repeated AvailabilityDateType date_types = 5;
+  repeated datifyy.admin.revenue.DateType date_types = 5;
   bool include_booked = 6;
   bool include_past = 7;
   datifyy.common.PaginationRequest pagination = 8;
@@ -201,7 +195,7 @@ message SearchAvailableUsersRequest {
   string timezone = 4;
   string location = 5;
   float max_distance_km = 6;
-  repeated AvailabilityDateType date_types = 7;
+  repeated datifyy.admin.revenue.DateType date_types = 7;
   repeated string preferred_activities = 8;
   int32 min_age = 9;
   int32 max_age = 10;
@@ -238,7 +232,7 @@ message CancelAvailabilityRequest {
 
 message UpdateAvailabilityPreferencesRequest {
   bool is_available = 1;
-  repeated AvailabilityDateType preferred_date_types = 2;
+  repeated datifyy.admin.revenue.DateType preferred_date_types = 2;
   int32 default_duration_minutes = 3;
   int32 default_buffer_time_minutes = 4;
   int32 advance_booking_days = 5;
@@ -329,7 +323,7 @@ message AvailabilityAnalytics {
 }
 
 message DateTypeStats {
-  AvailabilityDateType date_type = 1;
+  datifyy.admin.revenue.DateType date_type = 1;
   int32 count = 2;
   float percentage = 3;
 }
