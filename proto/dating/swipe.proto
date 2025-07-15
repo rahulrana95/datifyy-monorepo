@@ -4,7 +4,6 @@ package dating.swipe;
 
 import "google/protobuf/timestamp.proto";
 import "common/base.proto";
-import "user/profile.proto";
 
 // Auth view types
 enum AuthView {

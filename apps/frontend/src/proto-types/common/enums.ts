@@ -15,15 +15,6 @@ export enum UserStatus {
   USER_STATUS_DELETED = "USER_STATUS_DELETED",
 }
 
-/** Gender options */
-export enum Gender {
-  GENDER_UNSPECIFIED = "GENDER_UNSPECIFIED",
-  GENDER_MALE = "GENDER_MALE",
-  GENDER_FEMALE = "GENDER_FEMALE",
-  GENDER_NON_BINARY = "GENDER_NON_BINARY",
-  GENDER_OTHER = "GENDER_OTHER",
-}
-
 /** Relationship stage */
 export enum RelationshipStage {
   RELATIONSHIP_STAGE_UNSPECIFIED = "RELATIONSHIP_STAGE_UNSPECIFIED",

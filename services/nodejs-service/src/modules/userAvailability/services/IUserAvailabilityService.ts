@@ -14,8 +14,19 @@ import {
   AvailabilityAnalyticsResponse,
   CalendarViewResponse,
   TimeSuggestionsResponse,
-  AvailabilityConflict
+  AvailabilityConflict,
+  AvailabilitySlot
 } from '../../../proto-types/user/availability';
+
+/**
+ * Slot creation result type
+ */
+export interface SlotCreationResult {
+  success: boolean;
+  slot?: AvailabilitySlot;
+  error?: string;
+  conflict?: AvailabilityConflict;
+}
 
 /**
  * User Availability Service Interface

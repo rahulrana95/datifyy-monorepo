@@ -47,12 +47,12 @@ message UserProfile {
   string first_name = 3;
   string last_name = 4;
   string date_of_birth = 5;
-  datifyy.common.Gender gender = 6;
+  datifyy.user.Gender gender = 6;
   string phone_number = 7;
   string bio = 8;
   repeated string interests = 9;
   string occupation = 10;
-  .user.EducationLevel education_level = 11;
+  datifyy.user.EducationLevel education_level = 11;
   Religion religion = 12;
   SmokingPreference smoking_preference = 13;
   DrinkingPreference drinking_preference = 14;
@@ -70,10 +70,10 @@ message UserProfile {
 message PartnerPreferences {
   int32 user_id = 1;
   AgeRange age_range = 2;
-  repeated datifyy.common.Gender preferred_genders = 3;
+  repeated datifyy.user.Gender preferred_genders = 3;
   int32 max_distance_km = 4;
   HeightRange height_range = 5;
-  repeated .user.EducationLevel education_levels = 6;
+  repeated datifyy.user.EducationLevel education_levels = 6;
   repeated Religion religions = 7;
   repeated SmokingPreference smoking_preferences = 8;
   repeated DrinkingPreference drinking_preferences = 9;
@@ -124,7 +124,7 @@ message UpdateUserProfileRequest {
   string bio = 4;
   repeated string interests = 5;
   string occupation = 6;
-  .user.EducationLevel education_level = 7;
+  datifyy.user.EducationLevel education_level = 7;
   Religion religion = 8;
   SmokingPreference smoking_preference = 9;
   DrinkingPreference drinking_preference = 10;
@@ -135,10 +135,10 @@ message UpdateUserProfileRequest {
 message UpdatePartnerPreferencesRequest {
   int32 user_id = 1;
   AgeRange age_range = 2;
-  repeated datifyy.common.Gender preferred_genders = 3;
+  repeated datifyy.user.Gender preferred_genders = 3;
   int32 max_distance_km = 4;
   HeightRange height_range = 5;
-  repeated .user.EducationLevel education_levels = 6;
+  repeated datifyy.user.EducationLevel education_levels = 6;
   repeated Religion religions = 7;
   repeated SmokingPreference smoking_preferences = 8;
   repeated DrinkingPreference drinking_preferences = 9;

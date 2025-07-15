@@ -103,13 +103,13 @@ message CompatibilityDetails {
   int32 user1_id = 1;
   int32 user2_id = 2;
   double overall_score = 3;
-  repeated CompatibilityFactor factors = 4;
+  repeated CompatibilityFactorType factors = 4;
   string algorithm_version = 5;
   string calculated_at = 6;
 }
 
 // Compatibility factor
-message CompatibilityFactor {
+message CompatibilityFactorType {
   string factor_name = 1;
   double score = 2;
   double weight = 3;

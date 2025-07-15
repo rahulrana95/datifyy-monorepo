@@ -6,7 +6,8 @@
 
 /* eslint-disable */
 import type { LocationInfo, PaginationRequest, PaginationResponse } from "../common/base";
-import type { Gender, UserStatus } from "../common/enums";
+import type { UserStatus } from "../common/enums";
+import type { Gender } from "../user/enums";
 
 /** User trust score levels */
 export enum UserTrustScoreLevel {
@@ -56,6 +57,13 @@ export interface UserTrustScore {
   level: UserTrustScoreLevel;
   lastUpdated: string;
   factors: TrustScoreFactor[];
+}
+
+/** User trust score response message */
+export interface UserTrustScoreResponse {
+  success: boolean;
+  data?: UserTrustScore | undefined;
+  message: string;
 }
 
 /** Trust score factor */

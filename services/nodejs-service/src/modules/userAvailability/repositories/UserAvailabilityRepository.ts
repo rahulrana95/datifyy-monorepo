@@ -73,13 +73,14 @@ export class UserAvailabilityRepository implements IUserAvailabilityRepository {
       } as any);
 
       const savedAvailability = await this.repository.save(availability);
+      const result = Array.isArray(savedAvailability) ? savedAvailability[0] : savedAvailability;
       
       this.logger.info('Availability slot created successfully', { 
         userId, 
-        availabilityId: savedAvailability.id 
+        availabilityId: result.id
       });
 
-      return savedAvailability;
+      return result;
     } catch (error) {
       this.logger.error('Failed to create availability slot', { userId, error });
       throw error;
@@ -111,10 +112,10 @@ export class UserAvailabilityRepository implements IUserAvailabilityRepository {
           title: null, // Proto doesn't provide title
           notes: slotData.notes,
           locationPreference: (slotData.location as any)?.formatted_address || null,
-          bufferTimeMinutes: slotData.bufferTime || 30,
+          bufferTimeMinutes: slotData.bufferTimeMinutes || 30,
           preparationTimeMinutes: 15, // Default as proto doesn't provide this
           cancellationPolicy: (slotData.cancellationPolicy || 'TWENTY_FOUR_HOURS').toLowerCase().replace('_', '_') as any,
-          isRecurring: !!slotData.recurrenceType && slotData.recurrenceType !== 'NONE',
+          isRecurring: !!slotData.recurrenceType && slotData.recurrenceType !== AvailabilityRecurrenceType.AVAILABILITY_RECURRENCE_TYPE_NONE,
           recurrenceType: (slotData.recurrenceType || 'NONE').toLowerCase() as 'none' | 'weekly' | 'custom',
           recurrenceEndDate: slotData.recurrenceEndDate || null,
           status: 'active' as const
@@ -354,10 +355,10 @@ export class UserAvailabilityRepository implements IUserAvailabilityRepository {
       if (updateData.endTime) updateFields.endTime = updateData.endTime;
       if (updateData.notes !== undefined) updateFields.notes = updateData.notes;
       if (updateData.location) updateFields.locationPreference = (updateData.location as any).formatted_address;
-      if (updateData.bufferTime !== undefined) updateFields.bufferTimeMinutes = updateData.bufferTime;
+      if (updateData.bufferTimeMinutes !== undefined) updateFields.bufferTimeMinutes = updateData.bufferTimeMinutes;
       if (updateData.cancellationPolicy) updateFields.cancellationPolicy = updateData.cancellationPolicy;
       if (updateData.status) updateFields.status = updateData.status.toLowerCase(); // Convert enum to lowercase
-      if (updateData.isVisible !== undefined) updateFields.isDeleted = !updateData.isVisible;
+      // Note: isVisible field removed from UpdateAvailabilityRequest proto
 
       await this.repository.update(availabilityId, updateFields);
 
@@ -610,13 +611,15 @@ export class UserAvailabilityRepository implements IUserAvailabilityRepository {
     }
 
     // Status filters
-    if (filters.status && filters.status.length > 0) {
-      query.andWhere('availability.status IN (:...statuses)', { statuses: filters.status });
+    if (filters.statuses && filters.statuses.length > 0) {
+      const statusStrings = filters.statuses.map(s => s.toLowerCase().replace('availability_slot_status_', ''));
+      query.andWhere('availability.status IN (:...statuses)', { statuses: statusStrings });
     }
 
     // Date type filters
-    if (filters.dateType && filters.dateType.length > 0) {
-      query.andWhere('availability.dateType IN (:...dateTypes)', { dateTypes: filters.dateType });
+    if (filters.dateTypes && filters.dateTypes.length > 0) {
+      const dateTypeStrings = filters.dateTypes.map(dt => dt.toLowerCase().replace('availability_date_type_', ''));
+      query.andWhere('availability.dateType IN (:...dateTypes)', { dateTypes: dateTypeStrings });
     }
 
     // Always include bookings for now (can be optimized later)

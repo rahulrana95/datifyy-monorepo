@@ -1,8 +1,6 @@
 syntax = "proto3";
 
-package user;
-
-import "common/enums.proto";
+package datifyy.user;
 
 // Gender enum - Single source of truth
 enum Gender {

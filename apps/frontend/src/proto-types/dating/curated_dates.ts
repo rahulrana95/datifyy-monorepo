@@ -105,13 +105,13 @@ export interface CompatibilityDetails {
   user1Id: number;
   user2Id: number;
   overallScore: number;
-  factors: CompatibilityFactor[];
+  factors: CompatibilityFactorType[];
   algorithmVersion: string;
   calculatedAt: string;
 }
 
 /** Compatibility factor */
-export interface CompatibilityFactor {
+export interface CompatibilityFactorType {
   factorName: string;
   score: number;
   weight: number;

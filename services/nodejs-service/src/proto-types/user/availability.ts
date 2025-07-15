@@ -7,9 +7,6 @@
 /* eslint-disable */
 import type { PaginationRequest, PaginationResponse } from "../common/base";
 
-// Re-export for convenience
-export type { PaginationResponse } from "../common/base";
-
 /** Date type for availability */
 export enum AvailabilityDateType {
   AVAILABILITY_DATE_TYPE_UNSPECIFIED = "AVAILABILITY_DATE_TYPE_UNSPECIFIED",

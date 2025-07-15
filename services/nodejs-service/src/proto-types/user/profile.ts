@@ -6,8 +6,8 @@
 
 /* eslint-disable */
 import type { LocationInfo } from "../common/base";
-import type { DateType, Gender, UserStatus } from "../common/enums";
-import type { EducationLevel } from "./enums";
+import type { DateType, UserStatus } from "../common/enums";
+import type { EducationLevel, Gender } from "./enums";
 
 /** Religion */
 export enum Religion {

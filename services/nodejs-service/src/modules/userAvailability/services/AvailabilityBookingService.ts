@@ -4,7 +4,9 @@ import {
   BookAvailabilityRequest,
   UpdateBookingRequest,
   BookingResponse,
-  BookingListResponse
+  BookingListResponse,
+  AvailabilityBooking,
+  AvailabilityBookingStatus
 } from '../../../proto-types/user/availability';
 import { IAvailabilityBookingService } from './IAvailabilityBookingService';
 import { IAvailabilityBookingRepository } from '../repositories/IAvailabilityBookingRepository';
@@ -62,7 +64,7 @@ export class AvailabilityBookingService implements IAvailabilityBookingService {
   /**
    * Get user's bookings (outgoing bookings made by the user)
    */
-  async getUserBookings(userId: number, filters: any): Promise<BookingsListResponse> {
+  async getUserBookings(userId: number, filters: any): Promise<BookingListResponse> {
     this.logger.debug('Getting user bookings', { userId, filters });
 
     try {
@@ -72,23 +74,16 @@ export class AvailabilityBookingService implements IAvailabilityBookingService {
         paginatedResult.data.map(booking => this.mapper.toBookingResponse(booking))
       );
 
-      const bookingSummary = {
-        totalBookings: paginatedResult.pagination.total,
-        upcomingBookings: bookingResponses.filter(b => 
-          new Date(b.availability.availabilityDate) > new Date()
-        ).length,
-        completedBookings: bookingResponses.filter(b => b.bookingStatus === 'completed').length,
-        cancelledBookings: bookingResponses.filter(b => b.bookingStatus === 'cancelled').length
-      };
+      // Extract booking data from responses
+      const bookings = bookingResponses
+        .map(r => r.data)
+        .filter((d): d is AvailabilityBooking => !!d);
 
-      const response: BookingsListResponse = {
+      const response: BookingListResponse = {
         success: true,
-        data: {
-          ...paginatedResult,
-          data: bookingResponses,
-          bookingSummary
-        },
-        message: ''
+        bookings: bookings,
+        pagination: paginatedResult.pagination,
+        message: 'User bookings retrieved successfully'
       };
 
       this.logger.debug('User bookings retrieved', { userId, total: paginatedResult.pagination.total });
@@ -102,7 +97,7 @@ export class AvailabilityBookingService implements IAvailabilityBookingService {
   /**
    * Get incoming bookings (bookings on user's availability slots)
    */
-  async getIncomingBookings(userId: number, filters: any): Promise<BookingsListResponse> {
+  async getIncomingBookings(userId: number, filters: any): Promise<BookingListResponse> {
     this.logger.debug('Getting incoming bookings', { userId, filters });
 
     try {
@@ -112,23 +107,16 @@ export class AvailabilityBookingService implements IAvailabilityBookingService {
         paginatedResult.data.map(booking => this.mapper.toBookingResponse(booking))
       );
 
-      const bookingSummary = {
-        totalBookings: paginatedResult.pagination.total,
-        upcomingBookings: bookingResponses.filter(b => 
-          new Date(b.availability.availabilityDate) > new Date()
-        ).length,
-        completedBookings: bookingResponses.filter(b => b.bookingStatus === 'completed').length,
-        cancelledBookings: bookingResponses.filter(b => b.bookingStatus === 'cancelled').length
-      };
+      // Extract booking data from responses
+      const bookings = bookingResponses
+        .map(r => r.data)
+        .filter((d): d is AvailabilityBooking => !!d);
 
-      const response: BookingsListResponse = {
+      const response: BookingListResponse = {
         success: true,
-        data: {
-          ...paginatedResult,
-          data: bookingResponses,
-          bookingSummary
-        },
-        message: ''
+        bookings: bookings,
+        pagination: paginatedResult.pagination,
+        message: 'Incoming bookings retrieved successfully'
       };
 
       this.logger.debug('Incoming bookings retrieved', { userId, total: paginatedResult.pagination.total });

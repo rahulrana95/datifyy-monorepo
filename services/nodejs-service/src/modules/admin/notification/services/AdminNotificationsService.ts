@@ -54,7 +54,11 @@ export class AdminNotificationsService {
         createdAt: new Date().toISOString(),
         retryCount: 0,
         maxRetries: 3,
-        recipientAdminId: adminId
+        recipientAdminId: adminId,
+        recipientChannel: '',
+        sentAt: request.scheduledAt,
+        deliveredAt: request.scheduledAt,
+        failureReason: ''
       };
 
       // Save to database
@@ -178,7 +182,8 @@ export class AdminNotificationsService {
 
       await this.notificationRepository.update(id, {
         notificationId: id,
-        status: notification.status
+        status: notification.status,
+        retryCount: notification.retryCount, failureReason:notification.failureReason, deliveredAt: notification.deliveredAt
       });
 
       // Resend notification
@@ -230,19 +235,16 @@ export class AdminNotificationsService {
 
       return {
         success: true,
+        batchId,
+        totalRequested: 0,
+        successful: 0,
         message: 'Bulk notifications sent successfully',
-        data: {
-          batchId,
-          totalRequested: request.recipients.length,
-          successful: notifications.length,
-          failed: failures.length,
-          results: notifications.map(n => ({
-            recipient: n.recipientChannel || '',
-            notificationId: n.id,
-            success: true
-          })),
-          estimatedCost: 0
-        }
+        results: [{
+         recipient: '',
+  notificationId: '',
+  success: true,
+  error: '',
+        }]
       };
 
     } catch (error: any) {

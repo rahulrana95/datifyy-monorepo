@@ -4,8 +4,7 @@ package datifyy.admin.user_management;
 
 import "common/base.proto";
 import "common/enums.proto";
-import "admin/enums.proto";
-import "admin/auth.proto";
+import "user/enums.proto";
 
 // User trust score levels
 enum UserTrustScoreLevel {
@@ -32,7 +31,7 @@ message AdminUserDetail {
   string email = 2;
   string first_name = 3;
   string last_name = 4;
-  datifyy.common.Gender gender = 5;
+  datifyy.user.Gender gender = 5;
   string date_of_birth = 6;
   string phone_number = 7;
   datifyy.common.UserStatus status = 8;
@@ -58,6 +57,14 @@ message UserTrustScore {
   string last_updated = 3;
   repeated TrustScoreFactor factors = 4;
 }
+
+// User trust score response message
+message UserTrustScoreResponse {
+  bool success = 1;
+  UserTrustScore data = 2;
+  string message = 3;
+}
+
 
 // Trust score factor
 message TrustScoreFactor {
