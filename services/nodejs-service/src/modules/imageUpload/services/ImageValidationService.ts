@@ -53,8 +53,8 @@ export class ImageValidationService {
       operation: 'validateSingleFile'
     });
 
-    const errors: string[] = [];
-    const warnings: string[] = [];
+    const errors: any[] = [];
+    const warnings: any[] = [];
 
     try {
       // 1. File format validation using shared utility
@@ -96,11 +96,11 @@ export class ImageValidationService {
         isValid: errors.length === 0,
         errors,
         warnings,
-        fileInfo: {
-          size: file.size,
-          type: file.mimetype,
-          dimensions: await this.getImageDimensions(file)
-        }
+        // fileInfo: {
+        //   size: file.size,
+        //   type: file.mimetype,
+        //   dimensions: await this.getImageDimensions(file)
+        // }
       };
 
       this.logger.debug('File validation completed', {

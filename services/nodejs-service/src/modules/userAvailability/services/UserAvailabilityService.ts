@@ -31,7 +31,7 @@ import {  CreateAvailabilityRequest,
   AvailabilitySlotStatus,
   AvailabilityBookingStatus,
   AvailabilityAnalytics,
-  AvailabilityDateType,
+  DateType,
   AvailabilityCancellationPolicy
 } from '../../../proto-types';
 
@@ -318,8 +318,8 @@ export class UserAvailabilityService implements IUserAvailabilityService {
         status: AvailabilitySlotStatus.AVAILABILITY_SLOT_STATUS_CANCELLED,
         availabilitySlotId: availabilityId.toString(),
         dateType: availability.dateType === 'online' 
-          ? AvailabilityDateType.AVAILABILITY_DATE_TYPE_ONLINE 
-          : AvailabilityDateType.AVAILABILITY_DATE_TYPE_OFFLINE,
+          ? DateType.DATE_TYPE_ONLINE 
+          : DateType.DATE_TYPE_ONLINE,
         startTime: availability.startTime,
         endTime: availability.endTime,
         timezone: availability.timezone,

@@ -5,7 +5,6 @@ import {
   CreateAvailabilityRequest,
   UpdateAvailabilityRequest,
   GetAvailabilityRequest,
-  PaginationResponse,
   AvailabilityRecurrenceType
 } from '../../../proto-types/user/availability';
 import { DatifyyUserAvailability } from '../../../models/entities/DatifyyUserAvailability';

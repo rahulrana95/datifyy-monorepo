@@ -3,9 +3,9 @@
 import { 
   BookAvailabilityRequest,
   UpdateBookingRequest,
-  PaginationResponse
 } from '../../../proto-types/user/availability';
 import { DatifyyAvailabilityBookings } from '../../../models/entities/DatifyyAvailabilityBookings';
+import { PaginationResponse } from '../../../proto-types';
 
 // Define paginated response type
 export interface PaginatedResponse<T> {

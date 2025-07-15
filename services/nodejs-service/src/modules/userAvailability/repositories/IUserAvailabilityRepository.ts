@@ -5,9 +5,9 @@ import {
   CreateAvailabilityRequest,
   UpdateAvailabilityRequest,
   GetAvailabilityRequest,
-  PaginationResponse
 } from '../../../proto-types/user/availability';
 import { DatifyyUserAvailability } from '../../../models/entities/DatifyyUserAvailability';
+import { PaginationResponse } from '../../../proto-types';
 
 // Define paginated response type
 export interface PaginatedResponse<T> {

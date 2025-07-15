@@ -4,7 +4,6 @@ import { DataSource, Repository } from 'typeorm';
 import { 
   BookAvailabilityRequest,
   UpdateBookingRequest,
-  PaginationResponse
 } from '../../../proto-types/user/availability';
 import { DatifyyAvailabilityBookings } from '../../../models/entities/DatifyyAvailabilityBookings';
 import { Logger } from '../../../infrastructure/logging/Logger';
