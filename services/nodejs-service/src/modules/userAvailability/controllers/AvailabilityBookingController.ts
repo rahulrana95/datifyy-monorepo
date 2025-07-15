@@ -51,8 +51,8 @@ export class AvailabilityBookingController {
 
       this.logger.info('Booking availability slot', { 
         userId, 
-        availabilityId: bookingData.availabilityId,
-        activity: bookingData.selectedActivity,
+        availabilitySlotId: bookingData.availabilitySlotId,
+        activity: bookingData.activity,
         requestId: req.headers['x-request-id']
       });
 
@@ -97,7 +97,7 @@ export class AvailabilityBookingController {
       res.status(200).json({
         success: true,
         message: 'User bookings retrieved successfully',
-        data: result.data
+        data: result
       });
     } catch (error) {
       this.logger.error('Failed to get user bookings', { 
@@ -322,7 +322,7 @@ export class AvailabilityBookingController {
       res.status(200).json({
         success: true,
         message: 'Incoming bookings retrieved successfully',
-        data: result.data
+        data: result
       });
     } catch (error) {
       this.logger.error('Failed to get incoming bookings', { 

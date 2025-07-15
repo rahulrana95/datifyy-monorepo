@@ -4,16 +4,8 @@ package datifyy.admin.user_management;
 
 import "common/base.proto";
 import "common/enums.proto";
-
-
-// Admin permission levels
-enum AdminPermissionLevel {
-  ADMIN_PERMISSION_LEVEL_UNSPECIFIED = 0;
-  ADMIN_PERMISSION_LEVEL_READ_ONLY = 1;
-  ADMIN_PERMISSION_LEVEL_MODERATOR = 2;
-  ADMIN_PERMISSION_LEVEL_ADMIN = 3;
-  ADMIN_PERMISSION_LEVEL_SUPER_ADMIN = 4;
-}
+import "admin/enums.proto";
+import "admin/auth.proto";
 
 // User trust score levels
 enum UserTrustScoreLevel {
@@ -33,17 +25,6 @@ enum UserVerificationStatus {
 }
 
 // Admin user information
-message AdminUser {
-  int32 id = 1;
-  string email = 2;
-  string first_name = 3;
-  string last_name = 4;
-  AdminPermissionLevel permission_level = 5;
-  bool is_active = 6;
-  string last_login = 7;
-  string created_at = 8;
-  string updated_at = 9;
-}
 
 // User detail for admin view
 message AdminUserDetail {

@@ -12,7 +12,7 @@ import {
   CancellationPolicy,
   BookingStatus,
   SelectedActivity
-} from '../../../proto-types/user/availability';
+} from '../../../proto-types';
 import { DatifyyUserAvailability } from '../../../models/entities/DatifyyUserAvailability';
 import { DatifyyAvailabilityBookings } from '../../../models/entities/DatifyyAvailabilityBookings';
 import { DatifyyUsersInformation } from '../../../models/entities/DatifyyUsersInformation';

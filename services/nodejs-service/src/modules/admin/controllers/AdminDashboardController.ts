@@ -106,7 +106,7 @@ export class AdminDashboardController {
         alertCount: dashboardData.alerts.length
       });
 
-      const response: ApiResponse<AdminDashboardOverviewResponse> = {
+      const response: ApiResponse<DashboardOverviewResponse> = {
         success: true,
         message: 'Dashboard overview retrieved successfully',
         data: dashboardData,

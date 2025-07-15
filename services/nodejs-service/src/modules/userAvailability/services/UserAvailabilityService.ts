@@ -146,12 +146,19 @@ export class UserAvailabilityService implements IUserAvailabilityService {
 
       return {
         success: true,
-        data: {
-          created,
-          skipped,
-          summary
-        },
-        message: ''
+        createdSlots: created,
+        conflicts: skipped.map(s => ({
+          requestedSlot: s.slot,
+          conflictReason: s.reason,
+          conflictingSlots: [],
+          conflictDescription: s.reason,
+          conflictingSlotId: ''
+        })),
+        totalRequested: bulkData.slots.length,
+        totalCreated: created.length,
+        totalConflicts: skipped.length,
+        message: `Bulk availability creation completed. ${created.length} slots created, ${skipped.length} skipped.`,
+        data: created // For backward compatibility
       };
     } catch (error) {
       this.logger.error('Failed to create bulk availability', { userId, error });

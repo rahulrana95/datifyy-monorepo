@@ -86,6 +86,8 @@ message AvailabilitySlot {
   AvailabilityCancellationPolicy cancellation_policy = 21;
   google.protobuf.Timestamp created_at = 22;
   google.protobuf.Timestamp updated_at = 23;
+  bool is_booked = 24;
+  google.protobuf.Timestamp availability_date = 25;
 }
 
 // Availability booking
@@ -157,6 +159,8 @@ message CreateAvailabilityRequest {
   string notes = 15;
   repeated string preferred_activities = 16;
   AvailabilityCancellationPolicy cancellation_policy = 17;
+  bool is_recurring = 18;
+  google.protobuf.Timestamp availability_date = 19;
 }
 
 message UpdateAvailabilityRequest {
@@ -175,6 +179,8 @@ message UpdateAvailabilityRequest {
   string notes = 13;
   repeated string preferred_activities = 14;
   AvailabilityCancellationPolicy cancellation_policy = 15;
+  AvailabilitySlotStatus status = 16;
+  google.protobuf.Timestamp availability_date = 17;
 }
 
 message BulkCreateAvailabilityRequest {
@@ -206,6 +212,8 @@ message SearchAvailableUsersRequest {
   int32 max_age = 10;
   string gender = 11;
   datifyy.common.PaginationRequest pagination = 12;
+  int32 page = 13;
+  int32 limit = 14;
 }
 
 message BookAvailabilityRequest {
@@ -270,6 +278,7 @@ message AvailabilityListResponse {
   repeated AvailabilitySlot slots = 2;
   datifyy.common.PaginationResponse pagination = 3;
   string message = 4;
+  repeated AvailabilitySlot data = 5; // Alias for slots for backward compatibility
 }
 
 message BookingResponse {
@@ -309,6 +318,24 @@ message AvailabilityAnalytics {
   repeated AvailabilityTrend trends = 9;
   repeated ActivityStats activity_stats = 10;
   repeated TimeSlotStats time_slot_stats = 11;
+  int32 total_slots = 12;
+  int32 active_slots = 13;
+  int32 expired_slots = 14;
+  float utilization_rate = 15;
+  repeated DateTypeStats date_type_stats = 16;
+  repeated LocationStats location_stats = 17;
+}
+
+message DateTypeStats {
+  AvailabilityDateType date_type = 1;
+  int32 count = 2;
+  float percentage = 3;
+}
+
+message LocationStats {
+  string location = 1;
+  int32 count = 2;
+  float percentage = 3;
 }
 
 message AvailabilityTrend {
@@ -338,12 +365,15 @@ message BulkCreateAvailabilityResponse {
   int32 total_created = 5;
   int32 total_conflicts = 6;
   string message = 7;
+  repeated AvailabilitySlot data = 8; // Alias for created_slots for backward compatibility
 }
 
 message AvailabilityConflict {
   CreateAvailabilityRequest requested_slot = 1;
   string conflict_reason = 2;
   repeated AvailabilitySlot conflicting_slots = 3;
+  string conflict_description = 4;
+  string conflicting_slot_id = 5;
 }
 
 message SearchAvailableUsersResponse {
@@ -351,6 +381,7 @@ message SearchAvailableUsersResponse {
   repeated AvailableUser available_users = 2;
   datifyy.common.PaginationResponse pagination = 3;
   string message = 4;
+  repeated AvailableUser data = 5; // Alias for available_users for backward compatibility
 }
 
 message AvailableUser {
@@ -363,4 +394,58 @@ message AvailableUser {
   repeated AvailabilitySlot available_slots = 7;
   float compatibility_score = 8;
   repeated string common_interests = 9;
+}
+
+// Calendar view response
+message CalendarViewResponse {
+  bool success = 1;
+  repeated CalendarDay calendar_days = 2;
+  string message = 3;
+}
+
+message CalendarDay {
+  string date = 1;
+  repeated AvailabilitySlot slots = 2;
+  repeated AvailabilityBooking bookings = 3;
+  bool is_available = 4;
+  int32 total_slots = 5;
+  int32 booked_slots = 6;
+}
+
+// Time suggestions response
+message TimeSuggestionsResponse {
+  bool success = 1;
+  repeated TimeSuggestion suggestions = 2;
+  string message = 3;
+}
+
+message TimeSuggestion {
+  string date = 1;
+  string start_time = 2;
+  string end_time = 3;
+  float score = 4;
+  string reason = 5;
+  bool is_peak_time = 6;
+}
+
+// Slot creation result
+message SlotCreationResult {
+  bool success = 1;
+  AvailabilitySlot slot = 2;
+  string message = 3;
+  repeated string warnings = 4;
+}
+
+// Availability validation rules
+message AvailabilityValidationRules {
+  int32 min_duration_minutes = 1;
+  int32 max_duration_minutes = 2;
+  int32 min_advance_booking_hours = 3;
+  int32 max_advance_booking_days = 4;
+  int32 max_slots_per_day = 5;
+  int32 max_slots_per_week = 6;
+  repeated string allowed_time_zones = 7;
+  bool allow_overlapping_slots = 8;
+  bool require_buffer_time = 9;
+  int32 default_buffer_minutes = 10;
 }

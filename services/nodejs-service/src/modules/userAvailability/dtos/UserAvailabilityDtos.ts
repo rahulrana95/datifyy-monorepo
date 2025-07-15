@@ -15,7 +15,7 @@ import {
   type CancellationPolicyValue,
   type SelectedActivityValue,
   type BookingStatusValue
-} from '../../../proto-types/user/availability';
+} from '../../../proto-types';
 
 /**
  * DTO for creating a new availability slot

@@ -102,8 +102,8 @@ export class UserAvailabilityController {
 
       res.status(201).json({
         success: true,
-        message: `Bulk availability creation completed. ${result.data?.summary.successfullyCreated} slots created, ${result.data?.summary.skipped} skipped.`,
-        data: result.data
+        message: result.message,
+        data: result
       });
     } catch (error) {
       this.logger.error('Failed to create bulk availability', { 

@@ -4,17 +4,9 @@ package datifyy.user.profile;
 
 import "common/base.proto";
 import "common/enums.proto";
+import "user/enums.proto";
 
 
-// Education level
-enum EducationLevel {
-  EDUCATION_LEVEL_UNSPECIFIED = 0;
-  EDUCATION_LEVEL_HIGH_SCHOOL = 1;
-  EDUCATION_LEVEL_BACHELORS = 2;
-  EDUCATION_LEVEL_MASTERS = 3;
-  EDUCATION_LEVEL_PHD = 4;
-  EDUCATION_LEVEL_PROFESSIONAL = 5;
-}
 
 // Religion
 enum Religion {
