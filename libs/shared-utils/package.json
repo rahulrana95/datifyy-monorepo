@@ -5,10 +5,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "yarn exec tsc",
+    "dev": "yarn exec tsc --watch",
     "clean": "rm -rf dist",
-    "type-check": "tsc --noEmit"
+    "type-check": "yarn exec tsc --noEmit"
   },
   "dependencies": {
     "@datifyy/shared-types": "file:../shared-types",
@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@types/node": "^16.18.115",
-    "typescript": "^5.0.0"
+    "typescript": "^5.8.3"
   },
   "peerDependencies": {
     "@datifyy/shared-types": "1.0.0"
