@@ -13,7 +13,13 @@ import {
 import { IUserAvailabilityService } from '../services/IUserAvailabilityService';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { UnauthorizedError, ValidationError } from '../../../infrastructure/errors/AppErrors';
-import { BulkCreateAvailabilityRequest, CreateAvailabilityRequest, GetAvailabilityRequest, SearchAvailableUsersRequest, UpdateAvailabilityRequest } from '../../../proto-types/user/availability';
+import { 
+  CreateAvailabilityRequest, 
+  GetAvailabilityRequest, 
+  SearchAvailableUsersRequest, 
+  UpdateAvailabilityRequest,
+  BulkCreateAvailabilityRequest 
+} from '../../../proto-types/user/availability';
 
 /**
  * Interface for authenticated request with user information
@@ -58,7 +64,9 @@ export class UserAvailabilityController {
 
       this.logger.info('Creating availability slot', { 
         userId, 
-        date: availabilityData.availabilityDate,
+        dateType: availabilityData.dateType,
+        startTime: availabilityData.startTime,
+        endTime: availabilityData.endTime,
         requestId: req.headers['x-request-id']
       });
 
@@ -363,7 +371,13 @@ export class UserAvailabilityController {
         requestId: req.headers['x-request-id']
       });
 
-      const result = await this.availabilityService.getAvailabilityAnalytics(userId, analyticsRequest);
+      const request = {
+        userId,
+        startDate: analyticsRequest.startDate ? new Date(analyticsRequest.startDate) : undefined,
+        endDate: analyticsRequest.endDate ? new Date(analyticsRequest.endDate) : undefined,
+        groupBy: analyticsRequest.groupBy || 'day'
+      };
+      const result = await this.availabilityService.getAvailabilityAnalytics(userId, request);
 
       res.status(200).json({
         success: true,
@@ -409,7 +423,7 @@ export class UserAvailabilityController {
       res.status(200).json({
         success: true,
         message: 'Calendar view retrieved successfully',
-        data: result.data
+        data: result.calendarDays
       });
     } catch (error) {
       this.logger.error('Failed to get calendar view', { 
@@ -446,7 +460,7 @@ export class UserAvailabilityController {
       res.status(200).json({
         success: true,
         message: 'Time suggestions retrieved successfully',
-        data: result.data
+        data: result.suggestions
       });
     } catch (error) {
       this.logger.error('Failed to get time suggestions', { 

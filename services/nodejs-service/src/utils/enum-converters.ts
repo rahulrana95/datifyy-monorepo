@@ -15,7 +15,7 @@ import {
  */
 export function adminPermissionLevelToDb(level: AdminPermissionLevel): string {
   const mapping: Record<AdminPermissionLevel, string> = {
-    [AdminPermissionLevel.ADMIN_PERMISSION_LEVEL_UNSPECIFIED]: 'viewer', // default
+    [AdminPermissionLevel.ADMIN_PERMISSION_LEVEL_UNSPECIFIED]: 'viewer',
     [AdminPermissionLevel.VIEWER]: 'viewer',
     [AdminPermissionLevel.MODERATOR]: 'moderator',
     [AdminPermissionLevel.ADMIN]: 'admin',

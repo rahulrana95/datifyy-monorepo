@@ -52,7 +52,7 @@ message UserProfile {
   string bio = 8;
   repeated string interests = 9;
   string occupation = 10;
-  EducationLevel education_level = 11;
+  .user.EducationLevel education_level = 11;
   Religion religion = 12;
   SmokingPreference smoking_preference = 13;
   DrinkingPreference drinking_preference = 14;
@@ -73,7 +73,7 @@ message PartnerPreferences {
   repeated datifyy.common.Gender preferred_genders = 3;
   int32 max_distance_km = 4;
   HeightRange height_range = 5;
-  repeated EducationLevel education_levels = 6;
+  repeated .user.EducationLevel education_levels = 6;
   repeated Religion religions = 7;
   repeated SmokingPreference smoking_preferences = 8;
   repeated DrinkingPreference drinking_preferences = 9;
@@ -124,7 +124,7 @@ message UpdateUserProfileRequest {
   string bio = 4;
   repeated string interests = 5;
   string occupation = 6;
-  EducationLevel education_level = 7;
+  .user.EducationLevel education_level = 7;
   Religion religion = 8;
   SmokingPreference smoking_preference = 9;
   DrinkingPreference drinking_preference = 10;
@@ -138,7 +138,7 @@ message UpdatePartnerPreferencesRequest {
   repeated datifyy.common.Gender preferred_genders = 3;
   int32 max_distance_km = 4;
   HeightRange height_range = 5;
-  repeated EducationLevel education_levels = 6;
+  repeated .user.EducationLevel education_levels = 6;
   repeated Religion religions = 7;
   repeated SmokingPreference smoking_preferences = 8;
   repeated DrinkingPreference drinking_preferences = 9;

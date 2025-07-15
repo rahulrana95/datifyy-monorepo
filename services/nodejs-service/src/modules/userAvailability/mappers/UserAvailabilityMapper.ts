@@ -3,16 +3,15 @@
 import {
   AvailabilityResponse,
   BookingResponse,
-  AvailableUserResponse,
+  SearchAvailableUsersResponse,
   AvailabilitySlot,
   AvailabilityBooking,
-  DateType,
-  AvailabilityStatus,
-  RecurrenceType,
-  CancellationPolicy,
-  BookingStatus,
-  SelectedActivity
-} from '../../../proto-types';
+  AvailabilityDateType,
+  AvailabilitySlotStatus,
+  AvailabilityRecurrenceType,
+  AvailabilityCancellationPolicy,
+  AvailabilityBookingStatus
+} from '../../../proto-types/user/availability';
 import { DatifyyUserAvailability } from '../../../models/entities/DatifyyUserAvailability';
 import { DatifyyAvailabilityBookings } from '../../../models/entities/DatifyyAvailabilityBookings';
 import { DatifyyUsersInformation } from '../../../models/entities/DatifyyUsersInformation';
@@ -53,39 +52,38 @@ export class UserAvailabilityMapper {
       const canCancel = this.canCancelAvailability(entity);
       const canModify = this.canModifyAvailability(entity, isBooked);
 
-      const response: AvailabilityResponse = {
-        id: entity.id,
+      const availabilitySlot: AvailabilitySlot = {
+        id: entity.id.toString(),
         userId: entity.userId,
-        availabilityDate: entity.availabilityDate,
+        dateType: this.mapDateType(entity.dateType),
+        status: this.mapAvailabilityStatus(entity.status),
+        date: entity.availabilityDate ? new Date(entity.availabilityDate) : undefined,
         startTime: entity.startTime,
         endTime: entity.endTime,
-        timezone: entity.timezone,
-        dateType: entity.dateType as DateType,
-        status: entity.status as AvailabilityStatus,
-        title: entity.title || undefined,
-        notes: entity.notes || undefined,
-        locationPreference: entity.locationPreference || undefined,
-        isRecurring: entity.isRecurring,
-        recurrenceType: entity.recurrenceType as RecurrenceType,
-        recurrenceEndDate: entity.recurrenceEndDate || undefined,
-        parentAvailabilityId: entity.parentAvailabilityId || undefined,
-        bufferTimeMinutes: entity.bufferTimeMinutes,
-        preparationTimeMinutes: entity.preparationTimeMinutes,
-        cancellationPolicy: entity.cancellationPolicy as CancellationPolicy,
-        isDeleted: entity.isDeleted,
-        createdAt: entity.createdAt.toISOString(),
-        updatedAt: entity.updatedAt.toISOString(),
-        
-        // Booking information
-        booking: currentBooking ? await this.toBookingInfo(currentBooking) : undefined,
-        isBooked,
-        bookingCount,
-        
-        // Helper fields
-        formattedDateTime,
-        durationMinutes,
-        canCancel,
-        canModify
+        timezone: entity.timezone || 'UTC',
+        recurrenceType: this.mapRecurrenceType(entity.recurrenceType),
+        recurrenceDays: [],
+        recurrenceEndDate: entity.recurrenceEndDate ? new Date(entity.recurrenceEndDate) : undefined,
+        maxBookings: 1,
+        currentBookings: bookingCount || 0,
+        durationMinutes: durationMinutes,
+        bufferTimeMinutes: entity.bufferTimeMinutes || 0,
+        location: entity.locationPreference || '',
+        venue: '',
+        virtualLink: '',
+        notes: entity.notes || '',
+        preferredActivities: [],
+        cancellationPolicy: this.mapCancellationPolicy(entity.cancellationPolicy),
+        createdAt: entity.createdAt,
+        updatedAt: entity.updatedAt,
+        isBooked: isBooked,
+        availabilityDate: entity.availabilityDate ? new Date(entity.availabilityDate) : undefined
+      };
+
+      const response: AvailabilityResponse = {
+        success: true,
+        data: availabilitySlot,
+        message: 'Availability retrieved successfully'
       };
 
       this.logger.debug('Availability entity mapped successfully', { 
@@ -127,35 +125,37 @@ export class UserAvailabilityMapper {
         await this.toAvailabilityResponse(entity.availability) : 
         undefined;
 
+      const booking: AvailabilityBooking = {
+        id: entity.id.toString(),
+        availabilitySlotId: entity.availabilityId.toString(),
+        hostUserId: entity.availability?.userId || 0,
+        guestUserId: entity.bookedByUserId,
+        status: this.mapBookingStatus(entity.bookingStatus),
+        bookingDate: entity.createdAt,
+        startTime: entity.availability?.startTime || '',
+        endTime: entity.availability?.endTime || '',
+        location: '',
+        venue: '',
+        virtualLink: '',
+        activity: entity.selectedActivity || '',
+        notes: entity.bookingNotes || '',
+        cancellationReason: entity.cancellationReason || '',
+        cancelledByUserId: entity.cancelledAt ? entity.bookedByUserId : 0,
+        cancelledAt: entity.cancelledAt || undefined,
+        confirmedAt: entity.confirmedAt || undefined,
+        completedAt: undefined,
+        hostRating: 0,
+        guestRating: 0,
+        hostFeedback: '',
+        guestFeedback: '',
+        createdAt: entity.createdAt,
+        updatedAt: entity.updatedAt
+      };
+
       const response: BookingResponse = {
-        id: entity.id,
-        availabilityId: entity.availabilityId,
-        availability: availability!,
-        bookedByUserId: entity.bookedByUserId,
-        bookingStatus: entity.bookingStatus as BookingStatus,
-        selectedActivity: entity.selectedActivity as SelectedActivity,
-        bookingNotes: entity.bookingNotes || undefined,
-        confirmedAt: entity.confirmedAt?.toISOString() || undefined,
-        cancelledAt: entity.cancelledAt?.toISOString() || undefined,
-        cancellationReason: entity.cancellationReason || undefined,
-        withinPolicy: entity.withinPolicy || undefined,
-        createdAt: entity.createdAt.toISOString(),
-        updatedAt: entity.updatedAt.toISOString(),
-        
-        // Related user information
-        bookedByUser: {
-          id: entity.bookedByUser?.id || entity.bookedByUserId,
-          firstName: '',//entity.bookedByUser?.firstName || 'Unknown',
-          lastName: '',//entity.bookedByUser?.lastName || 'User',
-          email: '',//entity.bookedByUser?.officialEmail || '',
-          profileImage: '',//this.extractProfileImage(entity.bookedByUser?.images)
-        },
-        
-        // Helper fields
-        canCancel,
-        canModify,
-        refundEligible,
-        hoursUntilMeeting
+        success: true,
+        data: booking,
+        message: 'Booking retrieved successfully'
       };
 
       this.logger.debug('Booking entity mapped successfully', { 
@@ -190,7 +190,7 @@ export class UserAvailabilityMapper {
       commonInterests?: string[];
       matchReasons?: string[];
     } = {}
-  ): Promise<AvailableUserResponse> {
+  ): Promise<any> {
     try {
       this.logger.debug('Mapping available user response', { 
         userId: userProfile.id,
@@ -200,7 +200,7 @@ export class UserAvailabilityMapper {
       const availabilityResponse = await this.toAvailabilityResponse(availability);
       const age = this.calculateAge(userProfile.dob);
 
-      const response: AvailableUserResponse = {
+      const response = {
         availability: availabilityResponse,
         user: {
           id: parseInt(userProfile.id),
@@ -246,26 +246,31 @@ export class UserAvailabilityMapper {
   toAvailabilitySlot(entity: DatifyyUserAvailability): AvailabilitySlot {
     try {
       const slot: AvailabilitySlot = {
-        id: entity.id,
+        id: entity.id.toString(),
         userId: entity.userId,
-        availabilityDate: entity.availabilityDate,
+        dateType: this.mapDateType(entity.dateType),
+        status: this.mapAvailabilityStatus(entity.status),
+        date: entity.availabilityDate ? new Date(entity.availabilityDate) : undefined,
         startTime: entity.startTime,
         endTime: entity.endTime,
-        timezone: entity.timezone,
-        dateType: entity.dateType as DateType,
-        status: entity.status as AvailabilityStatus,
-        title: entity.title || undefined,
-        notes: entity.notes || undefined,
-        locationPreference: entity.locationPreference || undefined,
-        isRecurring: entity.isRecurring,
-        recurrenceType: entity.recurrenceType as RecurrenceType,
-        recurrenceEndDate: entity.recurrenceEndDate || undefined,
-        parentAvailabilityId: entity.parentAvailabilityId || undefined,
-        bufferTimeMinutes: entity.bufferTimeMinutes,
-        preparationTimeMinutes: entity.preparationTimeMinutes,
-        cancellationPolicy: entity.cancellationPolicy as CancellationPolicy,
+        timezone: entity.timezone || 'UTC',
+        recurrenceType: this.mapRecurrenceType(entity.recurrenceType),
+        recurrenceDays: [],
+        recurrenceEndDate: entity.recurrenceEndDate ? new Date(entity.recurrenceEndDate) : undefined,
+        maxBookings: 1,
+        currentBookings: 0,
+        durationMinutes: this.calculateDurationMinutes(entity.startTime, entity.endTime),
+        bufferTimeMinutes: entity.bufferTimeMinutes || 0,
+        location: entity.locationPreference || '',
+        venue: '',
+        virtualLink: '',
+        notes: entity.notes || '',
+        preferredActivities: [],
+        cancellationPolicy: this.mapCancellationPolicy(entity.cancellationPolicy),
         createdAt: entity.createdAt,
-        updatedAt: entity.updatedAt
+        updatedAt: entity.updatedAt,
+        isBooked: false,
+        availabilityDate: entity.availabilityDate ? new Date(entity.availabilityDate) : undefined
       };
 
       return slot;
@@ -286,27 +291,30 @@ export class UserAvailabilityMapper {
   toAvailabilityBooking(entity: DatifyyAvailabilityBookings): AvailabilityBooking {
     try {
       const booking: AvailabilityBooking = {
-        id: entity.id,
-        availabilityId: entity.availabilityId,
-        bookedByUserId: entity.bookedByUserId,
-        bookingStatus: entity.bookingStatus as BookingStatus,
-        selectedActivity: entity.selectedActivity as SelectedActivity,
-        bookingNotes: entity.bookingNotes || undefined,
-        confirmedAt: entity.confirmedAt || undefined,
+        id: entity.id.toString(),
+        availabilitySlotId: entity.availabilityId.toString(),
+        hostUserId: entity.availability?.userId || 0,
+        guestUserId: entity.bookedByUserId,
+        status: this.mapBookingStatus(entity.bookingStatus),
+        bookingDate: entity.createdAt,
+        startTime: entity.availability?.startTime || '',
+        endTime: entity.availability?.endTime || '',
+        location: '',
+        venue: '',
+        virtualLink: '',
+        activity: entity.selectedActivity || '',
+        notes: entity.bookingNotes || '',
+        cancellationReason: entity.cancellationReason || '',
+        cancelledByUserId: entity.cancelledAt ? entity.bookedByUserId : 0,
         cancelledAt: entity.cancelledAt || undefined,
-        cancellationReason: entity.cancellationReason || undefined,
-        withinPolicy: entity.withinPolicy || undefined,
+        confirmedAt: entity.confirmedAt || undefined,
+        completedAt: undefined,
+        hostRating: 0,
+        guestRating: 0,
+        hostFeedback: '',
+        guestFeedback: '',
         createdAt: entity.createdAt,
-        updatedAt: entity.updatedAt,
-        
-        // Related user information (if available)
-        bookedByUser: entity.bookedByUser ? {
-          id: entity.bookedByUser.id,
-          firstName:'', //entity.bookedByUser.firstName,
-          lastName: '',//entity.bookedByUser.lastName,
-          email: '',//entity.bookedByUser.officialEmail,
-          profileImage: '',//this.extractProfileImage(entity.bookedByUser.images)
-        } : undefined
+        updatedAt: entity.updatedAt
       };
 
       return booking;
@@ -591,5 +599,56 @@ export class UserAvailabilityMapper {
       return `${currentCity} (from ${hometown})`;
     }
     return currentCity || hometown || 'Location not specified';
+  }
+
+  // ============================================================================
+  // ENUM MAPPING HELPERS
+  // ============================================================================
+
+  private mapDateType(dateType: string): AvailabilityDateType {
+    switch (dateType?.toLowerCase()) {
+      case 'online': return AvailabilityDateType.AVAILABILITY_DATE_TYPE_ONLINE;
+      case 'offline': return AvailabilityDateType.AVAILABILITY_DATE_TYPE_OFFLINE;
+      default: return AvailabilityDateType.AVAILABILITY_DATE_TYPE_UNSPECIFIED;
+    }
+  }
+
+  private mapAvailabilityStatus(status: string): AvailabilitySlotStatus {
+    switch (status?.toLowerCase()) {
+      case 'active': return AvailabilitySlotStatus.AVAILABILITY_SLOT_STATUS_ACTIVE;
+      case 'cancelled': return AvailabilitySlotStatus.AVAILABILITY_SLOT_STATUS_CANCELLED;
+      case 'completed': return AvailabilitySlotStatus.AVAILABILITY_SLOT_STATUS_COMPLETED;
+      case 'deleted': return AvailabilitySlotStatus.AVAILABILITY_SLOT_STATUS_DELETED;
+      default: return AvailabilitySlotStatus.AVAILABILITY_SLOT_STATUS_UNSPECIFIED;
+    }
+  }
+
+  private mapRecurrenceType(recurrenceType: string | null): AvailabilityRecurrenceType {
+    switch (recurrenceType?.toLowerCase()) {
+      case 'none': return AvailabilityRecurrenceType.AVAILABILITY_RECURRENCE_TYPE_NONE;
+      case 'weekly': return AvailabilityRecurrenceType.AVAILABILITY_RECURRENCE_TYPE_WEEKLY;
+      case 'custom': return AvailabilityRecurrenceType.AVAILABILITY_RECURRENCE_TYPE_CUSTOM;
+      default: return AvailabilityRecurrenceType.AVAILABILITY_RECURRENCE_TYPE_NONE;
+    }
+  }
+
+  private mapCancellationPolicy(policy: string): AvailabilityCancellationPolicy {
+    switch (policy?.toLowerCase()) {
+      case 'flexible': return AvailabilityCancellationPolicy.AVAILABILITY_CANCELLATION_POLICY_FLEXIBLE;
+      case '24_hours': return AvailabilityCancellationPolicy.AVAILABILITY_CANCELLATION_POLICY_TWENTY_FOUR_HOURS;
+      case '48_hours': return AvailabilityCancellationPolicy.AVAILABILITY_CANCELLATION_POLICY_FORTY_EIGHT_HOURS;
+      case 'strict': return AvailabilityCancellationPolicy.AVAILABILITY_CANCELLATION_POLICY_STRICT;
+      default: return AvailabilityCancellationPolicy.AVAILABILITY_CANCELLATION_POLICY_FLEXIBLE;
+    }
+  }
+
+  private mapBookingStatus(status: string): AvailabilityBookingStatus {
+    switch (status?.toLowerCase()) {
+      case 'pending': return AvailabilityBookingStatus.AVAILABILITY_BOOKING_STATUS_PENDING;
+      case 'confirmed': return AvailabilityBookingStatus.AVAILABILITY_BOOKING_STATUS_CONFIRMED;
+      case 'cancelled': return AvailabilityBookingStatus.AVAILABILITY_BOOKING_STATUS_CANCELLED;
+      case 'completed': return AvailabilityBookingStatus.AVAILABILITY_BOOKING_STATUS_COMPLETED;
+      default: return AvailabilityBookingStatus.AVAILABILITY_BOOKING_STATUS_UNSPECIFIED;
+    }
   }
 }

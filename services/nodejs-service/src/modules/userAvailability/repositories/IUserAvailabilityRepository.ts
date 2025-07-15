@@ -9,6 +9,12 @@ import {
 } from '../../../proto-types/user/availability';
 import { DatifyyUserAvailability } from '../../../models/entities/DatifyyUserAvailability';
 
+// Define paginated response type
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: PaginationResponse;
+}
+
 /**
  * User Availability Repository Interface
  * 
@@ -58,7 +64,7 @@ export interface IUserAvailabilityRepository {
    * @param filters - Filter and pagination options
    * @returns Promise<PaginationResponse<DatifyyUserAvailability>> - Paginated availability slots
    */
-  findByUserId(userId: number, filters: GetAvailabilityRequest): Promise<PaginationResponse<DatifyyUserAvailability>>;
+  findByUserId(userId: number, filters: GetAvailabilityRequest): Promise<PaginatedResponse<DatifyyUserAvailability>>;
 
   /**
    * Find available slots in a date range (not booked)

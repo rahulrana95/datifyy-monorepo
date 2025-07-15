@@ -14,8 +14,7 @@ import {
   AvailabilityAnalyticsResponse,
   CalendarViewResponse,
   TimeSuggestionsResponse,
-  AvailabilityConflict,
-  SlotCreationResult
+  AvailabilityConflict
 } from '../../../proto-types/user/availability';
 
 /**

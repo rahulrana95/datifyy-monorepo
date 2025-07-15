@@ -183,11 +183,6 @@ message UpdateAvailabilityRequest {
   google.protobuf.Timestamp availability_date = 17;
 }
 
-message BulkCreateAvailabilityRequest {
-  repeated CreateAvailabilityRequest slots = 1;
-  bool skip_conflicts = 2;
-}
-
 message GetAvailabilityRequest {
   int32 user_id = 1;
   google.protobuf.Timestamp start_date = 2;
@@ -264,6 +259,13 @@ message GetAvailabilityAnalyticsRequest {
   google.protobuf.Timestamp start_date = 2;
   google.protobuf.Timestamp end_date = 3;
   string group_by = 4; // day, week, month
+}
+
+message BulkCreateAvailabilityRequest {
+  repeated CreateAvailabilityRequest slots = 1;
+  bool skip_conflicts = 2;
+  bool allow_overlap = 3;
+  bool validate_only = 4;
 }
 
 // Response messages
@@ -396,6 +398,8 @@ message AvailableUser {
   repeated string common_interests = 9;
 }
 
+// Removed duplicate messages - they are defined below
+
 // Calendar view response
 message CalendarViewResponse {
   bool success = 1;
@@ -449,3 +453,5 @@ message AvailabilityValidationRules {
   bool require_buffer_time = 9;
   int32 default_buffer_minutes = 10;
 }
+
+// Removed duplicate AvailabilityAnalyticsResponse and SlotCreationResult - they are defined earlier

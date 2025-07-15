@@ -4,7 +4,7 @@ import {
   BookAvailabilityRequest,
   UpdateBookingRequest,
   BookingResponse,
-  BookingsListResponse
+  BookingListResponse
 } from '../../../proto-types/user/availability';
 import { IAvailabilityBookingService } from './IAvailabilityBookingService';
 import { IAvailabilityBookingRepository } from '../repositories/IAvailabilityBookingRepository';
@@ -32,7 +32,7 @@ export class AvailabilityBookingService implements IAvailabilityBookingService {
    * Book an availability slot
    */
   async bookAvailability(userId: number, bookingData: BookAvailabilityRequest): Promise<BookingResponse> {
-    this.logger.info('Booking availability slot', { userId, availabilityId: bookingData.availabilityId });
+    this.logger.info('Booking availability slot', { userId, availabilitySlotId: bookingData.availabilitySlotId });
 
     try {
       // 1. Validate the booking request

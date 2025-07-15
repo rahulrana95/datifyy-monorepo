@@ -8,7 +8,7 @@ import {
 } from '../../../proto-types/user/availability';
 import { DatifyyAvailabilityBookings } from '../../../models/entities/DatifyyAvailabilityBookings';
 import { Logger } from '../../../infrastructure/logging/Logger';
-import { IAvailabilityBookingRepository, BookingStats } from './IAvailabilityBookingRepository';
+import { IAvailabilityBookingRepository, BookingStats, PaginatedResponse } from './IAvailabilityBookingRepository';
 
 /**
  * Availability Booking Repository Implementation
@@ -33,14 +33,14 @@ export class AvailabilityBookingRepository implements IAvailabilityBookingReposi
    * Create a new booking for an availability slot
    */
   async create(userId: number, bookingData: BookAvailabilityRequest): Promise<DatifyyAvailabilityBookings> {
-    this.logger.info('Creating booking', { userId, availabilityId: bookingData.availabilityId });
+    this.logger.info('Creating booking', { userId, slotId: bookingData.availabilitySlotId });
 
     try {
       const booking = this.repository.create({
-        availabilityId: bookingData.availabilityId,
+        availabilityId: parseInt(bookingData.availabilitySlotId),
         bookedByUserId: userId,
-        selectedActivity: bookingData.selectedActivity,
-        bookingNotes: bookingData.bookingNotes,
+        selectedActivity: 'activity' as const, // Default activity since proto doesn't provide it
+        bookingNotes: bookingData.notes,
         bookingStatus: 'pending'
       });
 
@@ -130,7 +130,7 @@ export class AvailabilityBookingRepository implements IAvailabilityBookingReposi
   /**
    * Find bookings made by a user (outgoing bookings)
    */
-  async findByUserId(userId: number, filters: any): Promise<PaginationResponse<DatifyyAvailabilityBookings>> {
+  async findByUserId(userId: number, filters: any): Promise<PaginatedResponse<DatifyyAvailabilityBookings>> {
     this.logger.debug('Finding bookings by user ID', { userId, filters });
 
     try {
@@ -173,9 +173,7 @@ export class AvailabilityBookingRepository implements IAvailabilityBookingReposi
           page,
           limit,
           total,
-          totalPages,
-          hasNext: page < totalPages,
-          hasPrevious: page > 1
+          totalPages
         }
       };
     } catch (error) {
@@ -187,7 +185,7 @@ export class AvailabilityBookingRepository implements IAvailabilityBookingReposi
   /**
    * Find incoming bookings for user's availability slots
    */
-  async findIncomingBookings(ownerId: number, filters: any): Promise<PaginationResponse<DatifyyAvailabilityBookings>> {
+  async findIncomingBookings(ownerId: number, filters: any): Promise<PaginatedResponse<DatifyyAvailabilityBookings>> {
     this.logger.debug('Finding incoming bookings', { ownerId, filters });
 
     try {
@@ -230,9 +228,7 @@ export class AvailabilityBookingRepository implements IAvailabilityBookingReposi
           page,
           limit,
           total,
-          totalPages,
-          hasNext: page < totalPages,
-          hasPrevious: page > 1
+          totalPages
         }
       };
     } catch (error) {

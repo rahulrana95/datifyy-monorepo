@@ -52,7 +52,6 @@ export class AvailabilityBookingController {
       this.logger.info('Booking availability slot', { 
         userId, 
         availabilitySlotId: bookingData.availabilitySlotId,
-        activity: bookingData.activity,
         requestId: req.headers['x-request-id']
       });
 

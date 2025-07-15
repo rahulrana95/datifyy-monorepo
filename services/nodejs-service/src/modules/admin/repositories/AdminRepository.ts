@@ -210,7 +210,7 @@ export class AdminRepository implements IAdminRepository {
       const admins = await this.repository.find({
         where: { 
           isactive: true,
-          accountStatus: adminAccountStatusToDb(AdminAccountStatus.ACTIVE) as any
+          accountStatus: adminAccountStatusToDb(AdminAccountStatus.ADMIN_ACTIVE) as any
         },
         order: { createdAt: 'DESC' }
       });
@@ -480,7 +480,7 @@ export class AdminRepository implements IAdminRepository {
       this.logger.info('Unlocking admin account', { adminId: id });
 
       const result = await this.repository.update(id, {
-        accountStatus: adminAccountStatusToDb(AdminAccountStatus.ACTIVE) as any,
+        accountStatus: adminAccountStatusToDb(AdminAccountStatus.ADMIN_ACTIVE) as any,
         lockedAt: undefined,
         lockExpiresAt: undefined,
         failedLoginAttempts: 0
@@ -516,7 +516,7 @@ export class AdminRepository implements IAdminRepository {
         this.repository.count({ 
           where: { 
             isactive: true, 
-            accountStatus: adminAccountStatusToDb(AdminAccountStatus.ACTIVE) as any
+            accountStatus: adminAccountStatusToDb(AdminAccountStatus.ADMIN_ACTIVE) as any
           } 
         }),
         this.repository.count({ 

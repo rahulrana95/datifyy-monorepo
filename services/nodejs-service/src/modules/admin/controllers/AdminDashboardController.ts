@@ -19,7 +19,8 @@ import {
   UserMetrics,
   DateMetrics,
   RevenueMetrics,
-  AlertSeverityLevel
+  AlertSeverityLevel,
+  DashboardOverview
 } from '../../../proto-types/admin/dashboard';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { AuthenticatedAdminRequest } from '../../../infrastructure/middleware/authentication';
@@ -82,11 +83,11 @@ export class AdminDashboardController {
       } = req.query;
 
       // TODO: Implement dashboard service to fetch actual data
-      const dashboardData = {
+      const dashboardData: DashboardOverview = {
         userMetrics: await this.getUserMetricsData(timeframe as string),
         dateMetrics: await this.getDateMetricsData(timeframe as string),
         revenueMetrics: await this.getRevenueMetricsData(timeframe as string),
-        activityMetrics: await this.getActivityMetricsData(),
+        // activityMetrics: await this.getActivityMetricsData(),
         alerts: includeAlerts ? await this.getAlertsData() : [],
         trends: includeTrends ? await this.getTrendsData(timeframe as string) : { 
           userGrowth: [], 
@@ -94,7 +95,7 @@ export class AdminDashboardController {
           dateActivity: [], 
           conversionRates: [] 
         },
-        lastUpdated: new Date().toISOString()
+        generatedAt: new Date().toISOString(),
       };
 
       const processingTime = Date.now() - startTime;
@@ -1053,7 +1054,7 @@ export class AdminDashboardController {
       });
 
       const alerts = await this.getAlertsData();
-      const criticalAlerts = alerts.filter(alert => alert.severity === 'critical');
+      const criticalAlerts = alerts.filter(alert => alert.severity === AlertSeverityLevel.ALERT_SEVERITY_LEVEL_CRITICAL);
 
       const processingTime = Date.now() - startTime;
 
@@ -1497,14 +1498,13 @@ export class AdminDashboardController {
   private async getUserMetricsData(timeframe: string): Promise<UserMetrics> {
     // TODO: Implement actual database queries
     return {
-      totalUsers: 0,
-      activeUsersToday: 0,
-      newUsersThisWeek: 0,
-      verifiedUsers: 0,
-      usersWithAvailability: 0,
-      usersByGender: { male: 0, female: 0, other: 0 },
-      usersByCity: [],
-      growthRate: 0
+        totalUsers: 0,
+  activeUsers: 0,
+  newSignupsToday: 0,
+  newSignupsThisWeek: 0,
+  verifiedUsers: 0,
+  userGrowthRate: 0,
+  premiumUsers: 0
     };
   }
 

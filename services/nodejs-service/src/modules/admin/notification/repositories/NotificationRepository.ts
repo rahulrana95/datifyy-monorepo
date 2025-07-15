@@ -219,12 +219,12 @@ export class NotificationRepository {
       message: entity.message,
       metadata: entity.metadata ? (entity.metadata as any) : {},
       status: entity.status as any,
-      recipientAdminId: entity.recipientAdminId || undefined,
-      recipientChannel: entity.recipientChannel || undefined,
+      recipientAdminId: entity.recipientAdminId  ?? 0,
+      recipientChannel: entity.recipientChannel || '',
       createdAt: entity.createdAt?.toISOString() || new Date().toISOString(),
-      sentAt: entity.sentAt?.toISOString(),
-      deliveredAt: entity.deliveryConfirmedAt?.toISOString(),
-      failureReason: entity.failureReason || undefined,
+      sentAt: entity.sentAt?.toISOString() ?? '',
+      deliveredAt: entity.deliveryConfirmedAt?.toISOString() ?? '',
+      failureReason: entity.failureReason || '',
       retryCount: entity.retryCount || 0,
       maxRetries: 3
     };

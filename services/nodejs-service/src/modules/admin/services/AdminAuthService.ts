@@ -119,7 +119,7 @@ export class AdminAuthService implements IAdminAuthService {
       }
 
       // Check account status
-      if (!admin.isactive || dbToAdminAccountStatus(admin.accountStatus) !== AdminAccountStatus.ACTIVE) {
+      if (!admin.isactive || dbToAdminAccountStatus(admin.accountStatus) !== AdminAccountStatus.ADMIN_ACTIVE) {
         await this.logSecurityEvent({
           eventType: 'LOGIN_FAILED',
           adminId: admin.id,
@@ -298,7 +298,7 @@ export class AdminAuthService implements IAdminAuthService {
       
       // Get admin and validate status
       const admin = await this.adminRepository.findById(adminId);
-      if (!admin || !admin.isactive || dbToAdminAccountStatus(admin.accountStatus) !== AdminAccountStatus.ACTIVE) {
+      if (!admin || !admin.isactive || dbToAdminAccountStatus(admin.accountStatus) !== AdminAccountStatus.ADMIN_ACTIVE) {
         await this.redisService.delete(`refresh_token:${refreshToken}`);
         throw new Error('Admin account is not active');
       }
@@ -391,7 +391,7 @@ export class AdminAuthService implements IAdminAuthService {
       // Get admin from database
       const admin = await this.adminRepository.findById(payload.adminId);
       
-      if (!admin || !admin.isactive || dbToAdminAccountStatus(admin.accountStatus) !== AdminAccountStatus.ACTIVE) {
+      if (!admin || !admin.isactive || dbToAdminAccountStatus(admin.accountStatus) !== AdminAccountStatus.ADMIN_ACTIVE) {
         return {
           isValid: false,
           invalidReason: 'Admin account is not active'
