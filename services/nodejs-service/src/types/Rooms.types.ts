@@ -3,6 +3,8 @@
  * Auto-generated from TypeORM entity: Rooms
  */
 
+import { DatifyyEvents } from "../models/entities/DatifyyEvents";
+
 export interface RoomsType {
   id: number;
   roomId: string;

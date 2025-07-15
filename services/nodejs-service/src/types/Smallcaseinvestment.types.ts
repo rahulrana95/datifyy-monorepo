@@ -6,8 +6,6 @@
 export interface SmallcaseinvestmentType {
   id: number;
   precision: 53;
-  precision: 53;
-  precision: 53;
 }
 
 // Utility types for Smallcaseinvestment

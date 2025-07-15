@@ -3,9 +3,12 @@
  * Auto-generated from TypeORM entity: DatifyyUsersLogin
  */
 
+import { DatifyyUserPartnerPreferences } from "@datifyy/shared-types";
+import { DatifyyUsersInformation } from "../models/entities/DatifyyUsersInformation";
 import { DatifyyEventsType } from "./DatifyyEvents.types";
 import { DatifyyTicketPurchasesType } from "./DatifyyTicketPurchases.types";
 import { DatifyyTransactionsType } from "./DatifyyTransactions.types";
+import { DatifyyTransactions } from "../models/entities/DatifyyTransactions";
 
 export interface DatifyyUsersLoginType {
   id: number;
