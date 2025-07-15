@@ -1,7 +1,18 @@
 // services/nodejs-service/src/modules/userAvailability/services/UserAvailabilityService.ts
-
-import {
-  CreateAvailabilityRequest,
+import { Logger } from '../../../infrastructure/logging/Logger';
+import { IUserAvailabilityRepository } from '../repositories/IUserAvailabilityRepository';
+import { UserAvailabilityMapper } from '../mappers/UserAvailabilityMapper';
+import { 
+  IUserAvailabilityService,
+  ValidationResult,
+  RecurringGenerationOptions,
+  AvailabilityStatsSummary,
+  ScheduleOptimizationPreferences,
+  ScheduleOptimizationResult,
+  NearbyAvailableUsersResponse
+} from './IUserAvailabilityService';
+import { BusinessRuleViolationError, NotFoundError, ValidationError } from '../../../infrastructure/errors/AppErrors';
+import { AvailabilityStatus,  CreateAvailabilityRequest,
   UpdateAvailabilityRequest,
   BulkCreateAvailabilityRequest,
   GetAvailabilityRequest,
@@ -16,22 +27,7 @@ import {
   TimeSuggestionsResponse,
   AvailabilityConflict,
   SlotCreationResult,
-  AvailabilityValidationRules,
-  AvailabilityStatus
-} from '@datifyy/shared-types';
-import { Logger } from '../../../infrastructure/logging/Logger';
-import { IUserAvailabilityRepository } from '../repositories/IUserAvailabilityRepository';
-import { UserAvailabilityMapper } from '../mappers/UserAvailabilityMapper';
-import { 
-  IUserAvailabilityService,
-  ValidationResult,
-  RecurringGenerationOptions,
-  AvailabilityStatsSummary,
-  ScheduleOptimizationPreferences,
-  ScheduleOptimizationResult,
-  NearbyAvailableUsersResponse
-} from './IUserAvailabilityService';
-import { BusinessRuleViolationError, NotFoundError, ValidationError } from '../../../infrastructure/errors/AppErrors';
+  AvailabilityValidationRules, } from '../../../proto-types';
 
 /**
  * User Availability Service Implementation

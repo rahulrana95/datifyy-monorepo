@@ -13,10 +13,10 @@ enum Gender {
 // Exercise levels
 enum ExerciseLevel {
   EXERCISE_LEVEL_UNSPECIFIED = 0;
-  NONE = 1;
-  LIGHT = 2;
-  MODERATE = 3;
-  HEAVY = 4;
+  EXERCISE_NONE = 1;
+  EXERCISE_LIGHT = 2;
+  EXERCISE_MODERATE = 3;
+  EXERCISE_HEAVY = 4;
 }
 
 // Education levels
@@ -101,18 +101,18 @@ enum AvailabilityStatus {
 // Recurrence types
 enum RecurrenceType {
   RECURRENCE_TYPE_UNSPECIFIED = 0;
-  NONE = 1;
-  DAILY = 2;
-  WEEKLY = 3;
-  MONTHLY = 4;
+  NO_RECURRENCE = 1;
+  RECURRENCE_DAILY = 2;
+  RECURRENCE_WEEKLY = 3;
+  RECURRENCE_MONTHLY = 4;
 }
 
 // Cancellation policy
 enum CancellationPolicy {
   CANCELLATION_POLICY_UNSPECIFIED = 0;
-  FLEXIBLE = 1;
-  MODERATE = 2;
-  STRICT = 3;
+  POLICY_FLEXIBLE = 1;
+  POLICY_MODERATE = 2;
+  POLICY_STRICT = 3;
 }
 
 // Booking status

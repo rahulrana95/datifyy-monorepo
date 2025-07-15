@@ -10,8 +10,7 @@ import {
   ResetPasswordRequest,
   EmailVerificationRequest,
   TokenValidationResponse,
-  UserProfileResponse
-} from "@datifyy/shared-types";
+} from "../proto-types";
 
 const AUTH_API_PREFIX = "auth";
 

@@ -1,4 +1,4 @@
-import { ApiResponse, PaginationResponse } from '@datifyy/shared-types';
+import { ApiResponse, PaginationResponse } from '../../../../../proto-types/common/base';
 
 export interface AdminUserListItem {
   id: number;

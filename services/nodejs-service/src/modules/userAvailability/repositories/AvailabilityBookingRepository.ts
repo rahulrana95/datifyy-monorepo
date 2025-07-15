@@ -5,7 +5,7 @@ import {
   BookAvailabilityRequest,
   UpdateBookingRequest,
   PaginationResponse
-} from '@datifyy/shared-types';
+} from '../../../proto-types/user/availability';
 import { DatifyyAvailabilityBookings } from '../../../models/entities/DatifyyAvailabilityBookings';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { IAvailabilityBookingRepository, BookingStats } from './IAvailabilityBookingRepository';

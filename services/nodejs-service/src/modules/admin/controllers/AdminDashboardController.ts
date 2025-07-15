@@ -13,16 +13,14 @@ import { DataSource } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { 
-  AdminDashboardOverviewResponse,
+  DashboardOverviewResponse,
   GetDashboardOverviewRequest,
-  GetMetricTrendsRequest,
-  GetAdminActivityRequest,
   DashboardAlert,
   UserMetrics,
   DateMetrics,
   RevenueMetrics,
-  SystemHealthStatus
-} from '@datifyy/shared-types';
+  AlertSeverityLevel
+} from '../../../proto-types/admin/dashboard';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { AuthenticatedAdminRequest } from '../../../infrastructure/middleware/authentication';
 
@@ -84,7 +82,7 @@ export class AdminDashboardController {
       } = req.query;
 
       // TODO: Implement dashboard service to fetch actual data
-      const dashboardData: AdminDashboardOverviewResponse = {
+      const dashboardData = {
         userMetrics: await this.getUserMetricsData(timeframe as string),
         dateMetrics: await this.getDateMetricsData(timeframe as string),
         revenueMetrics: await this.getRevenueMetricsData(timeframe as string),

@@ -2,13 +2,12 @@ syntax = "proto3";
 
 package datifyy.common;
 
-option typescript_namespace = "Datifyy.Common";
-
 // Common response structure
 message ApiResponse {
   bool success = 1;
   string message = 2;
-  google.protobuf.Any data = 3;
+  // Data will be handled as a generic type in TypeScript
+  bytes data = 3;
   ErrorDetails error = 4;
   ResponseMetadata metadata = 5;
 }
@@ -17,7 +16,8 @@ message ApiResponse {
 message ErrorDetails {
   string code = 1;
   string message = 2;
-  google.protobuf.Any details = 3;
+  // Details will be handled as JSON string in TypeScript
+  string details = 3;
 }
 
 // Response metadata

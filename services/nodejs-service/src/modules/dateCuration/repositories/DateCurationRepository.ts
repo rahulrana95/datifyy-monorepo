@@ -289,15 +289,20 @@ export class DateCurationRepository implements IDateCurationRepository {
     }
 
     const updateData: Partial<DatifyyCuratedDates> = {
-      ...data,
-      dateTime: new Date(data.dateTime ?? ""),
       updatedBy: adminUser,
       updatedAt: new Date(),
     };
 
-    if (data.dateTime) {
-      updateData.dateTime = new Date(data.dateTime);
-    }
+    // Map UpdateCuratedDateRequest fields to entity fields
+    if (data.status) updateData.status = data.status;
+    if (data.scheduledAt) updateData.dateTime = new Date(data.scheduledAt);
+    if (data.venueName) updateData.locationName = data.venueName;
+    if (data.venueAddress) updateData.locationAddress = data.venueAddress;
+    if (data.estimatedDuration) updateData.durationMinutes = data.estimatedDuration;
+    if (data.estimatedCost) updateData.estimatedCost = data.estimatedCost;
+    if (data.currency) updateData.currency = data.currency;
+    if (data.location) updateData.city = data.location.city;
+
 
     await this.curatedDatesRepo.save({ ...existingDate, ...updateData });
 

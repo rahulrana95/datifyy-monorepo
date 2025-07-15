@@ -2,7 +2,36 @@ syntax = "proto3";
 
 package common.storage;
 
-import "google/protobuf/any.proto";
+// Storage provider types
+enum StorageProvider {
+  STORAGE_PROVIDER_UNSPECIFIED = 0;
+  STORAGE_PROVIDER_CLOUDFLARE_R2 = 1;
+  STORAGE_PROVIDER_AWS_S3 = 2;
+  STORAGE_PROVIDER_GOOGLE_CLOUD_STORAGE = 3;
+  STORAGE_PROVIDER_AZURE_BLOB = 4;
+  STORAGE_PROVIDER_LOCAL = 5;
+}
+
+// Storage error codes
+enum StorageErrorCode {
+  STORAGE_ERROR_CODE_UNSPECIFIED = 0;
+  STORAGE_ERROR_CODE_UPLOAD_FAILED = 1;
+  STORAGE_ERROR_CODE_FILE_NOT_FOUND = 2;
+  STORAGE_ERROR_CODE_ACCESS_DENIED = 3;
+  STORAGE_ERROR_CODE_INVALID_FILE_TYPE = 4;
+  STORAGE_ERROR_CODE_FILE_TOO_LARGE = 5;
+  STORAGE_ERROR_CODE_QUOTA_EXCEEDED = 6;
+  STORAGE_ERROR_CODE_PROVIDER_ERROR = 7;
+}
+
+// File processing status
+enum FileProcessingStatus {
+  FILE_PROCESSING_STATUS_UNSPECIFIED = 0;
+  FILE_PROCESSING_STATUS_PENDING = 1;
+  FILE_PROCESSING_STATUS_PROCESSING = 2;
+  FILE_PROCESSING_STATUS_COMPLETED = 3;
+  FILE_PROCESSING_STATUS_FAILED = 4;
+}
 
 message StorageUploadOptions {
   string fileName = 1;
@@ -63,4 +92,56 @@ message StorageError {
   string provider = 3;
   string operation = 4;
   string correlationId = 5;
+}
+
+// Image processing options
+message ImageProcessingOptions {
+  int32 width = 1;
+  int32 height = 2;
+  string fit = 3; // cover, contain, fill, inside, outside
+  string format = 4; // jpg, png, webp, avif
+  int32 quality = 5;
+  bool progressive = 6;
+  bool optimize = 7;
+  map<string, string> transformParams = 8;
+}
+
+// Upload progress
+message UploadProgress {
+  string uploadId = 1;
+  int64 totalBytes = 2;
+  int64 uploadedBytes = 3;
+  float progressPercentage = 4;
+  int32 estimatedSecondsRemaining = 5;
+  FileProcessingStatus status = 6;
+  string startedAt = 7;
+  string updatedAt = 8;
+}
+
+// File validation result
+message FileValidationResult {
+  bool isValid = 1;
+  repeated ValidationError errors = 2;
+  repeated ValidationWarning warnings = 3;
+  FileMetadata metadata = 4;
+}
+
+message ValidationError {
+  string field = 1;
+  string message = 2;
+  string code = 3;
+}
+
+message ValidationWarning {
+  string field = 1;
+  string message = 2;
+  string code = 3;
+}
+
+message FileMetadata {
+  string filename = 1;
+  string contentType = 2;
+  int64 sizeBytes = 3;
+  string extension = 4;
+  map<string, string> properties = 5;
 }

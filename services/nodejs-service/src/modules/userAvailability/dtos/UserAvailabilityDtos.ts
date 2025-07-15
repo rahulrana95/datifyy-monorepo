@@ -15,7 +15,7 @@ import {
   type CancellationPolicyValue,
   type SelectedActivityValue,
   type BookingStatusValue
-} from '@datifyy/shared-types';
+} from '../../../proto-types/user/availability';
 
 /**
  * DTO for creating a new availability slot

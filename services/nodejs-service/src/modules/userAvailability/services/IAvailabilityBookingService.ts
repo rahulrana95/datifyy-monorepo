@@ -5,7 +5,7 @@ import {
   UpdateBookingRequest,
   BookingResponse,
   BookingsListResponse
-} from '@datifyy/shared-types';
+} from '../../../proto-types/user/availability';
 
 /**
  * Availability Booking Service Interface

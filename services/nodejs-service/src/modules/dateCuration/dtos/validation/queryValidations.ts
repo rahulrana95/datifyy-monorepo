@@ -2,7 +2,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { query, validationResult, ValidationChain } from 'express-validator';
-import { CuratedDateStatus, DateMode } from '@datifyy/shared-types';
+import { CuratedDateStatus, DateMode } from '../../../../proto-types/dating/curated_dates';
 
 /**
  * Validation rules for getting user dates

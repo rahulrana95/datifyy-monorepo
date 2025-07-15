@@ -9,6 +9,6 @@ export interface UserAccessType {
 }
 
 // Utility types for UserAccess
-export type CreateUserAccessInput = Omit<UserAccessType, 'id' | 'createdAt' | 'updatedAt'>;
-export type UpdateUserAccessInput = Partial<Omit<UserAccessType, 'id' | 'createdAt' | 'updatedAt'>>;
-export type UserAccessId = UserAccessType['id'];
+export type CreateUserAccessInput = UserAccessType;
+export type UpdateUserAccessInput = Partial<UserAccessType>;
+export type UserAccessId = UserAccessType['userId'];

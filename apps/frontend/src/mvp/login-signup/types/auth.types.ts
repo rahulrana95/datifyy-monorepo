@@ -6,14 +6,14 @@
 // Re-export from shared types for convenience
 export {
   AuthView, type ForgotPasswordStep
-} from '@datifyy/shared-types';
+} from '../../../proto-types';
 export type {
   FormFieldErrors,
   SignupFormData,
   LoginFormData,
   ForgotPasswordFormData,
   AuthStep
-} from '@datifyy/shared-types';
+} from '../../../proto-types';
 
 // Frontend-specific interfaces only
 export interface AuthFormProps {

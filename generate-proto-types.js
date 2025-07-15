@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 
+const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const glob = require('glob');
 
 // Configuration
 const PROTO_DIR = './proto';
-const OUTPUT_DIR = './services/nodejs-service/src/proto-types';
-const PROTOBUF_TS_OUT = path.join(OUTPUT_DIR, 'generated');
+const NODEJS_OUTPUT_DIR = './services/nodejs-service/src/proto-types';
+const FRONTEND_OUTPUT_DIR = './apps/frontend/src/proto-types';
 
-// Ensure output directory exists
+// Ensure output directories exist
 function ensureDirectoryExists(dirPath) {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
@@ -17,136 +18,157 @@ function ensureDirectoryExists(dirPath) {
   }
 }
 
-// Get all proto files recursively
-function getAllProtoFiles(dir) {
-  const files = [];
-  const items = fs.readdirSync(dir, { withFileTypes: true });
-  
-  for (const item of items) {
-    const fullPath = path.join(dir, item.name);
-    if (item.isDirectory()) {
-      files.push(...getAllProtoFiles(fullPath));
-    } else if (item.isFile() && item.name.endsWith('.proto')) {
-      files.push(fullPath);
-    }
+// Clean output directory
+function cleanDirectory(dirPath) {
+  if (fs.existsSync(dirPath)) {
+    fs.rmSync(dirPath, { recursive: true, force: true });
+    console.log(`Cleaned directory: ${dirPath}`);
   }
-  
-  return files;
+  ensureDirectoryExists(dirPath);
 }
 
-// Generate TypeScript types from proto files
-function generateTypes() {
-  console.log('🚀 Generating TypeScript types from Protocol Buffers...');
+// Generate TypeScript types using ts-proto
+function generateTypes(outputDir, options = {}) {
+  console.log(`\n📦 Generating types for ${outputDir}...`);
   
-  // Ensure output directory exists
-  ensureDirectoryExists(OUTPUT_DIR);
-  ensureDirectoryExists(PROTOBUF_TS_OUT);
+  // Clean and create output directory
+  cleanDirectory(outputDir);
   
-  // Get all proto files
-  const protoFiles = getAllProtoFiles(PROTO_DIR);
-  console.log(`Found ${protoFiles.length} proto files:`);
-  protoFiles.forEach(file => console.log(`  - ${file}`));
+  // Find all .proto files
+  const protoFiles = glob.sync(`${PROTO_DIR}/**/*.proto`);
   
-  // Generate TypeScript files using ts-proto
-  const protoPathArg = protoFiles.join(' ');
-  const command = `npx protoc \\
-    --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \\
-    --proto_path=${PROTO_DIR} \\
-    --ts_proto_out=${PROTOBUF_TS_OUT} \\
-    --ts_proto_opt=esModuleInterop=true \\
-    --ts_proto_opt=forceLong=string \\
-    --ts_proto_opt=useOptionals=messages \\
-    ${protoPathArg}`;
-  
-  try {
-    console.log('\\n🔧 Running protoc compiler...');
-    execSync(command, { stdio: 'inherit' });
-    console.log('✅ TypeScript types generated successfully!');
-  } catch (error) {
-    console.error('❌ Error generating types:', error.message);
+  if (protoFiles.length === 0) {
+    console.error('❌ No .proto files found in', PROTO_DIR);
     process.exit(1);
   }
   
-  // Generate index files for easier imports
-  generateIndexFiles();
+  console.log(`Found ${protoFiles.length} proto files`);
   
-  console.log('\\n🎉 Proto types generation complete!');
-  console.log(`📁 Types are available in: ${OUTPUT_DIR}`);
-  console.log('\\n💡 Usage example:');
-  console.log("import { NotificationResponse } from '../proto-types/admin/notifications';");
+  // ts-proto options
+  const tsProtoOptions = [
+    '--ts_proto_opt=esModuleInterop=true',
+    '--ts_proto_opt=outputEncodeMethods=false',
+    '--ts_proto_opt=outputJsonMethods=false',
+    '--ts_proto_opt=outputClientImpl=false',
+    '--ts_proto_opt=stringEnums=true', // Use string enums instead of numeric
+    '--ts_proto_opt=constEnums=false',
+    '--ts_proto_opt=enumsAsLiterals=false',
+    '--ts_proto_opt=outputTypeRegistry=false',
+    '--ts_proto_opt=addGrpcMetadata=false',
+    '--ts_proto_opt=nestJs=false',
+    '--ts_proto_opt=env=browser', // For frontend compatibility
+    '--ts_proto_opt=useOptionals=messages',
+    '--ts_proto_opt=exportCommonSymbols=false',
+    '--ts_proto_opt=snakeToCamel=true', // Convert snake_case to camelCase
+    '--ts_proto_opt=lowerCaseServiceMethods=true',
+    '--ts_proto_opt=unrecognizedEnum=false',
+    ...Object.entries(options).map(([key, value]) => `--ts_proto_opt=${key}=${value}`)
+  ].join(' ');
+  
+  // Generate command
+  const protoFilesList = protoFiles.map(f => path.relative(process.cwd(), f)).join(' ');
+  const command = `protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=${outputDir} ${tsProtoOptions} --proto_path=${PROTO_DIR} ${protoFilesList}`;
+  
+  console.log('Executing protoc with ts-proto...');
+  
+  try {
+    execSync(command, { stdio: 'inherit' });
+    console.log('✅ Successfully generated TypeScript types');
+  } catch (error) {
+    console.error('❌ Error generating types:', error.message);
+    // Try again with more verbose error output
+    try {
+      execSync(command, { stdio: 'pipe' });
+    } catch (detailedError) {
+      console.error('Detailed error:', detailedError.stdout?.toString());
+      console.error('Stderr:', detailedError.stderr?.toString());
+    }
+    process.exit(1);
+  }
+  
+  // Create index files for better imports
+  createIndexFiles(outputDir);
 }
 
-// Generate index files for easier imports
-function generateIndexFiles() {
-  console.log('\\n📝 Generating index files...');
+// Create index.ts files for easier imports
+function createIndexFiles(outputDir) {
+  const directories = ['common', 'admin', 'user', 'dating'];
+  
+  directories.forEach(dir => {
+    const dirPath = path.join(outputDir, dir);
+    if (fs.existsSync(dirPath)) {
+      const files = fs.readdirSync(dirPath)
+        .filter(f => f.endsWith('.ts') && f !== 'index.ts')
+        .map(f => f.replace('.ts', ''));
+      
+      if (files.length > 0) {
+        const indexContent = files
+          .map(f => `export * from './${f}';`)
+          .join('\n') + '\n';
+        
+        fs.writeFileSync(path.join(dirPath, 'index.ts'), indexContent);
+        console.log(`Created index.ts for ${dir}`);
+      }
+    }
+  });
   
   // Create main index file
   const mainIndexContent = `// Auto-generated index file for proto types
 // Generated at: ${new Date().toISOString()}
 
 // Common types
-export * from './generated/common/base';
-export * from './generated/common/enums';
+export * from './common';
 
 // Admin types
-export * from './generated/admin/notifications';
-export * from './generated/admin/dashboard';
-export * from './generated/admin/user_management';
+export * from './admin';
 
 // User types
-export * from './generated/user/profile';
+export * from './user';
 
 // Dating types
-export * from './generated/dating/curated_dates';
+export * from './dating';
 `;
   
-  fs.writeFileSync(path.join(OUTPUT_DIR, 'index.ts'), mainIndexContent);
-  console.log('✅ Created main index file');
-  
-  // Create category-specific index files
-  const categories = ['admin', 'user', 'dating', 'common'];
-  
-  categories.forEach(category => {
-    const categoryDir = path.join(PROTOBUF_TS_OUT, category);
-    if (fs.existsSync(categoryDir)) {
-      const categoryFiles = fs.readdirSync(categoryDir)
-        .filter(file => file.endsWith('.ts'))
-        .map(file => file.replace('.ts', ''));
-      
-      const categoryIndexContent = `// Auto-generated index file for ${category} types
-// Generated at: ${new Date().toISOString()}
-
-${categoryFiles.map(file => `export * from './${file}';`).join('\\n')}
-`;
-      
-      fs.writeFileSync(path.join(categoryDir, 'index.ts'), categoryIndexContent);
-      console.log(`✅ Created ${category} index file`);
-    }
-  });
-}
-
-// Check dependencies
-function checkDependencies() {
-  try {
-    execSync('protoc --version', { stdio: 'ignore' });
-  } catch (error) {
-    console.error('❌ Protocol Buffers compiler (protoc) is not installed.');
-    console.error('Please install it:');
-    console.error('  macOS: brew install protobuf');
-    console.error('  Ubuntu/Debian: sudo apt-get install protobuf-compiler');
-    process.exit(1);
-  }
+  fs.writeFileSync(path.join(outputDir, 'index.ts'), mainIndexContent);
+  console.log('Created main index.ts');
 }
 
 // Main execution
-if (require.main === module) {
+async function main() {
+  console.log('🚀 Generating TypeScript types from Protocol Buffers using ts-proto...');
+  
+  // Check if protoc is installed
   try {
-    checkDependencies();
-    generateTypes();
+    execSync('protoc --version', { stdio: 'pipe' });
   } catch (error) {
-    console.error('❌ Failed to generate proto types:', error.message);
+    console.error('❌ protoc is not installed. Please install it first:');
+    console.error('   brew install protobuf  # macOS');
+    console.error('   apt install protobuf-compiler  # Ubuntu/Debian');
     process.exit(1);
   }
+  
+  // Generate for nodejs service
+  console.log('\n📦 Generating types for nodejs service...');
+  generateTypes(NODEJS_OUTPUT_DIR);
+  
+  // Generate for frontend (with browser-specific options)
+  console.log('\n📦 Generating types for frontend...');
+  generateTypes(FRONTEND_OUTPUT_DIR, {
+    env: 'browser',
+    useDate: 'string' // Use string dates for JSON compatibility
+  });
+  
+  console.log('\n🎉 Proto types generation complete!');
+  console.log(`📁 Backend types: ${NODEJS_OUTPUT_DIR}`);
+  console.log(`📁 Frontend types: ${FRONTEND_OUTPUT_DIR}`);
+}
+
+// Run the script
+if (require.main === module) {
+  main().catch(error => {
+    console.error('Fatal error:', error);
+    process.exit(1);
+  });
 }
 
 module.exports = { generateTypes };

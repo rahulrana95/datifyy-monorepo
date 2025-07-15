@@ -8,7 +8,7 @@ import {
   StorageFileTooLargeError,
   StorageInvalidFileTypeError,
   FileValidationResult
-} from '@datifyy/shared-types';
+} from '../../../proto-types/common/storage';
 import {
   validateFile,
   FILE_VALIDATION_CONFIGS,

@@ -31,13 +31,14 @@
     "@radix-ui/react-dialog": "^1.1.5",
     "@tanstack/react-query-devtools": "^5.81.5",
     "empty": "0.10.1",
-    "react-router-dom": "^6.28.2",
-    "ts-proto": "^2.7.5"
+    "react-router-dom": "^6.28.2"
   },
   "devDependencies": {
     "@nx/workspace": "20.0.6",
     "@types/multer": "^2.0.0",
+    "glob": "^11.0.3",
     "nx": "20.0.6",
+    "ts-proto": "^2.7.5",
     "typescript": "^4.9.5"
   },
   "resolutions": {

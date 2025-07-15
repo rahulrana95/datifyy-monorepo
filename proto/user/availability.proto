@@ -1,0 +1,366 @@
+syntax = "proto3";
+
+package user.availability;
+
+import "google/protobuf/timestamp.proto";
+import "common/base.proto";
+
+// Date type for availability
+enum AvailabilityDateType {
+  AVAILABILITY_DATE_TYPE_UNSPECIFIED = 0;
+  AVAILABILITY_DATE_TYPE_ONLINE = 1;
+  AVAILABILITY_DATE_TYPE_OFFLINE = 2;
+}
+
+// Availability status
+enum AvailabilitySlotStatus {
+  AVAILABILITY_SLOT_STATUS_UNSPECIFIED = 0;
+  AVAILABILITY_SLOT_STATUS_ACTIVE = 1;
+  AVAILABILITY_SLOT_STATUS_CANCELLED = 2;
+  AVAILABILITY_SLOT_STATUS_COMPLETED = 3;
+  AVAILABILITY_SLOT_STATUS_DELETED = 4;
+}
+
+// Recurrence type
+enum AvailabilityRecurrenceType {
+  AVAILABILITY_RECURRENCE_TYPE_UNSPECIFIED = 0;
+  AVAILABILITY_RECURRENCE_TYPE_NONE = 1;
+  AVAILABILITY_RECURRENCE_TYPE_WEEKLY = 2;
+  AVAILABILITY_RECURRENCE_TYPE_CUSTOM = 3;
+}
+
+// Cancellation policy
+enum AvailabilityCancellationPolicy {
+  AVAILABILITY_CANCELLATION_POLICY_UNSPECIFIED = 0;
+  AVAILABILITY_CANCELLATION_POLICY_FLEXIBLE = 1;
+  AVAILABILITY_CANCELLATION_POLICY_TWENTY_FOUR_HOURS = 2;
+  AVAILABILITY_CANCELLATION_POLICY_FORTY_EIGHT_HOURS = 3;
+  AVAILABILITY_CANCELLATION_POLICY_STRICT = 4;
+}
+
+// Booking status
+enum AvailabilityBookingStatus {
+  AVAILABILITY_BOOKING_STATUS_UNSPECIFIED = 0;
+  AVAILABILITY_BOOKING_STATUS_PENDING = 1;
+  AVAILABILITY_BOOKING_STATUS_CONFIRMED = 2;
+  AVAILABILITY_BOOKING_STATUS_CANCELLED = 3;
+  AVAILABILITY_BOOKING_STATUS_COMPLETED = 4;
+}
+
+// Selected activity
+enum SelectedActivity {
+  SELECTED_ACTIVITY_UNSPECIFIED = 0;
+  SELECTED_ACTIVITY_COFFEE = 1;
+  SELECTED_ACTIVITY_LUNCH = 2;
+  SELECTED_ACTIVITY_DINNER = 3;
+  SELECTED_ACTIVITY_DRINKS = 4;
+  SELECTED_ACTIVITY_MOVIE = 5;
+  SELECTED_ACTIVITY_WALK = 6;
+  SELECTED_ACTIVITY_ACTIVITY = 7;
+  SELECTED_ACTIVITY_CASUAL = 8;
+  SELECTED_ACTIVITY_FORMAL = 9;
+}
+
+// Availability slot
+message AvailabilitySlot {
+  string id = 1;
+  int32 user_id = 2;
+  AvailabilityDateType date_type = 3;
+  AvailabilitySlotStatus status = 4;
+  google.protobuf.Timestamp date = 5;
+  string start_time = 6;
+  string end_time = 7;
+  string timezone = 8;
+  AvailabilityRecurrenceType recurrence_type = 9;
+  repeated string recurrence_days = 10;
+  google.protobuf.Timestamp recurrence_end_date = 11;
+  int32 max_bookings = 12;
+  int32 current_bookings = 13;
+  int32 duration_minutes = 14;
+  int32 buffer_time_minutes = 15;
+  string location = 16;
+  string venue = 17;
+  string virtual_link = 18;
+  string notes = 19;
+  repeated string preferred_activities = 20;
+  AvailabilityCancellationPolicy cancellation_policy = 21;
+  google.protobuf.Timestamp created_at = 22;
+  google.protobuf.Timestamp updated_at = 23;
+}
+
+// Availability booking
+message AvailabilityBooking {
+  string id = 1;
+  string availability_slot_id = 2;
+  int32 host_user_id = 3;
+  int32 guest_user_id = 4;
+  AvailabilityBookingStatus status = 5;
+  google.protobuf.Timestamp booking_date = 6;
+  string start_time = 7;
+  string end_time = 8;
+  string location = 9;
+  string venue = 10;
+  string virtual_link = 11;
+  string activity = 12;
+  string notes = 13;
+  string cancellation_reason = 14;
+  int32 cancelled_by_user_id = 15;
+  google.protobuf.Timestamp cancelled_at = 16;
+  google.protobuf.Timestamp confirmed_at = 17;
+  google.protobuf.Timestamp completed_at = 18;
+  float host_rating = 19;
+  float guest_rating = 20;
+  string host_feedback = 21;
+  string guest_feedback = 22;
+  google.protobuf.Timestamp created_at = 23;
+  google.protobuf.Timestamp updated_at = 24;
+}
+
+// User availability preferences
+message UserAvailabilityPreferences {
+  int32 user_id = 1;
+  bool is_available = 2;
+  repeated AvailabilityDateType preferred_date_types = 3;
+  int32 default_duration_minutes = 4;
+  int32 default_buffer_time_minutes = 5;
+  int32 advance_booking_days = 6;
+  int32 minimum_notice_hours = 7;
+  int32 maximum_bookings_per_day = 8;
+  int32 maximum_bookings_per_week = 9;
+  repeated string preferred_locations = 10;
+  repeated string preferred_activities = 11;
+  AvailabilityCancellationPolicy default_cancellation_policy = 12;
+  bool auto_confirm_bookings = 13;
+  bool send_reminders = 14;
+  int32 reminder_hours_before = 15;
+  repeated string blocked_user_ids = 16;
+  google.protobuf.Timestamp created_at = 17;
+  google.protobuf.Timestamp updated_at = 18;
+}
+
+// Request messages
+message CreateAvailabilityRequest {
+  AvailabilityDateType date_type = 1;
+  google.protobuf.Timestamp date = 2;
+  string start_time = 3;
+  string end_time = 4;
+  string timezone = 5;
+  AvailabilityRecurrenceType recurrence_type = 6;
+  repeated string recurrence_days = 7;
+  google.protobuf.Timestamp recurrence_end_date = 8;
+  int32 max_bookings = 9;
+  int32 duration_minutes = 10;
+  int32 buffer_time_minutes = 11;
+  string location = 12;
+  string venue = 13;
+  string virtual_link = 14;
+  string notes = 15;
+  repeated string preferred_activities = 16;
+  AvailabilityCancellationPolicy cancellation_policy = 17;
+}
+
+message UpdateAvailabilityRequest {
+  string availability_slot_id = 1;
+  AvailabilityDateType date_type = 2;
+  google.protobuf.Timestamp date = 3;
+  string start_time = 4;
+  string end_time = 5;
+  string timezone = 6;
+  int32 max_bookings = 7;
+  int32 duration_minutes = 8;
+  int32 buffer_time_minutes = 9;
+  string location = 10;
+  string venue = 11;
+  string virtual_link = 12;
+  string notes = 13;
+  repeated string preferred_activities = 14;
+  AvailabilityCancellationPolicy cancellation_policy = 15;
+}
+
+message BulkCreateAvailabilityRequest {
+  repeated CreateAvailabilityRequest slots = 1;
+  bool skip_conflicts = 2;
+}
+
+message GetAvailabilityRequest {
+  int32 user_id = 1;
+  google.protobuf.Timestamp start_date = 2;
+  google.protobuf.Timestamp end_date = 3;
+  repeated AvailabilitySlotStatus statuses = 4;
+  repeated AvailabilityDateType date_types = 5;
+  bool include_booked = 6;
+  bool include_past = 7;
+  datifyy.common.PaginationRequest pagination = 8;
+}
+
+message SearchAvailableUsersRequest {
+  google.protobuf.Timestamp date = 1;
+  string start_time = 2;
+  string end_time = 3;
+  string timezone = 4;
+  string location = 5;
+  float max_distance_km = 6;
+  repeated AvailabilityDateType date_types = 7;
+  repeated string preferred_activities = 8;
+  int32 min_age = 9;
+  int32 max_age = 10;
+  string gender = 11;
+  datifyy.common.PaginationRequest pagination = 12;
+}
+
+message BookAvailabilityRequest {
+  string availability_slot_id = 1;
+  int32 guest_user_id = 2;
+  string activity = 3;
+  string notes = 4;
+  bool accept_cancellation_policy = 5;
+}
+
+message UpdateBookingRequest {
+  string booking_id = 1;
+  AvailabilityBookingStatus status = 2;
+  string notes = 3;
+  string activity = 4;
+  string location = 5;
+  string venue = 6;
+  string virtual_link = 7;
+}
+
+message CancelAvailabilityRequest {
+  string id = 1;
+  bool is_booking = 2;
+  string cancellation_reason = 3;
+  bool notify_affected_users = 4;
+}
+
+message UpdateAvailabilityPreferencesRequest {
+  bool is_available = 1;
+  repeated AvailabilityDateType preferred_date_types = 2;
+  int32 default_duration_minutes = 3;
+  int32 default_buffer_time_minutes = 4;
+  int32 advance_booking_days = 5;
+  int32 minimum_notice_hours = 6;
+  int32 maximum_bookings_per_day = 7;
+  int32 maximum_bookings_per_week = 8;
+  repeated string preferred_locations = 9;
+  repeated string preferred_activities = 10;
+  AvailabilityCancellationPolicy default_cancellation_policy = 11;
+  bool auto_confirm_bookings = 12;
+  bool send_reminders = 13;
+  int32 reminder_hours_before = 14;
+  repeated string blocked_user_ids = 15;
+}
+
+message GetAvailabilityAnalyticsRequest {
+  int32 user_id = 1;
+  google.protobuf.Timestamp start_date = 2;
+  google.protobuf.Timestamp end_date = 3;
+  string group_by = 4; // day, week, month
+}
+
+// Response messages
+message AvailabilityResponse {
+  bool success = 1;
+  AvailabilitySlot data = 2;
+  string message = 3;
+}
+
+message AvailabilityListResponse {
+  bool success = 1;
+  repeated AvailabilitySlot slots = 2;
+  datifyy.common.PaginationResponse pagination = 3;
+  string message = 4;
+}
+
+message BookingResponse {
+  bool success = 1;
+  AvailabilityBooking data = 2;
+  string message = 3;
+}
+
+message BookingListResponse {
+  bool success = 1;
+  repeated AvailabilityBooking bookings = 2;
+  datifyy.common.PaginationResponse pagination = 3;
+  string message = 4;
+}
+
+message UserAvailabilityPreferencesResponse {
+  bool success = 1;
+  UserAvailabilityPreferences data = 2;
+  string message = 3;
+}
+
+message AvailabilityAnalyticsResponse {
+  bool success = 1;
+  AvailabilityAnalytics data = 2;
+  string message = 3;
+}
+
+message AvailabilityAnalytics {
+  int32 total_slots_created = 1;
+  int32 total_bookings = 2;
+  int32 completed_bookings = 3;
+  int32 cancelled_bookings = 4;
+  float booking_rate = 5;
+  float completion_rate = 6;
+  float cancellation_rate = 7;
+  float average_rating = 8;
+  repeated AvailabilityTrend trends = 9;
+  repeated ActivityStats activity_stats = 10;
+  repeated TimeSlotStats time_slot_stats = 11;
+}
+
+message AvailabilityTrend {
+  string date = 1;
+  int32 slots_created = 2;
+  int32 bookings = 3;
+  int32 cancellations = 4;
+}
+
+message ActivityStats {
+  string activity = 1;
+  int32 count = 2;
+  float percentage = 3;
+}
+
+message TimeSlotStats {
+  string time_slot = 1;
+  int32 count = 2;
+  float popularity = 3;
+}
+
+message BulkCreateAvailabilityResponse {
+  bool success = 1;
+  repeated AvailabilitySlot created_slots = 2;
+  repeated AvailabilityConflict conflicts = 3;
+  int32 total_requested = 4;
+  int32 total_created = 5;
+  int32 total_conflicts = 6;
+  string message = 7;
+}
+
+message AvailabilityConflict {
+  CreateAvailabilityRequest requested_slot = 1;
+  string conflict_reason = 2;
+  repeated AvailabilitySlot conflicting_slots = 3;
+}
+
+message SearchAvailableUsersResponse {
+  bool success = 1;
+  repeated AvailableUser available_users = 2;
+  datifyy.common.PaginationResponse pagination = 3;
+  string message = 4;
+}
+
+message AvailableUser {
+  int32 user_id = 1;
+  string first_name = 2;
+  string profile_image_url = 3;
+  int32 age = 4;
+  string location = 5;
+  float distance_km = 6;
+  repeated AvailabilitySlot available_slots = 7;
+  float compatibility_score = 8;
+  repeated string common_interests = 9;
+}

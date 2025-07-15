@@ -194,7 +194,7 @@ export class DateCurationService implements IDateCurationService {
           (d) =>
             new Date(d.dateTime) > new Date() &&
             [
-              CuratedDateStatus.PENDING,
+              CuratedDateStatus.UNSPECIFIED,
               CuratedDateStatus.USER1_CONFIRMED,
               CuratedDateStatus.USER2_CONFIRMED,
               CuratedDateStatus.BOTH_CONFIRMED,

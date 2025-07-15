@@ -1,6 +1,6 @@
 import { IsOptional, IsArray, IsEnum, IsBoolean, IsDateString } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { CuratedDateStatus, DateMode } from '@datifyy/shared-types';
+import { CuratedDateStatus, DateMode } from '../../../../proto-types/dating/curated_dates';
 import { BaseDateRangeQueryDto } from '../base/BaseQueryDto';
 import { VALIDATION_MESSAGES } from '../base/CommonTypes';
 

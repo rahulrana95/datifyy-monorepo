@@ -5,7 +5,6 @@ package datifyy.admin.notifications;
 import "common/base.proto";
 import "common/enums.proto";
 
-option typescript_namespace = "Datifyy.Admin.Notifications";
 
 // Notification channels
 enum NotificationChannel {

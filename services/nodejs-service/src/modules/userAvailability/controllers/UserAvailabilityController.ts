@@ -13,7 +13,7 @@ import {
 import { IUserAvailabilityService } from '../services/IUserAvailabilityService';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { UnauthorizedError, ValidationError } from '../../../infrastructure/errors/AppErrors';
-import { BulkCreateAvailabilityRequest, CreateAvailabilityRequest, GetAvailabilityRequest, SearchAvailableUsersRequest, UpdateAvailabilityRequest } from '@datifyy/shared-types';
+import { BulkCreateAvailabilityRequest, CreateAvailabilityRequest, GetAvailabilityRequest, SearchAvailableUsersRequest, UpdateAvailabilityRequest } from '../../../proto-types/user/availability';
 
 /**
  * Interface for authenticated request with user information

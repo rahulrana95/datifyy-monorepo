@@ -5,7 +5,6 @@ package datifyy.admin.user_management;
 import "common/base.proto";
 import "common/enums.proto";
 
-option typescript_namespace = "Datifyy.Admin.UserManagement";
 
 // Admin permission levels
 enum AdminPermissionLevel {

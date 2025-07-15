@@ -8,7 +8,7 @@ import {
 import { IAvailabilityBookingService } from '../services/IAvailabilityBookingService';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { UnauthorizedError, ValidationError } from '../../../infrastructure/errors/AppErrors';
-import { BookAvailabilityRequest, UpdateBookingRequest } from '@datifyy/shared-types';
+import { BookAvailabilityRequest, UpdateBookingRequest } from '../../../proto-types/user/availability';
 
 /**
  * Interface for authenticated request with user information

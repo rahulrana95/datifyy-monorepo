@@ -5,7 +5,7 @@ import {
   UpdateBookingRequest,
   BookingResponse,
   BookingsListResponse
-} from '@datifyy/shared-types';
+} from '../../../proto-types/user/availability';
 import { IAvailabilityBookingService } from './IAvailabilityBookingService';
 import { IAvailabilityBookingRepository } from '../repositories/IAvailabilityBookingRepository';
 import { UserAvailabilityMapper } from '../mappers/UserAvailabilityMapper';

@@ -6,7 +6,7 @@ import {
   UpdateAvailabilityRequest,
   GetAvailabilityRequest,
   PaginationResponse
-} from '@datifyy/shared-types';
+} from '../../../proto-types/user/availability';
 import { DatifyyUserAvailability } from '../../../models/entities/DatifyyUserAvailability';
 import { DatifyyUsersInformation } from '../../../models/entities/DatifyyUsersInformation';
 import { DatifyyAvailabilityBookings } from '../../../models/entities/DatifyyAvailabilityBookings';

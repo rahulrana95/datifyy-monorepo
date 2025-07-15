@@ -159,14 +159,7 @@ export enum RelationshipStage {
   MARRIED = 'MARRIED',
 }
 
-export enum DateType {
-  UNSPECIFIED = 'UNSPECIFIED',
-  CASUAL = 'CASUAL',
-  FORMAL = 'FORMAL',
-  VIRTUAL = 'VIRTUAL',
-  GROUP = 'GROUP',
-  ACTIVITY = 'ACTIVITY',
-}
+// DateType moved to user/availability module to avoid conflicts
 
 export enum AuthView {
   UNSPECIFIED = 'UNSPECIFIED',
@@ -383,6 +376,88 @@ export enum AdminLoginAttemptResult {
   RATE_LIMITED = 'RATE_LIMITED',
   IP_BLOCKED = 'IP_BLOCKED',
 }
+
+// Admin interface types
+export interface AdminListFilters {
+  permissionLevel?: AdminPermissionLevel;
+  accountStatus?: AdminAccountStatus;
+  email?: string;
+  department?: string;
+  createdAfter?: string;
+  createdBefore?: string;
+  lastLoginAfter?: string;
+  lastLoginBefore?: string;
+  search?: string;
+}
+
+export interface AdminTokenPayload {
+  adminId: number;
+  email: string;
+  permissionLevel: AdminPermissionLevel;
+  permissions: AdminPermission[];
+  sessionId: string;
+  iat: number;
+  exp: number;
+}
+
+// Admin security constants
+export const ADMIN_SECURITY_CONSTANTS = {
+  MAX_LOGIN_ATTEMPTS: 5,
+  LOCKOUT_DURATION_MINUTES: 30,
+  ACCOUNT_LOCK_DURATION: 30, // Same as LOCKOUT_DURATION_MINUTES
+  TOKEN_EXPIRY_HOURS: 24,
+  REFRESH_TOKEN_EXPIRY_DAYS: 30,
+  SESSION_TIMEOUT_MINUTES: 60,
+  SESSION_TIMEOUT_HOURS: 1, // 60 minutes = 1 hour
+  PASSWORD_MIN_LENGTH: 8,
+  PASSWORD_REQUIRE_UPPERCASE: true,
+  PASSWORD_REQUIRE_LOWERCASE: true,
+  PASSWORD_REQUIRE_NUMBERS: true,
+  PASSWORD_REQUIRE_SYMBOLS: true,
+  TWO_FACTOR_BACKUP_CODES_COUNT: 10,
+  TWO_FACTOR_VALIDITY_MINUTES: 5,
+  AUDIT_LOG_RETENTION_DAYS: 365,
+} as const;
+
+// Admin role permissions mapping
+export const ADMIN_ROLE_PERMISSIONS = {
+  [AdminPermissionLevel.VIEWER]: [
+    AdminPermission.VIEW_USERS,
+    AdminPermission.VIEW_ANALYTICS,
+  ],
+  [AdminPermissionLevel.MODERATOR]: [
+    AdminPermission.VIEW_USERS,
+    AdminPermission.MODERATE_CONTENT,
+    AdminPermission.VIEW_ANALYTICS,
+    AdminPermission.VIEW_EVENTS,
+  ],
+  [AdminPermissionLevel.ADMIN]: [
+    AdminPermission.VIEW_USERS,
+    AdminPermission.EDIT_USERS,
+    AdminPermission.MODERATE_CONTENT,
+    AdminPermission.VIEW_ANALYTICS,
+    AdminPermission.VIEW_EVENTS,
+    AdminPermission.CREATE_EVENTS,
+    AdminPermission.EDIT_EVENTS,
+    AdminPermission.VIEW_TRANSACTIONS,
+  ],
+  [AdminPermissionLevel.SUPER_ADMIN]: [
+    AdminPermission.VIEW_USERS,
+    AdminPermission.EDIT_USERS,
+    AdminPermission.DELETE_USERS,
+    AdminPermission.MODERATE_CONTENT,
+    AdminPermission.VIEW_ANALYTICS,
+    AdminPermission.VIEW_EVENTS,
+    AdminPermission.CREATE_EVENTS,
+    AdminPermission.EDIT_EVENTS,
+    AdminPermission.DELETE_EVENTS,
+    AdminPermission.VIEW_TRANSACTIONS,
+    AdminPermission.PROCESS_REFUNDS,
+    AdminPermission.MANAGE_ADMINS,
+    AdminPermission.SYSTEM_CONFIG,
+  ],
+  [AdminPermissionLevel.OWNER]: Object.values(AdminPermission).filter(p => p !== AdminPermission.UNSPECIFIED),
+} as const;
 
 export enum RevenueTimePeriod {
   UNSPECIFIED = 'UNSPECIFIED',
@@ -835,24 +910,123 @@ export interface AdminDashboardOverview {
   }>;
 }
 
+// User-related metrics for dashboard
+export interface UserMetrics {
+  readonly totalUsers: number;
+  readonly activeUsersToday: number;
+  readonly newUsersThisWeek: number;
+  readonly verifiedUsers: number;
+  readonly usersWithAvailability: number;
+  readonly usersByGender: {
+    readonly male: number;
+    readonly female: number;
+    readonly other: number;
+  };
+  readonly usersByCity: Array<{
+    readonly city: string;
+    readonly count: number;
+  }>;
+  readonly growthRate: number; // Percentage
+}
+
+// Date-related metrics for dashboard
+export interface DateMetrics {
+  readonly totalDatesSetup: number;
+  readonly datesScheduledThisWeek: number;
+  readonly datesCompletedThisWeek: number;
+  readonly datesCancelledThisWeek: number;
+  readonly upcomingDatesNextWeek: number;
+  readonly datesByMode: {
+    readonly online: number;
+    readonly offline: number;
+  };
+  readonly datesByCity: Array<{
+    readonly city: string;
+    readonly count: number;
+  }>;
+  readonly averageSuccessRate: number; // Percentage
+  readonly pendingFeedback: number;
+}
+
+// Activity-related metrics for dashboard
+export interface ActivityMetrics {
+  readonly totalLoginsToday: number;
+  readonly peakActivityHour: number; // 0-23
+  readonly averageSessionDuration: number; // in minutes
+  readonly profileUpdatesToday: number;
+  readonly feedbackSubmittedToday: number;
+  readonly supportTicketsOpen: number;
+}
+
+// Metric trends for charts and graphs
+export interface MetricTrends {
+  readonly userGrowth: TrendData[];
+  readonly revenueGrowth: TrendData[];
+  readonly dateActivity: TrendData[];
+  readonly conversionRates: TrendData[];
+}
+
+// Individual trend data point
+export interface TrendData {
+  readonly date: string; // YYYY-MM-DD
+  readonly value: number;
+  readonly change: number; // Percentage change from previous period
+}
+
+// Main dashboard overview response
+export interface AdminDashboardOverviewResponse {
+  readonly userMetrics: UserMetrics;
+  readonly dateMetrics: DateMetrics;
+  readonly revenueMetrics: RevenueMetrics;
+  readonly activityMetrics: ActivityMetrics;
+  readonly alerts: DashboardAlert[];
+  readonly trends: MetricTrends;
+  readonly lastUpdated: string; // ISO timestamp
+}
+
+// System health status
+export interface SystemHealthStatus {
+  readonly overall: 'healthy' | 'warning' | 'critical';
+  readonly services: {
+    readonly database: ServiceHealth;
+    readonly redis: ServiceHealth;
+    readonly emailService: ServiceHealth;
+    readonly storageService: ServiceHealth;
+    readonly paymentGateway: ServiceHealth;
+  };
+  readonly performance: {
+    readonly responseTime: number; // milliseconds
+    readonly memoryUsage: number; // percentage
+    readonly cpuUsage: number; // percentage
+    readonly activeConnections: number;
+  };
+  readonly lastChecked: string;
+}
+
+// Individual service health
+export interface ServiceHealth {
+  readonly status: 'healthy' | 'warning' | 'critical' | 'down';
+  readonly responseTime?: number;
+  readonly errorRate?: number;
+  readonly lastError?: string;
+  readonly uptime: number; // percentage
+}
+
 export interface RevenueMetrics {
-  totalRevenue: number;
-  revenueGrowth: number;
-  averageOrderValue: number;
-  totalTransactions: number;
-  successfulTransactions: number;
-  failedTransactions: number;
-  refundedTransactions: number;
-  topRevenueStreams: Array<{
-    category: string;
-    amount: number;
-    percentage: number;
-  }>;
-  revenueByTimePeriod: Array<{
-    period: string;
-    amount: number;
-    transactionCount: number;
-  }>;
+  readonly totalRevenue: number;
+  readonly revenueToday: number;
+  readonly revenueThisWeek: number;
+  readonly revenueThisMonth: number;
+  readonly revenueByType: {
+    readonly onlineDates: number;
+    readonly offlineDates: number;
+    readonly premiumFeatures: number;
+    readonly events: number;
+  };
+  readonly activePayingUsers: number;
+  readonly averageTransactionValue: number;
+  readonly refundsThisWeek: number;
+  readonly topRevenueCity: string;
 }
 
 export interface UserAnalytics {
@@ -909,6 +1083,36 @@ export interface GetUserAnalyticsRequest {
   includeDemographics?: boolean;
 }
 
+export interface GetMetricTrendsRequest {
+  metrics: string[];
+  timePeriod: RevenueTimePeriod;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface GetAdminActivityRequest {
+  startDate?: string;
+  endDate?: string;
+  adminId?: number;
+  actionTypes?: string[];
+  pagination?: PaginationRequest;
+}
+
+// Constants
+export const DASHBOARD_REFRESH_INTERVALS = {
+  REAL_TIME: 30000, // 30 seconds
+  FAST: 60000, // 1 minute
+  NORMAL: 300000, // 5 minutes
+  SLOW: 900000, // 15 minutes
+} as const;
+
+export const DASHBOARD_METRIC_TYPES = {
+  USER_COUNT: 'user_count',
+  REVENUE: 'revenue',
+  ACTIVITY: 'activity',
+  PERFORMANCE: 'performance',
+} as const;
+
 export interface GetSystemMetricsRequest {
   includeHistory?: boolean;
   timePeriod?: RevenueTimePeriod;
@@ -944,6 +1148,7 @@ export interface GetDashboardAlertsRequest {
 
 // Response interfaces
 export interface DashboardOverviewResponse extends ApiResponse<AdminDashboardOverview> {}
+export interface AdminDashboardOverviewResponse extends ApiResponse<AdminDashboardOverview> {} // Alias for backward compatibility
 export interface RevenueMetricsResponse extends ApiResponse<RevenueMetrics> {}
 export interface UserAnalyticsResponse extends ApiResponse<UserAnalytics> {}
 export interface SystemMetricsResponse extends ApiResponse<SystemMetrics> {}
@@ -1410,49 +1615,13 @@ export interface PrivacySettings {
   showProfileInSearch: boolean;
 }
 
-export interface AvailabilitySlot {
-  id: string;
-  userId: string;
-  dateType: DateType;
-  startTime: string;
-  endTime: string;
-  status: AvailabilityStatus;
-  recurrence: RecurrenceType;
-  location: string;
-  notes: string;
-  cancellationPolicy: CancellationPolicy;
-  price: number;
-  currency: string;
-  isPremium: boolean;
-  tags: string[];
-  maxParticipants: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface AvailabilityBooking {
-  id: string;
-  slotId: string;
-  bookerId: string;
-  ownerId: string;
-  status: BookingStatus;
-  bookedAt: string;
-  confirmedAt: string;
-  cancelledAt: string;
-  cancellationReason: string;
-  notes: string;
-  amountPaid: number;
-  currency: string;
-  paymentId: string;
-  createdAt: string;
-  updatedAt: string;
-}
+// Availability types moved to user/availability module to avoid duplicates
 
 export interface UserAvailabilityPreferences {
   userId: string;
-  preferredDateTypes: DateType[];
+  preferredDateTypes: string[]; // Use string to avoid enum reference
   defaultDurationMinutes: number;
-  defaultCancellationPolicy: CancellationPolicy;
+  defaultCancellationPolicy: string; // Use string to avoid enum reference
   defaultTimezone: string;
   autoAcceptBookings: boolean;
   advanceNoticeHours: number;
@@ -1715,11 +1884,7 @@ export interface UsersListResponse extends ApiResponse<{
   users: UserProfile[];
   pagination: PaginationResponse;
 }> {}
-export interface AvailabilityResponse extends ApiResponse<AvailabilitySlot> {}
-export interface AvailabilityListResponse extends ApiResponse<{
-  slots: AvailabilitySlot[];
-  pagination: PaginationResponse;
-}> {}
+// Availability responses moved to user/availability module
 export interface AuthResponse extends ApiResponse<{
   user: UserData;
   token: string;
@@ -1732,11 +1897,246 @@ export interface MatchesListResponse extends ApiResponse<{
 }> {}
 `;
   
+  // User Availability types  
+  const userAvailabilityTypes = `// Auto-generated from proto/user/availability.proto
+// Generated at: ${new Date().toISOString()}
+
+import { ApiResponse, PaginationRequest, PaginationResponse, LocationInfo } from '../common';
+
+export enum DateType {
+  UNSPECIFIED = 'UNSPECIFIED',
+  ONLINE = 'ONLINE',
+  OFFLINE = 'OFFLINE',
+}
+
+export enum AvailabilityStatus {
+  UNSPECIFIED = 'UNSPECIFIED',
+  ACTIVE = 'ACTIVE',
+  CANCELLED = 'CANCELLED',
+  COMPLETED = 'COMPLETED',
+  DELETED = 'DELETED',
+}
+
+export enum RecurrenceType {
+  UNSPECIFIED = 'UNSPECIFIED',
+  NONE = 'NONE',
+  WEEKLY = 'WEEKLY',
+  CUSTOM = 'CUSTOM',
+}
+
+export enum CancellationPolicy {
+  UNSPECIFIED = 'UNSPECIFIED',
+  FLEXIBLE = 'FLEXIBLE',
+  TWENTY_FOUR_HOURS = 'TWENTY_FOUR_HOURS',
+  FORTY_EIGHT_HOURS = 'FORTY_EIGHT_HOURS',
+  STRICT = 'STRICT',
+}
+
+export enum BookingStatus {
+  UNSPECIFIED = 'UNSPECIFIED',
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  CANCELLED = 'CANCELLED',
+  COMPLETED = 'COMPLETED',
+  NO_SHOW = 'NO_SHOW',
+}
+
+export interface AvailabilitySlot {
+  id: string;
+  userId: string;
+  dateType: DateType;
+  startTime: string;
+  endTime: string;
+  maxBookings: number;
+  currentBookings: number;
+  location?: LocationInfo;
+  notes?: string;
+  status: AvailabilityStatus;
+  recurrenceType?: RecurrenceType;
+  recurrenceEndDate?: string;
+  cancellationPolicy: CancellationPolicy;
+  autoConfirm: boolean;
+  bufferTime: number;
+  isVisible: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AvailabilityBooking {
+  id: string;
+  slotId: string;
+  bookerUserId: string;
+  hostUserId: string;
+  bookingTime: string;
+  startTime: string;
+  endTime: string;
+  status: BookingStatus;
+  notes?: string;
+  cancellationReason?: string;
+  cancelledAt?: string;
+  cancelledBy?: string;
+  confirmedAt?: string;
+  completedAt?: string;
+  noShowReportedAt?: string;
+  feedbackSubmitted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserAvailabilityPreferences {
+  userId: string;
+  defaultDateType: DateType;
+  defaultCancellationPolicy: CancellationPolicy;
+  defaultBufferTime: number;
+  autoConfirmBookings: boolean;
+  allowBackToBackBookings: boolean;
+  maxAdvanceBookingDays: number;
+  minAdvanceBookingHours: number;
+  defaultLocation?: LocationInfo;
+  timeZone: string;
+  workingHours: {
+    monday?: { start: string; end: string; };
+    tuesday?: { start: string; end: string; };
+    wednesday?: { start: string; end: string; };
+    thursday?: { start: string; end: string; };
+    friday?: { start: string; end: string; };
+    saturday?: { start: string; end: string; };
+    sunday?: { start: string; end: string; };
+  };
+  blackoutDates: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SelectedActivity {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  estimatedDuration: number;
+  location: LocationInfo;
+  tags: string[];
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Request interfaces
+export interface CreateAvailabilityRequest {
+  dateType: DateType;
+  startTime: string;
+  endTime: string;
+  maxBookings: number;
+  location?: LocationInfo;
+  notes?: string;
+  recurrenceType?: RecurrenceType;
+  recurrenceEndDate?: string;
+  cancellationPolicy: CancellationPolicy;
+  autoConfirm?: boolean;
+  bufferTime?: number;
+  isVisible?: boolean;
+}
+
+export interface UpdateAvailabilityRequest {
+  slotId: string;
+  startTime?: string;
+  endTime?: string;
+  maxBookings?: number;
+  location?: LocationInfo;
+  notes?: string;
+  cancellationPolicy?: CancellationPolicy;
+  autoConfirm?: boolean;
+  bufferTime?: number;
+  isVisible?: boolean;
+  status?: AvailabilityStatus;
+}
+
+export interface GetAvailabilityRequest {
+  userId?: string;
+  dateType?: DateType;
+  startDate?: string;
+  endDate?: string;
+  status?: AvailabilityStatus;
+  pagination?: PaginationRequest;
+}
+
+export interface SearchAvailableUsersRequest {
+  dateType: DateType;
+  startTime: string;
+  endTime: string;
+  location?: LocationInfo;
+  radius?: number;
+  maxUsers?: number;
+  excludeUserIds?: string[];
+}
+
+export interface BookAvailabilityRequest {
+  slotId: string;
+  startTime: string;
+  endTime: string;
+  notes?: string;
+}
+
+export interface UpdateBookingRequest {
+  bookingId: string;
+  status?: BookingStatus;
+  notes?: string;
+  cancellationReason?: string;
+}
+
+// Response interfaces
+export interface AvailabilityResponse extends ApiResponse<AvailabilitySlot> {}
+
+export interface AvailabilityListResponse extends ApiResponse<{
+  slots: AvailabilitySlot[];
+  pagination: PaginationResponse;
+}> {}
+
+export interface BookingResponse extends ApiResponse<AvailabilityBooking> {}
+
+export interface BookingListResponse extends ApiResponse<{
+  bookings: AvailabilityBooking[];
+  pagination: PaginationResponse;
+}> {}
+
+export interface AvailableUsersResponse extends ApiResponse<{
+  users: Array<{
+    userId: string;
+    availableSlots: AvailabilitySlot[];
+    distance?: number;
+  }>;
+}> {}
+
+// Validation rules
+export const AvailabilityValidationRules = {
+  minSlotDuration: 30 * 60 * 1000, // 30 minutes in milliseconds
+  maxSlotDuration: 8 * 60 * 60 * 1000, // 8 hours in milliseconds
+  minAdvanceBooking: 1 * 60 * 60 * 1000, // 1 hour in milliseconds
+  maxAdvanceBooking: 90 * 24 * 60 * 60 * 1000, // 90 days in milliseconds
+  maxBookingsPerSlot: 50,
+  maxBufferTime: 2 * 60 * 60 * 1000, // 2 hours in milliseconds
+  dateScheduling: {
+    minAdvanceHours: 1,
+    maxAdvanceDays: 90,
+    minDurationMinutes: 30,
+    maxDurationMinutes: 480,
+  },
+  feedback: {
+    minRating: 1,
+    maxRating: 5,
+    maxCommentLength: 2000,
+    maxRedFlags: 10,
+  },
+};
+`;
+
   fs.writeFileSync(path.join(outputDir, 'user', 'profile.ts'), userProfileTypes);
+  fs.writeFileSync(path.join(outputDir, 'user', 'availability.ts'), userAvailabilityTypes);
   
   // User index
   const userIndex = `export * from './enums';
 export * from './profile';
+export * from './availability';
 `;
   fs.writeFileSync(path.join(outputDir, 'user', 'index.ts'), userIndex);
   
@@ -1762,9 +2162,13 @@ export enum DateMode {
 
 export enum CuratedDateStatus {
   UNSPECIFIED = 'UNSPECIFIED',
+  PENDING = 'PENDING',
   PROPOSED = 'PROPOSED',
   ACCEPTED = 'ACCEPTED',
   REJECTED = 'REJECTED',
+  USER1_CONFIRMED = 'USER1_CONFIRMED',
+  USER2_CONFIRMED = 'USER2_CONFIRMED',
+  BOTH_CONFIRMED = 'BOTH_CONFIRMED',
   CONFIRMED = 'CONFIRMED',
   CANCELLED = 'CANCELLED',
   COMPLETED = 'COMPLETED',
@@ -2095,6 +2499,19 @@ export const DateCurationValidationRules = {
   maxRating: 5,
   minCompatibilityScore: 0,
   maxCompatibilityScore: 100,
+  dateScheduling: {
+    minAdvanceHours: 24,
+    maxAdvanceDays: 30,
+    minCancellationHours: 2,
+    maxDurationMinutes: 480, // 8 hours
+    minDurationMinutes: 30,
+  },
+  feedback: {
+    minRating: 1,
+    maxRating: 5,
+    maxTextLength: 2000,
+    requiredFields: ['rating', 'enjoyment', 'compatibility', 'wouldDateAgain'],
+  },
 };
 
 // Helper functions

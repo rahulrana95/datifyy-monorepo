@@ -16,7 +16,7 @@ import {
   TimeSuggestionsResponse,
   AvailabilityConflict,
   SlotCreationResult
-} from '@datifyy/shared-types';
+} from '../../../proto-types/user/availability';
 
 /**
  * User Availability Service Interface

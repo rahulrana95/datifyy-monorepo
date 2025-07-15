@@ -2,7 +2,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { body, validationResult, ValidationChain } from 'express-validator';
-import { DateMode } from '@datifyy/shared-types';
+import { DateMode } from '../../../../proto-types/dating/curated_dates';
 
 /**
  * Validation rules for creating curated dates

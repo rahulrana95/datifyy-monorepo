@@ -11,7 +11,7 @@ export interface ErrorObject { code: number; message: string }
  * Standard API error structure
  */
 export interface ApiError {
-  code: string;
+  code: string | number;
   message: string;
   details?: any;
   statusCode?: number;

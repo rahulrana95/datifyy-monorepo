@@ -2,7 +2,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { body, param, validationResult, ValidationChain } from 'express-validator';
-import { CancellationCategory } from '@datifyy/shared-types';
+import { CancellationCategory } from '../../../../proto-types/dating/curated_dates';
 
 /**
  * Validation rules for canceling dates

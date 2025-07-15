@@ -1,6 +1,5 @@
 // apps/frontend/src/mvp/admin-v2/dashboard/types/index.ts
 
-// Local enum and type definitions for dashboard (since they don't exist in shared-types yet)
 
 // Time range options for dashboard filtering
 export enum DashboardTimeRange {

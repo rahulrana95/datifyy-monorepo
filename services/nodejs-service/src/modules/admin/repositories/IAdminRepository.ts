@@ -11,10 +11,8 @@
 import {
   AdminPermissionLevel,
   AdminAccountStatus,
-  AdminListFilters,
-  AdminCreateRequest,
-  AdminUpdateRequest
-} from '@datifyy/shared-types';
+  AdminListFilters
+} from '../../../proto-types/admin/enums';
 import { DatifyyUsersLogin } from '../../../models/entities/DatifyyUsersLogin';
 
 /**

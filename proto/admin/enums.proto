@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package admin;
+package admin.enums;
 
 // Admin permission levels for role-based access control
 enum AdminPermissionLevel {
@@ -167,12 +167,12 @@ enum RevenueCategory {
 // Transaction status
 enum TransactionStatus {
   TRANSACTION_STATUS_UNSPECIFIED = 0;
-  PENDING = 1;
-  COMPLETED = 2;
-  FAILED = 3;
-  REFUNDED = 4;
-  CANCELLED = 5;
-  PROCESSING = 6;
+  TRANSACTION_PENDING = 1;
+  TRANSACTION_COMPLETED = 2;
+  TRANSACTION_FAILED = 3;
+  TRANSACTION_REFUNDED = 4;
+  TRANSACTION_CANCELLED = 5;
+  TRANSACTION_PROCESSING = 6;
 }
 
 // Payment methods
@@ -220,11 +220,11 @@ enum CompatibilityFactor {
 // Match confidence levels
 enum MatchConfidenceLevel {
   MATCH_CONFIDENCE_LEVEL_UNSPECIFIED = 0;
-  VERY_LOW = 1;
-  LOW = 2;
-  MODERATE = 3;
-  HIGH = 4;
-  VERY_HIGH = 5;
+  CONFIDENCE_VERY_LOW = 1;
+  CONFIDENCE_LOW = 2;
+  CONFIDENCE_MODERATE = 3;
+  CONFIDENCE_HIGH = 4;
+  CONFIDENCE_VERY_HIGH = 5;
 }
 
 // Date success prediction
@@ -240,10 +240,10 @@ enum DateSuccessPrediction {
 // Match suggestion status
 enum MatchSuggestionStatus {
   MATCH_SUGGESTION_STATUS_UNSPECIFIED = 0;
-  GENERATED = 1;
-  SENT = 2;
-  VIEWED = 3;
-  ACCEPTED = 4;
-  REJECTED = 5;
-  EXPIRED = 6;
+  SUGGESTION_GENERATED = 1;
+  SUGGESTION_SENT = 2;
+  SUGGESTION_VIEWED = 3;
+  SUGGESTION_ACCEPTED = 4;
+  SUGGESTION_REJECTED = 5;
+  SUGGESTION_EXPIRED = 6;
 }

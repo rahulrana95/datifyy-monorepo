@@ -4,7 +4,7 @@
  * Only frontend-specific component types remain here
  */
 
-import { PartnerPreferences, PreferencePage } from '@datifyy/shared-types';
+import { PartnerPreferences, PreferencePage } from '../../../proto-types';
 
 // Re-export from shared types
 export type {
@@ -12,7 +12,7 @@ export type {
   PreferencePage,
   PreferenceCategory,
   DatifyyUserPartnerPreferences
-} from '@datifyy/shared-types';
+} from '../../../proto-types';
 
 // Frontend-specific component props
 export interface PreferencesHeaderProps {

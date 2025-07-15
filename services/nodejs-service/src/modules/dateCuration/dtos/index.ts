@@ -48,4 +48,4 @@ export type {
   BulkDateOperationResult,
   DateConflict,
   CompatibilityDetails
-} from '@datifyy/shared-types';
+} from '../../../../proto-types/dating/curated_dates';

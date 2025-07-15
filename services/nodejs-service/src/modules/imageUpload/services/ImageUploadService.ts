@@ -33,7 +33,7 @@ import {
 import {
   StorageUploadOptions,
   StorageError
-} from '@datifyy/shared-types';
+} from '../../../proto-types/common/storage';
 import { ImageUploadError, ImageUploadErrorCodes } from '../errors/ImageUploadErrors';
 
 /**

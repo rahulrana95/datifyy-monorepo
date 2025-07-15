@@ -1,6 +1,7 @@
 // apps/frontend/src/service/apiService.ts
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
-import { ApiResponse, ServiceResponse } from "@datifyy/shared-types";
+import { ApiResponse } from "../proto-types";
+import { ServiceResponse } from "./ErrorTypes";
 
 class ApiService {
   private axiosInstance: AxiosInstance;

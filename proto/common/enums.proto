@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package datifyy.common;
 
-option typescript_namespace = "Datifyy.Common";
 
 // User status
 enum UserStatus {

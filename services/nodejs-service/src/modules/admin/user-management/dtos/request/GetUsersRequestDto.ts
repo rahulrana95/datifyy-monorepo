@@ -1,6 +1,6 @@
 import { IsOptional, IsString, IsEnum, IsNumber, Min, Max, IsBoolean, IsDateString } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import { PaginationRequest } from '@datifyy/shared-types';
+import { PaginationRequest } from '../../../../../proto-types/common/base';
 
 export enum UserSortField {
   CREATED_AT = 'createdAt',

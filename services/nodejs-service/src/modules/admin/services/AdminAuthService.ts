@@ -44,11 +44,15 @@ import {
   AdminLoginAttemptResult,
   ADMIN_SECURITY_CONSTANTS,
   ADMIN_ROLE_PERMISSIONS
-} from '@datifyy/shared-types';
+} from '../../../proto-types/admin/enums';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { Config } from '../../../infrastructure/config/Config';
 import { RedisService } from '../../../infrastructure/cache/RedisService';
 import { DatifyyUsersLogin } from '../../../models/entities/DatifyyUsersLogin';
+import {
+  adminAccountStatusToDb,
+  dbToAdminAccountStatus
+} from '../../../utils/enum-converters';
 
 /**
  * Admin Authentication Service Implementation
@@ -115,7 +119,7 @@ export class AdminAuthService implements IAdminAuthService {
       }
 
       // Check account status
-      if (!admin.isactive || admin.accountStatus !== AdminAccountStatus.ACTIVE) {
+      if (!admin.isactive || dbToAdminAccountStatus(admin.accountStatus) !== AdminAccountStatus.ACTIVE) {
         await this.logSecurityEvent({
           eventType: 'LOGIN_FAILED',
           adminId: admin.id,
@@ -294,7 +298,7 @@ export class AdminAuthService implements IAdminAuthService {
       
       // Get admin and validate status
       const admin = await this.adminRepository.findById(adminId);
-      if (!admin || !admin.isactive || admin.accountStatus !== AdminAccountStatus.ACTIVE) {
+      if (!admin || !admin.isactive || dbToAdminAccountStatus(admin.accountStatus) !== AdminAccountStatus.ACTIVE) {
         await this.redisService.delete(`refresh_token:${refreshToken}`);
         throw new Error('Admin account is not active');
       }
@@ -385,9 +389,9 @@ export class AdminAuthService implements IAdminAuthService {
       const payload = jwt.verify(token, this.jwtSecret) as AdminTokenPayload;
       
       // Get admin from database
-      const admin = await this.adminRepository.findById(parseInt(payload.id));
+      const admin = await this.adminRepository.findById(payload.adminId);
       
-      if (!admin || !admin.isactive || admin.accountStatus !== AdminAccountStatus.ACTIVE) {
+      if (!admin || !admin.isactive || dbToAdminAccountStatus(admin.accountStatus) !== AdminAccountStatus.ACTIVE) {
         return {
           isValid: false,
           invalidReason: 'Admin account is not active'

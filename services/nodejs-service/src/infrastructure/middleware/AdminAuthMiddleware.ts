@@ -147,7 +147,7 @@ export function adminAuthMiddleware(
       }
 
       if (
-        adminProfile.accountStatus !== AdminAccountStatus.ACTIVE &&
+        adminProfile.accountStatus !== AdminAccountStatus.ADMIN_ACTIVE &&
         !options.allowInactive
       ) {
         logger.warn("Non-active admin attempted access", {

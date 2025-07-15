@@ -28,6 +28,7 @@ const NOTIFICATION_CONSTANTS = {
   MAX_SMS_LENGTH: 160,
 };
 
+
 // Define missing interface
 interface UpdateNotificationPreferencesRequest {
   channels?: any;
@@ -424,13 +425,13 @@ function validateGetNotificationsRequest(req: Request): void {
 
   // Validate priorities if provided
   if (query.priorities) {
-    let prioritiesArray: number[];
+    let prioritiesArray: string[];
     if (typeof query.priorities === "string") {
       prioritiesArray = query.priorities
         .split(",")
-        .map((p: string) => parseInt(p.trim(), 10));
+        .map((p: string) => p.trim());
     } else if (Array.isArray(query.priorities)) {
-      prioritiesArray = query.priorities.map((p: string) => parseInt(p, 10));
+      prioritiesArray = query.priorities.map((p: any) => String(p).trim());
     } else {
       throw new ValidationError(
         "priorities must be a string or array",
@@ -440,24 +441,17 @@ function validateGetNotificationsRequest(req: Request): void {
     }
 
     const priorityValues = [
-      NotificationPriority.CRITICAL,
-      NotificationPriority.HIGH,
-      NotificationPriority.LOW,
-      NotificationPriority.NORMAL,
-      NotificationPriority.URGENT,
+      NotificationPriority.NOTIFICATION_PRIORITY_CRITICAL,
+      NotificationPriority.NOTIFICATION_PRIORITY_HIGH,
+      NotificationPriority.NOTIFICATION_PRIORITY_LOW,
+      NotificationPriority.NOTIFICATION_PRIORITY_NORMAL,
+      NotificationPriority.NOTIFICATION_PRIORITY_URGENT,
     ];
 
-    prioritiesArray.forEach((priority: number, index: number) => {
-      if (isNaN(priority)) {
-        throw new ValidationError(
-          `priorities[${index}] must be a number`,
-          `priorities[${index}]`,
-          "INVALID_PRIORITY_NUMBER"
-        );
-      }
+    prioritiesArray.forEach((priority: string, index: number) => {
       validateEnum(priority, priorityValues, `priorities[${index}]`);
     });
-    query.priorities = prioritiesArray;
+    query.priorities = prioritiesArray as NotificationPriority[];
   }
 
   // Validate date range
@@ -693,9 +687,9 @@ function validateTestNotificationRequest(req: Request): void {
   validateEnum(body.channel, channelValues, "channel");
 
   // Validate recipient format based on channel
-  if (body.channel === NotificationChannel.EMAIL) {
+  if (body.channel === NotificationChannel.NOTIFICATION_CHANNEL_EMAIL) {
     validateEmailFormat(body.recipient, "recipient");
-  } else if (body.channel === NotificationChannel.SLACK) {
+  } else if (body.channel === NotificationChannel.NOTIFICATION_CHANNEL_SLACK) {
     // Validate Slack channel format (#channel or @username)
     if (!body.recipient.startsWith("#") && !body.recipient.startsWith("@")) {
       throw new ValidationError(
@@ -704,7 +698,7 @@ function validateTestNotificationRequest(req: Request): void {
         "INVALID_SLACK_RECIPIENT"
       );
     }
-  } else if (body.channel === NotificationChannel.SMS) {
+  } else if (body.channel === NotificationChannel.NOTIFICATION_CHANNEL_SMS) {
     // Basic phone number validation
     const phoneRegex = /^\+?[\d\s\-\(\)]+$/;
     if (!phoneRegex.test(body.recipient)) {
@@ -1140,7 +1134,7 @@ function validateUpdateNotificationPreferencesRequest(req: Request): void {
 
       // Validate recipientAddress if provided
       if (channelPref.recipientAddress) {
-        if (channelKey === NotificationChannel.EMAIL) {
+        if (channelKey === NotificationChannel.NOTIFICATION_CHANNEL_EMAIL) {
           validateEmailFormat(
             channelPref.recipientAddress,
             `channels.${channelKey}.recipientAddress`

@@ -5,7 +5,6 @@ package datifyy.dating.curated_dates;
 import "common/base.proto";
 import "common/enums.proto";
 
-option typescript_namespace = "Datifyy.Dating.CuratedDates";
 
 // Date status
 enum CuratedDateStatus {

@@ -13,7 +13,7 @@ import {
   GetAdminActivityRequest,
   DASHBOARD_REFRESH_INTERVALS,
   DASHBOARD_METRIC_TYPES,
-} from '@datifyy/shared-types';
+} from '../../../proto-types/admin/dashboard';
 
 // =============================================================================
 // VALIDATION HELPERS

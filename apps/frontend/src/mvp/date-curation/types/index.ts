@@ -1,10 +1,19 @@
 // apps/frontend/src/mvp/date-curation/types/index.ts
 
-import { CancellationCategory, CuratedDateStatus, DateMode } from '@datifyy/shared-types';
+import {
+  CuratedDateStatus,
+  DateMode,
+  RelationshipStage,
+  CancellationCategory,
+  type CuratedDateResponse,
+  type DateFeedbackResponse,
+  type UserTrustScoreResponse,
+  type DateSeriesResponse,
+} from "../../../proto-types";
 
 /**
  * Date Curation Types - Frontend
- * 
+ *
  * Core interfaces for the user-facing date curation experience
  * Extends shared types with frontend-specific properties
  */
@@ -12,14 +21,13 @@ import { CancellationCategory, CuratedDateStatus, DateMode } from '@datifyy/shar
 // Re-export shared types for convenience
 export {
   DateMode,
-  CuratedDateStatus,
   RelationshipStage,
   CancellationCategory,
   type CuratedDateResponse,
   type DateFeedbackResponse,
   type UserTrustScoreResponse,
-  type DateSeriesResponse
-} from '@datifyy/shared-types';
+  type DateSeriesResponse,
+} from "../../../proto-types";
 
 /**
  * Frontend-specific curated date card interface
@@ -32,26 +40,26 @@ export interface CuratedDateCard {
   readonly matchAge: number;
   readonly matchImage?: string;
   readonly dateTime: string; // ISO string
-  readonly mode: 'online' | 'offline';
-  readonly status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  
+  readonly mode: "online" | "offline";
+  readonly status: "pending" | "confirmed" | "cancelled" | "completed";
+
   // Location details
   readonly location?: string;
   readonly meetingLink?: string;
-  
+
   // Match info
   readonly compatibilityScore: number;
   readonly isVerified: boolean;
-  
+
   // Admin guidance
   readonly adminNote?: string;
   readonly dressCode?: string;
-  
+
   // User actions
   readonly canCancel: boolean;
   readonly canConfirm: boolean;
   readonly canSubmitFeedback: boolean;
-  
+
   // UI helpers
   readonly hoursUntilDate: number;
   readonly formattedDateTime: string;
@@ -62,7 +70,7 @@ export interface CuratedDateCard {
  * Date action types for user interactions
  */
 export interface DateAction {
-  readonly type: 'accept' | 'cancel' | 'reschedule' | 'feedback';
+  readonly type: "accept" | "cancel" | "reschedule" | "feedback";
   readonly dateId: string;
   readonly category?: CancellationCategory;
   readonly reason?: string;
@@ -88,7 +96,7 @@ export interface DateCurationSummary {
 export interface DateFilter {
   readonly status?: CuratedDateStatus[];
   readonly mode?: DateMode[];
-  readonly timeRange?: 'upcoming' | 'past_week' | 'past_month' | 'all';
+  readonly timeRange?: "upcoming" | "past_week" | "past_month" | "all";
   readonly includeHistory?: boolean;
 }
 
