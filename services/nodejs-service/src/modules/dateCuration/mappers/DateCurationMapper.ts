@@ -9,10 +9,12 @@ import {
   DateFeedbackResponse,
   UserTrustScoreResponse,
   DateSeriesResponse,
-  PotentialMatchResponse,
+  SearchPotentialMatchesResponse,
   CuratedDateStatus,
-} from "@datifyy/shared-types";
-import { DateMode } from "@datifyy/shared-types";
+  DateMode,
+} from "../../../proto-types/dating/curated_dates";
+
+type PotentialMatchResponse = SearchPotentialMatchesResponse;
 
 export class DateCurationMapper {
   constructor(private readonly logger: Logger) {}

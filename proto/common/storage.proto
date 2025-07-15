@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package common.storage;
+
+import "google/protobuf/any.proto";
+
+message StorageUploadOptions {
+  string fileName = 1;
+  string contentType = 2;
+  string folder = 3;
+  bool isPublic = 4;
+  int32 expiresIn = 5;
+  map<string, string> metadata = 6;
+}
+
+message StorageUploadResult {
+  string id = 1;
+  string key = 2;
+  string url = 3;
+  string cdnUrl = 4;
+  int64 size = 5;
+  string contentType = 6;
+  string uploadedAt = 7;
+  map<string, string> metadata = 8;
+}
+
+message StorageListOptions {
+  string prefix = 1;
+  string folder = 2;
+  int32 limit = 3;
+  string cursor = 4;
+}
+
+message StorageFileInfo {
+  string id = 1;
+  string key = 2;
+  string url = 3;
+  int64 size = 4;
+  string contentType = 5;
+  string lastModified = 6;
+  map<string, string> metadata = 7;
+}
+
+message StorageListResult {
+  repeated StorageFileInfo files = 1;
+  string nextCursor = 2;
+  bool hasMore = 3;
+  int32 totalCount = 4;
+}
+
+message StorageHealthCheck {
+  bool isHealthy = 1;
+  int32 responseTime = 2;
+  string provider = 3;
+  string region = 4;
+  string lastChecked = 5;
+  string errorMessage = 6;
+}
+
+message StorageError {
+  string message = 1;
+  string code = 2;
+  string provider = 3;
+  string operation = 4;
+  string correlationId = 5;
+}

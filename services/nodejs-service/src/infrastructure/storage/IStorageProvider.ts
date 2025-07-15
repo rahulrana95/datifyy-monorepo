@@ -7,7 +7,7 @@ import {
   StorageListResult,
   StorageFileInfo,
   StorageHealthCheck
-} from '@datifyy/shared-types';
+} from '../../proto-types/common/storage';
 
 /**
  * Storage Provider Interface - Production Ready

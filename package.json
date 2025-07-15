@@ -9,16 +9,17 @@
     "libs/*"
   ],
   "scripts": {
-    "clean:shared": "yarn workspace @datifyy/shared-types clean && yarn workspace @datifyy/shared-utils clean && yarn workspace @datifyy/shared-validation clean",
-    "build:shared-types": "yarn workspace @datifyy/shared-types build",
+    "clean:shared": "yarn workspace @datifyy/shared-utils clean && yarn workspace @datifyy/shared-validation clean",
     "build:shared-utils": "yarn workspace @datifyy/shared-utils build",
     "build:shared-validation": "yarn workspace @datifyy/shared-validation build",
-    "build:shared": "yarn build:shared-types && yarn build:shared-utils && yarn build:shared-validation",
+    "build:shared": "yarn build:shared-utils && yarn build:shared-validation",
     "build:all": "yarn build:shared && yarn workspace frontend build && yarn workspace nodejs-service build",
-    "vercel:install": "yarn install && yarn build:shared",
-    "vercel:build": "cd apps/frontend && yarn build",
-    "dev:shared": "yarn workspace @datifyy/shared-types dev & yarn workspace @datifyy/shared-utils dev & yarn workspace @datifyy/shared-validation dev",
+    "vercel:install": "yarn install",
+    "vercel:build": "yarn workspace @datifyy/shared-utils build && yarn workspace @datifyy/shared-validation build && yarn workspace frontend build",
+    "dev:shared": "yarn workspace @datifyy/shared-utils dev & yarn workspace @datifyy/shared-validation dev",
     "type-check": "yarn workspaces run type-check",
+    "generate-proto-types": "node generate-proto-types-comprehensive.js",
+    "generate-proto-types-simple": "node generate-proto-types-simple.js",
     "start:frontend": "yarn workspace frontend start",
     "start:backend": "yarn workspace nodejs-service dev"
   },
@@ -30,7 +31,8 @@
     "@radix-ui/react-dialog": "^1.1.5",
     "@tanstack/react-query-devtools": "^5.81.5",
     "empty": "0.10.1",
-    "react-router-dom": "^6.28.2"
+    "react-router-dom": "^6.28.2",
+    "ts-proto": "^2.7.5"
   },
   "devDependencies": {
     "@nx/workspace": "20.0.6",

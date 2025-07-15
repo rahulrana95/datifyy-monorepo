@@ -1,0 +1,206 @@
+syntax = "proto3";
+
+package datifyy.dating.curated_dates;
+
+import "common/base.proto";
+import "common/enums.proto";
+
+option typescript_namespace = "Datifyy.Dating.CuratedDates";
+
+// Date status
+enum CuratedDateStatus {
+  CURATED_DATE_STATUS_UNSPECIFIED = 0;
+  CURATED_DATE_STATUS_PENDING = 1;
+  CURATED_DATE_STATUS_CONFIRMED = 2;
+  CURATED_DATE_STATUS_CANCELLED = 3;
+  CURATED_DATE_STATUS_COMPLETED = 4;
+  CURATED_DATE_STATUS_NO_SHOW = 5;
+}
+
+// Cancellation category
+enum CancellationCategory {
+  CANCELLATION_CATEGORY_UNSPECIFIED = 0;
+  CANCELLATION_CATEGORY_PERSONAL_EMERGENCY = 1;
+  CANCELLATION_CATEGORY_ILLNESS = 2;
+  CANCELLATION_CATEGORY_WORK_CONFLICT = 3;
+  CANCELLATION_CATEGORY_FAMILY_EMERGENCY = 4;
+  CANCELLATION_CATEGORY_TRANSPORTATION = 5;
+  CANCELLATION_CATEGORY_WEATHER = 6;
+  CANCELLATION_CATEGORY_NOT_INTERESTED = 7;
+  CANCELLATION_CATEGORY_OTHER = 8;
+}
+
+// Curation workflow stage
+enum CurationWorkflowStage {
+  CURATION_WORKFLOW_STAGE_UNSPECIFIED = 0;
+  CURATION_WORKFLOW_STAGE_MATCHING = 1;
+  CURATION_WORKFLOW_STAGE_VENUE_SELECTION = 2;
+  CURATION_WORKFLOW_STAGE_SCHEDULING = 3;
+  CURATION_WORKFLOW_STAGE_CONFIRMATION = 4;
+  CURATION_WORKFLOW_STAGE_PAYMENT = 5;
+  CURATION_WORKFLOW_STAGE_COMPLETED = 6;
+}
+
+// Curated date
+message CuratedDate {
+  string id = 1;
+  int32 user1_id = 2;
+  int32 user2_id = 3;
+  datifyy.common.DateType date_type = 4;
+  CuratedDateStatus status = 5;
+  string venue_name = 6;
+  string venue_address = 7;
+  datifyy.common.Coordinates venue_coordinates = 8;
+  string scheduled_date = 9;
+  string scheduled_time = 10;
+  double estimated_cost = 11;
+  string special_instructions = 12;
+  CurationWorkflowStage workflow_stage = 13;
+  int32 curator_admin_id = 14;
+  string created_at = 15;
+  string updated_at = 16;
+  string confirmed_at = 17;
+  string cancelled_at = 18;
+  CancellationCategory cancellation_category = 19;
+  string cancellation_reason = 20;
+  int32 cancelled_by_user_id = 21;
+}
+
+// Date feedback
+message DateFeedback {
+  string id = 1;
+  string curated_date_id = 2;
+  int32 user_id = 3;
+  int32 overall_rating = 4;
+  int32 venue_rating = 5;
+  int32 partner_rating = 6;
+  int32 curation_rating = 7;
+  string feedback_text = 8;
+  bool would_recommend_venue = 9;
+  bool would_date_partner_again = 10;
+  repeated string improvement_suggestions = 11;
+  bool is_anonymous = 12;
+  string submitted_at = 13;
+}
+
+// Date series
+message DateSeries {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  int32 user1_id = 4;
+  int32 user2_id = 5;
+  repeated string curated_date_ids = 6;
+  int32 total_dates = 7;
+  int32 completed_dates = 8;
+  datifyy.common.RelationshipStage relationship_stage = 9;
+  bool is_active = 10;
+  string created_at = 11;
+  string updated_at = 12;
+}
+
+// Compatibility details
+message CompatibilityDetails {
+  int32 user1_id = 1;
+  int32 user2_id = 2;
+  double overall_score = 3;
+  repeated CompatibilityFactor factors = 4;
+  string algorithm_version = 5;
+  string calculated_at = 6;
+}
+
+// Compatibility factor
+message CompatibilityFactor {
+  string factor_name = 1;
+  double score = 2;
+  double weight = 3;
+  string description = 4;
+}
+
+// Request messages
+message CreateCuratedDateRequest {
+  int32 user1_id = 1;
+  int32 user2_id = 2;
+  datifyy.common.DateType date_type = 3;
+  string preferred_date = 4;
+  string preferred_time = 5;
+  string preferred_venue_type = 6;
+  string special_requests = 7;
+  double budget_limit = 8;
+}
+
+message UpdateCuratedDateRequest {
+  string curated_date_id = 1;
+  CuratedDateStatus status = 2;
+  string venue_name = 3;
+  string venue_address = 4;
+  datifyy.common.Coordinates venue_coordinates = 5;
+  string scheduled_date = 6;
+  string scheduled_time = 7;
+  double estimated_cost = 8;
+  string special_instructions = 9;
+  CurationWorkflowStage workflow_stage = 10;
+}
+
+message ConfirmDateRequest {
+  string curated_date_id = 1;
+  int32 user_id = 2;
+  bool is_confirmed = 3;
+  string notes = 4;
+}
+
+message CancelDateRequest {
+  string curated_date_id = 1;
+  int32 user_id = 2;
+  CancellationCategory cancellation_category = 3;
+  string cancellation_reason = 4;
+  bool request_refund = 5;
+}
+
+message SubmitDateFeedbackRequest {
+  string curated_date_id = 1;
+  int32 user_id = 2;
+  int32 overall_rating = 3;
+  int32 venue_rating = 4;
+  int32 partner_rating = 5;
+  int32 curation_rating = 6;
+  string feedback_text = 7;
+  bool would_recommend_venue = 8;
+  bool would_date_partner_again = 9;
+  repeated string improvement_suggestions = 10;
+  bool is_anonymous = 11;
+}
+
+message GetCuratedDatesRequest {
+  int32 user_id = 1;
+  repeated CuratedDateStatus statuses = 2;
+  string start_date = 3;
+  string end_date = 4;
+  datifyy.common.PaginationRequest pagination = 5;
+}
+
+// Response messages
+message CuratedDateResponse {
+  bool success = 1;
+  CuratedDate data = 2;
+  string message = 3;
+}
+
+message CuratedDatesListResponse {
+  bool success = 1;
+  repeated CuratedDate dates = 2;
+  datifyy.common.PaginationResponse pagination = 3;
+  string message = 4;
+}
+
+message DateFeedbackResponse {
+  bool success = 1;
+  DateFeedback data = 2;
+  string message = 3;
+}
+
+message DateSeriesResponse {
+  bool success = 1;
+  DateSeries data = 2;
+  string message = 3;
+}

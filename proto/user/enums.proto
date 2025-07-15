@@ -1,0 +1,125 @@
+syntax = "proto3";
+
+package user;
+
+// Gender enum - Single source of truth
+enum Gender {
+  GENDER_UNSPECIFIED = 0;
+  MALE = 1;
+  FEMALE = 2;
+  OTHER = 3;
+}
+
+// Exercise levels
+enum ExerciseLevel {
+  EXERCISE_LEVEL_UNSPECIFIED = 0;
+  NONE = 1;
+  LIGHT = 2;
+  MODERATE = 3;
+  HEAVY = 4;
+}
+
+// Education levels
+enum EducationLevel {
+  EDUCATION_LEVEL_UNSPECIFIED = 0;
+  HIGH_SCHOOL = 1;
+  UNDERGRADUATE = 2;
+  GRADUATE = 3;
+  POSTGRADUATE = 4;
+}
+
+// Drinking habits
+enum DrinkingHabit {
+  DRINKING_HABIT_UNSPECIFIED = 0;
+  NEVER = 1;
+  OCCASIONALLY = 2;
+  REGULARLY = 3;
+}
+
+// Smoking habits
+enum SmokingHabit {
+  SMOKING_HABIT_UNSPECIFIED = 0;
+  SMOKING_NEVER = 1;
+  SMOKING_OCCASIONALLY = 2;
+  SMOKING_REGULARLY = 3;
+}
+
+// Looking for options
+enum LookingFor {
+  LOOKING_FOR_UNSPECIFIED = 0;
+  FRIENDSHIP = 1;
+  CASUAL = 2;
+  RELATIONSHIP = 3;
+}
+
+// Star signs
+enum StarSign {
+  STAR_SIGN_UNSPECIFIED = 0;
+  ARIES = 1;
+  TAURUS = 2;
+  GEMINI = 3;
+  CANCER = 4;
+  LEO = 5;
+  VIRGO = 6;
+  LIBRA = 7;
+  SCORPIO = 8;
+  SAGITTARIUS = 9;
+  CAPRICORN = 10;
+  AQUARIUS = 11;
+  PISCES = 12;
+}
+
+// Pronouns
+enum Pronoun {
+  PRONOUN_UNSPECIFIED = 0;
+  HE_HIM = 1;
+  SHE_HER = 2;
+  THEY_THEM = 3;
+  PRONOUN_OTHER = 4;
+}
+
+// Date types
+enum DateType {
+  DATE_TYPE_UNSPECIFIED = 0;
+  COFFEE = 1;
+  LUNCH = 2;
+  DINNER = 3;
+  DRINKS = 4;
+  ACTIVITY = 5;
+  VIRTUAL = 6;
+}
+
+// Availability status
+enum AvailabilityStatus {
+  AVAILABILITY_STATUS_UNSPECIFIED = 0;
+  AVAILABLE = 1;
+  BUSY = 2;
+  TENTATIVE = 3;
+  OUT_OF_OFFICE = 4;
+}
+
+// Recurrence types
+enum RecurrenceType {
+  RECURRENCE_TYPE_UNSPECIFIED = 0;
+  NONE = 1;
+  DAILY = 2;
+  WEEKLY = 3;
+  MONTHLY = 4;
+}
+
+// Cancellation policy
+enum CancellationPolicy {
+  CANCELLATION_POLICY_UNSPECIFIED = 0;
+  FLEXIBLE = 1;
+  MODERATE = 2;
+  STRICT = 3;
+}
+
+// Booking status
+enum BookingStatus {
+  BOOKING_STATUS_UNSPECIFIED = 0;
+  PENDING = 1;
+  CONFIRMED = 2;
+  CANCELLED = 3;
+  COMPLETED = 4;
+}

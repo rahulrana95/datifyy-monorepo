@@ -17,14 +17,87 @@ import { DatifyyCurationWorkflow } from "../../../models/entities/DatifyyCuratio
 import { DatifyyUsersLogin } from "../../../models/entities/DatifyyUsersLogin";
 import { DatifyyUsersInformation } from "../../../models/entities/DatifyyUsersInformation";
 import {
-  CreateCuratedDateRequest,
-  UpdateCuratedDateRequest,
-  GetUserDatesRequest,
-  AdminGetDatesRequest,
-  SearchPotentialMatchesRequest,
   CuratedDateStatus,
   DateMode,
-} from "@datifyy/shared-types";
+} from "../../../proto-types/dating";
+
+// Custom interfaces to match the existing repository implementation
+export interface CreateCuratedDateRequest {
+  user1Id: number;
+  user2Id: number;
+  dateTime: string;
+  durationMinutes?: number;
+  mode: DateMode;
+  locationName?: string;
+  locationAddress?: string;
+  locationCoordinates?: any;
+  meetingLink?: string;
+  meetingId?: string;
+  meetingPassword?: string;
+  adminNotes?: string;
+  specialInstructions?: string;
+  dressCode?: string;
+  suggestedConversationTopics?: string[];
+  compatibilityScore?: number;
+  matchReason?: string;
+  algorithmConfidence?: number;
+  tokensCostUser1?: number;
+  tokensCostUser2?: number;
+}
+
+export interface UpdateCuratedDateRequest {
+  dateTime?: string;
+  durationMinutes?: number;
+  mode?: DateMode;
+  locationName?: string;
+  locationAddress?: string;
+  locationCoordinates?: any;
+  meetingLink?: string;
+  meetingId?: string;
+  meetingPassword?: string;
+  adminNotes?: string;
+  specialInstructions?: string;
+  dressCode?: string;
+  suggestedConversationTopics?: string[];
+  compatibilityScore?: number;
+  matchReason?: string;
+  algorithmConfidence?: number;
+  tokensCostUser1?: number;
+  tokensCostUser2?: number;
+}
+
+export interface GetUserDatesRequest {
+  page?: number;
+  limit?: number;
+  status?: CuratedDateStatus[];
+  mode?: DateMode[];
+  startDate?: string;
+  endDate?: string;
+  includeHistory?: boolean;
+  includeFeedback?: boolean;
+  includePartnerInfo?: boolean;
+}
+
+export interface AdminGetDatesRequest {
+  page?: number;
+  limit?: number;
+  status?: CuratedDateStatus[];
+  curatedBy?: number;
+  user1Id?: number;
+  user2Id?: number;
+  startDate?: string;
+  endDate?: string;
+  includeFeedback?: boolean;
+  includeWorkflow?: boolean;
+}
+
+export interface SearchPotentialMatchesRequest {
+  userId: number;
+  page?: number;
+  limit?: number;
+  ageRange?: { min: number; max: number };
+  excludeRecentDates?: boolean;
+}
 
 export interface IDateCurationRepository {
   // Curated Dates CRUD

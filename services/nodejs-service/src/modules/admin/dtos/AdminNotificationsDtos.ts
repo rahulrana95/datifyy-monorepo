@@ -13,14 +13,29 @@ import {
   UpdateNotificationRequest,
   TestNotificationRequest,
   BulkNotificationRequest,
-  UpdateNotificationPreferencesRequest,
   NotificationChannel,
   NotificationTriggerEvent,
   NotificationPriority,
   NotificationStatus,
   NotificationFrequency,
-  NOTIFICATION_CONSTANTS,
-} from "@datifyy/shared-types";
+} from "../../../proto-types/admin/notifications";
+
+// Constants for validation
+const NOTIFICATION_CONSTANTS = {
+  MAX_TEMPLATE_VARIABLES: 50,
+  DEFAULT_RETRY_ATTEMPTS: 3,
+  BATCH_SIZE: 100,
+  MAX_SMS_LENGTH: 160,
+};
+
+// Define missing interface
+interface UpdateNotificationPreferencesRequest {
+  channels?: any;
+  eventPreferences?: any;
+  quietHours?: any;
+  timezone?: string;
+  language?: string;
+}
 
 // =============================================================================
 // VALIDATION HELPERS

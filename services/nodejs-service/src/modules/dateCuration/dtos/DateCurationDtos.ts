@@ -6,7 +6,7 @@ import {
   CuratedDateStatus, 
   CancellationCategory,
   DateCurationValidationRules 
-} from '@datifyy/shared-types';
+} from '../../../proto-types/dating/curated_dates';
 
 /**
  * Validation middleware for creating curated dates

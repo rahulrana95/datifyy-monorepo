@@ -5,13 +5,12 @@ import { DateCurationMapper } from "../mappers/DateCurationMapper";
 import {
   CreateCuratedDateRequest,
   UpdateCuratedDateRequest,
-  ConfirmDateRequest,
   CancelDateRequest,
   SubmitDateFeedbackRequest,
   GetUserDatesRequest,
   AdminGetDatesRequest,
   SearchPotentialMatchesRequest,
-  DateCurationAnalyticsRequest,
+  GetDateAnalyticsRequest as DateCurationAnalyticsRequest,
   UserDatesResponse,
   SearchPotentialMatchesResponse,
   DateCurationAnalyticsResponse,
@@ -20,11 +19,49 @@ import {
   UserTrustScoreResponse,
   DateSeriesResponse,
   DateCurationValidationRules,
-  DateConflict,
-  CompatibilityDetails,
   CuratedDateStatus,
-  BulkDateOperationResult,
-} from "@datifyy/shared-types";
+} from "../../../proto-types/dating";
+
+// Missing types that need to be defined
+export interface ConfirmDateRequest {
+  confirmed: boolean;
+  notes?: string;
+}
+
+export interface DateConflict {
+  conflictingDateId: number;
+  conflictType: 'overlapping' | 'same_user' | 'venue_unavailable';
+  conflictDescription: string;
+  suggestedAlternatives: Array<{
+    dateTime: string;
+    reason: string;
+  }>;
+}
+
+export interface CompatibilityDetails {
+  overallScore: number;
+  breakdown: {
+    ageCompatibility: number;
+    locationCompatibility: number;
+    interestsCompatibility: number;
+    lifestyleCompatibility: number;
+    goalsCompatibility: number;
+  };
+  strengths: string[];
+  concerns: string[];
+  recommendations: string[];
+}
+
+export interface BulkDateOperationResult {
+  totalProcessed: number;
+  successful: number;
+  failed: number;
+  results: Array<{
+    dateId?: number;
+    success: boolean;
+    error?: string;
+  }>;
+}
 
 export interface IDateCurationService {
   // User-facing methods

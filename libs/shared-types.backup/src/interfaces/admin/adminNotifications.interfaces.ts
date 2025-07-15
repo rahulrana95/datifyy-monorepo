@@ -648,6 +648,44 @@ export interface UpdateNotificationPreferencesRequest {
 }
 
 /**
+ * Create notification template request
+ */
+export interface CreateNotificationTemplateRequest {
+  readonly name: string;
+  readonly triggerEvent: NotificationTriggerEvent;
+  readonly channels: NotificationChannel[];
+  readonly priority: NotificationPriority;
+  readonly isActive?: boolean;
+  readonly templates: {
+    readonly email?: EmailTemplate;
+    readonly slack?: SlackTemplate;
+    readonly sms?: SmsTemplate;
+    readonly inApp?: InAppTemplate;
+  };
+  readonly frequency?: NotificationFrequency;
+  readonly conditions?: NotificationCondition[];
+}
+
+/**
+ * Update notification template request
+ */
+export interface UpdateNotificationTemplateRequest {
+  readonly name?: string;
+  readonly triggerEvent?: NotificationTriggerEvent;
+  readonly channels?: NotificationChannel[];
+  readonly priority?: NotificationPriority;
+  readonly isActive?: boolean;
+  readonly templates?: {
+    readonly email?: EmailTemplate;
+    readonly slack?: SlackTemplate;
+    readonly sms?: SmsTemplate;
+    readonly inApp?: InAppTemplate;
+  };
+  readonly frequency?: NotificationFrequency;
+  readonly conditions?: NotificationCondition[];
+}
+
+/**
  * Test notification request
  */
 export interface TestNotificationRequest {
@@ -729,6 +767,15 @@ export interface TestNotificationResponse {
     readonly failureReason?: string;
     readonly cost?: number;
   };
+  readonly message: string;
+}
+
+/**
+ * Notification template response
+ */
+export interface NotificationTemplateResponse {
+  readonly success: boolean;
+  readonly data: NotificationTemplate;
   readonly message: string;
 }
 

@@ -23,7 +23,7 @@ import {
 import { DateCurationRepository } from '../repositories/DateCurationRepository';
 import { DateCurationMapper } from '../mappers/DateCurationMapper';
 import { DateCurationService, IDateCurationService } from '../services/DateCurationService';
-import { GetUserDatesRequest } from '@datifyy/shared-types';
+import { GetUserDatesRequest } from '../repositories/DateCurationRepository';
 
 export class DateCurationController {
   private dateCurationService: IDateCurationService;

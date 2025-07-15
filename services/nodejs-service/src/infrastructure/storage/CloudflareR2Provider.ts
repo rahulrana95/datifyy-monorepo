@@ -8,7 +8,7 @@ import {
   StorageFileInfo,
   StorageHealthCheck,
   StorageError
-} from '@datifyy/shared-types';
+} from '../../proto-types/common/storage';
 import { 
   IStorageProvider,
   BatchUploadResult,

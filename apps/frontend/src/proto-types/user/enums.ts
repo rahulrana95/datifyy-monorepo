@@ -1,0 +1,111 @@
+// Auto-generated from proto/user/enums.proto
+// Generated at: 2025-07-15T10:21:46.945Z
+
+export enum Gender {
+  UNSPECIFIED = 'UNSPECIFIED',
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+  OTHER = 'OTHER',
+}
+
+export enum ExerciseLevel {
+  UNSPECIFIED = 'UNSPECIFIED',
+  NONE = 'NONE',
+  LIGHT = 'LIGHT',
+  MODERATE = 'MODERATE',
+  HEAVY = 'HEAVY',
+}
+
+export enum EducationLevel {
+  UNSPECIFIED = 'UNSPECIFIED',
+  HIGH_SCHOOL = 'HIGH_SCHOOL',
+  UNDERGRADUATE = 'UNDERGRADUATE',
+  GRADUATE = 'GRADUATE',
+  POSTGRADUATE = 'POSTGRADUATE',
+}
+
+export enum DrinkingHabit {
+  UNSPECIFIED = 'UNSPECIFIED',
+  NEVER = 'NEVER',
+  OCCASIONALLY = 'OCCASIONALLY',
+  REGULARLY = 'REGULARLY',
+}
+
+export enum SmokingHabit {
+  UNSPECIFIED = 'UNSPECIFIED',
+  NEVER = 'NEVER',
+  OCCASIONALLY = 'OCCASIONALLY',
+  REGULARLY = 'REGULARLY',
+}
+
+export enum LookingFor {
+  UNSPECIFIED = 'UNSPECIFIED',
+  FRIENDSHIP = 'FRIENDSHIP',
+  CASUAL = 'CASUAL',
+  RELATIONSHIP = 'RELATIONSHIP',
+}
+
+export enum StarSign {
+  UNSPECIFIED = 'UNSPECIFIED',
+  ARIES = 'ARIES',
+  TAURUS = 'TAURUS',
+  GEMINI = 'GEMINI',
+  CANCER = 'CANCER',
+  LEO = 'LEO',
+  VIRGO = 'VIRGO',
+  LIBRA = 'LIBRA',
+  SCORPIO = 'SCORPIO',
+  SAGITTARIUS = 'SAGITTARIUS',
+  CAPRICORN = 'CAPRICORN',
+  AQUARIUS = 'AQUARIUS',
+  PISCES = 'PISCES',
+}
+
+export enum Pronoun {
+  UNSPECIFIED = 'UNSPECIFIED',
+  HE_HIM = 'HE_HIM',
+  SHE_HER = 'SHE_HER',
+  THEY_THEM = 'THEY_THEM',
+  OTHER = 'OTHER',
+}
+
+export enum DateType {
+  UNSPECIFIED = 'UNSPECIFIED',
+  COFFEE = 'COFFEE',
+  LUNCH = 'LUNCH',
+  DINNER = 'DINNER',
+  DRINKS = 'DRINKS',
+  ACTIVITY = 'ACTIVITY',
+  VIRTUAL = 'VIRTUAL',
+}
+
+export enum AvailabilityStatus {
+  UNSPECIFIED = 'UNSPECIFIED',
+  AVAILABLE = 'AVAILABLE',
+  BUSY = 'BUSY',
+  TENTATIVE = 'TENTATIVE',
+  OUT_OF_OFFICE = 'OUT_OF_OFFICE',
+}
+
+export enum RecurrenceType {
+  UNSPECIFIED = 'UNSPECIFIED',
+  NONE = 'NONE',
+  DAILY = 'DAILY',
+  WEEKLY = 'WEEKLY',
+  MONTHLY = 'MONTHLY',
+}
+
+export enum CancellationPolicy {
+  UNSPECIFIED = 'UNSPECIFIED',
+  FLEXIBLE = 'FLEXIBLE',
+  MODERATE = 'MODERATE',
+  STRICT = 'STRICT',
+}
+
+export enum BookingStatus {
+  UNSPECIFIED = 'UNSPECIFIED',
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  CANCELLED = 'CANCELLED',
+  COMPLETED = 'COMPLETED',
+}
