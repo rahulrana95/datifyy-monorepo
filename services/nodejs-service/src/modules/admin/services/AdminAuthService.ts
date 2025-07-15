@@ -43,7 +43,6 @@ import {
   AdminTokenPayload,
   AdminLoginAttemptResult,
   ADMIN_SECURITY_CONSTANTS,
-  ADMIN_ROLE_PERMISSIONS
 } from '../../../proto-types/admin/enums';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { Config } from '../../../infrastructure/config/Config';

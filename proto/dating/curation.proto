@@ -377,3 +377,116 @@ message DateSeriesListResponse {
   datifyy.common.PaginationResponse pagination = 3;
   string message = 4;
 }
+
+message ActionResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Additional missing types that the service needs
+message SearchPotentialMatchesRequest {
+  int32 user_id = 1;
+  repeated string preferred_interests = 2;
+  int32 min_age = 3;
+  int32 max_age = 4;
+  float max_distance_km = 5;
+  string location = 6;
+  int32 limit = 7;
+  bool include_compatibility_analysis = 8;
+}
+
+message SearchPotentialMatchesResponse {
+  bool success = 1;
+  repeated PotentialMatch matches = 2;
+  int32 total_matches = 3;
+  string message = 4;
+}
+
+message PotentialMatch {
+  int32 user_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  int32 age = 4;
+  string location = 5;
+  repeated string interests = 6;
+  float compatibility_score = 7;
+  float distance_km = 8;
+  string profile_image_url = 9;
+  bool is_verified = 10;
+}
+
+message UserDatesResponse {
+  bool success = 1;
+  repeated CuratedDate dates = 2;
+  UserDatesSummary summary = 3;
+  string message = 4;
+}
+
+message UserDatesSummary {
+  int32 total_dates = 1;
+  int32 upcoming_dates = 2;
+  int32 completed_dates = 3;
+  int32 cancelled_dates = 4;
+  int32 pending_confirmation = 5;
+  int32 awaiting_feedback = 6;
+}
+
+message GetDateAnalyticsRequest {
+  int32 user_id = 1;
+  string start_date = 2;
+  string end_date = 3;
+  string period = 4; // daily, weekly, monthly
+  bool include_user_metrics = 5;
+  bool include_venue_metrics = 6;
+}
+
+message DateCurationAnalyticsResponse {
+  bool success = 1;
+  DateCurationAnalytics data = 2;
+  string message = 3;
+}
+
+message DateCurationAnalytics {
+  int32 total_dates = 1;
+  int32 successful_dates = 2;
+  int32 cancelled_dates = 3;
+  float success_rate = 4;
+  float average_rating = 5;
+  repeated VenueAnalytics venue_stats = 6;
+  repeated UserAnalytics user_stats = 7;
+}
+
+message VenueAnalytics {
+  string venue_name = 1;
+  string venue_type = 2;
+  int32 total_bookings = 3;
+  float average_rating = 4;
+  float success_rate = 5;
+}
+
+message UserAnalytics {
+  int32 user_id = 1;
+  string user_name = 2;
+  int32 total_dates = 3;
+  int32 successful_dates = 4;
+  float success_rate = 5;
+  float average_rating = 6;
+}
+
+message DateCurationValidationRules {
+  int32 min_advance_hours = 1;
+  int32 max_advance_days = 2;
+  int32 min_duration_minutes = 3;
+  int32 max_duration_minutes = 4;
+  repeated string allowed_venues = 5;
+  repeated string blocked_venues = 6;
+  int32 max_daily_bookings = 7;
+  int32 max_weekly_bookings = 8;
+}
+
+message ConfirmDateRequest {
+  int32 curated_date_id = 1;
+  int32 user_id = 2;
+  bool confirmed = 3;
+  string notes = 4;
+}

@@ -356,3 +356,117 @@ export interface DateSeriesListResponse {
   pagination?: PaginationResponse | undefined;
   message: string;
 }
+
+export interface ActionResponse {
+  success: boolean;
+  message: string;
+}
+
+/** Additional missing types that the service needs */
+export interface SearchPotentialMatchesRequest {
+  userId: number;
+  preferredInterests: string[];
+  minAge: number;
+  maxAge: number;
+  maxDistanceKm: number;
+  location: string;
+  limit: number;
+  includeCompatibilityAnalysis: boolean;
+}
+
+export interface SearchPotentialMatchesResponse {
+  success: boolean;
+  matches: PotentialMatch[];
+  totalMatches: number;
+  message: string;
+}
+
+export interface PotentialMatch {
+  userId: number;
+  firstName: string;
+  lastName: string;
+  age: number;
+  location: string;
+  interests: string[];
+  compatibilityScore: number;
+  distanceKm: number;
+  profileImageUrl: string;
+  isVerified: boolean;
+}
+
+export interface UserDatesResponse {
+  success: boolean;
+  dates: CuratedDate[];
+  summary?: UserDatesSummary | undefined;
+  message: string;
+}
+
+export interface UserDatesSummary {
+  totalDates: number;
+  upcomingDates: number;
+  completedDates: number;
+  cancelledDates: number;
+  pendingConfirmation: number;
+  awaitingFeedback: number;
+}
+
+export interface GetDateAnalyticsRequest {
+  userId: number;
+  startDate: string;
+  endDate: string;
+  /** daily, weekly, monthly */
+  period: string;
+  includeUserMetrics: boolean;
+  includeVenueMetrics: boolean;
+}
+
+export interface DateCurationAnalyticsResponse {
+  success: boolean;
+  data?: DateCurationAnalytics | undefined;
+  message: string;
+}
+
+export interface DateCurationAnalytics {
+  totalDates: number;
+  successfulDates: number;
+  cancelledDates: number;
+  successRate: number;
+  averageRating: number;
+  venueStats: VenueAnalytics[];
+  userStats: UserAnalytics[];
+}
+
+export interface VenueAnalytics {
+  venueName: string;
+  venueType: string;
+  totalBookings: number;
+  averageRating: number;
+  successRate: number;
+}
+
+export interface UserAnalytics {
+  userId: number;
+  userName: string;
+  totalDates: number;
+  successfulDates: number;
+  successRate: number;
+  averageRating: number;
+}
+
+export interface DateCurationValidationRules {
+  minAdvanceHours: number;
+  maxAdvanceDays: number;
+  minDurationMinutes: number;
+  maxDurationMinutes: number;
+  allowedVenues: string[];
+  blockedVenues: string[];
+  maxDailyBookings: number;
+  maxWeeklyBookings: number;
+}
+
+export interface ConfirmDateRequest {
+  curatedDateId: number;
+  userId: number;
+  confirmed: boolean;
+  notes: string;
+}

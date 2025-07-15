@@ -484,8 +484,3 @@ export interface RevenueComparisonsResponse {
   data?: RevenueComparisons | undefined;
   message: string;
 }
-
-export interface ActionResponse {
-  success: boolean;
-  message: string;
-}
