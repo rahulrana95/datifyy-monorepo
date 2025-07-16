@@ -107,7 +107,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({
     ];
 
     const unreadCount = notifications.filter(n => !n.isRead).length;
-    const MenuIcon = () => <FiMenu />;
+    const MenuIcon = () => React.createElement(FiMenu);
 
     return (
         <>

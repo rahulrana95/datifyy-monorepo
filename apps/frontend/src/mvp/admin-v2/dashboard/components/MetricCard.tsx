@@ -56,7 +56,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
     };
 
     // Get trend display info
-    const trendDisplay = trend ? getTrendDisplay(trend.direction, trend.percentage) : null;
+    const trendDisplay = trend ? getTrendDisplay(trend.direction.toLowerCase() as any, trend.percentage) : null;
 
     if (isLoading) {
         return (
