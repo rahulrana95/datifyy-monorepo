@@ -37,27 +37,28 @@ export class GetUsersRequestDto implements PaginationRequest {
   @Type(() => Number)
   @IsNumber()
   @Min(1)
-  page?: number = 1;
+  page: number = 1;
 
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @Min(1)
   @Max(100)
+    // @ts-ignore
   limit?: number = 20;
 
   @IsOptional()
   @IsEnum(UserSortField)
-  sortBy?: UserSortField = UserSortField.CREATED_AT;
+  sortBy: UserSortField = UserSortField.CREATED_AT;
 
   @IsOptional()
   @IsEnum(['ASC', 'DESC'])
-  sortOrder?: 'ASC' | 'DESC' = 'DESC';
+  sortOrder: 'ASC' | 'DESC' = 'DESC';
 
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value?.trim())
-  search?: string;
+  search: string;
 
   @IsOptional()
   @IsEnum(AccountStatusFilter)

@@ -313,16 +313,6 @@ message AdminActionSummary {
   bool success = 4;
 }
 
-message AdminTokenPayload {
-  int32 adminId = 1;
-  string email = 2;
-  string sessionId = 3;
-  admin.enums.AdminPermissionLevel permissionLevel = 4;
-  repeated admin.enums.AdminPermission permissions = 5;
-  google.protobuf.Timestamp issuedAt = 6;
-  google.protobuf.Timestamp expiresAt = 7;
-}
-
 message AdminApiResponse {
   bool success = 1;
   string message = 2;

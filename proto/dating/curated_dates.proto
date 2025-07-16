@@ -7,15 +7,6 @@ import "admin/revenue.proto";
 import "dating/common.proto";
 import "dating/curation.proto";
 
-
-
-// Response messages
-message CuratedDateResponse {
-  bool success = 1;
-  .dating.curation.CuratedDate data = 2;
-  string message = 3;
-}
-
 message CuratedDatesListResponse {
   bool success = 1;
   repeated .dating.curation.CuratedDate dates = 2;

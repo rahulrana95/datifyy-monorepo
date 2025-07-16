@@ -143,96 +143,12 @@ enum AdminLoginAttemptResult {
   IP_BLOCKED = 8;
 }
 
-// Revenue time periods
-enum RevenueTimePeriod {
-  REVENUE_TIME_PERIOD_UNSPECIFIED = 0;
-  DAILY = 1;
-  WEEKLY = 2;
-  MONTHLY = 3;
-  QUARTERLY = 4;
-  YEARLY = 5;
-}
-
-// Revenue categories
-enum RevenueCategory {
-  REVENUE_CATEGORY_UNSPECIFIED = 0;
-  SUBSCRIPTIONS = 1;
-  EVENT_FEES = 2;
-  PREMIUM_FEATURES = 3;
-  ADVERTISING = 4;
-  PARTNERSHIPS = 5;
-  OTHER = 6;
-}
-
-// Transaction status
-enum TransactionStatus {
-  TRANSACTION_STATUS_UNSPECIFIED = 0;
-  TRANSACTION_PENDING = 1;
-  TRANSACTION_COMPLETED = 2;
-  TRANSACTION_FAILED = 3;
-  TRANSACTION_REFUNDED = 4;
-  TRANSACTION_CANCELLED = 5;
-  TRANSACTION_PROCESSING = 6;
-}
-
-// Payment methods
-enum PaymentMethod {
-  PAYMENT_METHOD_UNSPECIFIED = 0;
-  CREDIT_CARD = 1;
-  DEBIT_CARD = 2;
-  PAYPAL = 3;
-  BANK_TRANSFER = 4;
-  DIGITAL_WALLET = 5;
-  CRYPTOCURRENCY = 6;
-}
-
 // Trend directions
 enum TrendDirection {
   TREND_DIRECTION_UNSPECIFIED = 0;
   UP = 1;
   DOWN = 2;
   STABLE = 3;
-}
-
-// Match algorithm types
-enum MatchAlgorithm {
-  MATCH_ALGORITHM_UNSPECIFIED = 0;
-  COLLABORATIVE_FILTERING = 1;
-  CONTENT_BASED = 2;
-  HYBRID = 3;
-  MACHINE_LEARNING = 4;
-  RULE_BASED = 5;
-}
-
-// Match confidence levels
-enum MatchConfidenceLevel {
-  MATCH_CONFIDENCE_LEVEL_UNSPECIFIED = 0;
-  CONFIDENCE_VERY_LOW = 1;
-  CONFIDENCE_LOW = 2;
-  CONFIDENCE_MODERATE = 3;
-  CONFIDENCE_HIGH = 4;
-  CONFIDENCE_VERY_HIGH = 5;
-}
-
-// Date success prediction
-enum DateSuccessPrediction {
-  DATE_SUCCESS_PREDICTION_UNSPECIFIED = 0;
-  VERY_UNLIKELY = 1;
-  UNLIKELY = 2;
-  NEUTRAL = 3;
-  LIKELY = 4;
-  VERY_LIKELY = 5;
-}
-
-// Match suggestion status
-enum MatchSuggestionStatus {
-  MATCH_SUGGESTION_STATUS_UNSPECIFIED = 0;
-  SUGGESTION_GENERATED = 1;
-  SUGGESTION_SENT = 2;
-  SUGGESTION_VIEWED = 3;
-  SUGGESTION_ACCEPTED = 4;
-  SUGGESTION_REJECTED = 5;
-  SUGGESTION_EXPIRED = 6;
 }
 
 // Admin token payload for JWT tokens

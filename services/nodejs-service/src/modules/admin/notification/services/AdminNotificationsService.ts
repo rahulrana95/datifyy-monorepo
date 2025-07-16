@@ -18,7 +18,6 @@ import {
   CreateNotificationTemplateRequest,
   NotificationTemplateResponse,
   TestNotificationRequest,
-  NotificationAnalyticsResponse,
 } from "../../../../proto-types/admin/notifications";
 
 export class AdminNotificationsService {
@@ -434,7 +433,7 @@ export class AdminNotificationsService {
   // Analytics methods (to be implemented)
   async getNotificationAnalytics(
     query: any
-  ): Promise<NotificationAnalyticsResponse> {
+  ): Promise<any> {
     return {
       success: true,
       message: "Analytics retrieved successfully",

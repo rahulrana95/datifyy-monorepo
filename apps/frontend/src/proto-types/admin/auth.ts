@@ -350,16 +350,6 @@ export interface AdminActionSummary {
   success: boolean;
 }
 
-export interface AdminTokenPayload {
-  adminId: number;
-  email: string;
-  sessionId: string;
-  permissionLevel: AdminPermissionLevel;
-  permissions: AdminPermission[];
-  issuedAt?: string | undefined;
-  expiresAt?: string | undefined;
-}
-
 export interface AdminApiResponse {
   success: boolean;
   message: string;

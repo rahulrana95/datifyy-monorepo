@@ -9,13 +9,6 @@ import type { PaginationResponse } from "../common/base";
 import type { AdminPriority, CuratedDateStatus, DateMode, SortBy, SortOrder } from "./common";
 import type { CuratedDate } from "./curation";
 
-/** Response messages */
-export interface CuratedDateResponse {
-  success: boolean;
-  data?: CuratedDate | undefined;
-  message: string;
-}
-
 export interface CuratedDatesListResponse {
   success: boolean;
   dates: CuratedDate[];

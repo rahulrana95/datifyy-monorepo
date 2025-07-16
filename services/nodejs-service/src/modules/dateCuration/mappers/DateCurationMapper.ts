@@ -5,10 +5,9 @@ import { DatifyyCuratedDateFeedback } from "../../../models/entities/DatifyyCura
 import { DatifyyUserTrustScores } from "../../../models/entities/DatifyyUserTrustScores";
 import { DatifyyDateSeries } from "../../../models/entities/DatifyyDateSeries";
 import {
-  CuratedDateResponse,
 } from "../../../proto-types/dating/curated_dates";
 import { UserTrustScoreResponse } from "../../../proto-types/admin/user_management";
-import { SearchPotentialMatchesResponse } from "../../../proto-types/dating/curation";
+import { CuratedDateResponse, SearchPotentialMatchesResponse } from "../../../proto-types/dating/curation";
 import { CuratedDateStatus, DateFeedbackResponse, DateSeriesResponse } from "../../../proto-types";
 
 export class DateCurationMapper {

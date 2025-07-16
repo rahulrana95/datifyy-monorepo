@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package datifyy.admin.revenue;
-
+import "admin/enums.proto";
 import "common/base.proto";
 
 // Revenue time periods for analytics
@@ -64,15 +64,6 @@ enum RefundStatus {
   REFUND_STATUS_FAILED = 6;
 }
 
-// Revenue trend directions
-enum TrendDirection {
-  TREND_DIRECTION_UNSPECIFIED = 0;
-  TREND_DIRECTION_UP = 1;
-  TREND_DIRECTION_DOWN = 2;
-  TREND_DIRECTION_STABLE = 3;
-  TREND_DIRECTION_VOLATILE = 4;
-}
-
 // Date type for revenue breakdown
 enum DateType {
   DATE_TYPE_UNSPECIFIED = 0;
@@ -130,7 +121,7 @@ message RevenueTrends {
   repeated RevenueDataPoint average_value_by_period = 3;
   repeated RevenueDataPoint refunds_by_period = 4;
   repeated RevenueDataPoint conversion_by_period = 5;
-  TrendDirection trend_direction = 6;
+  .admin.enums.TrendDirection trend_direction = 6;
   repeated SeasonalPattern seasonal_patterns = 7;
 }
 
@@ -224,7 +215,7 @@ message ComparisonMetrics {
   float transaction_change = 2; // Percentage
   float average_value_change = 3; // Percentage
   float user_count_change = 4; // Percentage
-  TrendDirection trend = 5;
+  .admin.enums.TrendDirection trend = 5;
   SignificanceLevel significance = 6; // Statistical significance
 }
 

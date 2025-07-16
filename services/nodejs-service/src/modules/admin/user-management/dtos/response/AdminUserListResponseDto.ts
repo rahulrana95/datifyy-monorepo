@@ -58,6 +58,4 @@ export interface AdminUserListMetadata {
   appliedFilters: AdminUserListFilters;
 }
 
-export type AdminUserListResponseDto = ApiResponse<PaginationResponse<AdminUserListItem> & {
-  metadata: AdminUserListMetadata;
-}>;
+export type AdminUserListResponseDto = ApiResponse<{ data: AdminUserListItem, pagination: PaginationResponse, metadata: AdminUserListMetadata }>;

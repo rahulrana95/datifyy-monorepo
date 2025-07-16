@@ -7,11 +7,11 @@
 /* eslint-disable */
 
 /** Common response structure */
-export interface ApiResponse {
+export interface ApiResponse<T> {
   success: boolean;
   message: string;
   /** Data will be handled as a generic type in TypeScript */
-  data: Uint8Array;
+  data: T;
   error?: ErrorDetails | undefined;
   metadata?: ResponseMetadata | undefined;
 }

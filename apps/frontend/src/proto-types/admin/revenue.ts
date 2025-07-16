@@ -6,6 +6,7 @@
 
 /* eslint-disable */
 import type { PaginationRequest, PaginationResponse } from "../common/base";
+import type { TrendDirection } from "./enums";
 
 /** Revenue time periods for analytics */
 export enum RevenueTimePeriod {
@@ -65,15 +66,6 @@ export enum RefundStatus {
   REFUND_STATUS_REJECTED = "REFUND_STATUS_REJECTED",
   REFUND_STATUS_PROCESSED = "REFUND_STATUS_PROCESSED",
   REFUND_STATUS_FAILED = "REFUND_STATUS_FAILED",
-}
-
-/** Revenue trend directions */
-export enum TrendDirection {
-  TREND_DIRECTION_UNSPECIFIED = "TREND_DIRECTION_UNSPECIFIED",
-  TREND_DIRECTION_UP = "TREND_DIRECTION_UP",
-  TREND_DIRECTION_DOWN = "TREND_DIRECTION_DOWN",
-  TREND_DIRECTION_STABLE = "TREND_DIRECTION_STABLE",
-  TREND_DIRECTION_VOLATILE = "TREND_DIRECTION_VOLATILE",
 }
 
 /** Date type for revenue breakdown */

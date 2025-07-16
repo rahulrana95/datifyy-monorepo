@@ -13,7 +13,6 @@ import { AuthenticatedRequest } from '../../../../infrastructure/middleware/auth
 import { AdminNotificationsService } from '../services/AdminNotificationsService';
 import { NotificationRepository } from '../repositories/NotificationRepository';
 import { 
-  NotificationAnalyticsResponse
 } from '../../../../proto-types/admin/notifications';
 
 interface ApiResponse<T = any> {
@@ -66,7 +65,7 @@ export class NotificationAnalyticsController {
 
       const processingTime = Date.now() - startTime;
 
-      const response: ApiResponse<NotificationAnalyticsResponse> = {
+      const response: ApiResponse<any> = {
         success: true,
         message: 'Notification analytics retrieved successfully',
         data: analytics,
