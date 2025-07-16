@@ -128,7 +128,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({
                     <HStack spacing={4}>
                         <IconButton
                             aria-label="Toggle sidebar"
-                            icon={<FiMenu />}
+                            icon={<FiMenu /> as React.ReactElement}
                             variant="ghost"
                             size="sm"
                             onClick={onToggleSidebar}
@@ -154,7 +154,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({
                         <Tooltip label="Global search (Coming soon)" hasArrow>
                             <IconButton
                                 aria-label="Search"
-                                icon={<FiSearch />}
+                                icon={<FiSearch /> as React.ReactElement}
                                 variant="ghost"
                                 size="sm"
                                 isDisabled
@@ -165,7 +165,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({
                         <Tooltip label="Refresh data" hasArrow>
                             <IconButton
                                 aria-label="Refresh"
-                                icon={<FiRefreshCw />}
+                                icon={<FiRefreshCw /> as React.ReactElement}
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => window.location.reload()}
@@ -176,7 +176,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({
                         <Box position="relative">
                             <IconButton
                                 aria-label="Notifications"
-                                icon={<FiBell />}
+                                icon={<FiBell /> as React.ReactElement}
                                 variant="ghost"
                                 size="sm"
                                 onClick={onNotificationsOpen}
@@ -223,21 +223,21 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({
                             </MenuButton>
 
                             <MenuList>
-                                <MenuItem icon={<FiUser />} isDisabled>
+                                <MenuItem icon={<FiUser /> as React.ReactElement} isDisabled>
                                     Profile Settings
                                 </MenuItem>
-                                <MenuItem icon={<FiShield />} isDisabled>
+                                <MenuItem icon={<FiShield /> as React.ReactElement} isDisabled>
                                     Security
                                 </MenuItem>
-                                <MenuItem icon={<FiSettings />} isDisabled>
+                                <MenuItem icon={<FiSettings /> as React.ReactElement} isDisabled>
                                     Preferences
                                 </MenuItem>
                                 <MenuDivider />
-                                <MenuItem icon={<FiHelpCircle />} isDisabled>
+                                <MenuItem icon={<FiHelpCircle /> as React.ReactElement} isDisabled>
                                     Help & Support
                                 </MenuItem>
                                 <MenuDivider />
-                                <MenuItem icon={<FiLogOut />} onClick={handleLogout} color="red.500">
+                                <MenuItem icon={<FiLogOut /> as React.ReactElement} onClick={handleLogout} color="red.500">
                                     Sign Out
                                 </MenuItem>
                             </MenuList>
