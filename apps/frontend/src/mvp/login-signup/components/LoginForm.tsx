@@ -103,7 +103,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSignup, onForgotPassword }) => 
                     name: userData.firstName || '',
                     // @ts-ignore
                     isAdmin: userData.isadmin || false,
-                    id: userData.id || ''
+                    id: String(userData.id || '')
                 });
 
                 setIsAuthenticated(true);

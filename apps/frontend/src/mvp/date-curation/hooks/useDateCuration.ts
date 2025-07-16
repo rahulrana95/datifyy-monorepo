@@ -26,7 +26,10 @@ import { useAuthStore } from '../../login-signup';
 export const useDateCuration = () => {
   const { user, isAuthenticated } = useAuthStore();
   const [filters, setFilters] = useState<DateFilter>({
-    status: ['pending', 'both_confirmed'] as CuratedDateStatus[],
+    status: [
+      CuratedDateStatus.CURATED_DATE_STATUS_PENDING,
+      CuratedDateStatus.CURATED_DATE_STATUS_BOTH_CONFIRMED
+    ],
     timeRange: 'upcoming',
     includeHistory: false
   });

@@ -1,6 +1,5 @@
 // apps/frontend/src/service/apiService.ts
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
-import { ApiResponse } from "../proto-types";
 import { ServiceResponse } from "./ErrorTypes";
 
 class ApiService {
@@ -49,11 +48,11 @@ class ApiService {
   }
 
   private async handleRequest<T>(
-    request: Promise<AxiosResponse<ApiResponse<T>>>
+    request: Promise<AxiosResponse<T>>
   ): Promise<ServiceResponse<T>> {
     try {
       const { data } = await request;
-      return { response: data.data };
+      return { response: data };
     } catch (error: any) {
       return {
         error: {
@@ -66,7 +65,7 @@ class ApiService {
 
   async get<T>(path: string, config?: AxiosRequestConfig): Promise<ServiceResponse<T>> {
     return this.handleRequest<T>(
-      this.axiosInstance.get<ApiResponse<T>>(`${this.prefixPath}/${path}`, config)
+      this.axiosInstance.get<T>(`${this.prefixPath}/${path}`, config)
     );
   }
 
@@ -76,7 +75,7 @@ class ApiService {
     config?: AxiosRequestConfig
   ): Promise<ServiceResponse<T>> {
     return this.handleRequest<T>(
-      this.axiosInstance.post<ApiResponse<T>>(`${this.prefixPath}/${path}`, data, config)
+      this.axiosInstance.post<T>(`${this.prefixPath}/${path}`, data, config)
     );
   }
 
@@ -86,13 +85,13 @@ class ApiService {
     config?: AxiosRequestConfig
   ): Promise<ServiceResponse<T>> {
     return this.handleRequest<T>(
-      this.axiosInstance.put<ApiResponse<T>>(`${this.prefixPath}/${path}`, data, config)
+      this.axiosInstance.put<T>(`${this.prefixPath}/${path}`, data, config)
     );
   }
 
   async delete<T>(path: string, config?: AxiosRequestConfig): Promise<ServiceResponse<T>> {
     return this.handleRequest<T>(
-      this.axiosInstance.delete<ApiResponse<T>>(`${this.prefixPath}/${path}`, config)
+      this.axiosInstance.delete<T>(`${this.prefixPath}/${path}`, config)
     );
   }
 

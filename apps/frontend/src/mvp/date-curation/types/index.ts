@@ -20,6 +20,7 @@ import {
 
 // Re-export shared types for convenience
 export {
+  CuratedDateStatus,
   DateMode,
   RelationshipStage,
   CancellationCategory,

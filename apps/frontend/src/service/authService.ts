@@ -11,6 +11,7 @@ import {
   EmailVerificationRequest,
   TokenValidationResponse,
 } from "../proto-types";
+import { DatifyyUsersInformation } from "./userService/UserProfileTypes";
 
 const AUTH_API_PREFIX = "auth";
 
@@ -26,11 +27,11 @@ export const login = async (
 
     const { response }: {response?: LoginResponse | undefined} = await apiService.post<LoginResponse>(`${AUTH_API_PREFIX}/login`, loginData);
 
-    if (!response?.token) {
+    if (!response?.accessToken) {
       return { response: undefined, error: { code: 401, message: "Login failed" } };
     }
 
-    const token = response.token;
+    const token = response.accessToken;
     apiService.setTokenInCookies(token);
 
     return { response: response, error: undefined };
@@ -55,13 +56,17 @@ export const verifyToken = async (): Promise<ServiceResponse<TokenValidationResp
 export const register = async (
   password: string, 
   email: string, 
-  verificationCode: string
+  verificationCode: string,
+  firstName: string = '',
+  lastName: string = ''
 ): Promise<ServiceResponse<SignupResponse>> => {
   try {
     const signupData: SignupRequest = {
       password,
       email,
-      verificationCode
+      firstName,
+      lastName,
+      agreeToTerms: true
     };
 
     const {response}: {response?: SignupResponse} = await apiService.post<SignupResponse>(`${AUTH_API_PREFIX}/signup`, signupData);
@@ -83,9 +88,9 @@ export const logout = async (): Promise<ServiceResponse<any>> => {
   }
 };
 
-export const getCurrentUser = async (): Promise<ServiceResponse<UserProfileResponse>> => {
+export const getCurrentUser = async (): Promise<ServiceResponse<DatifyyUsersInformation>> => {
   try {
-const {response} = await apiService.get<UserProfileResponse>("user-profile");
+const {response} = await apiService.get<DatifyyUsersInformation>("user-profile");
   
     
     return { response, error: undefined };
@@ -95,12 +100,12 @@ const {response} = await apiService.get<UserProfileResponse>("user-profile");
 };
 
 export const sendEmailCode = async (
-  emailData: EmailVerificationRequest
+  email: string
 ): Promise<ServiceResponse<any>> => {
   try {
     const {response} = await apiService.post(
       `${AUTH_API_PREFIX}/send-verification-code`, 
-      { email: emailData.to[0].email }
+      { email }
     );
     
     return { response: response, error: undefined };

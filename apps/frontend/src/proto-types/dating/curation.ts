@@ -13,6 +13,7 @@ import type {
   DateSeriesStatus,
   LocationCoordinates,
   RelationshipStage,
+  DateFeedback,
 } from "./common";
 
 /** Core curated date message */
@@ -270,4 +271,23 @@ export interface DateCurationValidationRules {
   blockedVenues: string[];
   maxDailyBookings: number;
   maxWeeklyBookings: number;
+}
+
+/** Date action response types */
+export interface ConfirmDateResponse {
+  success: boolean;
+  data?: CuratedDate | undefined;
+  message: string;
+}
+
+export interface CancelDateResponse {
+  success: boolean;
+  data?: CuratedDate | undefined;
+  message: string;
+}
+
+export interface SubmitDateFeedbackResponse {
+  success: boolean;
+  data?: DateFeedback | undefined;
+  message: string;
 }

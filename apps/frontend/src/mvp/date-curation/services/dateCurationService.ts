@@ -42,7 +42,7 @@ class DateCurationService {
 
       const params = {
         status: [], //(filters.status || [CuratedDateStatus.PENDING, 'confirmed']) as CuratedDateStatus[],
-        mode: filters.mode,
+        mode: filters.mode?.[0], // Take first mode if array
         includeHistory: false,
         includeFeedback: false,
         includePartnerInfo: true,
@@ -68,14 +68,14 @@ class DateCurationService {
         throw new Error(response.error.message || "Failed to fetch dates");
       }
 
-      if (!response.response?.data) {
+      if (!response.response?.dates) {
         console.warn("⚠️ No dates data in response");
         return { data: [] };
       }
 
       // Transform API response to frontend format
       const dates =
-        response.response.data.data?.map(this.transformToDateCard) || [];
+        response.response.dates?.map(this.transformToDateCard) || [];
 
       console.log("✅ Upcoming dates fetched successfully", {
         count: dates.length,
@@ -98,10 +98,10 @@ class DateCurationService {
 
       const params = {
         status: [
-          CuratedDateStatus.COMPLETED,
-          CuratedDateStatus.CANCELLED,
+          CuratedDateStatus.CURATED_DATE_STATUS_COMPLETED,
+          CuratedDateStatus.CURATED_DATE_STATUS_CANCELLED,
         ] as CuratedDateStatus[],
-        mode: filters.mode,
+        mode: filters.mode?.[0], // Take first mode if array
         includeHistory: true,
         includeFeedback: true,
         includePartnerInfo: true,
@@ -135,7 +135,7 @@ class DateCurationService {
       }
 
       const dates =
-        response.response?.data?.data?.map(this.transformToDateCard) || [];
+        response.response?.dates?.map(this.transformToDateCard) || [];
 
       console.log("✅ Date history fetched successfully", {
         count: dates.length,
@@ -170,7 +170,7 @@ class DateCurationService {
         throw new Error(response.error.message || "Failed to fetch summary");
       }
 
-      const summaryData = response.response?.data?.summary;
+      const summaryData = response.response?.summary;
 
       const summary: DateCurationSummary = {
         totalDates: summaryData?.totalDates || 0,
@@ -212,7 +212,7 @@ class DateCurationService {
           // For now, treat as cancel with reschedule reason
           return await this.cancelDate(
             action.dateId,
-            CancellationCategory.OTHER,
+            CancellationCategory.CANCELLATION_CATEGORY_OTHER,
             action.reason || "Reschedule requested"
           );
 

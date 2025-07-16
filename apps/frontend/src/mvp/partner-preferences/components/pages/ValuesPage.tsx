@@ -72,21 +72,21 @@ const ValuesPage: React.FC<ValuesPageProps> = ({ preferences, onUpdate }) => {
     ];
 
     const toggleReligion = (religion: string) => {
-        const currentReligions = preferences.religion || [];
-        const updatedReligions = currentReligions.includes(religion)
-            ? currentReligions.filter(r => r !== religion)
-            : [...currentReligions, religion];
+        const currentReligions = preferences.religions || [];
+        const updatedReligions = currentReligions.includes(religion as any)
+            ? currentReligions.filter((r: any) => r !== religion)
+            : [...currentReligions, religion as any];
 
-        onUpdate({ religion: updatedReligions });
+        onUpdate({ religions: updatedReligions });
     };
 
     const toggleEducation = (education: string) => {
-        const currentEducation = preferences.education || [];
-        const updatedEducation = currentEducation.includes(education)
-            ? currentEducation.filter(e => e !== education)
-            : [...currentEducation, education];
+        const currentEducation = preferences.educationLevels || [];
+        const updatedEducation = currentEducation.includes(education as any)
+            ? currentEducation.filter((e: any) => e !== education)
+            : [...currentEducation, education as any];
 
-        onUpdate({ education: updatedEducation });
+        onUpdate({ educationLevels: updatedEducation });
     };
 
     const formatCurrency = (amount: number) => {
@@ -108,11 +108,11 @@ const ValuesPage: React.FC<ValuesPageProps> = ({ preferences, onUpdate }) => {
                     </Text>
                 </HStack>
                 <Text fontSize="sm" color="gray.600" mb={4}>
-                    Select religious backgrounds you're comfortable with ({preferences.religion?.length || 0} selected)
+                    Select religious backgrounds you're comfortable with ({preferences.religions?.length || 0} selected)
                 </Text>
                 <SimpleGrid columns={{ base: 2, md: 3 }} spacing={3}>
                     {religions.map((religion) => {
-                        const isSelected = preferences.religion?.includes(religion);
+                        const isSelected = preferences.religions?.includes(religion as any);
                         return (
                             <Badge
                                 key={religion}
@@ -150,11 +150,11 @@ const ValuesPage: React.FC<ValuesPageProps> = ({ preferences, onUpdate }) => {
                     </Text>
                 </HStack>
                 <Text fontSize="sm" color="gray.600" mb={4}>
-                    Select education levels you prefer ({preferences.education?.length || 0} selected)
+                    Select education levels you prefer ({preferences.educationLevels?.length || 0} selected)
                 </Text>
                 <SimpleGrid columns={{ base: 2, md: 3 }} spacing={3}>
                     {educationLevels.map((education) => {
-                        const isSelected = preferences.education?.includes(education);
+                        const isSelected = preferences.educationLevels?.includes(education as any);
                         return (
                             <Badge
                                 key={education}
@@ -192,20 +192,19 @@ const ValuesPage: React.FC<ValuesPageProps> = ({ preferences, onUpdate }) => {
                     </Text>
                 </HStack>
                 <Text fontSize="sm" color="gray.600" mb={4}>
-                    {formatCurrency(preferences.income?.min || 0)} - {formatCurrency(preferences.income?.max || 200000)} annually
+                    {formatCurrency(parseInt(preferences.dealBreakers?.find(d => d.startsWith('incomeMin:'))?.split(':')[1] || '0'))} - {formatCurrency(parseInt(preferences.dealBreakers?.find(d => d.startsWith('incomeMax:'))?.split(':')[1] || '200000'))} annually
                 </Text>
 
                 <HStack spacing={4} align="end">
                     <FormControl flex={1}>
                         <FormLabel fontSize="sm">Minimum Income</FormLabel>
                         <NumberInput
-                            value={preferences.income?.min || 0}
-                            onChange={(_, value) => onUpdate({
-                                income: {
-                                    ...preferences.income,
-                                    min: isNaN(value) ? 0 : value
-                                }
-                            })}
+                            value={parseInt(preferences.dealBreakers?.find(d => d.startsWith('incomeMin:'))?.split(':')[1] || '0')}
+                            onChange={(_, value) => {
+                                const newDealBreakers = (preferences.dealBreakers || []).filter(d => !d.startsWith('incomeMin:'));
+                                if (!isNaN(value)) newDealBreakers.push(`incomeMin:${value}`);
+                                onUpdate({ dealBreakers: newDealBreakers });
+                            }}
                             min={0}
                             max={1000000}
                             step={5000}
@@ -221,13 +220,12 @@ const ValuesPage: React.FC<ValuesPageProps> = ({ preferences, onUpdate }) => {
                     <FormControl flex={1}>
                         <FormLabel fontSize="sm">Maximum Income</FormLabel>
                         <NumberInput
-                            value={preferences.income?.max || 200000}
-                            onChange={(_, value) => onUpdate({
-                                income: {
-                                    ...preferences.income,
-                                    max: isNaN(value) ? 200000 : value
-                                }
-                            })}
+                            value={parseInt(preferences.dealBreakers?.find(d => d.startsWith('incomeMax:'))?.split(':')[1] || '200000')}
+                            onChange={(_, value) => {
+                                const newDealBreakers = (preferences.dealBreakers || []).filter(d => !d.startsWith('incomeMax:'));
+                                if (!isNaN(value)) newDealBreakers.push(`incomeMax:${value}`);
+                                onUpdate({ dealBreakers: newDealBreakers });
+                            }}
                             min={0}
                             max={1000000}
                             step={5000}
@@ -248,7 +246,9 @@ const ValuesPage: React.FC<ValuesPageProps> = ({ preferences, onUpdate }) => {
                         colorScheme="brand"
                         onChange={(e) => {
                             if (!e.target.checked) {
-                                onUpdate({ income: { min: 0, max: 0 } });
+                                const newDealBreakers = (preferences.dealBreakers || [])
+                                    .filter(d => !d.startsWith('incomeMin:') && !d.startsWith('incomeMax:'));
+                                onUpdate({ dealBreakers: newDealBreakers });
                             }
                         }}
                     />

@@ -82,7 +82,7 @@ function App() {
           name: data?.firstName ?? '',
           // @ts-ignore
           isAdmin: data?.isadmin ?? false,
-          id: data?.id ?? ''
+          id: String(data?.id ?? '')
         })
         setLoading(false);
         return;

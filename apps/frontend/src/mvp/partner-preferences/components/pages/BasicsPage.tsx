@@ -47,14 +47,14 @@ const BasicsPage: React.FC<BasicsPageProps> = ({ preferences, onUpdate }) => {
                     </Text>
                 </HStack>
                 <Text fontSize="md" color="gray.600" mb={4}>
-                    {preferences.minAge} - {preferences.maxAge} years old
+                    {preferences.ageRange?.minAge || 22} - {preferences.ageRange?.maxAge || 35} years old
                 </Text>
                 <RangeSlider
-                    value={[preferences.minAge || 22, preferences.maxAge || 35]}
+                    value={[preferences.ageRange?.minAge || 22, preferences.ageRange?.maxAge || 35]}
                     min={18}
                     max={65}
                     step={1}
-                    onChange={([min, max]) => onUpdate({ minAge: min, maxAge: max })}
+                    onChange={([min, max]) => onUpdate({ ageRange: { minAge: min, maxAge: max } })}
                     colorScheme="brand"
                 >
                     <RangeSliderTrack bg="brand.100" h={2}>
@@ -78,14 +78,14 @@ const BasicsPage: React.FC<BasicsPageProps> = ({ preferences, onUpdate }) => {
                     </Text>
                 </HStack>
                 <Text fontSize="md" color="gray.600" mb={4}>
-                    Within {preferences.maxDistance || 50} km
+                    Within {preferences.maxDistanceKm || 50} km
                 </Text>
                 <RangeSlider
-                    value={[preferences.maxDistance || 50]}
+                    value={[preferences.maxDistanceKm || 50]}
                     min={1}
                     max={100}
                     step={1}
-                    onChange={([distance]) => onUpdate({ maxDistance: distance })}
+                    onChange={([distance]) => onUpdate({ maxDistanceKm: distance })}
                     colorScheme="brand"
                 >
                     <RangeSliderTrack bg="brand.100" h={2}>

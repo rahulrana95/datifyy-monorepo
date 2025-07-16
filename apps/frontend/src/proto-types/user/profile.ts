@@ -174,3 +174,11 @@ export interface ProfileImageResponse {
   imageUrl: string;
   message: string;
 }
+
+/** User data for authentication */
+export interface UserData {
+  id: string;
+  email: string;
+  name: string;
+  isAdmin: boolean;
+}

@@ -301,7 +301,7 @@ const UpcomingDatesSection: React.FC<UpcomingDatesSectionProps> = ({
                                                     onClick={() => handleDateAction({
                                                         type: 'cancel',
                                                         dateId: date.id,
-                                                        category: CancellationCategory.OTHER // Will be handled by modal later
+                                                        category: CancellationCategory.CANCELLATION_CATEGORY_OTHER // Will be handled by modal later
                                                     })}
                                                     flex={1}
                                                     maxW="200px"
