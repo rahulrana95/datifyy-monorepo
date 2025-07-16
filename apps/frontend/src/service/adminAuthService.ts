@@ -1,6 +1,6 @@
 // apps/frontend/src/service/adminAuthService.ts
 import apiService from "./apiService";
-import { ServiceResponse } from "@datifyy/shared-types";
+import { ServiceResponse } from "./ErrorTypes";
 
 const ADMIN_API_PREFIX = "admin/auth";
 

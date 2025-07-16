@@ -3,6 +3,8 @@
  * Auto-generated from TypeORM entity: UserEventsPasscodes
  */
 
+import { DatifyyEvents } from "../models/entities/DatifyyEvents";
+
 export interface UserEventsPasscodesType {
   id: number;
   eventId: number;

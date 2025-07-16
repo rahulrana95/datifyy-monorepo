@@ -1,0 +1,322 @@
+syntax = "proto3";
+
+package admin.auth;
+
+import "google/protobuf/timestamp.proto";
+import "admin/enums.proto";
+import "admin/dashboard.proto";
+import "common/base.proto";
+
+// Admin user
+message AdminUser {
+  int32 id = 1;
+  string email = 2;
+  string firstName = 3;
+  string lastName = 4;
+  admin.enums.AdminPermissionLevel permissionLevel = 5;
+  repeated admin.enums.AdminPermission additionalPermissions = 6;
+  admin.enums.AdminAccountStatus accountStatus = 7;
+  bool isActive = 8;
+  string profileImageUrl = 9;
+  string phoneNumber = 10;
+  string department = 11;
+  string position = 12;
+  string timezone = 13;
+  string preferredLanguage = 14;
+  bool twoFactorEnabled = 15;
+  repeated admin.enums.AdminTwoFactorMethod twoFactorMethods = 16;
+  int32 failedLoginAttempts = 17;
+  google.protobuf.Timestamp lockedAt = 18;
+  google.protobuf.Timestamp lockExpiresAt = 19;
+  google.protobuf.Timestamp lastLoginAt = 20;
+  string lastLoginIp = 21;
+  string lastLoginUserAgent = 22;
+  google.protobuf.Timestamp lastActiveAt = 23;
+  int32 loginCount = 24;
+  google.protobuf.Timestamp lastPasswordChange = 25;
+  google.protobuf.Timestamp passwordExpiryDate = 26;
+  bool mustChangePassword = 27;
+  int32 createdBy = 28;
+  int32 updatedBy = 29;
+  string notes = 30;
+  google.protobuf.Timestamp createdAt = 31;
+  google.protobuf.Timestamp updatedAt = 32;
+}
+
+// Admin profile (public view)
+message AdminProfile {
+  int32 id = 1;
+  string email = 2;
+  string firstName = 3;
+  string lastName = 4;
+  string fullName = 5;
+  admin.enums.AdminPermissionLevel permissionLevel = 6;
+  repeated admin.enums.AdminPermission permissions = 7;
+  admin.enums.AdminAccountStatus accountStatus = 8;
+  bool isActive = 9;
+  string profileImageUrl = 10;
+  string department = 11;
+  string position = 12;
+  string timezone = 13;
+  string preferredLanguage = 14;
+  bool twoFactorEnabled = 15;
+  google.protobuf.Timestamp lastActiveAt = 16;
+  google.protobuf.Timestamp createdAt = 17;
+}
+
+// Device info
+message DeviceInfo {
+  string userAgent = 1;
+  string platform = 2;
+  string browser = 3;
+  string version = 4;
+  string os = 5;
+  string device = 6;
+}
+
+// Geo location
+message GeoLocation {
+  string ip = 1;
+  string country = 2;
+  string region = 3;
+  string city = 4;
+  string timezone = 5;
+  double latitude = 6;
+  double longitude = 7;
+}
+
+// Admin session
+message AdminSession {
+  string id = 1;
+  int32 adminId = 2;
+  string accessToken = 3;
+  string refreshToken = 4;
+  admin.enums.AdminSessionStatus status = 5;
+  DeviceInfo device = 6;
+  GeoLocation location = 7;
+  string ipAddress = 8;
+  google.protobuf.Timestamp createdAt = 9;
+  google.protobuf.Timestamp expiresAt = 10;
+  google.protobuf.Timestamp lastActivityAt = 11;
+  bool isTwoFactorComplete = 12;
+  string twoFactorMethod = 13;
+}
+
+// Admin auth context
+message AdminAuthContext {
+  AdminProfile admin = 1;
+  string sessionId = 2;
+  repeated admin.enums.AdminPermission permissions = 3;
+  bool hasPermission = 4;
+  google.protobuf.Timestamp sessionExpiresAt = 5;
+  bool requiresTwoFactor = 6;
+}
+
+// Admin audit log
+message AdminAuditLog {
+  string id = 1;
+  int32 adminId = 2;
+  admin.enums.AdminActionType action = 3;
+  string resourceType = 4;
+  string resourceId = 5;
+  string description = 6;
+  map<string, string> metadata = 7;
+  string ipAddress = 8;
+  string userAgent = 9;
+  admin.enums.AdminRiskLevel riskLevel = 10;
+  bool success = 11;
+  string errorMessage = 12;
+  google.protobuf.Timestamp createdAt = 13;
+}
+
+// Admin login attempt
+message AdminLoginAttempt {
+  string id = 1;
+  string email = 2;
+  int32 adminId = 3;
+  admin.enums.AdminLoginAttemptResult result = 4;
+  string ipAddress = 5;
+  string userAgent = 6;
+  GeoLocation location = 7;
+  bool isSuspicious = 8;
+  string suspiciousReason = 9;
+  google.protobuf.Timestamp attemptedAt = 10;
+}
+
+// Admin security alert
+message AdminSecurityAlert {
+  string id = 1;
+  int32 adminId = 2;
+  string alertType = 3; // suspicious_login, password_reset, permission_change, etc.
+  datifyy.admin.dashboard.AlertSeverityLevel severity = 4;
+  string title = 5;
+  string description = 6;
+  map<string, string> details = 7;
+  bool isResolved = 8;
+  string resolvedBy = 9;
+  google.protobuf.Timestamp resolvedAt = 10;
+  google.protobuf.Timestamp createdAt = 11;
+}
+
+// Request messages
+message AdminLoginRequest {
+  string email = 1;
+  string password = 2;
+  bool rememberMe = 3;
+  DeviceInfo device = 4;
+}
+
+message AdminTwoFactorRequest {
+  string sessionId = 1;
+  string code = 2;
+  admin.enums.AdminTwoFactorMethod method = 3;
+  bool trustDevice = 4;
+}
+
+message AdminRefreshTokenRequest {
+  string refreshToken = 1;
+}
+
+message AdminLogoutRequest {
+  string sessionId = 1;
+  bool logoutAllDevices = 2;
+}
+
+message AdminPasswordResetRequest {
+  string email = 1;
+  string resetCode = 2;
+  string newPassword = 3;
+}
+
+message AdminPasswordChangeRequest {
+  string currentPassword = 1;
+  string newPassword = 2;
+  bool logoutOtherSessions = 3;
+}
+
+message AdminPermissionCheckRequest {
+  int32 adminId = 1;
+  repeated admin.enums.AdminPermission requiredPermissions = 2;
+  admin.enums.AdminPermissionLevel requiredLevel = 3;
+  string resourceType = 4;
+  string resourceId = 5;
+}
+
+message AdminListFilters {
+  repeated admin.enums.AdminAccountStatus statuses = 1;
+  repeated admin.enums.AdminPermissionLevel permissionLevels = 2;
+  repeated string departments = 3;
+  bool activeOnly = 4;
+  bool twoFactorEnabledOnly = 5;
+  string searchQuery = 6;
+  google.protobuf.Timestamp createdAfter = 7;
+  google.protobuf.Timestamp createdBefore = 8;
+  google.protobuf.Timestamp lastActiveAfter = 9;
+  google.protobuf.Timestamp lastActiveBefore = 10;
+}
+
+message AdminCreateRequest {
+  string email = 1;
+  string password = 2;
+  string firstName = 3;
+  string lastName = 4;
+  admin.enums.AdminPermissionLevel permissionLevel = 5;
+  repeated admin.enums.AdminPermission additionalPermissions = 6;
+  string department = 7;
+  string position = 8;
+  string phoneNumber = 9;
+  string timezone = 10;
+  string preferredLanguage = 11;
+  bool requirePasswordChange = 12;
+  bool sendWelcomeEmail = 13;
+  string notes = 14;
+}
+
+message AdminUpdateRequest {
+  int32 adminId = 1;
+  string firstName = 2;
+  string lastName = 3;
+  admin.enums.AdminPermissionLevel permissionLevel = 4;
+  repeated admin.enums.AdminPermission additionalPermissions = 5;
+  admin.enums.AdminAccountStatus accountStatus = 6;
+  bool isActive = 7;
+  string department = 8;
+  string position = 9;
+  string phoneNumber = 10;
+  string timezone = 11;
+  string preferredLanguage = 12;
+  string notes = 13;
+}
+
+// Response messages
+message AdminLoginResponse {
+  bool success = 1;
+  AdminAuthContext authContext = 2;
+  string accessToken = 3;
+  string refreshToken = 4;
+  string sessionId = 5;
+  bool requiresTwoFactor = 6;
+  repeated admin.enums.AdminTwoFactorMethod availableMethods = 7;
+  string message = 8;
+}
+
+message AdminRefreshTokenResponse {
+  bool success = 1;
+  string accessToken = 2;
+  string refreshToken = 3;
+  AdminAuthContext authContext = 4;
+  string message = 5;
+}
+
+message AdminLogoutResponse {
+  bool success = 1;
+  int32 sessionsTerminated = 2;
+  string message = 3;
+}
+
+message AdminPermissionCheckResponse {
+  bool hasPermission = 1;
+  repeated admin.enums.AdminPermission missingPermissions = 2;
+  string reason = 3;
+}
+
+message AdminListResponse {
+  bool success = 1;
+  repeated AdminProfile admins = 2;
+  datifyy.common.PaginationResponse pagination = 3;
+  AdminListSummary summary = 4;
+  string message = 5;
+}
+
+message AdminListSummary {
+  int32 totalCount = 1;
+  int32 activeCount = 2;
+  int32 suspendedCount = 3;
+  int32 lockedCount = 4;
+  map<string, int32> byPermissionLevel = 5;
+  map<string, int32> byDepartment = 6;
+}
+
+message AdminActivitySummary {
+  int32 adminId = 1;
+  int32 totalActions = 2;
+  google.protobuf.Timestamp lastActivityAt = 3;
+  repeated AdminActionSummary recentActions = 4;
+  map<string, int32> actionsByType = 5;
+  int32 suspiciousActivities = 6;
+}
+
+message AdminActionSummary {
+  admin.enums.AdminActionType action = 1;
+  string description = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  bool success = 4;
+}
+
+message AdminApiResponse {
+  bool success = 1;
+  string message = 2;
+  map<string, string> errors = 3;
+  string requestId = 4;
+  google.protobuf.Timestamp timestamp = 5;
+}

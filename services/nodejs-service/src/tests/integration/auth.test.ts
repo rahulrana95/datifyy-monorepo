@@ -1,8 +1,8 @@
 import request from 'supertest';
 import { DataSource } from 'typeorm';
-import { setupTestDatabase } from '../helpers/setupTestDatabase';
-import { createApp } from '../../src/app';
-import { DatifyyUsersLogin } from '../../src/models/entities/DatifyyUsersLogin';
+import { setupTestDatabase } from '../../__tests__/helpers/setupTestDatabase';
+import { DatifyyUsersLogin } from '../../models/entities/DatifyyUsersLogin';
+import { createAppRoutes } from '../../routes';
 
 describe('Auth Integration Tests', () => {
   let app: any;
@@ -13,7 +13,7 @@ describe('Auth Integration Tests', () => {
     dataSource = await setupTestDatabase();
     
     // Create app instance
-    app = createApp(dataSource);
+    app = createAppRoutes(dataSource);
   });
 
   afterAll(async () => {
@@ -114,6 +114,7 @@ describe('Auth Integration Tests', () => {
       const cookies = response.headers['set-cookie'];
       expect(cookies).toBeDefined();
       
+      // @ts-ignore
       const tokenCookie = cookies.find((cookie: string) => 
         cookie.startsWith('token=')
       );

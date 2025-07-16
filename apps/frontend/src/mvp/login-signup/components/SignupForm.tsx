@@ -128,10 +128,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onLogin }) => {
         setLoading(true);
 
         try {
-            const response = await authService.sendEmailCode({
-                to: [{ email: formData.email.trim(), name: formData.email.trim() }],
-                type: "verifyEmail"
-            });
+            const response = await authService.sendEmailCode(formData.email.trim());
 
             if (response.error) {
                 setError("Failed to send verification code. Please try again.");

@@ -7,15 +7,8 @@ import {
   AvailabilityStatus, 
   RecurrenceType, 
   CancellationPolicy,
-  SelectedActivity,
-  BookingStatus, 
-  type DateTypeValue,
-  type AvailabilityStatusValue,
-  type RecurrenceTypeValue,
-  type CancellationPolicyValue,
-  type SelectedActivityValue,
-  type BookingStatusValue
-} from '@datifyy/shared-types';
+  BookingStatus
+} from '../../../proto-types';
 
 /**
  * DTO for creating a new availability slot
@@ -82,7 +75,7 @@ export class CreateAvailabilityDto {
    * Type of date - online or offline
    */
   @IsIn(['online', 'offline'], { message: 'Date type must be either "online" or "offline"' })
-  dateType: DateTypeValue;
+  dateType: DateType;
 
   /**
    * Optional title for the availability slot
@@ -133,7 +126,7 @@ export class CreateAvailabilityDto {
   @IsEnum(CancellationPolicy, { 
     message: 'Cancellation policy must be one of: flexible, 24_hours, 48_hours, strict' 
   })
-  cancellationPolicy?: CancellationPolicyValue;
+  cancellationPolicy?: CancellationPolicy;
 
   /**
    * Whether this slot is recurring
@@ -150,7 +143,7 @@ export class CreateAvailabilityDto {
   @IsEnum(RecurrenceType, { 
     message: 'Recurrence type must be one of: none, weekly, custom' 
   })
-  recurrenceType?: RecurrenceTypeValue;
+  recurrenceType?: RecurrenceType;
 
   /**
    * End date for recurrence (if recurring)
@@ -192,7 +185,7 @@ export class UpdateAvailabilityDto {
 
   @IsOptional()
   @IsIn(['online', 'offline'], { message: 'Date type must be either "online" or "offline"' })
-  dateType?: DateTypeValue;
+  dateType?: DateType;
 
   @IsOptional()
   @IsString({ message: 'Title must be a string' })
@@ -225,13 +218,13 @@ export class UpdateAvailabilityDto {
   @IsEnum(CancellationPolicy, { 
     message: 'Cancellation policy must be one of: flexible, 24_hours, 48_hours, strict' 
   })
-  cancellationPolicy?: CancellationPolicyValue;
+  cancellationPolicy?: CancellationPolicy;
 
   @IsOptional()
   @IsEnum(AvailabilityStatus, { 
     message: 'Status must be one of: active, cancelled, completed, deleted' 
   })
-  status?: AvailabilityStatusValue;
+  status?: AvailabilityStatus;
 }
 
 /**
@@ -308,7 +301,7 @@ export class GetAvailabilityDto {
     message: 'Each status must be one of: active, cancelled, completed, deleted' 
   })
   @Transform(({ value }) => Array.isArray(value) ? value : [value])
-  status?: AvailabilityStatusValue[];
+  status?: AvailabilityStatus[];
 
   /**
    * Filter by date type
@@ -320,7 +313,7 @@ export class GetAvailabilityDto {
     message: 'Each date type must be either "online" or "offline"' 
   })
   @Transform(({ value }) => Array.isArray(value) ? value : [value])
-  dateType?: DateTypeValue[];
+  dateType?: DateType[];
 
   /**
    * Timezone for filtering and display
@@ -408,7 +401,7 @@ export class SearchAvailableUsersDto {
    */
   @IsOptional()
   @IsEnum(DateType, { message: 'Date type must be either "online" or "offline"' })
-  dateType?: DateTypeValue;
+  dateType?: DateType;
 
   /**
    * Search radius in kilometers (for offline dates)
@@ -424,11 +417,11 @@ export class SearchAvailableUsersDto {
    */
   @IsOptional()
   @IsArray({ message: 'Preferred activities must be an array' })
-  @IsEnum(SelectedActivity, { 
+  @IsString({ 
     each: true, 
-    message: 'Each activity must be a valid activity type' 
+    message: 'Each activity must be a string' 
   })
-  preferredActivities?: SelectedActivityValue[];
+  preferredActivities?: string[];
 
   /**
    * Age range preference
@@ -483,10 +476,10 @@ export class BookAvailabilityDto {
   /**
    * Selected activity for the date
    */
-  @IsEnum(SelectedActivity, { 
-    message: 'Selected activity must be a valid activity type' 
+  @IsString({ 
+    message: 'Selected activity must be a string' 
   })
-  selectedActivity: SelectedActivityValue;
+  selectedActivity: string;
 
   /**
    * Optional notes for the booking
@@ -508,13 +501,13 @@ export class UpdateBookingDto {
   @IsEnum(BookingStatus, { 
     message: 'Booking status must be one of: pending, confirmed, cancelled, completed' 
   })
-  bookingStatus?: BookingStatusValue;
+  bookingStatus?: BookingStatus;
 
   @IsOptional()
-  @IsEnum(SelectedActivity, { 
-    message: 'Selected activity must be a valid activity type' 
+  @IsString({ 
+    message: 'Selected activity must be a string' 
   })
-  selectedActivity?: SelectedActivityValue;
+  selectedActivity?: string;
 
   @IsOptional()
   @IsString({ message: 'Booking notes must be a string' })

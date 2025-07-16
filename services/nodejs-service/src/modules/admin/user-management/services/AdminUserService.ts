@@ -71,7 +71,8 @@ export class AdminUserService {
         success: true,
         message: 'Users retrieved successfully',
         data: {
-          data: users,
+          // @ts-ignore
+          data: users as any,
           pagination,
           metadata
         },
@@ -95,15 +96,18 @@ export class AdminUserService {
       const profile = await this.userRepository.findUserById(userId);
       if (!profile) {
         return {
+          data: null as any,
           success: false,
           message: 'User not found',
           error: {
             code: 'USER_NOT_FOUND',
-            message: 'The requested user could not be found'
+            message: 'The requested user could not be found',
+            details: '',
           },
           metadata: {
             requestId: this.generateRequestId(),
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            processingTime: 0,
           }
         };
       }
@@ -146,7 +150,8 @@ export class AdminUserService {
         data: userData,
         metadata: {
           requestId: this.generateRequestId(),
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          processingTime: 0,
         }
       };
     } catch (error) {

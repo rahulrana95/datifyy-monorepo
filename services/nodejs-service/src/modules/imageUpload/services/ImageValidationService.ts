@@ -5,15 +5,10 @@ import { IImageRepository } from '../repositories/IImageRepository';
 import { ImageCategory } from '../dtos/ImageUploadDtos';
 import {
   StorageError,
-  StorageFileTooLargeError,
-  StorageInvalidFileTypeError,
   FileValidationResult
-} from '@datifyy/shared-types';
-import {
-  validateFile,
-  FILE_VALIDATION_CONFIGS,
-  formatFileSize,
-  } from '@datifyy/shared-utils';
+} from '../../../proto-types/common/storage';
+import { formatFileSize } from '../utils/format/formatUtils';
+import { FILE_VALIDATION_CONFIGS, validateFile } from '../utils/validation/fileValidationUtils';
 
 /**
  * Image Validation Service - Single Responsibility
@@ -53,8 +48,8 @@ export class ImageValidationService {
       operation: 'validateSingleFile'
     });
 
-    const errors: string[] = [];
-    const warnings: string[] = [];
+    const errors: any[] = [];
+    const warnings: any[] = [];
 
     try {
       // 1. File format validation using shared utility
@@ -96,11 +91,11 @@ export class ImageValidationService {
         isValid: errors.length === 0,
         errors,
         warnings,
-        fileInfo: {
-          size: file.size,
-          type: file.mimetype,
-          dimensions: await this.getImageDimensions(file)
-        }
+        // fileInfo: {
+        //   size: file.size,
+        //   type: file.mimetype,
+        //   dimensions: await this.getImageDimensions(file)
+        // }
       };
 
       this.logger.debug('File validation completed', {
@@ -126,7 +121,7 @@ export class ImageValidationService {
 
       return {
         isValid: false,
-        errors: ['Validation service error: ' + (error instanceof Error ? error.message : 'Unknown error')],
+        errors: ['Validation service error: ' + (error instanceof Error ? error.message : 'Unknown error')] as any,
         warnings
       };
     }
@@ -187,11 +182,11 @@ export class ImageValidationService {
       fileResults.push({
         fileName: file.originalname,
         isValid: fileValidation.isValid,
-        errors: fileValidation.errors
+        errors: fileValidation.errors as any
       });
 
       if (fileValidation.warnings) {
-        warnings.push(...fileValidation.warnings);
+        warnings.push(...fileValidation.warnings as any);
       }
     }
 

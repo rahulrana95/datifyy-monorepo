@@ -1,0 +1,181 @@
+syntax = "proto3";
+
+package admin.enums;
+
+// Admin permission levels for role-based access control
+enum AdminPermissionLevel {
+  ADMIN_PERMISSION_LEVEL_UNSPECIFIED = 0;
+  VIEWER = 1;
+  MODERATOR = 2;
+  ADMIN = 3;
+  SUPER_ADMIN = 4;
+  OWNER = 5;
+}
+
+// Specific admin permissions for granular access control
+enum AdminPermission {
+  ADMIN_PERMISSION_UNSPECIFIED = 0;
+  
+  // User Management
+  VIEW_USERS = 1;
+  EDIT_USERS = 2;
+  DELETE_USERS = 3;
+  VERIFY_USERS = 4;
+  BAN_USERS = 5;
+  
+  // Content Moderation
+  VIEW_REPORTS = 6;
+  MODERATE_CONTENT = 7;
+  DELETE_CONTENT = 8;
+  
+  // Event Management
+  VIEW_EVENTS = 9;
+  CREATE_EVENTS = 10;
+  EDIT_EVENTS = 11;
+  DELETE_EVENTS = 12;
+  MANAGE_EVENT_REGISTRATIONS = 13;
+  
+  // Financial Operations
+  VIEW_TRANSACTIONS = 14;
+  PROCESS_REFUNDS = 15;
+  VIEW_REVENUE_REPORTS = 16;
+  MANAGE_PRICING = 17;
+  
+  // Analytics & Reports
+  VIEW_ANALYTICS = 18;
+  EXPORT_DATA = 19;
+  VIEW_SYSTEM_METRICS = 20;
+  
+  // System Administration
+  MANAGE_ADMINS = 21;
+  SYSTEM_CONFIG = 22;
+  VIEW_LOGS = 23;
+  MANAGE_INTEGRATIONS = 24;
+}
+
+// Admin authentication session status
+enum AdminSessionStatus {
+  ADMIN_SESSION_STATUS_UNSPECIFIED = 0;
+  ACTIVE = 1;
+  EXPIRED = 2;
+  INVALIDATED = 3;
+  LOCKED = 4;
+  PENDING_2FA = 5;
+}
+
+// Two-Factor Authentication methods
+enum AdminTwoFactorMethod {
+  ADMIN_TWO_FACTOR_METHOD_UNSPECIFIED = 0;
+  EMAIL = 1;
+  SMS = 2;
+  TOTP = 3;
+  HARDWARE_KEY = 4;
+}
+
+// Admin account status
+enum AdminAccountStatus {
+  ADMIN_ACCOUNT_STATUS_UNSPECIFIED = 0;
+  ADMIN_ACTIVE = 1;
+  SUSPENDED = 2;
+  DEACTIVATED = 3;
+  PENDING = 4;
+  ADMIN_LOCKED = 5;
+}
+
+// Admin action types for audit logging
+enum AdminActionType {
+  ADMIN_ACTION_TYPE_UNSPECIFIED = 0;
+  
+  // Authentication
+  LOGIN = 1;
+  LOGOUT = 2;
+  LOGIN_FAILED = 3;
+  PASSWORD_RESET = 4;
+  
+  // User Operations
+  USER_CREATED = 5;
+  USER_UPDATED = 6;
+  USER_DELETED = 7;
+  USER_BANNED = 8;
+  USER_VERIFIED = 9;
+  
+  // Content Moderation
+  CONTENT_APPROVED = 10;
+  CONTENT_REJECTED = 11;
+  CONTENT_DELETED = 12;
+  REPORT_RESOLVED = 13;
+  
+  // Event Management
+  EVENT_CREATED = 14;
+  EVENT_UPDATED = 15;
+  EVENT_DELETED = 16;
+  EVENT_CANCELLED = 17;
+  
+  // Financial
+  REFUND_PROCESSED = 18;
+  TRANSACTION_REVIEWED = 19;
+  
+  // System
+  SYSTEM_CONFIG_CHANGED = 20;
+  ADMIN_CREATED = 21;
+  ADMIN_PERMISSIONS_CHANGED = 22;
+}
+
+// Risk levels for admin operations
+enum AdminRiskLevel {
+  ADMIN_RISK_LEVEL_UNSPECIFIED = 0;
+  LOW = 1;
+  MEDIUM = 2;
+  HIGH = 3;
+  CRITICAL = 4;
+}
+
+// Admin login attempt result types
+enum AdminLoginAttemptResult {
+  ADMIN_LOGIN_ATTEMPT_RESULT_UNSPECIFIED = 0;
+  SUCCESS = 1;
+  INVALID_CREDENTIALS = 2;
+  ACCOUNT_LOCKED = 3;
+  ACCOUNT_SUSPENDED = 4;
+  REQUIRES_2FA = 5;
+  INVALID_2FA = 6;
+  RATE_LIMITED = 7;
+  IP_BLOCKED = 8;
+}
+
+// Trend directions
+enum TrendDirection {
+  TREND_DIRECTION_UNSPECIFIED = 0;
+  UP = 1;
+  DOWN = 2;
+  STABLE = 3;
+}
+
+// Admin token payload for JWT tokens
+message AdminTokenPayload {
+  string sub = 1;
+  string email = 2;
+  AdminPermissionLevel permission_level = 3;
+  repeated AdminPermission permissions = 4;
+  string session_id = 5;
+  int64 iat = 6;
+  int64 exp = 7;
+  string iss = 8;
+  string aud = 9;
+  int32 admin_id = 10;
+}
+
+// Admin security constants
+message AdminSecurityConstants {
+  int32 max_login_attempts = 1;
+  int32 session_timeout_hours = 2;
+  int32 two_factor_validity_minutes = 3;
+  int32 password_reset_validity_hours = 4;
+  int32 account_lock_duration_minutes = 5;
+  int32 refresh_token_validity_days = 6;
+  int32 max_concurrent_sessions = 7;
+  int32 password_history_count = 8;
+  int32 password_min_length = 9;
+  int32 rate_limit_window_minutes = 10;
+  int32 rate_limit_max_requests = 11;
+}

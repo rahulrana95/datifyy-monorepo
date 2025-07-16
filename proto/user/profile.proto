@@ -1,0 +1,175 @@
+syntax = "proto3";
+
+package datifyy.user.profile;
+
+import "common/base.proto";
+import "common/enums.proto";
+import "user/enums.proto";
+import "admin/revenue.proto";
+
+
+
+// Religion
+enum Religion {
+  RELIGION_UNSPECIFIED = 0;
+  RELIGION_CHRISTIANITY = 1;
+  RELIGION_ISLAM = 2;
+  RELIGION_HINDUISM = 3;
+  RELIGION_BUDDHISM = 4;
+  RELIGION_JUDAISM = 5;
+  RELIGION_SIKHISM = 6;
+  RELIGION_OTHER = 7;
+  RELIGION_ATHEIST = 8;
+  RELIGION_AGNOSTIC = 9;
+}
+
+// Smoking preference
+enum SmokingPreference {
+  SMOKING_PREFERENCE_UNSPECIFIED = 0;
+  SMOKING_PREFERENCE_NEVER = 1;
+  SMOKING_PREFERENCE_SOCIALLY = 2;
+  SMOKING_PREFERENCE_REGULARLY = 3;
+  SMOKING_PREFERENCE_TRYING_TO_QUIT = 4;
+}
+
+// Drinking preference
+enum DrinkingPreference {
+  DRINKING_PREFERENCE_UNSPECIFIED = 0;
+  DRINKING_PREFERENCE_NEVER = 1;
+  DRINKING_PREFERENCE_SOCIALLY = 2;
+  DRINKING_PREFERENCE_REGULARLY = 3;
+  DRINKING_PREFERENCE_OCCASIONALLY = 4;
+}
+
+// User profile
+message UserProfile {
+  int32 id = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string date_of_birth = 5;
+  datifyy.user.Gender gender = 6;
+  string phone_number = 7;
+  string bio = 8;
+  repeated string interests = 9;
+  string occupation = 10;
+  datifyy.user.EducationLevel education_level = 11;
+  Religion religion = 12;
+  SmokingPreference smoking_preference = 13;
+  DrinkingPreference drinking_preference = 14;
+  int32 height_cm = 15;
+  repeated string profile_images = 16;
+  datifyy.common.LocationInfo location = 17;
+  bool is_verified = 18;
+  int32 profile_completion_percentage = 19;
+  datifyy.common.UserStatus status = 20;
+  string created_at = 21;
+  string updated_at = 22;
+}
+
+// Partner preferences
+message PartnerPreferences {
+  int32 user_id = 1;
+  AgeRange age_range = 2;
+  repeated datifyy.user.Gender preferred_genders = 3;
+  int32 max_distance_km = 4;
+  HeightRange height_range = 5;
+  repeated datifyy.user.EducationLevel education_levels = 6;
+  repeated Religion religions = 7;
+  repeated SmokingPreference smoking_preferences = 8;
+  repeated DrinkingPreference drinking_preferences = 9;
+  repeated string interests = 10;
+  repeated string deal_breakers = 11;
+  int32 importance_score = 12;
+  string created_at = 13;
+  string updated_at = 14;
+}
+
+// Age range
+message AgeRange {
+  int32 min_age = 1;
+  int32 max_age = 2;
+}
+
+// Height range
+message HeightRange {
+  int32 min_height_cm = 1;
+  int32 max_height_cm = 2;
+}
+
+// User availability
+message UserAvailability {
+  int32 id = 1;
+  int32 user_id = 2;
+  datifyy.admin.revenue.DateType date_type = 3;
+  string start_time = 4;
+  string end_time = 5;
+  string timezone = 6;
+  bool is_recurring = 7;
+  repeated string days_of_week = 8;
+  string notes = 9;
+  bool is_available = 10;
+  string created_at = 11;
+  string updated_at = 12;
+}
+
+// Request messages
+message GetUserProfileRequest {
+  int32 user_id = 1;
+}
+
+message UpdateUserProfileRequest {
+  int32 user_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string bio = 4;
+  repeated string interests = 5;
+  string occupation = 6;
+  datifyy.user.EducationLevel education_level = 7;
+  Religion religion = 8;
+  SmokingPreference smoking_preference = 9;
+  DrinkingPreference drinking_preference = 10;
+  int32 height_cm = 11;
+  datifyy.common.LocationInfo location = 12;
+}
+
+message UpdatePartnerPreferencesRequest {
+  int32 user_id = 1;
+  AgeRange age_range = 2;
+  repeated datifyy.user.Gender preferred_genders = 3;
+  int32 max_distance_km = 4;
+  HeightRange height_range = 5;
+  repeated datifyy.user.EducationLevel education_levels = 6;
+  repeated Religion religions = 7;
+  repeated SmokingPreference smoking_preferences = 8;
+  repeated DrinkingPreference drinking_preferences = 9;
+  repeated string interests = 10;
+  repeated string deal_breakers = 11;
+  int32 importance_score = 12;
+}
+
+message UploadProfileImageRequest {
+  int32 user_id = 1;
+  bytes image_data = 2;
+  string image_type = 3;
+  bool is_primary = 4;
+}
+
+// Response messages
+message UserProfileResponse {
+  bool success = 1;
+  UserProfile data = 2;
+  string message = 3;
+}
+
+message PartnerPreferencesResponse {
+  bool success = 1;
+  PartnerPreferences data = 2;
+  string message = 3;
+}
+
+message ProfileImageResponse {
+  bool success = 1;
+  string image_url = 2;
+  string message = 3;
+}

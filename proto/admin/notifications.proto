@@ -1,0 +1,343 @@
+syntax = "proto3";
+
+package datifyy.admin.notifications;
+
+import "common/base.proto";
+
+
+// Notification channels
+enum NotificationChannel {
+  NOTIFICATION_CHANNEL_UNSPECIFIED = 0;
+  NOTIFICATION_CHANNEL_EMAIL = 1;
+  NOTIFICATION_CHANNEL_SLACK = 2;
+  NOTIFICATION_CHANNEL_SMS = 3;
+  NOTIFICATION_CHANNEL_IN_APP = 4;
+  NOTIFICATION_CHANNEL_WEBHOOK = 5;
+  NOTIFICATION_CHANNEL_PUSH = 6;
+}
+
+// Notification priority
+enum NotificationPriority {
+  NOTIFICATION_PRIORITY_UNSPECIFIED = 0;
+  NOTIFICATION_PRIORITY_LOW = 1;
+  NOTIFICATION_PRIORITY_NORMAL = 2;
+  NOTIFICATION_PRIORITY_HIGH = 3;
+  NOTIFICATION_PRIORITY_URGENT = 4;
+  NOTIFICATION_PRIORITY_CRITICAL = 5;
+}
+
+// Notification status
+enum NotificationStatus {
+  NOTIFICATION_STATUS_UNSPECIFIED = 0;
+  NOTIFICATION_STATUS_PENDING = 1;
+  NOTIFICATION_STATUS_SENT = 2;
+  NOTIFICATION_STATUS_DELIVERED = 3;
+  NOTIFICATION_STATUS_FAILED = 4;
+  NOTIFICATION_STATUS_BOUNCED = 5;
+  NOTIFICATION_STATUS_OPENED = 6;
+  NOTIFICATION_STATUS_CLICKED = 7;
+  NOTIFICATION_STATUS_UNSUBSCRIBED = 8;
+}
+
+// Notification trigger events
+enum NotificationTriggerEvent {
+  NOTIFICATION_TRIGGER_EVENT_UNSPECIFIED = 0;
+  
+  // User Events
+  NOTIFICATION_TRIGGER_EVENT_NEW_USER_SIGNUP = 1;
+  NOTIFICATION_TRIGGER_EVENT_USER_PROFILE_COMPLETED = 2;
+  NOTIFICATION_TRIGGER_EVENT_USER_EMAIL_VERIFIED = 3;
+  NOTIFICATION_TRIGGER_EVENT_USER_PHONE_VERIFIED = 4;
+  NOTIFICATION_TRIGGER_EVENT_USER_DELETED_ACCOUNT = 5;
+  NOTIFICATION_TRIGGER_EVENT_USER_REPORTED = 6;
+  
+  // Date Events
+  NOTIFICATION_TRIGGER_EVENT_DATE_CURATED = 7;
+  NOTIFICATION_TRIGGER_EVENT_DATE_CONFIRMED = 8;
+  NOTIFICATION_TRIGGER_EVENT_DATE_CANCELLED = 9;
+  NOTIFICATION_TRIGGER_EVENT_DATE_CANCELLED_LAST_MINUTE = 10;
+  NOTIFICATION_TRIGGER_EVENT_DATE_COMPLETED = 11;
+  NOTIFICATION_TRIGGER_EVENT_DATE_NO_SHOW = 12;
+  NOTIFICATION_TRIGGER_EVENT_DATE_FEEDBACK_SUBMITTED = 13;
+  NOTIFICATION_TRIGGER_EVENT_DATE_SAFETY_CONCERN = 14;
+  
+  // Payment Events
+  NOTIFICATION_TRIGGER_EVENT_PAYMENT_SUCCESSFUL = 15;
+  NOTIFICATION_TRIGGER_EVENT_PAYMENT_FAILED = 16;
+  NOTIFICATION_TRIGGER_EVENT_REFUND_REQUESTED = 17;
+  NOTIFICATION_TRIGGER_EVENT_REFUND_PROCESSED = 18;
+  NOTIFICATION_TRIGGER_EVENT_HIGH_VALUE_TRANSACTION = 19;
+  NOTIFICATION_TRIGGER_EVENT_CHARGEBACK_RECEIVED = 20;
+  
+  // System Events
+  NOTIFICATION_TRIGGER_EVENT_SYSTEM_ERROR = 21;
+  NOTIFICATION_TRIGGER_EVENT_DATABASE_SLOW = 22;
+  NOTIFICATION_TRIGGER_EVENT_API_RATE_LIMIT_EXCEEDED = 23;
+  NOTIFICATION_TRIGGER_EVENT_STORAGE_QUOTA_WARNING = 24;
+  NOTIFICATION_TRIGGER_EVENT_EMAIL_DELIVERY_FAILED = 25;
+  
+  // Revenue Events
+  NOTIFICATION_TRIGGER_EVENT_DAILY_REVENUE_TARGET_MET = 26;
+  NOTIFICATION_TRIGGER_EVENT_MONTHLY_REVENUE_TARGET_MET = 27;
+  NOTIFICATION_TRIGGER_EVENT_REVENUE_DROP_DETECTED = 28;
+  NOTIFICATION_TRIGGER_EVENT_NEW_PAYING_USER = 29;
+  
+  // Trust & Safety Events
+  NOTIFICATION_TRIGGER_EVENT_LOW_TRUST_SCORE = 30;
+  NOTIFICATION_TRIGGER_EVENT_MULTIPLE_CANCELLATIONS = 31;
+  NOTIFICATION_TRIGGER_EVENT_SUSPICIOUS_ACTIVITY = 32;
+  NOTIFICATION_TRIGGER_EVENT_FAKE_PROFILE_DETECTED = 33;
+  
+  // Admin Events
+  NOTIFICATION_TRIGGER_EVENT_ADMIN_LOGIN = 34;
+  NOTIFICATION_TRIGGER_EVENT_ADMIN_LOGIN_FAILED = 35;
+  NOTIFICATION_TRIGGER_EVENT_ADMIN_PERMISSION_CHANGED = 36;
+  NOTIFICATION_TRIGGER_EVENT_ADMIN_ACTION_HIGH_RISK = 37;
+}
+
+// Notification frequency
+enum NotificationFrequency {
+  NOTIFICATION_FREQUENCY_UNSPECIFIED = 0;
+  NOTIFICATION_FREQUENCY_IMMEDIATE = 1;
+  NOTIFICATION_FREQUENCY_BATCHED_5MIN = 2;
+  NOTIFICATION_FREQUENCY_BATCHED_15MIN = 3;
+  NOTIFICATION_FREQUENCY_BATCHED_HOURLY = 4;
+  NOTIFICATION_FREQUENCY_DAILY_DIGEST = 5;
+  NOTIFICATION_FREQUENCY_WEEKLY_DIGEST = 6;
+  NOTIFICATION_FREQUENCY_DISABLED = 7;
+}
+
+// Base notification
+message BaseNotification {
+  string id = 1;
+  NotificationTriggerEvent trigger_event = 2;
+  NotificationChannel channel = 3;
+  NotificationPriority priority = 4;
+  string title = 5;
+  string message = 6;
+  NotificationMetadata metadata = 7;
+  NotificationStatus status = 8;
+  int32 recipient_admin_id = 9;
+  string recipient_channel = 10;
+  string created_at = 11;
+  string sent_at = 12;
+  string delivered_at = 13;
+  string failure_reason = 14;
+  int32 retry_count = 15;
+  int32 max_retries = 16;
+}
+
+// Notification metadata
+message NotificationMetadata {
+  string resource_type = 1;
+  string resource_id = 2;
+  int32 user_id = 3;
+  string user_email = 4;
+  string user_name = 5;
+  int32 admin_id = 6;
+  double amount = 7;
+  string currency = 8;
+  string city = 9;
+  string date_time = 10;
+  map<string, string> additional_data = 11;
+  map<string, string> template_variables = 12;
+  string action_url = 13;
+  string action_text = 14;
+}
+
+// Email template
+message EmailTemplate {
+  string subject = 1;
+  string html_content = 2;
+  string text_content = 3;
+  string from_name = 4;
+  string from_email = 5;
+  string reply_to = 6;
+  repeated string variables = 7;
+}
+
+// Slack template
+message SlackTemplate {
+  string channel = 1;
+  string message = 2;
+  string icon_emoji = 3;
+  string username = 4;
+  repeated string variables = 5;
+}
+
+// SMS template
+message SmsTemplate {
+  string message = 1;
+  int32 max_length = 2;
+  repeated string variables = 3;
+}
+
+// In-app template
+message InAppTemplate {
+  string title = 1;
+  string message = 2;
+  string icon = 3;
+  string action_text = 4;
+  string action_url = 5;
+  string category = 6;
+  repeated string variables = 7;
+}
+
+// Notification template
+message NotificationTemplate {
+  string id = 1;
+  string name = 2;
+  NotificationTriggerEvent trigger_event = 3;
+  repeated NotificationChannel channels = 4;
+  bool is_active = 5;
+  EmailTemplate email = 6;
+  SlackTemplate slack = 7;
+  SmsTemplate sms = 8;
+  InAppTemplate in_app = 9;
+  NotificationFrequency frequency = 10;
+  NotificationPriority priority = 11;
+  repeated NotificationCondition conditions = 12;
+  string created_at = 13;
+  string updated_at = 14;
+  int32 created_by = 15;
+}
+
+// Notification condition
+message NotificationCondition {
+  string field = 1;
+  string operator = 2; // "equals", "not_equals", "greater_than", etc.
+  string value = 3;
+  string logical_operator = 4; // "AND", "OR"
+}
+
+// Request messages
+message CreateNotificationRequest {
+  NotificationTriggerEvent trigger_event = 1;
+  repeated NotificationChannel channels = 2;
+  NotificationPriority priority = 3;
+  string title = 4;
+  string message = 5;
+  NotificationMetadata metadata = 6;
+  repeated int32 recipient_admin_ids = 7;
+  repeated string recipient_channels = 8;
+  string scheduled_at = 9;
+  string template_id = 10;
+  map<string, string> template_variables = 11;
+}
+
+message GetNotificationsRequest {
+  repeated NotificationChannel channels = 1;
+  repeated NotificationTriggerEvent trigger_events = 2;
+  repeated NotificationStatus statuses = 3;
+  repeated NotificationPriority priorities = 4;
+  string start_date = 5;
+  string end_date = 6;
+  int32 recipient_admin_id = 7;
+  bool is_read = 8;
+  datifyy.common.PaginationRequest pagination = 9;
+}
+
+message UpdateNotificationRequest {
+  string notification_id = 1;
+  NotificationStatus status = 2;
+  int32 retry_count = 3;
+  string failure_reason = 4;
+  string delivered_at = 5;
+  NotificationMetadata metadata = 6;
+}
+
+message CreateNotificationTemplateRequest {
+  string name = 1;
+  NotificationTriggerEvent trigger_event = 2;
+  repeated NotificationChannel channels = 3;
+  NotificationPriority priority = 4;
+  bool is_active = 5;
+  EmailTemplate email = 6;
+  SlackTemplate slack = 7;
+  SmsTemplate sms = 8;
+  InAppTemplate in_app = 9;
+  NotificationFrequency frequency = 10;
+  repeated NotificationCondition conditions = 11;
+}
+
+message UpdateNotificationTemplateRequest {
+  string template_id = 1;
+  string name = 2;
+  NotificationTriggerEvent trigger_event = 3;
+  repeated NotificationChannel channels = 4;
+  NotificationPriority priority = 5;
+  bool is_active = 6;
+  EmailTemplate email = 7;
+  SlackTemplate slack = 8;
+  SmsTemplate sms = 9;
+  InAppTemplate in_app = 10;
+  NotificationFrequency frequency = 11;
+  repeated NotificationCondition conditions = 12;
+}
+
+message TestNotificationRequest {
+  NotificationChannel channel = 1;
+  string recipient = 2;
+  string template_id = 3;
+  map<string, string> template_variables = 4;
+  string custom_message = 5;
+}
+
+message BulkNotificationRequest {
+  string template_id = 1;
+  repeated BulkNotificationRecipient recipients = 2;
+  string scheduled_at = 3;
+  NotificationPriority priority = 4;
+  NotificationMetadata metadata = 5;
+}
+
+message BulkNotificationRecipient {
+  int32 admin_id = 1;
+  string channel = 2;
+  map<string, string> template_variables = 3;
+}
+
+// Response messages
+message NotificationResponse {
+  bool success = 1;
+  BaseNotification data = 2;
+  string message = 3;
+}
+
+message NotificationsListResponse {
+  bool success = 1;
+  repeated BaseNotification notifications = 2;
+  datifyy.common.PaginationResponse pagination = 3;
+  NotificationsSummary summary = 4;
+  string message = 5;
+}
+
+message NotificationsSummary {
+  int32 unread_count = 1;
+  int32 critical_count = 2;
+  int32 recent_activity = 3;
+}
+
+message NotificationTemplateResponse {
+  bool success = 1;
+  NotificationTemplate data = 2;
+  string message = 3;
+}
+
+message BulkNotificationResponse {
+  bool success = 1;
+  string batch_id = 2;
+  int32 total_requested = 3;
+  int32 successful = 4;
+  int32 failed = 5;
+  repeated BulkNotificationResult results = 6;
+  double estimated_cost = 7;
+  string message = 8;
+}
+
+message BulkNotificationResult {
+  string recipient = 1;
+  string notification_id = 2;
+  bool success = 3;
+  string error = 4;
+}

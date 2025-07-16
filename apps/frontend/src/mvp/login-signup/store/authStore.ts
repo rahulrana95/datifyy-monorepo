@@ -1,7 +1,7 @@
 // apps/frontend/src/mvp/login-signup/store/authStore.ts
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { UserData, AuthModalState, AuthView } from "@datifyy/shared-types";
+import { UserData, AuthModalState, AuthView } from "../../../proto-types";
 
 interface AuthState extends AuthModalState {
   // User state

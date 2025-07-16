@@ -1,7 +1,19 @@
 // services/nodejs-service/src/modules/userAvailability/services/UserAvailabilityService.ts
-
-import {
-  CreateAvailabilityRequest,
+import { Logger } from '../../../infrastructure/logging/Logger';
+import { IUserAvailabilityRepository } from '../repositories/IUserAvailabilityRepository';
+import { UserAvailabilityMapper } from '../mappers/UserAvailabilityMapper';
+import { 
+  IUserAvailabilityService,
+  ValidationResult,
+  RecurringGenerationOptions,
+  AvailabilityStatsSummary,
+  ScheduleOptimizationPreferences,
+  ScheduleOptimizationResult,
+  NearbyAvailableUsersResponse,
+  SlotCreationResult
+} from './IUserAvailabilityService';
+import { BusinessRuleViolationError, NotFoundError, ValidationError } from '../../../infrastructure/errors/AppErrors';
+import {  CreateAvailabilityRequest,
   UpdateAvailabilityRequest,
   BulkCreateAvailabilityRequest,
   GetAvailabilityRequest,
@@ -15,23 +27,30 @@ import {
   CalendarViewResponse,
   TimeSuggestionsResponse,
   AvailabilityConflict,
-  SlotCreationResult,
-  AvailabilityValidationRules,
-  AvailabilityStatus
-} from '@datifyy/shared-types';
-import { Logger } from '../../../infrastructure/logging/Logger';
-import { IUserAvailabilityRepository } from '../repositories/IUserAvailabilityRepository';
-import { UserAvailabilityMapper } from '../mappers/UserAvailabilityMapper';
-import { 
-  IUserAvailabilityService,
-  ValidationResult,
-  RecurringGenerationOptions,
-  AvailabilityStatsSummary,
-  ScheduleOptimizationPreferences,
-  ScheduleOptimizationResult,
-  NearbyAvailableUsersResponse
-} from './IUserAvailabilityService';
-import { BusinessRuleViolationError, NotFoundError, ValidationError } from '../../../infrastructure/errors/AppErrors';
+  AvailabilitySlot,
+  AvailabilitySlotStatus,
+  AvailabilityBookingStatus,
+  AvailabilityAnalytics,
+  DateType,
+  AvailabilityCancellationPolicy
+} from '../../../proto-types';
+
+// Default validation rules
+const DEFAULT_VALIDATION_RULES = {
+  timeSlot: {
+    minDuration: 30,
+    maxDuration: 240,
+    maxFutureDays: 90
+  },
+  booking: {
+    minAdvanceHours: 24,
+    maxAdvanceDays: 60
+  },
+  limits: {
+    maxSlotsPerDay: 5,
+    maxSlotsPerWeek: 20
+  }
+};
 
 /**
  * User Availability Service Implementation
@@ -73,7 +92,7 @@ export class UserAvailabilityService implements IUserAvailabilityService {
         await this.generateRecurringSlots(
           userId,
           availabilityData,
-          availabilityData.recurrenceEndDate,
+          availabilityData.recurrenceEndDate?.toISOString() || '',
           { skipConflicts: true }
         );
       }
@@ -100,7 +119,7 @@ export class UserAvailabilityService implements IUserAvailabilityService {
     this.logger.info('Creating bulk availability slots', { userId, count: bulkData.slots.length });
 
     try {
-      const created: AvailabilityResponse[] = [];
+      const created: AvailabilitySlot[] = [];
       const skipped: Array<{ slot: CreateAvailabilityRequest; reason: string }> = [];
       let errors = 0;
 
@@ -124,7 +143,9 @@ export class UserAvailabilityService implements IUserAvailabilityService {
           // Create the slot
           const createdSlot = await this.repository.create(userId, slotData);
           const response = await this.mapper.toAvailabilityResponse(createdSlot);
-          created.push(response);
+          if (response.data) {
+            created.push(response.data);
+          }
 
         } catch (error) {
           errors++;
@@ -150,12 +171,19 @@ export class UserAvailabilityService implements IUserAvailabilityService {
 
       return {
         success: true,
-        data: {
-          created,
-          skipped,
-          summary
-        },
-        message: ''
+        createdSlots: created,
+        conflicts: skipped.map(s => ({
+          requestedSlot: s.slot,
+          conflictReason: s.reason,
+          conflictingSlots: [],
+          conflictDescription: s.reason,
+          conflictingSlotId: ''
+        })),
+        totalRequested: bulkData.slots.length,
+        totalCreated: created.length,
+        totalConflicts: skipped.length,
+        message: `Bulk availability creation completed. ${created.length} slots created, ${skipped.length} skipped.`,
+        data: created // For backward compatibility
       };
     } catch (error) {
       this.logger.error('Failed to create bulk availability', { userId, error });
@@ -200,21 +228,17 @@ export class UserAvailabilityService implements IUserAvailabilityService {
         paginatedResult.data.map(availability => this.mapper.toAvailabilityResponse(availability))
       );
 
-      // Calculate summary statistics
-      const summary = await this.calculateAvailabilitySummary(
-        availabilityResponses,
-        filters.startDate,
-        filters.endDate
-      );
+      // Extract slots from responses
+      const slots = availabilityResponses
+        .map(r => r.data)
+        .filter((d): d is AvailabilitySlot => !!d);
 
       const response: AvailabilityListResponse = {
         success: true,
-        data: {
-          ...paginatedResult,
-          data: availabilityResponses,
-          summary
-        },
-        message: ''
+        slots: slots,
+        data: slots, // Alias for backward compatibility
+        pagination: paginatedResult.pagination,
+        message: 'Availability slots retrieved successfully'
       };
 
       this.logger.debug('User availability retrieved', { 
@@ -291,7 +315,23 @@ export class UserAvailabilityService implements IUserAvailabilityService {
 
       // 3. Cancel the slot
       const cancelledAvailability = await this.repository.update(availabilityId, {
-        status: AvailabilityStatus.CANCELLED
+        status: AvailabilitySlotStatus.AVAILABILITY_SLOT_STATUS_CANCELLED,
+        availabilitySlotId: availabilityId.toString(),
+        dateType: availability.dateType === 'online' 
+          ? DateType.DATE_TYPE_ONLINE 
+          : DateType.DATE_TYPE_ONLINE,
+        startTime: availability.startTime,
+        endTime: availability.endTime,
+        timezone: availability.timezone,
+        maxBookings: 1,
+        durationMinutes: 60,
+        bufferTimeMinutes: availability.bufferTimeMinutes || 0,
+        location: availability.locationPreference || '',
+        venue: '',
+        virtualLink: '',
+        notes: availability.notes || '',
+        preferredActivities: [],
+        cancellationPolicy: this.mapCancellationPolicy(availability.cancellationPolicy)
       });
 
       const response = await this.mapper.toAvailabilityResponse(cancelledAvailability);
@@ -353,18 +393,14 @@ export class UserAvailabilityService implements IUserAvailabilityService {
 
       const response: SearchAvailableUsersResponse = {
         success: true,
-        message: '',
-        data: {
-          data: [],
-          pagination: {
-            page: searchCriteria.page || 1,
-            limit: searchCriteria.limit || 20,
-            total: 0,
-            totalPages: 0,
-            hasNext: false,
-            hasPrevious: false
-          },
-          searchSummary
+        message: 'Search completed successfully',
+        availableUsers: [],
+        data: [], // Alias for backward compatibility
+        pagination: {
+          page: searchCriteria.page || 1,
+          limit: searchCriteria.limit || 20,
+          total: 0,
+          totalPages: 0
         }
       };
 
@@ -391,42 +427,41 @@ export class UserAvailabilityService implements IUserAvailabilityService {
 
     try {
       // Calculate date range if not provided
-      const endDate = analyticsRequest.endDate || new Date().toISOString().split('T')[0];
-      const startDate = analyticsRequest.startDate || 
+      const endDate = analyticsRequest.endDate?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0];
+      const startDate = analyticsRequest.startDate?.toISOString().split('T')[0] || 
         new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
       // Get statistics from repository
       const stats = await this.repository.getUserAvailabilityStats(userId, startDate, endDate);
 
       // Build comprehensive analytics response
-      const analyticsData = {
-        summary: {
-          totalSlots: stats.totalSlots,
-          bookedSlots: stats.bookedSlots,
-          availableSlots: stats.totalSlots - stats.bookedSlots,
-          completedMeetings: stats.completedSlots,
-          cancelledMeetings: stats.cancelledSlots,
-          averageBookingRate: stats.bookingRate,
-          totalHoursAvailable: stats.totalHours,
-          totalHoursBooked: stats.bookedHours
-        },
-        trends: [] as any[], // TODO: Implement trend analysis
-        popularTimeSlots: [] as any[], // TODO: Implement time slot analysis
-        popularActivities: [] as any[], // TODO: Implement activity analysis
-        locationStats: {
-          onlineBookings: 0, // TODO: Calculate from data
-          offlineBookings: 0,
-          averageDistance: 0
-        }
+      const analyticsData: AvailabilityAnalytics = {
+        totalSlotsCreated: stats.totalSlots,
+        totalBookings: stats.bookedSlots,
+        completedBookings: stats.completedSlots,
+        cancelledBookings: stats.cancelledSlots,
+        bookingRate: stats.bookingRate,
+        completionRate: stats.completedSlots > 0 ? (stats.completedSlots / stats.bookedSlots) * 100 : 0,
+        cancellationRate: stats.cancelledSlots > 0 ? (stats.cancelledSlots / stats.totalSlots) * 100 : 0,
+        averageRating: 0, // TODO: Calculate from ratings
+        trends: [], // TODO: Implement trend analysis
+        activityStats: [], // TODO: Implement activity analysis
+        timeSlotStats: [], // TODO: Implement time slot analysis
+        totalSlots: stats.totalSlots,
+        activeSlots: stats.activeSlots,
+        expiredSlots: 0, // TODO: Calculate expired slots
+        utilizationRate: stats.bookingRate,
+        dateTypeStats: [], // TODO: Implement date type analysis
+        locationStats: [] // TODO: Implement location analysis
       };
 
       const response: AvailabilityAnalyticsResponse = {
         success: true,
         data: analyticsData,
-         message: '',
+        message: 'Analytics data retrieved successfully'
       };
 
-      this.logger.debug('Availability analytics calculated', { userId, summary: analyticsData.summary });
+      this.logger.debug('Availability analytics calculated', { userId, totalSlots: analyticsData.totalSlots });
       return response;
     } catch (error) {
       this.logger.error('Failed to get availability analytics', { userId, error });
@@ -452,19 +487,15 @@ export class UserAvailabilityService implements IUserAvailabilityService {
 
       const response: CalendarViewResponse = {
         success: true,
-        data: {
-          month,
-          days: calendarData.map(day => ({
-            ...day,
-            slots: [] // TODO: Include actual slot data if needed
-          })),
-          summary: {
-            totalDaysWithSlots,
-            totalSlots,
-            bookingRate
-          }
-        },
-         message: '',
+        calendarDays: calendarData.map(day => ({
+          date: day.date,
+          slots: [], // TODO: Include actual slot data
+          bookings: [], // TODO: Include actual booking data
+          isAvailable: day.hasAvailability,
+          totalSlots: day.availableSlots + day.bookedSlots,
+          bookedSlots: day.bookedSlots
+        })),
+        message: 'Calendar view retrieved successfully'
       };
 
       this.logger.debug('Calendar view generated', { userId, month, totalDaysWithSlots });
@@ -514,11 +545,15 @@ export class UserAvailabilityService implements IUserAvailabilityService {
 
       const response: TimeSuggestionsResponse = {
         success: true,
-        data: {
-          suggestedSlots,
-          optimizedSchedule
-        },
-         message: '',
+        suggestions: suggestedSlots.map(slot => ({
+          date: slot.date,
+          startTime: slot.startTime,
+          endTime: slot.endTime,
+          score: slot.confidence * 100, // Convert confidence to score
+          reason: slot.reason,
+          isPeakTime: false // Default value
+        })),
+        message: 'Time suggestions generated successfully'
       };
 
       this.logger.debug('Time suggestions generated', { userId, suggestionsCount: suggestedSlots.length });
@@ -557,19 +592,19 @@ export class UserAvailabilityService implements IUserAvailabilityService {
 
         // Check minimum duration
         const duration = this.calculateDurationMinutes(availabilityData.startTime, availabilityData.endTime);
-        if (duration < AvailabilityValidationRules.timeSlot.minDurationMinutes) {
+        if (duration < DEFAULT_VALIDATION_RULES.timeSlot.minDuration) {
           businessRuleViolations.push({
             rule: 'min_duration',
-            description: `Minimum duration is ${AvailabilityValidationRules.timeSlot.minDurationMinutes} minutes`,
+            description: `Minimum duration is ${DEFAULT_VALIDATION_RULES.timeSlot.minDuration} minutes`,
             severity: 'error'
           });
         }
 
         // Check maximum duration
-        if (duration > AvailabilityValidationRules.timeSlot.maxDurationMinutes) {
+        if (duration > DEFAULT_VALIDATION_RULES.timeSlot.maxDuration) {
           businessRuleViolations.push({
             rule: 'max_duration',
-            description: `Maximum duration is ${AvailabilityValidationRules.timeSlot.maxDurationMinutes} minutes`,
+            description: `Maximum duration is ${DEFAULT_VALIDATION_RULES.timeSlot.maxDuration} minutes`,
             severity: 'error'
           });
         }
@@ -579,10 +614,10 @@ export class UserAvailabilityService implements IUserAvailabilityService {
         const now = new Date();
         const daysDiff = Math.ceil((slotDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
         
-        if (daysDiff > AvailabilityValidationRules.timeSlot.maxFutureDays) {
+        if (daysDiff > DEFAULT_VALIDATION_RULES.timeSlot.maxFutureDays) {
           businessRuleViolations.push({
             rule: 'max_future_days',
-            description: `Cannot create availability more than ${AvailabilityValidationRules.timeSlot.maxFutureDays} days in advance`,
+            description: `Cannot create availability more than ${DEFAULT_VALIDATION_RULES.timeSlot.maxFutureDays} days in advance`,
             severity: 'error'
           });
         }
@@ -590,7 +625,7 @@ export class UserAvailabilityService implements IUserAvailabilityService {
         // 2. Check for conflicts
         const conflictingSlots = await this.repository.findConflictingSlots(
           userId,
-          availabilityData.availabilityDate,
+          availabilityData.availabilityDate?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
           availabilityData.startTime,
           availabilityData.endTime,
           excludeId
@@ -598,15 +633,13 @@ export class UserAvailabilityService implements IUserAvailabilityService {
 
         for (const conflictSlot of conflictingSlots) {
           conflicts.push({
-            conflictingSlotId: conflictSlot.id,
-            conflictType: 'overlap',
+            conflictingSlotId: conflictSlot.id.toString(),
+            conflictReason: 'overlap',
             conflictDescription: `Overlaps with existing slot from ${conflictSlot.startTime} to ${conflictSlot.endTime}`,
-            suggestedAlternatives: [
-              {
-                startTime: conflictSlot.endTime,
-                endTime: this.addMinutesToTime(conflictSlot.endTime, duration)
-              }
-            ]
+            conflictingSlots: [], // TODO: Convert entity to AvailabilitySlot
+            requestedSlot: 'startTime' in availabilityData && 'recurrenceType' in availabilityData 
+              ? availabilityData as CreateAvailabilityRequest 
+              : undefined
           });
         }
       }
@@ -642,7 +675,7 @@ export class UserAvailabilityService implements IUserAvailabilityService {
 
     try {
       const results: SlotCreationResult[] = [];
-      const startDate = new Date(baseSlot.availabilityDate);
+      const startDate = baseSlot.availabilityDate ? new Date(baseSlot.availabilityDate) : new Date();
       const endDateTime = new Date(endDate);
       
       let currentDate = new Date(startDate);
@@ -657,7 +690,7 @@ export class UserAvailabilityService implements IUserAvailabilityService {
 
         const slotData: CreateAvailabilityRequest = {
           ...baseSlot,
-          availabilityDate: currentDate.toISOString().split('T')[0],
+          availabilityDate: currentDate,
           isRecurring: false, // Prevent infinite recursion
         };
 
@@ -668,7 +701,7 @@ export class UserAvailabilityService implements IUserAvailabilityService {
           if (!validation.isValid && !options.skipConflicts) {
             results.push({
               success: false,
-              conflicts: validation.conflicts,
+              conflict: validation.conflicts[0], // Use first conflict
               error: 'Validation failed'
             });
           } else if (validation.isValid) {
@@ -678,7 +711,7 @@ export class UserAvailabilityService implements IUserAvailabilityService {
             
             results.push({
               success: true,
-              slot: response
+              slot: response.data || undefined
             });
           }
         } catch (error) {
@@ -756,15 +789,11 @@ export class UserAvailabilityService implements IUserAvailabilityService {
       );
 
       const conflicts: AvailabilityConflict[] = conflictingSlots.map(slot => ({
-        conflictingSlotId: slot.id,
-        conflictType: 'overlap',
+        conflictingSlotId: slot.id.toString(),
+        conflictReason: 'overlap',
         conflictDescription: `Overlaps with existing slot from ${slot.startTime} to ${slot.endTime}`,
-        suggestedAlternatives: [
-          {
-            startTime: slot.endTime,
-            endTime: this.addMinutesToTime(slot.endTime, this.calculateDurationMinutes(startTime, endTime))
-          }
-        ]
+        conflictingSlots: [], // TODO: Convert entity to AvailabilitySlot
+        requestedSlot: undefined
       }));
 
       this.logger.debug('Conflict check completed', { userId, conflictsFound: conflicts.length });
@@ -959,10 +988,10 @@ export class UserAvailabilityService implements IUserAvailabilityService {
     endDate?: string
   ): Promise<any> {
     const totalSlots = availabilities.length;
-    const bookedSlots = availabilities.filter(a => a.isBooked).length;
+    const bookedSlots = availabilities.filter(a => a.data && a.data.isBooked).length;
     const availableSlots = totalSlots - bookedSlots;
     const upcomingSlots = availabilities.filter(a => 
-      new Date(a.availabilityDate) > new Date()
+      a.data && a.data.availabilityDate && new Date(a.data.availabilityDate) > new Date()
     ).length;
 
     return {
@@ -995,5 +1024,24 @@ export class UserAvailabilityService implements IUserAvailabilityService {
     const date = new Date(`2000-01-01T${time}`);
     date.setMinutes(date.getMinutes() + minutes);
     return date.toTimeString().slice(0, 5);
+  }
+
+  /**
+   * Map entity cancellation policy to proto enum
+   * @private
+   */
+  private mapCancellationPolicy(policy: string): AvailabilityCancellationPolicy {
+    switch (policy) {
+      case '24_hours':
+        return AvailabilityCancellationPolicy.AVAILABILITY_CANCELLATION_POLICY_TWENTY_FOUR_HOURS;
+      case '48_hours':
+        return AvailabilityCancellationPolicy.AVAILABILITY_CANCELLATION_POLICY_FORTY_EIGHT_HOURS;
+      case 'flexible':
+        return AvailabilityCancellationPolicy.AVAILABILITY_CANCELLATION_POLICY_FLEXIBLE;
+      case 'strict':
+        return AvailabilityCancellationPolicy.AVAILABILITY_CANCELLATION_POLICY_STRICT;
+      default:
+        return AvailabilityCancellationPolicy.AVAILABILITY_CANCELLATION_POLICY_UNSPECIFIED;
+    }
   }
 }

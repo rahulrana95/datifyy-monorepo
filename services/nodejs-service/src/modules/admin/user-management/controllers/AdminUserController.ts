@@ -38,7 +38,7 @@ export class AdminUserController {
 
       // Extract and validate query parameters
       const filters: GetUsersRequestDto = {
-        page: req.query.page ? parseInt(req.query.page as string) : undefined,
+        page: req.query.page ? parseInt(req.query.page as string) : 0,
         limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
         sortBy: req.query.sortBy as any,
         sortOrder: req.query.sortOrder as any,

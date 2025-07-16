@@ -9,11 +9,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { 
   GetDashboardOverviewRequest,
-  GetMetricTrendsRequest,
-  GetAdminActivityRequest,
-  DASHBOARD_REFRESH_INTERVALS,
-  DASHBOARD_METRIC_TYPES,
-} from '@datifyy/shared-types';
+  DashboardMetricType,
+} from '../../../proto-types/admin/dashboard';
 
 // =============================================================================
 // VALIDATION HELPERS
@@ -202,7 +199,7 @@ function validateMetricTrendsRequest(req: Request): void {
 
   // Validate required metricType
   if (query.metricType) {
-    const validMetricTypes = Object.values(DASHBOARD_METRIC_TYPES) as string[];
+    const validMetricTypes = Object.values(DashboardMetricType) as string[];
     validateEnum(query.metricType, validMetricTypes, 'metricType');
   }
 

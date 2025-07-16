@@ -9,14 +9,15 @@
     "libs/*"
   ],
   "scripts": {
-    "clean:shared": "yarn workspace @datifyy/shared-types clean && yarn workspace @datifyy/shared-utils clean && yarn workspace @datifyy/shared-validation clean",
-    "build:shared-types": "yarn workspace @datifyy/shared-types build",
+    "clean:shared": "yarn workspace @datifyy/shared-utils clean",
     "build:shared-utils": "yarn workspace @datifyy/shared-utils build",
-    "build:shared-validation": "yarn workspace @datifyy/shared-validation build",
-    "build:shared": "yarn build:shared-types && yarn build:shared-utils && yarn build:shared-validation",
+    "build:shared": "yarn build:shared-constants",
     "build:all": "yarn build:shared && yarn workspace frontend build && yarn workspace nodejs-service build",
-    "dev:shared": "yarn workspace @datifyy/shared-types dev & yarn workspace @datifyy/shared-utils dev & yarn workspace @datifyy/shared-validation dev",
+    "vercel:install": "yarn install",
+    "vercel:build": "yarn install && yarn workspace @datifyy/shared-utils build && yarn workspace frontend build",
+    "dev:shared": "yarn workspace @datifyy/shared-utils dev",
     "type-check": "yarn workspaces run type-check",
+    "generate-proto-types": "node generate-proto-types",
     "start:frontend": "yarn workspace frontend start",
     "start:backend": "yarn workspace nodejs-service dev"
   },
@@ -33,7 +34,9 @@
   "devDependencies": {
     "@nx/workspace": "20.0.6",
     "@types/multer": "^2.0.0",
+    "glob": "^11.0.3",
     "nx": "20.0.6",
+    "ts-proto": "^2.7.5",
     "typescript": "^4.9.5"
   },
   "resolutions": {

@@ -165,9 +165,8 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onLogin }) => {
 
         try {
             const response = await authService.resetPassword({
-                email: email.trim(),
-                newPassword,
-                resetCode: code
+                token: code,
+                newPassword
             });
 
             if (response.error) {

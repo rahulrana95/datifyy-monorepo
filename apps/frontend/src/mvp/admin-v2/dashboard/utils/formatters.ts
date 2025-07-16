@@ -1,8 +1,8 @@
 // apps/frontend/src/mvp/admin-v2/dashboard/utils/formatters.ts
 
 import { formatCurrency, formatNumber, formatPercentage } from "@datifyy/shared-utils";
-import type { TrendDirection } from "@datifyy/shared-types";
 import type { ValueFormatter, DateFormatter, PercentageFormatter } from "../types";
+import { TrendDirection } from "../../../../proto-types";
 
 /**
  * Format metric values for display in dashboard cards

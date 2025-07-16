@@ -4,13 +4,12 @@
  */
 
 export interface UsersLoginType {
-  primary: true;
   uuid: string;
   email: string;
   password: string;
 }
 
 // Utility types for UsersLogin
-export type CreateUsersLoginInput = Omit<UsersLoginType, 'id' | 'createdAt' | 'updatedAt'>;
-export type UpdateUsersLoginInput = Partial<Omit<UsersLoginType, 'id' | 'createdAt' | 'updatedAt'>>;
-export type UsersLoginId = UsersLoginType['id'];
+export type CreateUsersLoginInput = UsersLoginType;
+export type UpdateUsersLoginInput = Partial<UsersLoginType>;
+export type UsersLoginId = UsersLoginType['uuid'];

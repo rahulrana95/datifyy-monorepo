@@ -19,7 +19,6 @@
     "typescript": "^5.8.3"
   },
   "peerDependencies": {
-    "@datifyy/shared-types": "1.0.0"
   },
   "files": [
     "dist"

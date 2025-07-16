@@ -1,4 +1,5 @@
 import request from 'supertest';
+// @ts-ignore
 import app from '.';
 
 describe('GET /api/chat/next-available-user/:eventId/:email', () => {

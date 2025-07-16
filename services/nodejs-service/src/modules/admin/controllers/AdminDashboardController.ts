@@ -13,18 +13,39 @@ import { DataSource } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { 
-  AdminDashboardOverviewResponse,
+  DashboardOverviewResponse,
   GetDashboardOverviewRequest,
-  GetMetricTrendsRequest,
-  GetAdminActivityRequest,
   DashboardAlert,
   UserMetrics,
   DateMetrics,
   RevenueMetrics,
-  SystemHealthStatus
-} from '@datifyy/shared-types';
+  AlertSeverityLevel,
+  DashboardOverview
+} from '../../../proto-types/admin/dashboard';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { AuthenticatedAdminRequest } from '../../../infrastructure/middleware/authentication';
+
+/**
+ * System Health Status Interface
+ */
+interface SystemHealthStatus {
+  overall: string;
+  services: {
+    database: { status: string; uptime: number };
+    redis: { status: string; uptime: number };
+    emailService: { status: string; uptime: number };
+    storageService: { status: string; uptime: number };
+    paymentGateway: { status: string; uptime: number };
+  };
+  performance?: {
+    responseTime: number;
+    memoryUsage: number;
+    cpuUsage: number;
+    diskUsage: number;
+    activeConnections?: number;
+  };
+  issues?: Array<{ service: string; issue: string; severity: string }>;
+}
 
 /**
  * Standard API response format
@@ -84,11 +105,11 @@ export class AdminDashboardController {
       } = req.query;
 
       // TODO: Implement dashboard service to fetch actual data
-      const dashboardData: AdminDashboardOverviewResponse = {
+      const dashboardData: DashboardOverview = {
         userMetrics: await this.getUserMetricsData(timeframe as string),
         dateMetrics: await this.getDateMetricsData(timeframe as string),
         revenueMetrics: await this.getRevenueMetricsData(timeframe as string),
-        activityMetrics: await this.getActivityMetricsData(),
+        // activityMetrics: await this.getActivityMetricsData(),
         alerts: includeAlerts ? await this.getAlertsData() : [],
         trends: includeTrends ? await this.getTrendsData(timeframe as string) : { 
           userGrowth: [], 
@@ -96,7 +117,7 @@ export class AdminDashboardController {
           dateActivity: [], 
           conversionRates: [] 
         },
-        lastUpdated: new Date().toISOString()
+        generatedAt: new Date().toISOString(),
       };
 
       const processingTime = Date.now() - startTime;
@@ -108,10 +129,16 @@ export class AdminDashboardController {
         alertCount: dashboardData.alerts.length
       });
 
-      const response: ApiResponse<AdminDashboardOverviewResponse> = {
+      const dashboardResponse: DashboardOverviewResponse = {
         success: true,
         message: 'Dashboard overview retrieved successfully',
-        data: dashboardData,
+        ...dashboardData
+      };
+
+      const response: ApiResponse<DashboardOverviewResponse> = {
+        success: true,
+        message: 'Dashboard overview retrieved successfully',
+        data: dashboardResponse,
         metadata: {
           requestId,
           timestamp: new Date().toISOString(),
@@ -1055,7 +1082,7 @@ export class AdminDashboardController {
       });
 
       const alerts = await this.getAlertsData();
-      const criticalAlerts = alerts.filter(alert => alert.severity === 'critical');
+      const criticalAlerts = alerts.filter(alert => alert.severity === AlertSeverityLevel.ALERT_SEVERITY_LEVEL_CRITICAL);
 
       const processingTime = Date.now() - startTime;
 
@@ -1107,13 +1134,13 @@ export class AdminDashboardController {
           storageService: { status: 'healthy', uptime: 99.7 },
           paymentGateway: { status: 'healthy', uptime: 99.6 }
         },
-        performance: {
-          responseTime: 150,
-          memoryUsage: 65,
-          cpuUsage: 45,
-          activeConnections: 120
-        },
-        lastChecked: new Date().toISOString()
+        // performance: {
+        //   responseTime: 150,
+        //   memoryUsage: 65,
+        //   cpuUsage: 45,
+        //   activeConnections: 120
+        // },
+        // lastChecked: new Date().toISOString()
       };
 
       const processingTime = Date.now() - startTime;
@@ -1499,29 +1526,26 @@ export class AdminDashboardController {
   private async getUserMetricsData(timeframe: string): Promise<UserMetrics> {
     // TODO: Implement actual database queries
     return {
-      totalUsers: 0,
-      activeUsersToday: 0,
-      newUsersThisWeek: 0,
-      verifiedUsers: 0,
-      usersWithAvailability: 0,
-      usersByGender: { male: 0, female: 0, other: 0 },
-      usersByCity: [],
-      growthRate: 0
+        totalUsers: 0,
+  activeUsers: 0,
+  newSignupsToday: 0,
+  newSignupsThisWeek: 0,
+  verifiedUsers: 0,
+  userGrowthRate: 0,
+  premiumUsers: 0
     };
   }
 
   private async getDateMetricsData(timeframe: string): Promise<DateMetrics> {
     // TODO: Implement actual database queries
     return {
-      totalDatesSetup: 0,
-      datesScheduledThisWeek: 0,
-      datesCompletedThisWeek: 0,
-      datesCancelledThisWeek: 0,
-      upcomingDatesNextWeek: 0,
-      datesByMode: { online: 0, offline: 0 },
-      datesByCity: [],
-      averageSuccessRate: 0,
-      pendingFeedback: 0
+        totalDatesCurated: 0,
+  datesToday: 0,
+  datesThisWeek: 0,
+  successfulDates: 0,
+  cancelledDates: 0,
+  dateSuccessRate: 0,
+  averageDateRating: 0,
     };
   }
 
@@ -1532,16 +1556,7 @@ export class AdminDashboardController {
       revenueToday: 0,
       revenueThisWeek: 0,
       revenueThisMonth: 0,
-      revenueByType: {
-        onlineDates: 0,
-        offlineDates: 0,
-        premiumFeatures: 0,
-        events: 0
-      },
-      activePayingUsers: 0,
-      averageTransactionValue: 0,
-      refundsThisWeek: 0,
-      topRevenueCity: ''
+      averageRevenuePerUser: 0, revenueGrowthRate: 0, successfulTransactions:0, failedTransactions:0
     };
   }
 

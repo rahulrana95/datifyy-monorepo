@@ -42,6 +42,11 @@ const PreferencesHeader: React.FC<PreferencesHeaderProps> = ({
                     title: 'Values & Beliefs',
                     description: 'Religion, family plans, and core values',
                 };
+            default:
+                return {
+                    title: 'Partner Preferences',
+                    description: 'Find your perfect match',
+                };
         }
     };
 

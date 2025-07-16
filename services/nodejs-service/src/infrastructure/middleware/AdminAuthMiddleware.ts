@@ -1,22 +1,22 @@
 /**
  * Admin Auth Middleware - JWT Validation & Context
- * 
+ *
  * Validates JWT tokens and injects admin context into requests.
  * Provides role-based access control and session management.
- * 
+ *
  * @author Datifyy Engineering Team
  * @since 1.0.0
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { IAdminAuthService } from '../../modules/admin/services/IAdminAuthService';
+import { Request, Response, NextFunction } from "express";
+import { IAdminAuthService } from "../../modules/admin/services/IAdminAuthService";
+import { Logger } from "../logging/Logger";
+import { AuthenticationError, AuthorizationError } from "../errors/AppErrors";
 import {
+  AdminAccountStatus,
   AdminPermission,
   AdminPermissionLevel,
-  AdminAccountStatus
-} from '@datifyy/shared-types';
-import { Logger } from '../logging/Logger';
-import { AuthenticationError, AuthorizationError } from '../errors/AppErrors';
+} from "../../proto-types";
 
 /**
  * Enhanced request interface with admin context
@@ -57,7 +57,9 @@ interface AdminAuthOptions {
   /** Required any of these permissions (OR operation) */
   requiredAnyPermissions?: AdminPermission[];
   /** Custom permission check function */
-  customPermissionCheck?: (admin: AuthenticatedAdminRequest['admin']) => boolean;
+  customPermissionCheck?: (
+    admin: AuthenticatedAdminRequest["admin"]
+  ) => boolean;
   /** Skip session validation */
   skipSessionValidation?: boolean;
   /** Allow inactive admins (for logout, profile update) */
@@ -66,10 +68,10 @@ interface AdminAuthOptions {
 
 /**
  * Admin Authentication Middleware Factory
- * 
+ *
  * Creates authentication middleware with configurable options for different
  * security requirements and permission levels.
- * 
+ *
  * @param adminAuthService Admin authentication service
  * @param options Authentication configuration options
  * @returns Express middleware function
@@ -80,16 +82,20 @@ export function adminAuthMiddleware(
 ) {
   const logger = Logger.getInstance();
 
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     const startTime = Date.now();
     const requestId = (req as any).requestId || `auth_${Date.now()}`;
 
     try {
-      logger.debug('Admin authentication middleware started', {
+      logger.debug("Admin authentication middleware started", {
         requestId,
         path: req.path,
         method: req.method,
-        options
+        options,
       });
 
       // Extract token from Authorization header or cookie
@@ -97,52 +103,57 @@ export function adminAuthMiddleware(
 
       // Handle optional authentication
       if (!token && options.optional) {
-        logger.debug('No token provided for optional auth endpoint', { requestId });
+        logger.debug("No token provided for optional auth endpoint", {
+          requestId,
+        });
         return next();
       }
 
       // Require token for protected endpoints
       if (!token) {
-        throw new AuthenticationError('Access token is required');
+        throw new AuthenticationError("Access token is required");
       }
 
       // Validate token and get admin context
       const validationResult = await adminAuthService.validateToken(token);
 
       if (!validationResult.isValid) {
-        logger.warn('Invalid token provided', {
+        logger.warn("Invalid token provided", {
           requestId,
           reason: validationResult.invalidReason,
-          path: req.path
+          path: req.path,
         });
 
         throw new AuthenticationError(
-          validationResult.invalidReason || 'Invalid or expired token'
+          validationResult.invalidReason || "Invalid or expired token"
         );
       }
 
       const { admin: adminProfile, sessionId } = validationResult;
 
       if (!adminProfile) {
-        throw new AuthenticationError('Admin profile not found');
+        throw new AuthenticationError("Admin profile not found");
       }
 
       // Check admin account status
       if (!options.allowInactive && !adminProfile.isActive) {
-        logger.warn('Inactive admin attempted access', {
+        logger.warn("Inactive admin attempted access", {
           requestId,
           adminId: adminProfile.id,
-          accountStatus: adminProfile.accountStatus
+          accountStatus: adminProfile.accountStatus,
         });
 
-        throw new AuthenticationError('Admin account is not active');
+        throw new AuthenticationError("Admin account is not active");
       }
 
-      if (adminProfile.accountStatus !== AdminAccountStatus.ACTIVE && !options.allowInactive) {
-        logger.warn('Non-active admin attempted access', {
+      if (
+        adminProfile.accountStatus !== AdminAccountStatus.ADMIN_ACTIVE &&
+        !options.allowInactive
+      ) {
+        logger.warn("Non-active admin attempted access", {
           requestId,
           adminId: adminProfile.id,
-          accountStatus: adminProfile.accountStatus
+          accountStatus: adminProfile.accountStatus,
         });
 
         throw new AuthenticationError(
@@ -160,17 +171,17 @@ export function adminAuthMiddleware(
       (req as AuthenticatedAdminRequest).admin = adminContext;
 
       // Update admin activity (async, don't wait)
-      adminAuthService.updateAdminActivity(adminProfile.id).catch(error => {
-        logger.error('Failed to update admin activity', {
+      adminAuthService.updateAdminActivity(adminProfile.id).catch((error) => {
+        logger.error("Failed to update admin activity", {
           requestId,
           adminId: adminProfile.id,
-          error
+          error,
         });
       });
 
       // Log successful authentication
       const authTime = Date.now() - startTime;
-      logger.info('Admin authenticated successfully', {
+      logger.info("Admin authenticated successfully", {
         requestId,
         adminId: adminProfile.id,
         email: adminProfile.email,
@@ -178,27 +189,26 @@ export function adminAuthMiddleware(
         sessionId,
         authTime,
         path: req.path,
-        method: req.method
+        method: req.method,
       });
 
       next();
-
-    } catch (error:any) {
+    } catch (error: any) {
       const authTime = Date.now() - startTime;
-      
-      logger.error('Admin authentication failed', {
+
+      logger.error("Admin authentication failed", {
         requestId,
         error: error.message,
         authTime,
         path: req.path,
         method: req.method,
         ip: getClientIpAddress(req),
-        userAgent: req.headers['user-agent']
+        userAgent: req.headers["user-agent"],
       });
 
       // Set authentication headers for client
-      res.setHeader('WWW-Authenticate', 'Bearer realm="Admin API"');
-      
+      res.setHeader("WWW-Authenticate", 'Bearer realm="Admin API"');
+
       next(error);
     }
   };
@@ -206,7 +216,7 @@ export function adminAuthMiddleware(
 
 /**
  * Permission-based middleware factory
- * 
+ *
  * Creates middleware that requires specific permissions.
  * Shorthand for common permission requirements.
  */
@@ -215,13 +225,13 @@ export function requireAdminPermission(
   ...permissions: AdminPermission[]
 ) {
   return adminAuthMiddleware(adminAuthService, {
-    requiredPermissions: permissions
+    requiredPermissions: permissions,
   });
 }
 
 /**
  * Role-based middleware factory
- * 
+ *
  * Creates middleware that requires minimum permission level.
  */
 export function requireAdminRole(
@@ -229,42 +239,42 @@ export function requireAdminRole(
   minimumLevel: AdminPermissionLevel
 ) {
   return adminAuthMiddleware(adminAuthService, {
-    requiredPermissionLevel: minimumLevel
+    requiredPermissionLevel: minimumLevel,
   });
 }
 
 /**
  * Super admin middleware factory
- * 
+ *
  * Creates middleware that requires super admin privileges.
  */
 export function requireSuperAdmin(adminAuthService: IAdminAuthService) {
   return adminAuthMiddleware(adminAuthService, {
-    requiredPermissionLevel: AdminPermissionLevel.SUPER_ADMIN
+    requiredPermissionLevel: AdminPermissionLevel.SUPER_ADMIN,
   });
 }
 
 /**
  * Owner-only middleware factory
- * 
+ *
  * Creates middleware that requires owner privileges.
  */
 export function requireOwner(adminAuthService: IAdminAuthService) {
   return adminAuthMiddleware(adminAuthService, {
-    requiredPermissionLevel: AdminPermissionLevel.OWNER
+    requiredPermissionLevel: AdminPermissionLevel.OWNER,
   });
 }
 
 /**
  * Optional admin authentication middleware
- * 
+ *
  * Attaches admin context if token is provided, but doesn't require it.
  * Useful for endpoints that enhance functionality with admin context.
  */
 export function optionalAdminAuth(adminAuthService: IAdminAuthService) {
   return adminAuthMiddleware(adminAuthService, {
     optional: true,
-    allowInactive: true
+    allowInactive: true,
   });
 }
 
@@ -278,12 +288,12 @@ export function optionalAdminAuth(adminAuthService: IAdminAuthService) {
 function extractTokenFromRequest(req: Request): string | null {
   // Check Authorization header first (Bearer token)
   const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Bearer ')) {
+  if (authHeader && authHeader.startsWith("Bearer ")) {
     return authHeader.slice(7); // Remove 'Bearer ' prefix
   }
 
   // Check custom header
-  const customHeader = req.headers['authorization'] as string;
+  const customHeader = req.headers["authorization"] as string;
   if (customHeader) {
     return customHeader;
   }
@@ -309,7 +319,7 @@ function extractTokenFromRequest(req: Request): string | null {
 function createAdminContext(
   adminProfile: any,
   sessionId: string
-): AuthenticatedAdminRequest['admin'] {
+): AuthenticatedAdminRequest["admin"] {
   return {
     id: adminProfile.id,
     email: adminProfile.email,
@@ -329,13 +339,13 @@ function createAdminContext(
     },
 
     hasAnyPermission: (permissions: AdminPermission[]): boolean => {
-      return permissions.some(permission => 
+      return permissions.some((permission) =>
         adminProfile.permissions.includes(permission)
       );
     },
 
     hasAllPermissions: (permissions: AdminPermission[]): boolean => {
-      return permissions.every(permission => 
+      return permissions.every((permission) =>
         adminProfile.permissions.includes(permission)
       );
     },
@@ -346,14 +356,16 @@ function createAdminContext(
         AdminPermissionLevel.MODERATOR,
         AdminPermissionLevel.ADMIN,
         AdminPermissionLevel.SUPER_ADMIN,
-        AdminPermissionLevel.OWNER
+        AdminPermissionLevel.OWNER,
       ];
 
-      const currentLevelIndex = levelHierarchy.indexOf(adminProfile.permissionLevel);
+      const currentLevelIndex = levelHierarchy.indexOf(
+        adminProfile.permissionLevel
+      );
       const requiredLevelIndex = levelHierarchy.indexOf(level);
 
       return currentLevelIndex >= requiredLevelIndex;
-    }
+    },
   };
 }
 
@@ -361,7 +373,7 @@ function createAdminContext(
  * Perform permission checks based on options
  */
 async function performPermissionChecks(
-  adminContext: AuthenticatedAdminRequest['admin'],
+  adminContext: AuthenticatedAdminRequest["admin"],
   options: AdminAuthOptions,
   logger: Logger,
   requestId: string
@@ -369,11 +381,11 @@ async function performPermissionChecks(
   // Check required permission level
   if (options.requiredPermissionLevel) {
     if (!adminContext.hasRoleLevel(options.requiredPermissionLevel)) {
-      logger.warn('Admin lacks required permission level', {
+      logger.warn("Admin lacks required permission level", {
         requestId,
         adminId: adminContext.id,
         currentLevel: adminContext.permissionLevel,
-        requiredLevel: options.requiredPermissionLevel
+        requiredLevel: options.requiredPermissionLevel,
       });
 
       throw new AuthorizationError(
@@ -386,33 +398,38 @@ async function performPermissionChecks(
   if (options.requiredPermissions && options.requiredPermissions.length > 0) {
     if (!adminContext.hasAllPermissions(options.requiredPermissions)) {
       const missingPermissions = options.requiredPermissions.filter(
-        permission => !adminContext.hasPermission(permission)
+        (permission) => !adminContext.hasPermission(permission)
       );
 
-      logger.warn('Admin lacks required permissions', {
+      logger.warn("Admin lacks required permissions", {
         requestId,
         adminId: adminContext.id,
         requiredPermissions: options.requiredPermissions,
-        missingPermissions
+        missingPermissions,
       });
 
       throw new AuthorizationError(
-        `Required permissions: ${missingPermissions.join(', ')}`
+        `Required permissions: ${missingPermissions.join(", ")}`
       );
     }
   }
 
   // Check required any permissions (OR operation)
-  if (options.requiredAnyPermissions && options.requiredAnyPermissions.length > 0) {
+  if (
+    options.requiredAnyPermissions &&
+    options.requiredAnyPermissions.length > 0
+  ) {
     if (!adminContext.hasAnyPermission(options.requiredAnyPermissions)) {
-      logger.warn('Admin lacks any required permissions', {
+      logger.warn("Admin lacks any required permissions", {
         requestId,
         adminId: adminContext.id,
-        requiredAnyPermissions: options.requiredAnyPermissions
+        requiredAnyPermissions: options.requiredAnyPermissions,
       });
 
       throw new AuthorizationError(
-        `At least one of these permissions required: ${options.requiredAnyPermissions.join(', ')}`
+        `At least one of these permissions required: ${options.requiredAnyPermissions.join(
+          ", "
+        )}`
       );
     }
   }
@@ -420,12 +437,12 @@ async function performPermissionChecks(
   // Custom permission check
   if (options.customPermissionCheck) {
     if (!options.customPermissionCheck(adminContext)) {
-      logger.warn('Admin failed custom permission check', {
+      logger.warn("Admin failed custom permission check", {
         requestId,
-        adminId: adminContext.id
+        adminId: adminContext.id,
       });
 
-      throw new AuthorizationError('Access denied by custom permission check');
+      throw new AuthorizationError("Access denied by custom permission check");
     }
   }
 }
@@ -435,12 +452,12 @@ async function performPermissionChecks(
  */
 function getClientIpAddress(req: Request): string {
   return (
-    req.headers['cf-connecting-ip'] as string ||
-    req.headers['x-forwarded-for'] as string ||
-    req.headers['x-real-ip'] as string ||
+    (req.headers["cf-connecting-ip"] as string) ||
+    (req.headers["x-forwarded-for"] as string) ||
+    (req.headers["x-real-ip"] as string) ||
     req.connection.remoteAddress ||
     req.socket.remoteAddress ||
-    '127.0.0.1'
+    "127.0.0.1"
   );
 }
 
@@ -484,7 +501,7 @@ export function auditAdminAction(actionType: string, description?: string) {
     const logger = Logger.getInstance();
 
     if (isAuthenticatedAdminRequest(req)) {
-      logger.info('Admin action audit', {
+      logger.info("Admin action audit", {
         actionType,
         description: description || `${req.method} ${req.path}`,
         adminId: req.admin.id,
@@ -492,8 +509,8 @@ export function auditAdminAction(actionType: string, description?: string) {
         sessionId: req.admin.sessionId,
         requestId: (req as any).requestId,
         ipAddress: getClientIpAddress(req),
-        userAgent: req.headers['user-agent'],
-        timestamp: new Date().toISOString()
+        userAgent: req.headers["user-agent"],
+        timestamp: new Date().toISOString(),
       });
     }
 

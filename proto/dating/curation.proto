@@ -1,0 +1,275 @@
+syntax = "proto3";
+
+package dating.curation;
+
+import "common/base.proto";
+import "dating/common.proto";
+
+// Core curated date message
+message CuratedDate {
+  int32 id = 1;
+  int32 user1_id = 2;
+  int32 user2_id = 3;
+  string date_time = 4; // ISO string
+  int32 duration_minutes = 5;
+  dating.common.DateMode mode = 6;
+  
+  // Location details (for offline dates)
+  string location_name = 7;
+  string location_address = 8;
+  dating.common.LocationCoordinates location_coordinates = 9;
+  string location_google_maps_url = 10;
+  
+  // Online meeting details
+  string meeting_link = 11;
+  string meeting_id = 12;
+  string meeting_password = 13;
+  
+  // Status and tracking
+  dating.common.CuratedDateStatus status = 14;
+  string date_series_id = 15;
+  int32 date_number_in_series = 16;
+  
+  // Admin instructions
+  string admin_notes = 17;
+  string special_instructions = 18;
+  string dress_code = 19;
+  repeated string suggested_conversation_topics = 20;
+  
+  // Confirmation tracking
+  string user1_confirmed_at = 21;
+  string user2_confirmed_at = 22;
+  
+  // Cancellation details
+  int32 cancelled_by_user_id = 23;
+  string cancelled_at = 24;
+  string cancellation_reason = 25;
+  dating.common.CancellationCategory cancellation_category = 26;
+  
+  // Completion tracking
+  string completed_at = 27;
+  int32 actual_duration_minutes = 28;
+  
+  // Notifications
+  bool reminder_sent_24h = 29;
+  bool reminder_sent_2h = 30;
+  bool follow_up_sent = 31;
+  
+  // Matching details
+  float compatibility_score = 32;
+  string match_reason = 33;
+  float algorithm_confidence = 34;
+  
+  // Token costs
+  int32 tokens_cost_user1 = 35;
+  int32 tokens_cost_user2 = 36;
+  
+  // Audit fields
+  int32 curated_by = 37;
+  string curated_at = 38;
+  int32 updated_by = 39;
+  string updated_at = 40;
+}
+
+
+// Request messages
+message CreateCuratedDateRequest {
+  int32 user1_id = 1;
+  int32 user2_id = 2;
+  string date_time = 3; // ISO string
+  int32 duration_minutes = 4;
+  dating.common.DateMode mode = 5;
+  
+  // Location (for offline dates)
+  string location_name = 6;
+  string location_address = 7;
+  dating.common.LocationCoordinates location_coordinates = 8;
+  
+  // Online meeting (for online dates)
+  string meeting_link = 9;
+  string meeting_id = 10;
+  string meeting_password = 11;
+  
+  // Admin instructions
+  string admin_notes = 12;
+  string special_instructions = 13;
+  string dress_code = 14;
+  repeated string suggested_conversation_topics = 15;
+  
+  // Matching context
+  float compatibility_score = 16;
+  string match_reason = 17;
+  float algorithm_confidence = 18;
+  
+  // Token costs
+  int32 tokens_cost_user1 = 19;
+  int32 tokens_cost_user2 = 20;
+}
+
+message UpdateCuratedDateRequest {
+  int32 curated_date_id = 1;
+  string date_time = 2;
+  int32 duration_minutes = 3;
+  dating.common.DateMode mode = 4;
+  string location_name = 5;
+  string location_address = 6;
+  dating.common.LocationCoordinates location_coordinates = 7;
+  string meeting_link = 8;
+  string meeting_id = 9;
+  string meeting_password = 10;
+  string admin_notes = 11;
+  string special_instructions = 12;
+  string dress_code = 13;
+  repeated string suggested_conversation_topics = 14;
+}
+
+message GetCuratedDatesRequest {
+  repeated dating.common.CuratedDateStatus statuses = 1;
+  int32 user_id = 2;
+  string start_date = 3;
+  string end_date = 4;
+  string date_series_id = 5;
+  datifyy.common.PaginationRequest pagination = 6;
+}
+
+message GetUserTrustScoreRequest {
+  int32 user_id = 1;
+}
+
+message CreateDateSeriesRequest {
+  int32 user1_id = 1;
+  int32 user2_id = 2;
+  dating.common.RelationshipStage relationship_stage = 3;
+  int32 mutual_interest_level = 4;
+  string admin_notes = 5;
+  string preferred_date_frequency = 6;
+  repeated string preferred_date_types = 7;
+}
+
+message UpdateDateSeriesRequest {
+  string series_id = 1;
+  dating.common.DateSeriesStatus series_status = 2;
+  dating.common.RelationshipStage relationship_stage = 3;
+  int32 mutual_interest_level = 4;
+  string admin_notes = 5;
+  string preferred_date_frequency = 6;
+  repeated string preferred_date_types = 7;
+  string series_ended_reason = 8;
+  int32 ended_by_user_id = 9;
+  string final_outcome = 10;
+}
+
+// Response messages
+message CuratedDateResponse {
+  bool success = 1;
+  CuratedDate data = 2;
+  string message = 3;
+}
+
+message CuratedDateListResponse {
+  bool success = 1;
+  repeated CuratedDate curated_dates = 2;
+  datifyy.common.PaginationResponse pagination = 3;
+  string message = 4;
+}
+
+// Additional missing types that the service needs
+message SearchPotentialMatchesRequest {
+  int32 user_id = 1;
+  repeated string preferred_interests = 2;
+  int32 min_age = 3;
+  int32 max_age = 4;
+  float max_distance_km = 5;
+  string location = 6;
+  int32 limit = 7;
+  bool include_compatibility_analysis = 8;
+}
+
+message SearchPotentialMatchesResponse {
+  bool success = 1;
+  repeated PotentialMatch matches = 2;
+  int32 total_matches = 3;
+  string message = 4;
+}
+
+message PotentialMatch {
+  int32 user_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  int32 age = 4;
+  string location = 5;
+  repeated string interests = 6;
+  float compatibility_score = 7;
+  float distance_km = 8;
+  string profile_image_url = 9;
+  bool is_verified = 10;
+}
+
+message UserDatesResponse {
+  bool success = 1;
+  repeated CuratedDate dates = 2;
+  UserDatesSummary summary = 3;
+  string message = 4;
+}
+
+message UserDatesSummary {
+  int32 total_dates = 1;
+  int32 upcoming_dates = 2;
+  int32 completed_dates = 3;
+  int32 cancelled_dates = 4;
+  int32 pending_confirmation = 5;
+  int32 awaiting_feedback = 6;
+}
+
+message GetDateAnalyticsRequest {
+  int32 user_id = 1;
+  string start_date = 2;
+  string end_date = 3;
+  string period = 4; // daily, weekly, monthly
+  bool include_user_metrics = 5;
+  bool include_venue_metrics = 6;
+}
+
+message DateCurationAnalyticsResponse {
+  bool success = 1;
+  DateCurationAnalytics data = 2;
+  string message = 3;
+}
+
+message DateCurationAnalytics {
+  int32 total_dates = 1;
+  int32 successful_dates = 2;
+  int32 cancelled_dates = 3;
+  float success_rate = 4;
+  float average_rating = 5;
+  repeated VenueAnalytics venue_stats = 6;
+  repeated UserAnalytics user_stats = 7;
+}
+
+message VenueAnalytics {
+  string venue_name = 1;
+  string venue_type = 2;
+  int32 total_bookings = 3;
+  float average_rating = 4;
+  float success_rate = 5;
+}
+
+message UserAnalytics {
+  int32 user_id = 1;
+  string user_name = 2;
+  int32 total_dates = 3;
+  int32 successful_dates = 4;
+  float success_rate = 5;
+  float average_rating = 6;
+}
+
+message DateCurationValidationRules {
+  int32 min_advance_hours = 1;
+  int32 max_advance_days = 2;
+  int32 min_duration_minutes = 3;
+  int32 max_duration_minutes = 4;
+  repeated string allowed_venues = 5;
+  repeated string blocked_venues = 6;
+  int32 max_daily_bookings = 7;
+  int32 max_weekly_bookings = 8;
+}

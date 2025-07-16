@@ -3,6 +3,13 @@
  * Auto-generated from TypeORM entity: AdminUser
  */
 
+import { 
+  AdminPermissionLevel, 
+  AdminAccountStatus, 
+  AdminPermission, 
+  AdminTwoFactorMethod 
+} from '../proto-types/admin/enums';
+
 export interface AdminUserType {
   id: number;
   unique: true;
@@ -10,10 +17,8 @@ export interface AdminUserType {
   passwordHash: string;
   firstName: string;
   lastName: string;
-  enum: AdminPermissionLevel;
   permissionLevel: AdminPermissionLevel;
   additionalPermissions: AdminPermission[];
-  enum: AdminAccountStatus;
   accountStatus: AdminAccountStatus;
   isActive: boolean;
   profileImageUrl: string;

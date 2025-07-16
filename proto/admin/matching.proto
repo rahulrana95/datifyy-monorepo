@@ -1,0 +1,462 @@
+syntax = "proto3";
+
+package datifyy.admin.matching;
+
+import "common/base.proto";
+import "user/profile.proto";
+import "admin/revenue.proto";
+
+// Match suggestion algorithms
+enum MatchAlgorithm {
+  MATCH_ALGORITHM_UNSPECIFIED = 0;
+  MATCH_ALGORITHM_PREFERENCE_BASED = 1;
+  MATCH_ALGORITHM_BEHAVIOR_BASED = 2;
+  MATCH_ALGORITHM_COLLABORATIVE_FILTERING = 3;
+  MATCH_ALGORITHM_HYBRID_ML = 4;
+  MATCH_ALGORITHM_LOCATION_PROXIMITY = 5;
+  MATCH_ALGORITHM_ACTIVITY_BASED = 6;
+  MATCH_ALGORITHM_TRUST_SCORE_WEIGHTED = 7;
+}
+
+// Compatibility factors for scoring
+enum CompatibilityFactorScoring {
+  COMPATIBILITY_FACTOR_UNSPECIFIED = 0;
+  COMPATIBILITY_FACTOR_AGE_COMPATIBILITY = 1;
+  COMPATIBILITY_FACTOR_LOCATION_PROXIMITY = 2;
+  COMPATIBILITY_FACTOR_EDUCATION_LEVEL = 3;
+  COMPATIBILITY_FACTOR_CAREER_COMPATIBILITY = 4;
+  COMPATIBILITY_FACTOR_LIFESTYLE_ALIGNMENT = 5;
+  COMPATIBILITY_FACTOR_INTERESTS_OVERLAP = 6;
+  COMPATIBILITY_FACTOR_VALUES_ALIGNMENT = 7;
+  COMPATIBILITY_FACTOR_COMMUNICATION_STYLE = 8;
+  COMPATIBILITY_FACTOR_RELATIONSHIP_GOALS = 9;
+  COMPATIBILITY_FACTOR_PHYSICAL_PREFERENCES = 10;
+  COMPATIBILITY_FACTOR_RELIGIOUS_COMPATIBILITY = 11;
+  COMPATIBILITY_FACTOR_FAMILY_PLANNING = 12;
+  COMPATIBILITY_FACTOR_SOCIAL_HABITS = 13;
+  COMPATIBILITY_FACTOR_ACTIVITY_PREFERENCES = 14;
+  COMPATIBILITY_FACTOR_PERSONALITY_MATCH = 15;
+}
+
+// Match suggestion status
+enum MatchSuggestionStatus {
+  MATCH_SUGGESTION_STATUS_UNSPECIFIED = 0;
+  MATCH_SUGGESTION_STATUS_PENDING = 1;
+  MATCH_SUGGESTION_STATUS_REVIEWED = 2;
+  MATCH_SUGGESTION_STATUS_ACCEPTED = 3;
+  MATCH_SUGGESTION_STATUS_REJECTED = 4;
+  MATCH_SUGGESTION_STATUS_DATE_CREATED = 5;
+  MATCH_SUGGESTION_STATUS_EXPIRED = 6;
+  MATCH_SUGGESTION_STATUS_CANCELLED = 7;
+}
+
+// User availability status for matching
+enum UserAvailabilityStatus {
+  USER_AVAILABILITY_STATUS_UNSPECIFIED = 0;
+  USER_AVAILABILITY_STATUS_AVAILABLE = 1;
+  USER_AVAILABILITY_STATUS_BUSY = 2;
+  USER_AVAILABILITY_STATUS_ON_DATE = 3;
+  USER_AVAILABILITY_STATUS_UNAVAILABLE = 4;
+  USER_AVAILABILITY_STATUS_PROBATION = 5;
+  USER_AVAILABILITY_STATUS_INACTIVE = 6;
+}
+
+// Match confidence levels
+enum MatchConfidenceLevel {
+  MATCH_CONFIDENCE_LEVEL_UNSPECIFIED = 0;
+  MATCH_CONFIDENCE_LEVEL_VERY_LOW = 1;      // < 30%
+  MATCH_CONFIDENCE_LEVEL_LOW = 2;           // 30-50%
+  MATCH_CONFIDENCE_LEVEL_MEDIUM = 3;        // 50-70%
+  MATCH_CONFIDENCE_LEVEL_HIGH = 4;          // 70-85%
+  MATCH_CONFIDENCE_LEVEL_VERY_HIGH = 5;     // 85-95%
+  MATCH_CONFIDENCE_LEVEL_EXCEPTIONAL = 6;   // > 95%
+}
+
+// Date success prediction categories
+enum DateSuccessPrediction {
+  DATE_SUCCESS_PREDICTION_UNSPECIFIED = 0;
+  DATE_SUCCESS_PREDICTION_UNLIKELY = 1;         // < 25%
+  DATE_SUCCESS_PREDICTION_POSSIBLE = 2;         // 25-50%
+  DATE_SUCCESS_PREDICTION_LIKELY = 3;           // 50-75%
+  DATE_SUCCESS_PREDICTION_VERY_LIKELY = 4;      // 75-90%
+  DATE_SUCCESS_PREDICTION_ALMOST_CERTAIN = 5;   // > 90%
+}
+
+// Match rejection reasons for learning
+enum MatchRejectionReason {
+  MATCH_REJECTION_REASON_UNSPECIFIED = 0;
+  MATCH_REJECTION_REASON_COMPATIBILITY_TOO_LOW = 1;
+  MATCH_REJECTION_REASON_LOCATION_TOO_FAR = 2;
+  MATCH_REJECTION_REASON_AGE_MISMATCH = 3;
+  MATCH_REJECTION_REASON_LIFESTYLE_CONFLICT = 4;
+  MATCH_REJECTION_REASON_RECENT_INTERACTION = 5;
+  MATCH_REJECTION_REASON_USER_PREFERENCE_MISMATCH = 6;
+  MATCH_REJECTION_REASON_TRUST_SCORE_LOW = 7;
+  MATCH_REJECTION_REASON_ADMIN_INTUITION = 8;
+  MATCH_REJECTION_REASON_SCHEDULING_CONFLICT = 9;
+  MATCH_REJECTION_REASON_OTHER = 10;
+}
+
+// Risk factor severity levels
+enum RiskSeverity {
+  RISK_SEVERITY_UNSPECIFIED = 0;
+  RISK_SEVERITY_LOW = 1;
+  RISK_SEVERITY_MEDIUM = 2;
+  RISK_SEVERITY_HIGH = 3;
+  RISK_SEVERITY_CRITICAL = 4;
+}
+
+// Impact levels for compatibility factors
+enum ImpactLevel {
+  IMPACT_LEVEL_UNSPECIFIED = 0;
+  IMPACT_LEVEL_LOW = 1;
+  IMPACT_LEVEL_MEDIUM = 2;
+  IMPACT_LEVEL_HIGH = 3;
+}
+
+// User engagement levels
+enum UserEngagementLevel {
+  USER_ENGAGEMENT_LEVEL_UNSPECIFIED = 0;
+  USER_ENGAGEMENT_LEVEL_LOW = 1;
+  USER_ENGAGEMENT_LEVEL_MEDIUM = 2;
+  USER_ENGAGEMENT_LEVEL_HIGH = 3;
+}
+
+// User verification levels
+enum UserVerificationLevel {
+  USER_VERIFICATION_LEVEL_UNSPECIFIED = 0;
+  USER_VERIFICATION_LEVEL_BASIC = 1;
+  USER_VERIFICATION_LEVEL_VERIFIED = 2;
+  USER_VERIFICATION_LEVEL_PREMIUM = 3;
+}
+
+// Match usage outcome
+enum MatchUsageOutcome {
+  MATCH_USAGE_OUTCOME_UNSPECIFIED = 0;
+  MATCH_USAGE_OUTCOME_SCHEDULED = 1;
+  MATCH_USAGE_OUTCOME_ACCEPTED = 2;
+  MATCH_USAGE_OUTCOME_DECLINED = 3;
+  MATCH_USAGE_OUTCOME_CANCELLED = 4;
+}
+
+// Location coordinates
+message LocationCoordinatesSmall {
+  float lat = 1;
+  float lng = 2;
+}
+
+// User location details
+message UserLocation {
+  string city = 1;
+  string state = 2;
+  string country = 3;
+  LocationCoordinatesSmall coordinates = 4;
+  string timezone = 5;
+}
+
+// User lifestyle information
+message UserLifestyle {
+  string drinking = 1;
+  string smoking = 2;
+  string exercise = 3;
+  string diet = 4;
+  string social_level = 5;
+  string work_life_balance = 6;
+  string travel_frequency = 7;
+  bool pet_owner = 8;
+  string living_arrangement = 9;
+}
+
+// User preferences summary
+message UserPreferences {
+  datifyy.user.profile.AgeRange age_range = 1;
+  float location_radius = 2; // km
+  repeated string education = 3;
+  map<string, string> lifestyle = 4;
+  repeated string interests = 5;
+  repeated string deal_breakers = 6;
+  repeated string priorities = 7;
+}
+
+// User verification status
+message UserVerificationStatus {
+  bool email = 1;
+  bool phone = 2;
+  bool identity = 3;
+  bool photos = 4;
+  bool workplace = 5;
+  UserVerificationLevel overall_level = 6;
+}
+
+// User activity level
+message UserActivityLevel {
+  string login_frequency = 1; // 'daily', 'weekly', etc.
+  float response_rate = 2; // 0-1
+  float initiation_rate = 3; // 0-1
+  float completion_rate = 4; // 0-1
+  float feedback_rate = 5; // 0-1
+  UserEngagementLevel overall_engagement = 6;
+}
+
+// User dating history summary
+message UserDateHistory {
+  int32 total_dates = 1;
+  int32 completed_dates = 2;
+  int32 cancelled_dates = 3;
+  int32 no_shows = 4;
+  float average_rating = 5;
+  float second_date_rate = 6; // 0-1
+  string last_date_at = 7;
+  repeated string favorite_activities = 8;
+  repeated string preferred_locations = 9;
+  repeated string time_preferences = 10;
+}
+
+// User profile for matching
+message MatchUserProfile {
+  int32 id = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+  int32 age = 5;
+  string gender = 6;
+  UserLocation location = 7;
+  string education = 8;
+  string profession = 9;
+  string bio = 10;
+  repeated string interests = 11;
+  UserLifestyle lifestyle = 12;
+  UserPreferences preferences = 13;
+  UserVerificationStatus verification_status = 14;
+  float trust_score = 15;
+  UserActivityLevel activity_level = 16;
+  UserAvailabilityStatus availability_status = 17;
+  string last_active_at = 18;
+  UserDateHistory date_history = 19;
+  repeated string photos = 20;
+  bool is_profile_complete = 21;
+}
+
+// Admin user profile for match requests
+message AdminUserProfile {
+  int32 id = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string role = 5;
+  string experience = 6;
+  repeated string specialization = 7;
+  float success_rate = 8; // 0-1
+  int32 total_matches = 9;
+}
+
+// Individual compatibility factor score
+message FactorScore {
+  float score = 1; // 0-100
+  float weight = 2; // 0-1, importance weight
+  string explanation = 3;
+  repeated string data_points = 4;
+  float confidence = 5; // 0-1
+}
+
+// Compatibility strength or concern area
+message CompatibilityStrength {
+  CompatibilityFactorScoring factor = 1;
+  float score = 2;
+  ImpactLevel impact = 3;
+  string description = 4;
+  repeated string examples = 5;
+}
+
+// Risk factor analysis
+message RiskFactor {
+  string type = 1;
+  RiskSeverity severity = 2;
+  string description = 3;
+  float likelihood = 4; // 0-1
+  string mitigation = 5;
+  string impact = 6;
+}
+
+// Comprehensive compatibility analysis
+message CompatibilityAnalysis {
+  float overall_score = 1; // 0-100
+  map<string, FactorScore> factor_scores = 2;
+  repeated CompatibilityStrength strength_areas = 3;
+  repeated CompatibilityStrength concern_areas = 4;
+  repeated string improvement_suggestions = 5;
+  repeated string deal_breakers = 6;
+  repeated string positive_indicators = 7;
+  repeated RiskFactor risk_factors = 8;
+  float long_term_compatibility = 9; // 0-100
+  float chemistry_prediction = 10; // 0-100
+  float communication_fit = 11; // 0-100
+}
+
+// Match usage details when suggestion is used
+message MatchUsageDetails {
+  bool date_created = 1;
+  int32 date_id = 2;
+  string date_scheduled_at = 3;
+  string used_at = 4;
+  string admin_notes = 5;
+  repeated string modifications = 6;
+  MatchUsageOutcome outcome = 7;
+}
+
+// Main match suggestion message
+message MatchSuggestion {
+  string id = 1;
+  int32 requesting_admin_id = 2;
+  int32 target_user_id = 3;
+  int32 suggested_user_id = 4;
+  MatchAlgorithm algorithm = 5;
+  float compatibility_score = 6; // 0-100
+  MatchConfidenceLevel confidence_level = 7;
+  string match_reason = 8;
+  CompatibilityAnalysis detailed_analysis = 9;
+  DateSuccessPrediction success_prediction = 10;
+  float success_probability = 11; // 0-1
+  float estimated_chemistry = 12; // 0-100
+  datifyy.admin.revenue.DateType recommended_date_type = 13;
+  string recommended_location = 14;
+  repeated string recommended_activities = 15;
+  repeated string conversation_starters = 16;
+  repeated string potential_concerns = 17;
+  MatchSuggestionStatus status = 18;
+  string admin_notes = 19;
+  MatchRejectionReason rejection_reason = 20;
+  string rejection_notes = 21;
+  string generated_at = 22;
+  string expires_at = 23;
+  string reviewed_at = 24;
+  int32 reviewed_by = 25;
+  bool is_used = 26;
+  MatchUsageDetails usage_details = 27;
+  MatchUserProfile target_user = 28;
+  MatchUserProfile suggested_user = 29;
+  AdminUserProfile requesting_admin = 30;
+}
+
+// Batch match suggestion request
+message BatchMatchSuggestion {
+  string batch_id = 1;
+  repeated int32 target_user_ids = 2;
+  repeated MatchAlgorithm algorithms = 3;
+  int32 max_suggestions_per_user = 4;
+  float min_compatibility_score = 5;
+  repeated CompatibilityFactorScoring priority_factors = 6;
+  bool include_analysis = 7;
+  string requested_by = 8;
+  string requested_at = 9;
+  string expires_at = 10;
+}
+
+// Request messages
+message GenerateMatchSuggestionRequest {
+  int32 target_user_id = 1;
+  repeated MatchAlgorithm algorithms = 2;
+  int32 max_suggestions = 3;
+  float min_compatibility_score = 4;
+  repeated CompatibilityFactorScoring priority_factors = 5;
+  bool include_detailed_analysis = 6;
+  repeated int32 exclude_user_ids = 7;
+}
+
+message GetMatchSuggestionsRequest {
+  int32 admin_id = 1;
+  repeated int32 target_user_ids = 2;
+  repeated MatchSuggestionStatus statuses = 3;
+  repeated MatchAlgorithm algorithms = 4;
+  float min_compatibility_score = 5;
+  string start_date = 6;
+  string end_date = 7;
+  datifyy.common.PaginationRequest pagination = 8;
+}
+
+message ReviewMatchSuggestionRequest {
+  string suggestion_id = 1;
+  int32 admin_id = 2;
+  MatchSuggestionStatus status = 3;
+  string admin_notes = 4;
+  MatchRejectionReason rejection_reason = 5;
+  string rejection_notes = 6;
+}
+
+message UseMatchSuggestionRequest {
+  string suggestion_id = 1;
+  int32 admin_id = 2;
+  int32 date_id = 3;
+  string date_scheduled_at = 4;
+  string admin_notes = 5;
+  repeated string modifications = 6;
+}
+
+message GetCompatibilityAnalysisRequest {
+  int32 user1_id = 1;
+  int32 user2_id = 2;
+  repeated CompatibilityFactorScoring factors = 3;
+  bool include_detailed_breakdown = 4;
+  bool include_risk_analysis = 5;
+}
+
+message BatchGenerateMatchSuggestionsRequest {
+  repeated int32 target_user_ids = 1;
+  repeated MatchAlgorithm algorithms = 2;
+  int32 max_suggestions_per_user = 3;
+  float min_compatibility_score = 4;
+  repeated CompatibilityFactorScoring priority_factors = 5;
+  bool include_analysis = 6;
+  int32 requesting_admin_id = 7;
+}
+
+message GetUserMatchabilityRequest {
+  int32 user_id = 1;
+  bool include_compatibility_factors = 2;
+  bool include_activity_analysis = 3;
+  bool include_preference_analysis = 4;
+}
+
+// Response messages
+message MatchSuggestionResponse {
+  bool success = 1;
+  MatchSuggestion data = 2;
+  string message = 3;
+}
+
+message MatchSuggestionListResponse {
+  bool success = 1;
+  repeated MatchSuggestion suggestions = 2;
+  datifyy.common.PaginationResponse pagination = 3;
+  string message = 4;
+}
+
+message CompatibilityAnalysisResponse {
+  bool success = 1;
+  CompatibilityAnalysis data = 2;
+  string message = 3;
+}
+
+message BatchMatchSuggestionResponse {
+  bool success = 1;
+  string batch_id = 2;
+  int32 total_generated = 3;
+  int32 total_users_processed = 4;
+  repeated MatchSuggestion suggestions = 5;
+  string message = 6;
+}
+
+message UserMatchabilityResponse {
+  bool success = 1;
+  MatchUserProfile user_profile = 2;
+  repeated CompatibilityFactorScoring strong_factors = 3;
+  repeated CompatibilityFactorScoring weak_factors = 4;
+  repeated string improvement_suggestions = 5;
+  float overall_matchability_score = 6;
+  string message = 7;
+}
+
+message ActionResponse {
+  bool success = 1;
+  string message = 2;
+}

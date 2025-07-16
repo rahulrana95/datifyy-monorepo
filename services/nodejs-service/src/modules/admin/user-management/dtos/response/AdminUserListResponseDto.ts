@@ -1,4 +1,4 @@
-import { ApiResponse, PaginationResponse } from '@datifyy/shared-types';
+import { ApiResponse, PaginationResponse } from '../../../../../proto-types/common/base';
 
 export interface AdminUserListItem {
   id: number;
@@ -58,6 +58,4 @@ export interface AdminUserListMetadata {
   appliedFilters: AdminUserListFilters;
 }
 
-export type AdminUserListResponseDto = ApiResponse<PaginationResponse<AdminUserListItem> & {
-  metadata: AdminUserListMetadata;
-}>;
+export type AdminUserListResponseDto = ApiResponse<{ data: AdminUserListItem, pagination: PaginationResponse, metadata: AdminUserListMetadata }>;

@@ -1,0 +1,139 @@
+syntax = "proto3";
+
+package datifyy.admin.dashboard;
+
+import "common/base.proto";
+
+
+// Dashboard metric types
+enum DashboardMetricType {
+  DASHBOARD_METRIC_TYPE_UNSPECIFIED = 0;
+  DASHBOARD_METRIC_TYPE_USERS = 1;
+  DASHBOARD_METRIC_TYPE_REVENUE = 2;
+  DASHBOARD_METRIC_TYPE_DATES = 3;
+  DASHBOARD_METRIC_TYPE_ENGAGEMENT = 4;
+  DASHBOARD_METRIC_TYPE_CONVERSION = 5;
+}
+
+// Alert severity levels
+enum AlertSeverityLevel {
+  ALERT_SEVERITY_LEVEL_UNSPECIFIED = 0;
+  ALERT_SEVERITY_LEVEL_INFO = 1;
+  ALERT_SEVERITY_LEVEL_WARNING = 2;
+  ALERT_SEVERITY_LEVEL_ERROR = 3;
+  ALERT_SEVERITY_LEVEL_CRITICAL = 4;
+}
+
+// Dashboard overview data
+message DashboardOverview {
+  UserMetrics user_metrics = 1;
+  RevenueMetrics revenue_metrics = 2;
+  DateMetrics date_metrics = 3;
+  EngagementMetrics engagement_metrics = 4;
+  repeated DashboardAlert alerts = 5;
+  repeated TrendData trends = 6;
+  string generated_at = 7;
+}
+
+// User metrics
+message UserMetrics {
+  int32 total_users = 1;
+  int32 active_users = 2;
+  int32 new_signups_today = 3;
+  int32 new_signups_this_week = 4;
+  int32 verified_users = 5;
+  double user_growth_rate = 6;
+  int32 premium_users = 7;
+}
+
+// Revenue metrics
+message RevenueMetrics {
+  double total_revenue = 1;
+  double revenue_today = 2;
+  double revenue_this_week = 3;
+  double revenue_this_month = 4;
+  double average_revenue_per_user = 5;
+  double revenue_growth_rate = 6;
+  int32 successful_transactions = 7;
+  int32 failed_transactions = 8;
+}
+
+// Date metrics
+message DateMetrics {
+  int32 total_dates_curated = 1;
+  int32 dates_today = 2;
+  int32 dates_this_week = 3;
+  int32 successful_dates = 4;
+  int32 cancelled_dates = 5;
+  double date_success_rate = 6;
+  double average_date_rating = 7;
+}
+
+// Engagement metrics
+message EngagementMetrics {
+  int32 daily_active_users = 1;
+  int32 weekly_active_users = 2;
+  int32 monthly_active_users = 3;
+  double average_session_duration = 4;
+  int32 profile_completions_today = 5;
+  int32 matches_made_today = 6;
+}
+
+// Dashboard alert
+message DashboardAlert {
+  string id = 1;
+  string title = 2;
+  string message = 3;
+  AlertSeverityLevel severity = 4;
+  string category = 5;
+  bool is_read = 6;
+  string created_at = 7;
+  string action_url = 8;
+}
+
+// Trend data
+message TrendData {
+  string metric_name = 1;
+  repeated TrendPoint data_points = 2;
+  string period = 3; // "day", "week", "month"
+  double trend_percentage = 4;
+}
+
+// Trend point
+message TrendPoint {
+  string date = 1;
+  double value = 2;
+}
+
+// Request messages
+message GetDashboardOverviewRequest {
+  string start_date = 1;
+  string end_date = 2;
+  repeated DashboardMetricType metric_types = 3;
+  bool include_trends = 4;
+  bool include_alerts = 5;
+}
+
+message GetDashboardAlertsRequest {
+  repeated AlertSeverityLevel severities = 1;
+  bool unread_only = 2;
+  datifyy.common.PaginationRequest pagination = 3;
+}
+
+message MarkAlertAsReadRequest {
+  string alert_id = 1;
+}
+
+// Response messages
+message DashboardOverviewResponse {
+  bool success = 1;
+  DashboardOverview data = 2;
+  string message = 3;
+}
+
+message DashboardAlertsResponse {
+  bool success = 1;
+  repeated DashboardAlert alerts = 2;
+  datifyy.common.PaginationResponse pagination = 3;
+  string message = 4;
+}

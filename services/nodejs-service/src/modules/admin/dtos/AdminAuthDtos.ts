@@ -30,7 +30,7 @@ import {
   AdminAccountStatus,
   AdminTwoFactorMethod,
   AdminSessionStatus
-} from '@datifyy/shared-types';
+} from '../../../proto-types/admin/enums';
 
 /**
  * Geographic Location DTO

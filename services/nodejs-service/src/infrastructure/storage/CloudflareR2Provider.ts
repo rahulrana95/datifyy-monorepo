@@ -8,7 +8,7 @@ import {
   StorageFileInfo,
   StorageHealthCheck,
   StorageError
-} from '@datifyy/shared-types';
+} from '../../proto-types';
 import { 
   IStorageProvider,
   BatchUploadResult,
@@ -95,7 +95,7 @@ export class CloudflareR2Provider implements IStorageProvider {
         id: this.generateFileId(),
         key: storageKey,
         url: this.buildPublicUrl(storageKey),
-        cdnUrl: this.buildCdnUrl(storageKey),
+        cdnUrl: this.buildCdnUrl(storageKey) ?? '',
         size: fileBuffer.length,
         contentType: options.contentType,
         uploadedAt: new Date().toISOString(),
@@ -228,7 +228,7 @@ export class CloudflareR2Provider implements IStorageProvider {
       const response: any = await this.executeWithRetry(() => this.s3Client.send(command));
       
       if (!response.Body) {
-        throw new StorageError('Empty response body', 'EMPTY_RESPONSE', 'cloudflare-r2', 'download');
+        throw this.wrapStorageError('Empty response body', 'EMPTY_RESPONSE', 'cloudflare-r2');
       }
 
       const buffer = await this.streamToBuffer(response.Body as any);
@@ -296,7 +296,7 @@ export class CloudflareR2Provider implements IStorageProvider {
   /**
    * List files with pagination and filtering
    */
-  async listFiles(options: StorageListOptions = {}): Promise<StorageListResult> {
+  async listFiles(options: StorageListOptions): Promise<StorageListResult> {
     const correlationId = this.generateCorrelationId();
 
     try {
@@ -499,7 +499,8 @@ export class CloudflareR2Provider implements IStorageProvider {
         responseTime,
         provider: 'cloudflare-r2',
         region: this.config.region,
-        lastChecked: new Date().toISOString()
+        lastChecked: new Date().toISOString(),
+         errorMessage: ''
       };
 
     } catch (error) {
@@ -508,7 +509,8 @@ export class CloudflareR2Provider implements IStorageProvider {
         responseTime: Date.now() - startTime,
         provider: 'cloudflare-r2',
         region: this.config.region,
-        lastChecked: new Date().toISOString()
+        lastChecked: new Date().toISOString(),
+        errorMessage: ''
       };
     }
   }
@@ -618,12 +620,13 @@ export class CloudflareR2Provider implements IStorageProvider {
   }
 
   private wrapStorageError(error: any, operation: string, correlationId: string): StorageError {
-    return new StorageError(
-      error.message || 'Storage operation failed',
-      error.code || 'STORAGE_ERROR',
-      'cloudflare-r2',
-      operation
-    );
+    return {
+       message: error.message || 'Storage operation failed',
+  code:  error.code || 'STORAGE_ERROR',
+  provider:  'cloudflare-r2',
+  operation: operation,
+  correlationId: correlationId
+    };
   }
 
   private serializeError(error: any): any {

@@ -23,7 +23,7 @@ import {
 import { DateCurationRepository } from '../repositories/DateCurationRepository';
 import { DateCurationMapper } from '../mappers/DateCurationMapper';
 import { DateCurationService, IDateCurationService } from '../services/DateCurationService';
-import { GetUserDatesRequest } from '@datifyy/shared-types';
+import { GetUserDatesRequest } from '../repositories/DateCurationRepository';
 
 export class DateCurationController {
   private dateCurationService: IDateCurationService;
@@ -57,7 +57,7 @@ export class DateCurationController {
         dateTime: createData.dateTime
       });
 
-      const result = await this.dateCurationService.createCuratedDate(adminId, createData);
+      const result = await this.dateCurationService.createCuratedDate(adminId, createData as any);
 
       res.status(201).json({
         success: true,
@@ -100,7 +100,7 @@ export class DateCurationController {
 
       this.logger.info('Getting user dates', { userId, filters });
 
-      const response = await this.dateCurationService.getUserDates(userId, filters);
+      const response = await this.dateCurationService.getUserDates(userId, filters  as any);
 
       res.status(200).json(response);
 
@@ -133,7 +133,7 @@ export class DateCurationController {
         hasNotes: !!confirmData.notes
       });
 
-      const result = await this.dateCurationService.confirmDate(userId, dateId, confirmData);
+      const result = await this.dateCurationService.confirmDate(userId, dateId, confirmData  as any);
 
       res.status(200).json({
         success: true,
@@ -173,7 +173,7 @@ export class DateCurationController {
         reportUser: feedback.reportUser
       });
 
-      const result = await this.dateCurationService.submitDateFeedback(userId, dateId, feedback);
+      const result = await this.dateCurationService.submitDateFeedback(userId, dateId, feedback  as any);
 
       res.status(201).json({
         success: true,

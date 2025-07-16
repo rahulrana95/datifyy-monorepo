@@ -5,26 +5,52 @@ import { DateCurationMapper } from "../mappers/DateCurationMapper";
 import {
   CreateCuratedDateRequest,
   UpdateCuratedDateRequest,
-  ConfirmDateRequest,
-  CancelDateRequest,
-  SubmitDateFeedbackRequest,
-  GetUserDatesRequest,
-  AdminGetDatesRequest,
   SearchPotentialMatchesRequest,
-  DateCurationAnalyticsRequest,
+  GetDateAnalyticsRequest,
   UserDatesResponse,
   SearchPotentialMatchesResponse,
   DateCurationAnalyticsResponse,
   CuratedDateResponse,
-  DateFeedbackResponse,
-  UserTrustScoreResponse,
-  DateSeriesResponse,
-  DateCurationValidationRules,
-  DateConflict,
-  CompatibilityDetails,
-  CuratedDateStatus,
-  BulkDateOperationResult,
-} from "@datifyy/shared-types";
+  CuratedDate,
+} from "../../../proto-types/dating/curation";
+import { UserTrustScoreResponse } from "../../../proto-types/admin/user_management";
+import { GetUserDatesRequest, AdminGetDatesRequest } from "../../../proto-types/dating/curated_dates";
+import { ConfirmDateRequest, CuratedDateStatus, DateFeedbackResponse, DateSeriesResponse, SubmitDateFeedbackRequest } from "../../../proto-types";
+
+export interface DateConflict {
+  conflictingDateId: number;
+  conflictType: 'overlapping' | 'same_user' | 'venue_unavailable';
+  conflictDescription: string;
+  suggestedAlternatives: Array<{
+    dateTime: string;
+    reason: string;
+  }>;
+}
+
+export interface CompatibilityDetails {
+  overallScore: number;
+  breakdown: {
+    ageCompatibility: number;
+    locationCompatibility: number;
+    interestsCompatibility: number;
+    lifestyleCompatibility: number;
+    goalsCompatibility: number;
+  };
+  strengths: string[];
+  concerns: string[];
+  recommendations: string[];
+}
+
+export interface BulkDateOperationResult {
+  totalProcessed: number;
+  successful: number;
+  failed: number;
+  results: Array<{
+    dateId?: number;
+    success: boolean;
+    error?: string;
+  }>;
+}
 
 export interface IDateCurationService {
   // User-facing methods
@@ -41,7 +67,7 @@ export interface IDateCurationService {
   cancelDate(
     userId: number,
     dateId: number,
-    data: CancelDateRequest
+    data: any 
   ): Promise<{ cancelled: boolean; refundAmount?: number }>;
   submitDateFeedback(
     userId: number,
@@ -99,7 +125,7 @@ export interface IDateCurationService {
     data: any
   ): Promise<DateSeriesResponse>;
   getDateCurationAnalytics(
-    filters: DateCurationAnalyticsRequest
+    filters: GetDateAnalyticsRequest
   ): Promise<DateCurationAnalyticsResponse>;
   getDateCurationDashboard(): Promise<any>;
   getAllDateFeedback(filters: any): Promise<any>;
@@ -144,7 +170,7 @@ export class DateCurationService implements IDateCurationService {
     try {
       const { dates, total } = await this.repository.getUserDates(
         userId,
-        filters
+        filters as any
       );
       const mappedDates = dates.map((date) =>
         this.mapper.toCuratedDateResponse(date, userId)
@@ -157,29 +183,26 @@ export class DateCurationService implements IDateCurationService {
           (d) =>
             new Date(d.dateTime) > new Date() &&
             [
-              CuratedDateStatus.PENDING,
-              CuratedDateStatus.USER1_CONFIRMED,
-              CuratedDateStatus.USER2_CONFIRMED,
-              CuratedDateStatus.BOTH_CONFIRMED,
+              CuratedDateStatus.CURATED_DATE_STATUS_UNSPECIFIED,
+              CuratedDateStatus.CURATED_DATE_STATUS_PENDING,
+              CuratedDateStatus.CURATED_DATE_STATUS_USER1_CONFIRMED,
+              CuratedDateStatus.CURATED_DATE_STATUS_USER2_CONFIRMED,
+              CuratedDateStatus.CURATED_DATE_STATUS_BOTH_CONFIRMED,
             ].includes(d.status as CuratedDateStatus)
         ).length,
         completedDates: dates.filter(
-          (d) => d.status === CuratedDateStatus.COMPLETED
+          (d) => d.status === CuratedDateStatus.CURATED_DATE_STATUS_COMPLETED
         ).length,
         cancelledDates: dates.filter(
-          (d) => d.status === CuratedDateStatus.CANCELLED
+          (d) => d.status === CuratedDateStatus.CURATED_DATE_STATUS_CANCELLED
         ).length,
         pendingConfirmation: dates.filter(
           (d) =>
-            d.status === CuratedDateStatus.PENDING ||
-            (d.status === CuratedDateStatus.USER2_CONFIRMED &&
-              d.user2Id === userId) ||
-            (d.status === CuratedDateStatus.USER1_CONFIRMED &&
-              d.user1Id === userId)
+            d.status === CuratedDateStatus.CURATED_DATE_STATUS_PENDING
         ).length,
         awaitingFeedback: dates.filter(
           (d) =>
-            d.status === CuratedDateStatus.COMPLETED &&
+            d.status === CuratedDateStatus.CURATED_DATE_STATUS_COMPLETED &&
             !d.datifyyCuratedDateFeedbacks?.some((f) => f.userId === userId)
         ).length,
       };
@@ -187,18 +210,8 @@ export class DateCurationService implements IDateCurationService {
       return {
         success: true,
         message: "",
-        data: {
-          data: mappedDates,
-          pagination: {
-            total,
-            page: filters.page || 1,
-            hasPrevious: false,
-            hasNext: false,
-            limit: filters.limit || 10,
-            totalPages: Math.ceil(total / (filters.limit || 10)),
-          },
-          summary,
-        },
+        dates: mappedDates.map(r => r.data!) as any,
+        summary,
       };
     } catch (error) {
       this.logger.error("Failed to get user dates", { userId, error });
@@ -217,7 +230,7 @@ export class DateCurationService implements IDateCurationService {
       throw new Error("Date not found or not accessible");
     }
 
-    return this.mapper.toCuratedDateResponse(date, userId);
+    return this.mapper.toCuratedDateResponse(date, userId) as any;
   }
 
   async confirmDate(
@@ -260,7 +273,7 @@ export class DateCurationService implements IDateCurationService {
     const updatedDate = await this.repository.confirmDate(dateId, userId);
 
     const isBothConfirmed =
-      updatedDate.status === CuratedDateStatus.BOTH_CONFIRMED;
+      updatedDate.status === CuratedDateStatus.CURATED_DATE_STATUS_BOTH_CONFIRMED;
     const message = isBothConfirmed
       ? "Date confirmed! Both participants have now confirmed."
       : "Date confirmed! Waiting for your date partner to confirm.";
@@ -274,12 +287,12 @@ export class DateCurationService implements IDateCurationService {
   async cancelDate(
     userId: number,
     dateId: number,
-    data: CancelDateRequest
+    data: any
   ): Promise<{ cancelled: boolean; refundAmount?: number }> {
     this.logger.info("Cancelling date", {
       userId,
       dateId,
-      category: data.category,
+      category: data.cancellationCategory,
     });
 
     const date = await this.repository.getUserDateById(userId, dateId);
@@ -288,11 +301,11 @@ export class DateCurationService implements IDateCurationService {
     }
 
     // Check if date can be cancelled
-    if (date.status === CuratedDateStatus.CANCELLED) {
+    if (date.status === CuratedDateStatus.CURATED_DATE_STATUS_CANCELLED) {
       throw new Error("Date is already cancelled");
     }
 
-    if (date.status === CuratedDateStatus.COMPLETED) {
+    if (date.status === CuratedDateStatus.CURATED_DATE_STATUS_COMPLETED) {
       throw new Error("Cannot cancel a completed date");
     }
 
@@ -302,21 +315,12 @@ export class DateCurationService implements IDateCurationService {
       (1000 * 60 * 60);
     let refundAmount = 0;
 
-    const userTokenCost =
-      date.user1Id === userId
-        ? date.tokensCostUser1 || 0
-        : date.tokensCostUser2 || 0;
+    const userTokenCost = date.user1Id === userId ? date.tokensCostUser1 : date.tokensCostUser2;
 
-    if (
-      hoursUntilDate >=
-      DateCurationValidationRules.cancellation.freeThresholdHours
-    ) {
-      refundAmount = userTokenCost; // Full refund
-    } else if (
-      hoursUntilDate >=
-      DateCurationValidationRules.cancellation.partialRefundThresholdHours
-    ) {
-      refundAmount = Math.floor(userTokenCost * 0.5); // 50% refund
+    if (hoursUntilDate >= 24) {
+      refundAmount = userTokenCost || 0; // Full refund
+    } else if (hoursUntilDate >= 2) {
+      refundAmount = Math.floor((userTokenCost || 0) * 0.5); // 50% refund
     } else {
       refundAmount = 0; // No refund
     }
@@ -324,8 +328,8 @@ export class DateCurationService implements IDateCurationService {
     await this.repository.cancelDate(
       dateId,
       userId,
-      data.reason,
-      data.category
+      data.cancellationReason,
+      data.cancellationCategory
     );
 
     // Update user trust score for cancellation
@@ -333,7 +337,7 @@ export class DateCurationService implements IDateCurationService {
 
     return {
       cancelled: true,
-      refundAmount: data.refundTokens ? refundAmount : undefined,
+      refundAmount,
     };
   }
 
@@ -350,7 +354,7 @@ export class DateCurationService implements IDateCurationService {
     }
 
     // Check if date is completed
-    if (date.status !== CuratedDateStatus.COMPLETED) {
+    if (date.status !== CuratedDateStatus.CURATED_DATE_STATUS_COMPLETED) {
       throw new Error("Can only submit feedback for completed dates");
     }
 
@@ -363,24 +367,19 @@ export class DateCurationService implements IDateCurationService {
       throw new Error("Feedback already submitted for this date");
     }
 
-    // Check submission deadline
-    if (date.completedAt) {
+    // Check submission deadline (48 hours after completion)
+    if (date.updatedAt) {
       const hoursAfterCompletion =
-        (new Date().getTime() - new Date(date.completedAt).getTime()) /
+        (new Date().getTime() - new Date(date.updatedAt).getTime()) /
         (1000 * 60 * 60);
-      if (
-        hoursAfterCompletion >
-        DateCurationValidationRules.feedback.submissionDeadlineHours
-      ) {
+      if (hoursAfterCompletion > 48) {
         throw new Error("Feedback submission deadline has passed");
       }
     }
 
     const feedbackData = {
-      curatedDateId: dateId,
-      userId,
       ...feedback,
-      submittedAt: new Date(),
+      submittedAt: new Date().toISOString(),
     };
 
     const savedFeedback = await this.repository.createDateFeedback(
@@ -391,7 +390,7 @@ export class DateCurationService implements IDateCurationService {
     const partnerId = date.user1Id === userId ? date.user2Id : date.user1Id;
     await this.repository.calculateTrustScore(partnerId);
 
-    return this.mapper.toDateFeedbackResponse(savedFeedback, date);
+    return this.mapper.toDateFeedbackResponse(savedFeedback, date) as any;
   }
 
   async getUserDateFeedback(
@@ -404,7 +403,7 @@ export class DateCurationService implements IDateCurationService {
     }
 
     const date = await this.repository.getUserDateById(userId, dateId);
-    return this.mapper.toDateFeedbackResponse(feedback, date!);
+    return this.mapper.toDateFeedbackResponse(feedback, date!) as any;
   }
 
   async updateDateFeedback(
@@ -439,7 +438,7 @@ export class DateCurationService implements IDateCurationService {
     );
     const date = await this.repository.getUserDateById(userId, dateId);
 
-    return this.mapper.toDateFeedbackResponse(updatedFeedback, date!);
+    return this.mapper.toDateFeedbackResponse(updatedFeedback, date!) as any;
   }
 
   async getUserTrustScore(userId: number): Promise<UserTrustScoreResponse> {
@@ -459,7 +458,7 @@ export class DateCurationService implements IDateCurationService {
     this.logger.info("Getting user date series", { userId });
 
     const series = await this.repository.getUserDateSeries(userId);
-    return series.map((s) => this.mapper.toDateSeriesResponse(s, userId));
+    return series.map((s) => this.mapper.toDateSeriesResponse(s, userId)) as any;
   }
 
   async getDateSeriesById(
@@ -478,7 +477,7 @@ export class DateCurationService implements IDateCurationService {
       throw new Error("Access denied to this date series");
     }
 
-    return this.mapper.toDateSeriesResponse(series, userId);
+    return this.mapper.toDateSeriesResponse(series, userId) as any;
   }
 
   // ============================================================================
@@ -506,7 +505,7 @@ export class DateCurationService implements IDateCurationService {
     }
 
     const createdDate = await this.repository.createCuratedDate(data, adminId);
-    return this.mapper.toCuratedDateResponse(createdDate);
+    return this.mapper.toCuratedDateResponse(createdDate) as any;
   }
 
   async updateCuratedDate(
@@ -521,7 +520,7 @@ export class DateCurationService implements IDateCurationService {
       data,
       adminId
     );
-    return this.mapper.toCuratedDateResponse(updatedDate);
+    return this.mapper.toCuratedDateResponse(updatedDate) as any;
   }
 
   async getAdminCuratedDates(
@@ -534,7 +533,7 @@ export class DateCurationService implements IDateCurationService {
     );
     const mappedDates = dates.map((date) =>
       this.mapper.toCuratedDateResponse(date)
-    );
+    ) as any;
 
     return { dates: mappedDates, total };
   }
@@ -547,7 +546,7 @@ export class DateCurationService implements IDateCurationService {
       throw new Error("Curated date not found");
     }
 
-    return this.mapper.toCuratedDateResponse(date);
+    return this.mapper.toCuratedDateResponse(date) as any;
   }
 
   async deleteCuratedDate(adminId: number, dateId: number): Promise<void> {
@@ -570,37 +569,12 @@ export class DateCurationService implements IDateCurationService {
       this.mapper.toPotentialMatchResponse(user, filters.userId)
     );
 
-    const searchSummary = {
-      searchCriteria: filters,
-      totalMatches: total,
-      averageCompatibility:
-        mappedUsers.reduce((sum, match) => sum + match.compatibilityScore, 0) /
-          mappedUsers.length || 0,
-      highCompatibilityMatches: mappedUsers.filter(
-        (match) => match.compatibilityScore > 80
-      ).length,
-      verifiedMatches: mappedUsers.filter(
-        (match) =>
-          match.userInfo.verificationStatus.email &&
-          match.userInfo.verificationStatus.phone
-      ).length,
-    };
 
     return {
       success: true,
       message: "",
-      data: {
-        data: mappedUsers,
-        pagination: {
-          total,
-          hasNext: false,
-          hasPrevious: false,
-          page: filters.page || 1,
-          limit: filters.limit || 10,
-          totalPages: Math.ceil(total / (filters.limit || 10)),
-        },
-        searchSummary,
-      },
+      matches: mappedUsers as any,
+      totalMatches: total,
     };
   }
 
@@ -704,11 +678,11 @@ export class DateCurationService implements IDateCurationService {
       seriesId,
       data
     );
-    return this.mapper.toDateSeriesResponse(updatedSeries);
+    return this.mapper.toDateSeriesResponse(updatedSeries) as any;
   }
 
   async getDateCurationAnalytics(
-    filters: DateCurationAnalyticsRequest
+    filters: GetDateAnalyticsRequest
   ): Promise<DateCurationAnalyticsResponse> {
     this.logger.info("Getting date curation analytics", { filters });
 

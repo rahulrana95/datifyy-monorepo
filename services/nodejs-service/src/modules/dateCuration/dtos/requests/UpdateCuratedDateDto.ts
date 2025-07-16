@@ -18,9 +18,10 @@ import {
   IsArray
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
-import { DateMode, CuratedDateStatus } from '@datifyy/shared-types';
+import { } from '../../../../proto-types/dating/curated_dates';
 import { LocationCoordinatesDto } from './CreateCuratedDateDto';
 import { VALIDATION_RULES, VALIDATION_MESSAGES, FIELD_LENGTHS } from '../base/CommonTypes';
+import { CuratedDateStatus, DateMode } from '../../../../proto-types';
 
 /**
  * Update curated date request DTO

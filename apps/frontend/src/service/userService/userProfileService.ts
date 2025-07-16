@@ -6,7 +6,7 @@ import {
 } from "../../mvp/common/utils/serviceUtils";
 import { DatifyyUserPartnerPreferences } from "../../mvp/profile/types";
 import api from "../apiService";
-import { ErrorObject } from "../ErrorTypes";
+import { ApiError, ServiceResponse } from "../ErrorTypes";
 import { DatifyyUsersInformation } from "./UserProfileTypes";
 
 /**
@@ -24,16 +24,12 @@ class UserProfileService {
    */
   async getUserProfile(): Promise<{
     response: DatifyyUsersInformation | null;
-    error?: ErrorObject;
+    error?: ApiError;
   }> {
     try {
       console.log('🔍 Fetching user profile...');
       
-      // @ts-ignore
-      const response: {
-        response: DatifyyUsersInformation,
-        error: ErrorObject
-      } = await api.get(`user-profile`);
+      const response = await api.get(`user-profile`) as ServiceResponse<DatifyyUsersInformation>;
 
       if (response.error) {
         console.error('❌ Failed to fetch user profile:', response.error);
@@ -59,7 +55,7 @@ class UserProfileService {
    */
   async updateUserProfile(data: Partial<DatifyyUsersInformation>): Promise<{
     response: DatifyyUsersInformation | null;
-    error?: ErrorObject;
+    error?: ApiError;
   }> {
     try {
       console.log('📝 Updating user profile...', { fields: Object.keys(data) });
@@ -77,10 +73,7 @@ class UserProfileService {
         };
       }
 
-      const response: {
-        response?: DatifyyUsersInformation;
-        error?: ErrorObject;
-      } = await api.put("user-profile", data);
+      const response = await api.put("user-profile", data) as ServiceResponse<DatifyyUsersInformation>;
 
       if (response.error) {
         console.error('❌ Failed to update user profile:', response.error);
@@ -108,18 +101,15 @@ class UserProfileService {
    */
   async getPartnerPreferences(): Promise<{
     response: DatifyyUserPartnerPreferences | null;
-    error?: ErrorObject;
+    error?: ApiError;
   }> {
     try {
       console.log('🔍 Fetching partner preferences...');
       
-      const response: {
-        response?: {
-          success?: boolean;
-          data?: DatifyyUserPartnerPreferences;
-        };
-        error?: ErrorObject;
-      } = await api.get(`${this.prefix}`);
+      const response = await api.get(`${this.prefix}`) as ServiceResponse<{
+        success?: boolean;
+        data?: DatifyyUserPartnerPreferences;
+      }>;
 
       if (response.error) {
         console.error('❌ Failed to fetch partner preferences:', response.error);
@@ -145,7 +135,7 @@ class UserProfileService {
    */
   async updatePartnerPreferences(data: Partial<DatifyyUserPartnerPreferences>): Promise<{
     response: DatifyyUserPartnerPreferences | null;
-    error?: ErrorObject;
+    error?: ApiError;
   }> {
     try {
       console.log('📝 Updating partner preferences...', { fields: Object.keys(data) });
@@ -163,13 +153,10 @@ class UserProfileService {
         };
       }
 
-      const response: {
-        response?: {
-          success?: boolean;
-          data?: DatifyyUserPartnerPreferences;
-        };
-        error?: ErrorObject;
-      } = await api.put(`${this.prefix}`, data);
+      const response = await api.put(`${this.prefix}`, data) as ServiceResponse<{
+        success?: boolean;
+        data?: DatifyyUserPartnerPreferences;
+      }>;
 
       if (response.error) {
         console.error('❌ Failed to update partner preferences:', response.error);
@@ -195,7 +182,7 @@ class UserProfileService {
    */
   async createPartnerPreferences(data: Partial<DatifyyUserPartnerPreferences>): Promise<{
     response: DatifyyUserPartnerPreferences | null;
-    error?: ErrorObject;
+    error?: ApiError;
   }> {
     try {
       console.log('🆕 Creating partner preferences...');
@@ -211,13 +198,10 @@ class UserProfileService {
         };
       }
 
-      const response: {
-        response?: {
-          success?: boolean;
-          data?: DatifyyUserPartnerPreferences;
-        };
-        error?: ErrorObject;
-      } = await api.post(`${this.prefix}`, data);
+      const response = await api.post(`${this.prefix}`, data) as ServiceResponse<{
+        success?: boolean;
+        data?: DatifyyUserPartnerPreferences;
+      }>;
 
       if (response.error) {
         console.error('❌ Failed to create partner preferences:', response.error);
@@ -242,15 +226,12 @@ class UserProfileService {
    */
   async deletePartnerPreferences(): Promise<{
     success: boolean;
-    error?: ErrorObject;
+    error?: ApiError;
   }> {
     try {
       console.log('🗑️ Deleting partner preferences...');
 
-      const response: {
-        response?: { success?: boolean };
-        error?: ErrorObject;
-      } = await api.delete("partner-preferences");
+      const response = await api.delete("partner-preferences") as ServiceResponse<{ success?: boolean }>;
 
       if (response.error) {
         console.error('❌ Failed to delete partner preferences:', response.error);
@@ -290,7 +271,7 @@ class UserProfileService {
         hasMore: boolean;
       };
     } | null;
-    error?: ErrorObject;
+    error?: ApiError;
   }> {
     try {
       console.log('🔍 Getting matches...', options);
@@ -303,13 +284,10 @@ class UserProfileService {
       }
 
       const endpoint = `matches${params.toString() ? `?${params}` : ''}`;
-      const response: {
-        response?: {
-          success?: boolean;
-          data?: any;
-        };
-        error?: ErrorObject;
-      } = await api.get(endpoint);
+      const response = await api.get(endpoint) as ServiceResponse<{
+        success?: boolean;
+        data?: any;
+      }>;
 
       if (response.error) {
         console.error('❌ Failed to get matches:', response.error);
@@ -346,18 +324,15 @@ class UserProfileService {
       };
       recommendations: string[];
     } | null;
-    error?: ErrorObject;
+    error?: ApiError;
   }> {
     try {
       console.log('🔍 Getting compatibility score...', { targetUserId });
 
-      const response: {
-        response?: {
-          success?: boolean;
-          data?: any;
-        };
-        error?: ErrorObject;
-      } = await api.get(`compatibility/${targetUserId}`);
+      const response = await api.get(`compatibility/${targetUserId}`) as ServiceResponse<{
+        success?: boolean;
+        data?: any;
+      }>;
 
       if (response.error) {
         return { response: null, error: response.error };
@@ -526,7 +501,7 @@ class UserProfileService {
       missingFields: string[];
       recommendations: string[];
     } | null;
-    error?: ErrorObject;
+    error?: ApiError;
   }> {
     try {
       const profileResponse = await this.getUserProfile();

@@ -1,4 +1,4 @@
-import { ApiResponse } from '@datifyy/shared-types';
+import { ApiResponse } from '../../../../../proto-types/common/base';
 
 export interface UserStatsOverview {
   totalUsers: number;

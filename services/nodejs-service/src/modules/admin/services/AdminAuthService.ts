@@ -8,8 +8,8 @@
  * @since 1.0.0
  */
 
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcryptjs';
+import * as jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import {
   IAdminAuthService,
@@ -42,13 +42,17 @@ import {
   AdminTwoFactorMethod,
   AdminTokenPayload,
   AdminLoginAttemptResult,
-  ADMIN_SECURITY_CONSTANTS,
-  ADMIN_ROLE_PERMISSIONS
-} from '@datifyy/shared-types';
+  AdminSecurityConstants,
+} from '../../../proto-types/admin/enums';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { Config } from '../../../infrastructure/config/Config';
 import { RedisService } from '../../../infrastructure/cache/RedisService';
 import { DatifyyUsersLogin } from '../../../models/entities/DatifyyUsersLogin';
+import {
+  adminAccountStatusToDb,
+  dbToAdminAccountStatus
+} from '../../../utils/enum-converters';
+import { ADMIN_SECURITY_CONSTANTS } from '../../../utils/admin-auth-constants';
 
 /**
  * Admin Authentication Service Implementation
@@ -115,7 +119,7 @@ export class AdminAuthService implements IAdminAuthService {
       }
 
       // Check account status
-      if (!admin.isactive || admin.accountStatus !== AdminAccountStatus.ACTIVE) {
+      if (!admin.isactive || dbToAdminAccountStatus(admin.accountStatus) !== AdminAccountStatus.ADMIN_ACTIVE) {
         await this.logSecurityEvent({
           eventType: 'LOGIN_FAILED',
           adminId: admin.id,
@@ -179,7 +183,7 @@ export class AdminAuthService implements IAdminAuthService {
           }
         });
 
-        const remainingAttempts = ADMIN_SECURITY_CONSTANTS.MAX_LOGIN_ATTEMPTS - failedAttempts;
+        const remainingAttempts = ADMIN_SECURITY_CONSTANTS.maxLoginAttempts - failedAttempts;
         
         return {
           success: false,
@@ -294,7 +298,7 @@ export class AdminAuthService implements IAdminAuthService {
       
       // Get admin and validate status
       const admin = await this.adminRepository.findById(adminId);
-      if (!admin || !admin.isactive || admin.accountStatus !== AdminAccountStatus.ACTIVE) {
+      if (!admin || !admin.isactive || dbToAdminAccountStatus(admin.accountStatus) !== AdminAccountStatus.ADMIN_ACTIVE) {
         await this.redisService.delete(`refresh_token:${refreshToken}`);
         throw new Error('Admin account is not active');
       }
@@ -385,9 +389,9 @@ export class AdminAuthService implements IAdminAuthService {
       const payload = jwt.verify(token, this.jwtSecret) as AdminTokenPayload;
       
       // Get admin from database
-      const admin = await this.adminRepository.findById(parseInt(payload.id));
+      const admin = await this.adminRepository.findById(payload.adminId);
       
-      if (!admin || !admin.isactive || admin.accountStatus !== AdminAccountStatus.ACTIVE) {
+      if (!admin || !admin.isactive || dbToAdminAccountStatus(admin.accountStatus) !== AdminAccountStatus.ADMIN_ACTIVE) {
         return {
           isValid: false,
           invalidReason: 'Admin account is not active'
@@ -763,7 +767,7 @@ export class AdminAuthService implements IAdminAuthService {
     
     await this.redisService.setex(
       `2fa_session:${loginSessionId}`,
-      ADMIN_SECURITY_CONSTANTS.TWO_FACTOR_VALIDITY_MINUTES * 60,
+      ADMIN_SECURITY_CONSTANTS.twoFactorValidityMinutes * 60,
       JSON.stringify({
         adminId,
         deviceInfo,
@@ -775,7 +779,7 @@ export class AdminAuthService implements IAdminAuthService {
   }
 
   private getTokenExpirySeconds(): number {
-    return ADMIN_SECURITY_CONSTANTS.SESSION_TIMEOUT_HOURS * 60 * 60;
+    return ADMIN_SECURITY_CONSTANTS.sessionTimeoutHours * 60 * 60;
   }
 
   private getRefreshTokenExpirySeconds(rememberMe?: boolean): number {

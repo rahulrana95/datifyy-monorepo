@@ -3,7 +3,7 @@
  * Auto-generated from TypeORM entity: DatifyyUsersLogin
  */
 
-import { DatifyyUserPartnerPreferences } from "@datifyy/shared-types";
+import { DatifyyUserPartnerPreferences } from "../models/entities/DatifyyUserPartnerPreferences";
 import { DatifyyUsersInformation } from "../models/entities/DatifyyUsersInformation";
 import { DatifyyEventsType } from "./DatifyyEvents.types";
 import { DatifyyTicketPurchasesType } from "./DatifyyTicketPurchases.types";

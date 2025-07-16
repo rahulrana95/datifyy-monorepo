@@ -52,21 +52,31 @@ const PhysicalPage: React.FC<PhysicalPageProps> = ({ preferences, onUpdate }) =>
     ];
 
     const toggleBodyType = (bodyType: string) => {
-        const currentTypes = preferences.bodyType || [];
-        const updatedTypes = currentTypes.includes(bodyType)
-            ? currentTypes.filter(t => t !== bodyType)
-            : [...currentTypes, bodyType];
+        const bodyTypePrefix = 'bodyType:';
+        const currentInterests = preferences.interests || [];
+        const bodyTypeInterests = currentInterests.filter(i => i.startsWith(bodyTypePrefix));
+        const otherInterests = currentInterests.filter(i => !i.startsWith(bodyTypePrefix));
+        
+        const hasBodyType = bodyTypeInterests.some(i => i === `${bodyTypePrefix}${bodyType}`);
+        const newBodyTypes = hasBodyType
+            ? bodyTypeInterests.filter((t: string) => t !== `${bodyTypePrefix}${bodyType}`)
+            : [...bodyTypeInterests, `${bodyTypePrefix}${bodyType}`];
 
-        onUpdate({ bodyType: updatedTypes });
+        onUpdate({ interests: [...otherInterests, ...newBodyTypes] });
     };
 
     const toggleEthnicity = (ethnicity: string) => {
-        const currentEthnicities = preferences.ethnicity || [];
-        const updatedEthnicities = currentEthnicities.includes(ethnicity)
-            ? currentEthnicities.filter(e => e !== ethnicity)
-            : [...currentEthnicities, ethnicity];
+        const ethnicityPrefix = 'ethnicity:';
+        const currentInterests = preferences.interests || [];
+        const ethnicityInterests = currentInterests.filter(i => i.startsWith(ethnicityPrefix));
+        const otherInterests = currentInterests.filter(i => !i.startsWith(ethnicityPrefix) && !i.startsWith('bodyType:'));
+        
+        const hasEthnicity = ethnicityInterests.some(i => i === `${ethnicityPrefix}${ethnicity}`);
+        const newEthnicities = hasEthnicity
+            ? ethnicityInterests.filter((e: string) => e !== `${ethnicityPrefix}${ethnicity}`)
+            : [...ethnicityInterests, `${ethnicityPrefix}${ethnicity}`];
 
-        onUpdate({ ethnicity: updatedEthnicities });
+        onUpdate({ interests: [...otherInterests, ...currentInterests.filter(i => i.startsWith('bodyType:')), ...newEthnicities] });
     };
 
     const formatHeight = (cm: number) => {
@@ -86,15 +96,15 @@ const PhysicalPage: React.FC<PhysicalPageProps> = ({ preferences, onUpdate }) =>
                     </Text>
                 </HStack>
                 <Text fontSize="md" color="gray.600" mb={4}>
-                    {formatHeight(preferences.height?.min || 150)} - {formatHeight(preferences.height?.max || 200)}
+                    {formatHeight(preferences.heightRange?.minHeightCm || 150)} - {formatHeight(preferences.heightRange?.maxHeightCm || 200)}
                 </Text>
                 <RangeSlider
-                    value={[preferences.height?.min || 150, preferences.height?.max || 200]}
+                    value={[preferences.heightRange?.minHeightCm || 150, preferences.heightRange?.maxHeightCm || 200]}
                     min={140}
                     max={220}
                     step={1}
                     onChange={([min, max]) => onUpdate({
-                        height: { min, max }
+                        heightRange: { minHeightCm: min, maxHeightCm: max }
                     })}
                     colorScheme="brand"
                 >
@@ -119,11 +129,11 @@ const PhysicalPage: React.FC<PhysicalPageProps> = ({ preferences, onUpdate }) =>
                     </Text>
                 </HStack>
                 <Text fontSize="sm" color="gray.600" mb={4}>
-                    Select body types you're attracted to ({preferences.bodyType?.length || 0} selected)
+                    Select body types you're attracted to ({preferences.interests?.filter(i => i.startsWith('bodyType:')).length || 0} selected)
                 </Text>
                 <SimpleGrid columns={{ base: 2, md: 4 }} spacing={3}>
                     {bodyTypes.map((bodyType) => {
-                        const isSelected = preferences.bodyType?.includes(bodyType);
+                        const isSelected = preferences.interests?.some(i => i === `bodyType:${bodyType}`);
                         return (
                             <Badge
                                 key={bodyType}
@@ -161,11 +171,11 @@ const PhysicalPage: React.FC<PhysicalPageProps> = ({ preferences, onUpdate }) =>
                     </Text>
                 </HStack>
                 <Text fontSize="sm" color="gray.600" mb={4}>
-                    Select ethnicities you're open to dating ({preferences.ethnicity?.length || 0} selected)
+                    Select ethnicities you're open to dating ({preferences.interests?.filter(i => i.startsWith('ethnicity:')).length || 0} selected)
                 </Text>
                 <SimpleGrid columns={{ base: 2, md: 3 }} spacing={3}>
                     {ethnicities.map((ethnicity) => {
-                        const isSelected = preferences.ethnicity?.includes(ethnicity);
+                        const isSelected = preferences.interests?.some(i => i === `ethnicity:${ethnicity}`);
                         return (
                             <Badge
                                 key={ethnicity}

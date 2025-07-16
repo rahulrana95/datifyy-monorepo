@@ -33,7 +33,7 @@ import {
 import {
   StorageUploadOptions,
   StorageError
-} from '@datifyy/shared-types';
+} from '../../../proto-types/common/storage';
 import { ImageUploadError, ImageUploadErrorCodes } from '../errors/ImageUploadErrors';
 
 /**
@@ -534,6 +534,7 @@ export class ImageUploadService implements IImageUploadService {
       contentType: file.mimetype,
       folder: `users/${category}`,
       isPublic: true,
+      expiresIn: 2000000,
       metadata: {
         operationId,
         originalName: file.originalname,

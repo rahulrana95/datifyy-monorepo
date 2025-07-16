@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { FaCoffee, FaSmoking, FaWineGlass, FaChild, FaBaby } from 'react-icons/fa';
 import { PartnerPreferences } from '../../types';
+import { SmokingPreference, DrinkingPreference } from '../../../../proto-types';
 
 interface LifestylePageProps {
     preferences: PartnerPreferences;
@@ -23,16 +24,16 @@ interface LifestylePageProps {
 const LifestylePage: React.FC<LifestylePageProps> = ({ preferences, onUpdate }) => {
     const drinkingOptions = [
         { value: '', label: 'No preference' },
-        { value: 'never', label: 'Never drinks' },
-        { value: 'socially', label: 'Social drinker' },
-        { value: 'regularly', label: 'Regular drinker' },
+        { value: DrinkingPreference.DRINKING_PREFERENCE_NEVER, label: 'Never drinks' },
+        { value: DrinkingPreference.DRINKING_PREFERENCE_SOCIALLY, label: 'Social drinker' },
+        { value: DrinkingPreference.DRINKING_PREFERENCE_REGULARLY, label: 'Regular drinker' },
     ];
 
     const smokingOptions = [
         { value: '', label: 'No preference' },
-        { value: 'never', label: 'Non-smoker' },
-        { value: 'socially', label: 'Social smoker' },
-        { value: 'regularly', label: 'Regular smoker' },
+        { value: SmokingPreference.SMOKING_PREFERENCE_NEVER, label: 'Non-smoker' },
+        { value: SmokingPreference.SMOKING_PREFERENCE_SOCIALLY, label: 'Social smoker' },
+        { value: SmokingPreference.SMOKING_PREFERENCE_REGULARLY, label: 'Regular smoker' },
     ];
 
     const kidsOptions = [
@@ -59,12 +60,12 @@ const LifestylePage: React.FC<LifestylePageProps> = ({ preferences, onUpdate }) 
     ];
 
     const toggleLifestyle = (lifestyle: string) => {
-        const currentLifestyles = preferences.lifestyle || [];
-        const updatedLifestyles = currentLifestyles.includes(lifestyle)
-            ? currentLifestyles.filter(l => l !== lifestyle)
-            : [...currentLifestyles, lifestyle];
+        const currentInterests = preferences.interests || [];
+        const updatedInterests = currentInterests.includes(lifestyle)
+            ? currentInterests.filter((l: string) => l !== lifestyle)
+            : [...currentInterests, lifestyle];
 
-        onUpdate({ lifestyle: updatedLifestyles });
+        onUpdate({ interests: updatedInterests });
     };
 
     return (
@@ -79,8 +80,8 @@ const LifestylePage: React.FC<LifestylePageProps> = ({ preferences, onUpdate }) 
                 </HStack>
                 <FormControl>
                     <Select
-                        value={preferences.drinking || ''}
-                        onChange={(e) => onUpdate({ drinking: e.target.value })}
+                        value={preferences.drinkingPreferences?.[0] || ''}
+                        onChange={(e) => onUpdate({ drinkingPreferences: e.target.value ? [e.target.value as DrinkingPreference] : [] })}
                         placeholder="Select drinking preference"
                         size="lg"
                         borderColor="gray.300"
@@ -109,8 +110,8 @@ const LifestylePage: React.FC<LifestylePageProps> = ({ preferences, onUpdate }) 
                 </HStack>
                 <FormControl>
                     <Select
-                        value={preferences.smoking || ''}
-                        onChange={(e) => onUpdate({ smoking: e.target.value })}
+                        value={preferences.smokingPreferences?.[0] || ''}
+                        onChange={(e) => onUpdate({ smokingPreferences: e.target.value ? [e.target.value as SmokingPreference] : [] })}
                         placeholder="Select smoking preference"
                         size="lg"
                         borderColor="gray.300"
@@ -143,8 +144,12 @@ const LifestylePage: React.FC<LifestylePageProps> = ({ preferences, onUpdate }) 
                             Partner having kids
                         </FormLabel>
                         <Select
-                            value={preferences.hasKids || ''}
-                            onChange={(e) => onUpdate({ hasKids: e.target.value })}
+                            value={preferences.dealBreakers?.find(d => d.startsWith('hasKids:'))?.split(':')[1] || ''}
+                            onChange={(e) => {
+                                const newDealBreakers = (preferences.dealBreakers || []).filter(d => !d.startsWith('hasKids:'));
+                                if (e.target.value) newDealBreakers.push(`hasKids:${e.target.value}`);
+                                onUpdate({ dealBreakers: newDealBreakers });
+                            }}
                             placeholder="Select preference"
                             size="lg"
                         >
@@ -161,8 +166,12 @@ const LifestylePage: React.FC<LifestylePageProps> = ({ preferences, onUpdate }) 
                             Wanting kids in future
                         </FormLabel>
                         <Select
-                            value={preferences.wantsKids || ''}
-                            onChange={(e) => onUpdate({ wantsKids: e.target.value })}
+                            value={preferences.dealBreakers?.find(d => d.startsWith('wantsKids:'))?.split(':')[1] || ''}
+                            onChange={(e) => {
+                                const newDealBreakers = (preferences.dealBreakers || []).filter(d => !d.startsWith('wantsKids:'));
+                                if (e.target.value) newDealBreakers.push(`wantsKids:${e.target.value}`);
+                                onUpdate({ dealBreakers: newDealBreakers });
+                            }}
                             placeholder="Select preference"
                             size="lg"
                         >
@@ -185,11 +194,11 @@ const LifestylePage: React.FC<LifestylePageProps> = ({ preferences, onUpdate }) 
                     </Text>
                 </HStack>
                 <Text fontSize="sm" color="gray.600" mb={4}>
-                    Select lifestyle traits you prefer in a partner ({preferences.lifestyle?.length || 0} selected)
+                    Select lifestyle traits you prefer in a partner ({preferences.interests?.filter(i => lifestyleChoices.includes(i)).length || 0} selected)
                 </Text>
                 <SimpleGrid columns={{ base: 2, md: 3 }} spacing={3}>
                     {lifestyleChoices.map((lifestyle) => {
-                        const isSelected = preferences.lifestyle?.includes(lifestyle);
+                        const isSelected = preferences.interests?.includes(lifestyle);
                         return (
                             <Badge
                                 key={lifestyle}

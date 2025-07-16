@@ -1,30 +1,29 @@
 // apps/frontend/src/mvp/date-curation/services/dateCurationService.ts
 
-import apiService from '../../../service/apiService';
-import { 
-  CuratedDateCard, 
-  DateAction, 
+import apiService from "../../../service/apiService";
+import {
+  CuratedDateCard,
+  DateAction,
   DateCurationSummary,
   DateFilter,
-  DateFeedbackForm 
-} from '../types';
+  DateFeedbackForm,
+} from "../types";
+import { formatDateForDisplay, calculateHoursUntil } from "../utils/dateUtils";
 import {
+  CuratedDateStatus,
   GetUserDatesRequest,
   UserDatesResponse,
   ConfirmDateResponse,
   CancelDateResponse,
   SubmitDateFeedbackResponse,
   CancellationCategory,
-  CuratedDateStatus
-} from '@datifyy/shared-types';
-import { formatDateForDisplay, calculateHoursUntil } from '../utils/dateUtils';
+} from "../../../proto-types";
 
-
-const PATH_PREFIX: string = 'date-curation/';
+const PATH_PREFIX: string = "date-curation/";
 
 /**
  * Date Curation Service
- * 
+ *
  * Handles all API communications for date curation features:
  * - Fetching user dates (upcoming and history)
  * - Date actions (confirm, cancel, reschedule)
@@ -32,102 +31,119 @@ const PATH_PREFIX: string = 'date-curation/';
  * - Summary statistics
  */
 class DateCurationService {
-
   /**
    * Get upcoming dates for the current user
    */
-  async getUpcomingDates(filters: DateFilter): Promise<{ data: CuratedDateCard[] }> {
+  async getUpcomingDates(
+    filters: DateFilter
+  ): Promise<{ data: CuratedDateCard[] }> {
     try {
-      console.log('🔍 Fetching upcoming dates...', { filters });
+      console.log("🔍 Fetching upcoming dates...", { filters });
 
       const params = {
-        status: [],//(filters.status || [CuratedDateStatus.PENDING, 'confirmed']) as CuratedDateStatus[],
-        mode: filters.mode,
+        status: [], //(filters.status || [CuratedDateStatus.PENDING, 'confirmed']) as CuratedDateStatus[],
+        mode: filters.mode?.[0], // Take first mode if array
         includeHistory: false,
         includeFeedback: false,
         includePartnerInfo: true,
         page: 1,
-          limit: 20,
-        startDate: ''
+        limit: 20,
+        startDate: "",
       };
 
       // Add date range filter
-      if (filters.timeRange === 'upcoming') {
-        params.startDate = new Date().toISOString().split('T')[0]; // Today
+      if (filters.timeRange === "upcoming") {
+        params.startDate = new Date().toISOString().split("T")[0]; // Today
       }
 
-    
       const paramsReq: GetUserDatesRequest = params;
-        
-      const response = await apiService.get<UserDatesResponse>(`${PATH_PREFIX}my-dates`, { params });
+
+      const response = await apiService.get<UserDatesResponse>(
+        `${PATH_PREFIX}my-dates`,
+        { params }
+      );
 
       if (response.error) {
-        console.error('❌ Failed to fetch upcoming dates:', response.error);
-        throw new Error(response.error.message || 'Failed to fetch dates');
+        console.error("❌ Failed to fetch upcoming dates:", response.error);
+        throw new Error(response.error.message || "Failed to fetch dates");
       }
 
-      if (!response.response?.data) {
-        console.warn('⚠️ No dates data in response');
+      if (!response.response?.dates) {
+        console.warn("⚠️ No dates data in response");
         return { data: [] };
       }
 
       // Transform API response to frontend format
-      const dates = response.response.data.data?.map(this.transformToDateCard) || [];
-      
-      console.log('✅ Upcoming dates fetched successfully', { count: dates.length });
-      return { data: dates };
+      const dates =
+        response.response.dates?.map(this.transformToDateCard) || [];
 
+      console.log("✅ Upcoming dates fetched successfully", {
+        count: dates.length,
+      });
+      return { data: dates };
     } catch (error: any) {
-      console.error('❌ Error fetching upcoming dates:', error);
-      throw new Error(error.message || 'Failed to fetch upcoming dates');
+      console.error("❌ Error fetching upcoming dates:", error);
+      throw new Error(error.message || "Failed to fetch upcoming dates");
     }
   }
 
   /**
    * Get date history for the current user
    */
-  async getDateHistory(filters: DateFilter): Promise<{ data: CuratedDateCard[] }> {
+  async getDateHistory(
+    filters: DateFilter
+  ): Promise<{ data: CuratedDateCard[] }> {
     try {
-      console.log('🔍 Fetching date history...', { filters });
+      console.log("🔍 Fetching date history...", { filters });
 
       const params = {
-        status: ['completed', 'cancelled'] as CuratedDateStatus[],
-        mode: filters.mode,
+        status: [
+          CuratedDateStatus.CURATED_DATE_STATUS_COMPLETED,
+          CuratedDateStatus.CURATED_DATE_STATUS_CANCELLED,
+        ] as CuratedDateStatus[],
+        mode: filters.mode?.[0], // Take first mode if array
         includeHistory: true,
         includeFeedback: true,
         includePartnerInfo: true,
         page: 1,
-          limit: 50,
-        startDate: ''
+        limit: 50,
+        startDate: "",
       };
 
       // Add date range filter for history
-      if (filters.timeRange === 'past_week') {
+      if (filters.timeRange === "past_week") {
         const weekAgo = new Date();
         weekAgo.setDate(weekAgo.getDate() - 7);
-        params.startDate = weekAgo.toISOString().split('T')[0];
-      } else if (filters.timeRange === 'past_month') {
+        params.startDate = weekAgo.toISOString().split("T")[0];
+      } else if (filters.timeRange === "past_month") {
         const monthAgo = new Date();
         monthAgo.setMonth(monthAgo.getMonth() - 1);
-        params.startDate = monthAgo.toISOString().split('T')[0];
+        params.startDate = monthAgo.toISOString().split("T")[0];
       }
 
-        const paramReq: GetUserDatesRequest = params;
-      const response = await apiService.get<UserDatesResponse>(`${PATH_PREFIX}dates`, { params: paramReq });
+      const paramReq: GetUserDatesRequest = params;
+      const response = await apiService.get<UserDatesResponse>(
+        `${PATH_PREFIX}dates`,
+        { params: paramReq }
+      );
 
       if (response.error) {
-        console.error('❌ Failed to fetch date history:', response.error);
-        throw new Error(response.error.message || 'Failed to fetch date history');
+        console.error("❌ Failed to fetch date history:", response.error);
+        throw new Error(
+          response.error.message || "Failed to fetch date history"
+        );
       }
 
-      const dates = response.response?.data?.data?.map(this.transformToDateCard) || [];
-      
-      console.log('✅ Date history fetched successfully', { count: dates.length });
-      return { data: dates };
+      const dates =
+        response.response?.dates?.map(this.transformToDateCard) || [];
 
+      console.log("✅ Date history fetched successfully", {
+        count: dates.length,
+      });
+      return { data: dates };
     } catch (error: any) {
-      console.error('❌ Error fetching date history:', error);
-      throw new Error(error.message || 'Failed to fetch date history');
+      console.error("❌ Error fetching date history:", error);
+      throw new Error(error.message || "Failed to fetch date history");
     }
   }
 
@@ -136,23 +152,26 @@ class DateCurationService {
    */
   async getSummary(): Promise<{ data: DateCurationSummary }> {
     try {
-      console.log('🔍 Fetching date curation summary...');
+      console.log("🔍 Fetching date curation summary...");
 
-      const response = await apiService.get<UserDatesResponse>(`${PATH_PREFIX}dates`, {
-        params: { 
-          includeHistory: true,
-          includeFeedback: true,
-          limit: 100 // Get more for summary calculation
+      const response = await apiService.get<UserDatesResponse>(
+        `${PATH_PREFIX}dates`,
+        {
+          params: {
+            includeHistory: true,
+            includeFeedback: true,
+            limit: 100, // Get more for summary calculation
+          },
         }
-      });
+      );
 
       if (response.error) {
-        console.error('❌ Failed to fetch summary:', response.error);
-        throw new Error(response.error.message || 'Failed to fetch summary');
+        console.error("❌ Failed to fetch summary:", response.error);
+        throw new Error(response.error.message || "Failed to fetch summary");
       }
 
-      const summaryData = response.response?.data?.summary;
-      
+      const summaryData = response.response?.summary;
+
       const summary: DateCurationSummary = {
         totalDates: summaryData?.totalDates || 0,
         upcomingDates: summaryData?.upcomingDates || 0,
@@ -163,12 +182,11 @@ class DateCurationService {
         successfulConnections: 0, // Will be calculated
       };
 
-      console.log('✅ Summary fetched successfully', summary);
+      console.log("✅ Summary fetched successfully", summary);
       return { data: summary };
-
     } catch (error: any) {
-      console.error('❌ Error fetching summary:', error);
-      throw new Error(error.message || 'Failed to fetch summary');
+      console.error("❌ Error fetching summary:", error);
+      throw new Error(error.message || "Failed to fetch summary");
     }
   }
 
@@ -177,26 +195,33 @@ class DateCurationService {
    */
   async handleDateAction(action: DateAction): Promise<any> {
     try {
-      console.log('🎯 Handling date action...', { action });
+      console.log("🎯 Handling date action...", { action });
 
       switch (action.type) {
-        case 'accept':
+        case "accept":
           return await this.confirmDate(action.dateId);
-        
-        case 'cancel':
-          return await this.cancelDate(action.dateId, action.category, action.reason);
-        
-        case 'reschedule':
+
+        case "cancel":
+          return await this.cancelDate(
+            action.dateId,
+            action.category,
+            action.reason
+          );
+
+        case "reschedule":
           // For now, treat as cancel with reschedule reason
-          return await this.cancelDate(action.dateId, CancellationCategory.OTHER, action.reason || 'Reschedule requested');
-        
+          return await this.cancelDate(
+            action.dateId,
+            CancellationCategory.CANCELLATION_CATEGORY_OTHER,
+            action.reason || "Reschedule requested"
+          );
+
         default:
           throw new Error(`Unknown action type: ${action.type}`);
       }
-
     } catch (error: any) {
-      console.error('❌ Error handling date action:', error);
-      throw new Error(error.message || 'Failed to process date action');
+      console.error("❌ Error handling date action:", error);
+      throw new Error(error.message || "Failed to process date action");
     }
   }
 
@@ -210,7 +235,7 @@ class DateCurationService {
     );
 
     if (response.error) {
-      throw new Error(response.error.message || 'Failed to confirm date');
+      throw new Error(response.error.message || "Failed to confirm date");
     }
 
     return response.response!;
@@ -220,22 +245,22 @@ class DateCurationService {
    * Cancel a date
    */
   private async cancelDate(
-    dateId: string, 
-    category?: CancellationCategory, 
+    dateId: string,
+    category?: CancellationCategory,
     reason?: string
   ): Promise<CancelDateResponse> {
     const response = await apiService.post<CancelDateResponse>(
       `${PATH_PREFIX}dates/${dateId}/cancel`,
       {
-        reason: reason || 'User cancelled',
-        category: category || 'other',
+        reason: reason || "User cancelled",
+        category: category || "other",
         notifyPartner: true,
-        refundTokens: true
+        refundTokens: true,
       }
     );
 
     if (response.error) {
-      throw new Error(response.error.message || 'Failed to cancel date');
+      throw new Error(response.error.message || "Failed to cancel date");
     }
 
     return response.response!;
@@ -244,9 +269,12 @@ class DateCurationService {
   /**
    * Submit feedback for a completed date
    */
-  async submitFeedback(dateId: string, feedback: DateFeedbackForm): Promise<any> {
+  async submitFeedback(
+    dateId: string,
+    feedback: DateFeedbackForm
+  ): Promise<any> {
     try {
-      console.log('📝 Submitting date feedback...', { dateId, feedback });
+      console.log("📝 Submitting date feedback...", { dateId, feedback });
 
       const response = await apiService.post<SubmitDateFeedbackResponse>(
         `${PATH_PREFIX}dates/${dateId}/feedback`,
@@ -259,21 +287,20 @@ class DateCurationService {
           whatCouldImprove: feedback.whatCouldImprove,
           interestedInSecondDate: feedback.interestedInSecondDate,
           additionalComments: feedback.additionalComments,
-          isAnonymous: false
+          isAnonymous: false,
         }
       );
 
       if (response.error) {
-        console.error('❌ Failed to submit feedback:', response.error);
-        throw new Error(response.error.message || 'Failed to submit feedback');
+        console.error("❌ Failed to submit feedback:", response.error);
+        throw new Error(response.error.message || "Failed to submit feedback");
       }
 
-      console.log('✅ Feedback submitted successfully');
+      console.log("✅ Feedback submitted successfully");
       return response.response;
-
     } catch (error: any) {
-      console.error('❌ Error submitting feedback:', error);
-      throw new Error(error.message || 'Failed to submit feedback');
+      console.error("❌ Error submitting feedback:", error);
+      throw new Error(error.message || "Failed to submit feedback");
     }
   }
 
@@ -284,24 +311,26 @@ class DateCurationService {
     const dateTime = new Date(apiDate.dateTime || apiDate.availabilityDate);
     const now = new Date();
     const hoursUntilDate = calculateHoursUntil(dateTime);
-    
+
     return {
       id: apiDate.id?.toString() || Math.random().toString(),
-      matchName: apiDate.user?.firstName || apiDate.matchName || 'Unknown',
+      matchName: apiDate.user?.firstName || apiDate.matchName || "Unknown",
       matchAge: apiDate.user?.age || 25,
       matchImage: apiDate.user?.profileImage || apiDate.matchImage,
       dateTime: dateTime.toISOString(),
-      mode: apiDate.mode || apiDate.dateType || 'offline',
+      mode: apiDate.mode || apiDate.dateType || "offline",
       status: this.mapStatusToFrontend(apiDate.status),
       location: apiDate.locationName || apiDate.locationPreference,
       meetingLink: apiDate.meetingLink,
       compatibilityScore: apiDate.compatibilityScore || 85,
-      isVerified: apiDate.user?.verificationStatus?.email || apiDate.isVerified || false,
+      isVerified:
+        apiDate.user?.verificationStatus?.email || apiDate.isVerified || false,
       adminNote: apiDate.adminNotes || apiDate.notes,
       dressCode: apiDate.dressCode,
-      canCancel: apiDate.canCancel ?? (hoursUntilDate > 4),
-      canConfirm: apiDate.canConfirm ?? (apiDate.status === 'pending'),
-      canSubmitFeedback: apiDate.canSubmitFeedback ?? (apiDate.status === 'completed'),
+      canCancel: apiDate.canCancel ?? hoursUntilDate > 4,
+      canConfirm: apiDate.canConfirm ?? apiDate.status === "pending",
+      canSubmitFeedback:
+        apiDate.canSubmitFeedback ?? apiDate.status === "completed",
       hoursUntilDate,
       formattedDateTime: formatDateForDisplay(dateTime),
       isUpcoming: dateTime > now,
@@ -311,17 +340,17 @@ class DateCurationService {
   /**
    * Map API status to frontend status
    */
-  private mapStatusToFrontend(apiStatus: string): CuratedDateCard['status'] {
-    const statusMap: Record<string, CuratedDateCard['status']> = {
-      'pending': 'pending',
-      'active': 'pending', 
-      'booked': 'confirmed',
-      'confirmed': 'confirmed',
-      'cancelled': 'cancelled',
-      'completed': 'completed',
+  private mapStatusToFrontend(apiStatus: string): CuratedDateCard["status"] {
+    const statusMap: Record<string, CuratedDateCard["status"]> = {
+      pending: "pending",
+      active: "pending",
+      booked: "confirmed",
+      confirmed: "confirmed",
+      cancelled: "cancelled",
+      completed: "completed",
     };
 
-    return statusMap[apiStatus] || 'pending';
+    return statusMap[apiStatus] || "pending";
   }
 }
 

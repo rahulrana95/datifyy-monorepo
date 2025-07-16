@@ -24,22 +24,20 @@ const PartnerPreferencesContainer: React.FC = () => {
     const toast = useToast();
 
     const [preferences, setPreferences] = useState<PartnerPreferences>({
-        minAge: 22,
-        maxAge: 35,
-        maxDistance: 50,
+        userId: 0,
+        ageRange: { minAge: 22, maxAge: 35 },
+        preferredGenders: [],
+        maxDistanceKm: 50,
+        heightRange: { minHeightCm: 150, maxHeightCm: 200 },
+        educationLevels: [],
+        religions: [],
+        smokingPreferences: [],
+        drinkingPreferences: [],
         interests: [],
         dealBreakers: [],
-        education: [],
-        lifestyle: [],
-        bodyType: [],
-        ethnicity: [],
-        religion: [],
-        smoking: '',
-        drinking: '',
-        hasKids: '',
-        wantsKids: '',
-        height: { min: 150, max: 200 },
-        income: { min: 0, max: 200000 },
+        importanceScore: 5,
+        createdAt: '',
+        updatedAt: ''
     });
 
     const [currentPage, setCurrentPage] = useState<PreferencePage>('basics');
@@ -56,23 +54,28 @@ const PartnerPreferencesContainer: React.FC = () => {
             const response = await userProfileService.getPartnerPreferences();
             if (response.response) {
                 const data = response.response;
+                // Map from DatifyyUserPartnerPreferences to PartnerPreferences
                 setPreferences({
-                    minAge: data.minAge || 22,
-                    maxAge: data.maxAge || 35,
-                    maxDistance: 50, // Default since API might not have this
+                    userId: data.id || 0,
+                    ageRange: { 
+                        minAge: data.minAge || 22, 
+                        maxAge: data.maxAge || 35 
+                    },
+                    preferredGenders: [],
+                    maxDistanceKm: data.locationPreferenceRadius || 50,
+                    heightRange: { 
+                        minHeightCm: data.minHeight || 150, 
+                        maxHeightCm: data.maxHeight || 200 
+                    },
+                    educationLevels: (data.educationLevel || []) as any[],
+                    religions: data.religion ? [data.religion as any] : [],
+                    smokingPreferences: data.smokingPreference ? [data.smokingPreference as any] : [],
+                    drinkingPreferences: data.drinkingPreference ? [data.drinkingPreference as any] : [],
                     interests: data.interests || [],
-                    dealBreakers: [], // Not in API yet
-                    education: [], // Future feature
-                    lifestyle: [], // Future feature
-                    bodyType: [], // Future feature
-                    ethnicity: [], // Future feature
-                    religion: [], // Future feature
-                    smoking: '', // Future feature
-                    drinking: '', // Future feature
-                    hasKids: '', // Future feature
-                    wantsKids: '', // Future feature
-                    height: { min: 150, max: 200 }, // Future feature
-                    income: { min: 0, max: 200000 }, // Future feature
+                    dealBreakers: [],
+                    importanceScore: 5,
+                    createdAt: '',
+                    updatedAt: ''
                 });
             }
         } catch (error) {
@@ -93,11 +96,7 @@ const PartnerPreferencesContainer: React.FC = () => {
         setSaving(true);
         try {
             // Only send properties that exist in the API
-            const updateData = {
-                minAge: preferences.minAge,
-                maxAge: preferences.maxAge,
-                interests: preferences.interests,
-            };
+            const updateData = preferences;
 
             const response = await userProfileService.updatePartnerPreferences(updateData);
 
@@ -135,14 +134,14 @@ const PartnerPreferencesContainer: React.FC = () => {
         let completedFields = 0;
 
         // Count completed fields
-        if (preferences.minAge && preferences.maxAge) completedFields++;
-        if (preferences.maxDistance && preferences.maxDistance > 0) completedFields++;
+        if (preferences.ageRange?.minAge && preferences.ageRange?.maxAge) completedFields++;
+        if (preferences.maxDistanceKm && preferences.maxDistanceKm > 0) completedFields++;
         if (preferences.interests && preferences.interests.length > 0) completedFields++;
         if (preferences.dealBreakers && preferences.dealBreakers.length > 0) completedFields++;
-        if (preferences.smoking) completedFields++;
-        if (preferences.drinking) completedFields++;
-        if (preferences.hasKids) completedFields++;
-        if (preferences.wantsKids) completedFields++;
+        if (preferences.smokingPreferences && preferences.smokingPreferences.length > 0) completedFields++;
+        if (preferences.drinkingPreferences && preferences.drinkingPreferences.length > 0) completedFields++;
+        if (preferences.educationLevels && preferences.educationLevels.length > 0) completedFields++;
+        if (preferences.religions && preferences.religions.length > 0) completedFields++;
 
         return Math.round((completedFields / totalFields) * 100);
     };

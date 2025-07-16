@@ -4,8 +4,8 @@ import {
   BookAvailabilityRequest,
   UpdateBookingRequest,
   BookingResponse,
-  BookingsListResponse
-} from '@datifyy/shared-types';
+  BookingListResponse
+} from '../../../proto-types';
 
 /**
  * Availability Booking Service Interface
@@ -31,7 +31,7 @@ export interface IAvailabilityBookingService {
    * @param filters - Filter and pagination options
    * @returns Promise<BookingsListResponse> - Paginated booking list
    */
-  getUserBookings(userId: number, filters: any): Promise<BookingsListResponse>;
+  getUserBookings(userId: number, filters: any): Promise<BookingListResponse>;
 
   /**
    * Get incoming bookings (bookings on user's availability slots)
@@ -39,7 +39,7 @@ export interface IAvailabilityBookingService {
    * @param filters - Filter and pagination options
    * @returns Promise<BookingsListResponse> - Paginated incoming bookings
    */
-  getIncomingBookings(userId: number, filters: any): Promise<BookingsListResponse>;
+  getIncomingBookings(userId: number, filters: any): Promise<BookingListResponse>;
 
   /**
    * Get specific booking by ID

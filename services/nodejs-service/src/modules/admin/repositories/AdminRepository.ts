@@ -19,11 +19,16 @@ import {
 import {
   AdminPermissionLevel,
   AdminAccountStatus,
-  AdminListFilters,
-  ADMIN_SECURITY_CONSTANTS
-} from '@datifyy/shared-types';
+} from '../../../proto-types/admin/enums';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { DatifyyUsersLogin } from '../../../models/entities/DatifyyUsersLogin';
+import {
+  adminPermissionLevelToDb,
+  dbToAdminPermissionLevel,
+  adminAccountStatusToDb,
+  dbToAdminAccountStatus
+} from '../../../utils/enum-converters';
+import { ADMIN_SECURITY_CONSTANTS } from '../../../utils/admin-auth-constants';
 
 /**
  * TypeORM implementation of Admin Repository
@@ -150,7 +155,7 @@ export class AdminRepository implements IAdminRepository {
 
       const result = await this.repository.update(id, { 
         isactive: false,
-        accountStatus: AdminAccountStatus.DEACTIVATED,
+        accountStatus: adminAccountStatusToDb(AdminAccountStatus.DEACTIVATED) as any,
         updatedAt: new Date()
       });
 
@@ -204,7 +209,7 @@ export class AdminRepository implements IAdminRepository {
       const admins = await this.repository.find({
         where: { 
           isactive: true,
-          accountStatus: AdminAccountStatus.ACTIVE 
+          accountStatus: adminAccountStatusToDb(AdminAccountStatus.ADMIN_ACTIVE) as any
         },
         order: { createdAt: 'DESC' }
       });
@@ -222,7 +227,7 @@ export class AdminRepository implements IAdminRepository {
     try {
       const admins = await this.repository.find({
         where: { 
-          permissionLevel,
+          permissionLevel: adminPermissionLevelToDb(permissionLevel) as any,
           isactive: true 
         },
         order: { createdAt: 'DESC' }
@@ -242,7 +247,7 @@ export class AdminRepository implements IAdminRepository {
     try {
       const admins = await this.repository.find({
         where: { 
-          accountStatus,
+          accountStatus: adminAccountStatusToDb(accountStatus) as any,
           isactive: true 
         },
         order: { createdAt: 'DESC' }
@@ -306,7 +311,7 @@ export class AdminRepository implements IAdminRepository {
   }
 
   async findWithFilters(
-    filters: AdminListFilters,
+    filters: any,
     pagination: PaginationOptions
   ): Promise<PaginatedResult<DatifyyUsersLogin>> {
     try {
@@ -345,7 +350,7 @@ export class AdminRepository implements IAdminRepository {
       
       const admins = await this.repository.find({
         where: [
-          { accountStatus: AdminAccountStatus.LOCKED, isactive: true },
+          { accountStatus: adminAccountStatusToDb(AdminAccountStatus.ADMIN_LOCKED) as any, isactive: true },
           { 
             lockedAt: new Date(),
             isactive: true
@@ -418,8 +423,8 @@ export class AdminRepository implements IAdminRepository {
       const newAttempts = admin.failedLoginAttempts + 1;
       
       // Check if account should be locked
-      if (newAttempts >= ADMIN_SECURITY_CONSTANTS.MAX_LOGIN_ATTEMPTS) {
-        await this.lockAccount(id, ADMIN_SECURITY_CONSTANTS.ACCOUNT_LOCK_DURATION);
+      if (newAttempts >= ADMIN_SECURITY_CONSTANTS.maxLoginAttempts) {
+        await this.lockAccount(id, ADMIN_SECURITY_CONSTANTS.accountLockDurationMinutes);
       } else {
         await this.repository.update(id, { failedLoginAttempts: newAttempts });
       }
@@ -452,7 +457,7 @@ export class AdminRepository implements IAdminRepository {
       const lockExpiresAt = new Date(now.getTime() + lockDurationMinutes * 60 * 1000);
 
       const result = await this.repository.update(id, {
-        accountStatus: AdminAccountStatus.LOCKED,
+        accountStatus: adminAccountStatusToDb(AdminAccountStatus.ADMIN_LOCKED) as any,
         lockedAt: now,
         lockExpiresAt,
         failedLoginAttempts: 0
@@ -474,7 +479,7 @@ export class AdminRepository implements IAdminRepository {
       this.logger.info('Unlocking admin account', { adminId: id });
 
       const result = await this.repository.update(id, {
-        accountStatus: AdminAccountStatus.ACTIVE,
+        accountStatus: adminAccountStatusToDb(AdminAccountStatus.ADMIN_ACTIVE) as any,
         lockedAt: undefined,
         lockExpiresAt: undefined,
         failedLoginAttempts: 0
@@ -510,13 +515,13 @@ export class AdminRepository implements IAdminRepository {
         this.repository.count({ 
           where: { 
             isactive: true, 
-            accountStatus: AdminAccountStatus.ACTIVE 
+            accountStatus: adminAccountStatusToDb(AdminAccountStatus.ADMIN_ACTIVE) as any
           } 
         }),
         this.repository.count({ 
           where: { 
             isactive: true, 
-            accountStatus: AdminAccountStatus.LOCKED 
+            accountStatus: adminAccountStatusToDb(AdminAccountStatus.ADMIN_LOCKED) as any
           } 
         }),
         this.getAdminsLoggedInSince(this.getStartOfDay()),
@@ -631,13 +636,13 @@ export class AdminRepository implements IAdminRepository {
 
     if (criteria.permissionLevel) {
       queryBuilder.andWhere('admin.permissionLevel = :permissionLevel', {
-        permissionLevel: criteria.permissionLevel
+        permissionLevel: adminPermissionLevelToDb(criteria.permissionLevel)
       });
     }
 
     if (criteria.accountStatus) {
       queryBuilder.andWhere('admin.accountStatus = :accountStatus', {
-        accountStatus: criteria.accountStatus
+        accountStatus: adminAccountStatusToDb(criteria.accountStatus)
       });
     }
 
@@ -686,9 +691,8 @@ export class AdminRepository implements IAdminRepository {
     const counts: Record<AdminPermissionLevel, number> = {} as any;
 
       for (const level of levels) {
-        // @ts-ignore
       counts[level] = await this.repository.count({
-        where: { permissionLevel: level, isactive: true }
+        where: { permissionLevel: adminPermissionLevelToDb(level) as any, isactive: true }
       });
     }
 

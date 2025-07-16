@@ -3,9 +3,15 @@
 import { 
   BookAvailabilityRequest,
   UpdateBookingRequest,
-  PaginationResponse
-} from '@datifyy/shared-types';
+} from '../../../proto-types/user/availability';
 import { DatifyyAvailabilityBookings } from '../../../models/entities/DatifyyAvailabilityBookings';
+import { PaginationResponse } from '../../../proto-types';
+
+// Define paginated response type
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: PaginationResponse;
+}
 
 /**
  * Availability Booking Repository Interface
@@ -54,7 +60,7 @@ export interface IAvailabilityBookingRepository {
    * @param filters - Filter and pagination options
    * @returns Promise<PaginationResponse<DatifyyAvailabilityBookings>> - Paginated bookings
    */
-  findByUserId(userId: number, filters: any): Promise<PaginationResponse<DatifyyAvailabilityBookings>>;
+  findByUserId(userId: number, filters: any): Promise<PaginatedResponse<DatifyyAvailabilityBookings>>;
 
   /**
    * Find incoming bookings for user's availability slots
@@ -62,7 +68,7 @@ export interface IAvailabilityBookingRepository {
    * @param filters - Filter and pagination options
    * @returns Promise<PaginationResponse<DatifyyAvailabilityBookings>> - Paginated incoming bookings
    */
-  findIncomingBookings(ownerId: number, filters: any): Promise<PaginationResponse<DatifyyAvailabilityBookings>>;
+  findIncomingBookings(ownerId: number, filters: any): Promise<PaginatedResponse<DatifyyAvailabilityBookings>>;
 
   /**
    * Find bookings for a specific availability slot

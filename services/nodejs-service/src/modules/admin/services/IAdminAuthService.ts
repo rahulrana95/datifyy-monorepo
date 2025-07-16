@@ -26,7 +26,7 @@ import {
   AdminPermission,
   AdminTwoFactorMethod,
   AdminTokenPayload
-} from '@datifyy/shared-types';
+} from '../../../proto-types/admin/enums';
 
 /**
  * Authentication result with detailed status information

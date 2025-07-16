@@ -7,7 +7,7 @@ import {
   CuratedDateStatus, 
   CancellationCategory,
   DateCurationValidationRules 
-} from '@datifyy/shared-types';
+} from '../../../../proto-types';
 
 /**
  * Common validation constraints and rules

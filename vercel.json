@@ -1,0 +1,6 @@
+{
+  "buildCommand": "yarn install && yarn vercel:build",
+  "outputDirectory": "apps/frontend/build",
+  "installCommand": "yarn install",
+  "framework": null
+}

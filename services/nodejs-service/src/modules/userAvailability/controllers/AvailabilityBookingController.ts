@@ -8,7 +8,7 @@ import {
 import { IAvailabilityBookingService } from '../services/IAvailabilityBookingService';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { UnauthorizedError, ValidationError } from '../../../infrastructure/errors/AppErrors';
-import { BookAvailabilityRequest, UpdateBookingRequest } from '@datifyy/shared-types';
+import { BookAvailabilityRequest, UpdateBookingRequest } from '../../../proto-types/user/availability';
 
 /**
  * Interface for authenticated request with user information
@@ -51,8 +51,7 @@ export class AvailabilityBookingController {
 
       this.logger.info('Booking availability slot', { 
         userId, 
-        availabilityId: bookingData.availabilityId,
-        activity: bookingData.selectedActivity,
+        availabilitySlotId: bookingData.availabilitySlotId,
         requestId: req.headers['x-request-id']
       });
 
@@ -97,7 +96,7 @@ export class AvailabilityBookingController {
       res.status(200).json({
         success: true,
         message: 'User bookings retrieved successfully',
-        data: result.data
+        data: result
       });
     } catch (error) {
       this.logger.error('Failed to get user bookings', { 
@@ -322,7 +321,7 @@ export class AvailabilityBookingController {
       res.status(200).json({
         success: true,
         message: 'Incoming bookings retrieved successfully',
-        data: result.data
+        data: result
       });
     } catch (error) {
       this.logger.error('Failed to get incoming bookings', { 

@@ -17,14 +17,87 @@ import { DatifyyCurationWorkflow } from "../../../models/entities/DatifyyCuratio
 import { DatifyyUsersLogin } from "../../../models/entities/DatifyyUsersLogin";
 import { DatifyyUsersInformation } from "../../../models/entities/DatifyyUsersInformation";
 import {
-  CreateCuratedDateRequest,
-  UpdateCuratedDateRequest,
-  GetUserDatesRequest,
-  AdminGetDatesRequest,
-  SearchPotentialMatchesRequest,
   CuratedDateStatus,
   DateMode,
-} from "@datifyy/shared-types";
+} from "../../../proto-types/dating";
+
+// Custom interfaces to match the existing repository implementation
+export interface CreateCuratedDateRequest {
+  user1Id: number;
+  user2Id: number;
+  dateTime: string;
+  durationMinutes?: number;
+  mode: DateMode;
+  locationName?: string;
+  locationAddress?: string;
+  locationCoordinates?: any;
+  meetingLink?: string;
+  meetingId?: string;
+  meetingPassword?: string;
+  adminNotes?: string;
+  specialInstructions?: string;
+  dressCode?: string;
+  suggestedConversationTopics?: string[];
+  compatibilityScore?: number;
+  matchReason?: string;
+  algorithmConfidence?: number;
+  tokensCostUser1?: number;
+  tokensCostUser2?: number;
+}
+
+export interface UpdateCuratedDateRequest {
+  dateTime?: string;
+  durationMinutes?: number;
+  mode?: DateMode;
+  locationName?: string;
+  locationAddress?: string;
+  locationCoordinates?: any;
+  meetingLink?: string;
+  meetingId?: string;
+  meetingPassword?: string;
+  adminNotes?: string;
+  specialInstructions?: string;
+  dressCode?: string;
+  suggestedConversationTopics?: string[];
+  compatibilityScore?: number;
+  matchReason?: string;
+  algorithmConfidence?: number;
+  tokensCostUser1?: number;
+  tokensCostUser2?: number;
+}
+
+export interface GetUserDatesRequest {
+  page?: number;
+  limit?: number;
+  status?: CuratedDateStatus[];
+  mode?: DateMode[];
+  startDate?: string;
+  endDate?: string;
+  includeHistory?: boolean;
+  includeFeedback?: boolean;
+  includePartnerInfo?: boolean;
+}
+
+export interface AdminGetDatesRequest {
+  page?: number;
+  limit?: number;
+  status?: CuratedDateStatus[];
+  curatedBy?: number;
+  user1Id?: number;
+  user2Id?: number;
+  startDate?: string;
+  endDate?: string;
+  includeFeedback?: boolean;
+  includeWorkflow?: boolean;
+}
+
+export interface SearchPotentialMatchesRequest {
+  userId: number;
+  page?: number;
+  limit?: number;
+  ageRange?: { min: number; max: number };
+  excludeRecentDates?: boolean;
+}
 
 export interface IDateCurationRepository {
   // Curated Dates CRUD
@@ -179,7 +252,7 @@ export class DateCurationRepository implements IDateCurationRepository {
       algorithmConfidence: data.algorithmConfidence?.toString(),
       tokensCostUser1: data.tokensCostUser1 || 0,
       tokensCostUser2: data.tokensCostUser2 || 0,
-      status: CuratedDateStatus.PENDING,
+      status: CuratedDateStatus.CURATED_DATE_STATUS_PENDING,
       // Set the relation object instead of ID
       curatedBy: adminUser,
     });
@@ -216,15 +289,17 @@ export class DateCurationRepository implements IDateCurationRepository {
     }
 
     const updateData: Partial<DatifyyCuratedDates> = {
-      ...data,
-      dateTime: new Date(data.dateTime ?? ""),
       updatedBy: adminUser,
       updatedAt: new Date(),
     };
 
-    if (data.dateTime) {
-      updateData.dateTime = new Date(data.dateTime);
-    }
+    // Map UpdateCuratedDateRequest fields to entity fields
+    if (data.dateTime) updateData.dateTime = new Date(data.dateTime);
+    if (data.locationName) updateData.locationName = data.locationName;
+    if (data.locationAddress) updateData.locationAddress = data.locationAddress;
+    if (data.durationMinutes) updateData.durationMinutes = data.durationMinutes;
+    if (data.specialInstructions) updateData.specialInstructions = data.specialInstructions;
+
 
     await this.curatedDatesRepo.save({ ...existingDate, ...updateData });
 
@@ -481,16 +556,16 @@ export class DateCurationRepository implements IDateCurationRepository {
     if (date.user1Id === userId) {
       updateData.user1ConfirmedAt = new Date();
       if (date.user2ConfirmedAt) {
-        updateData.status = CuratedDateStatus.USER2_CONFIRMED;
+        updateData.status = CuratedDateStatus.CURATED_DATE_STATUS_CONFIRMED;
       } else {
-        updateData.status = CuratedDateStatus.USER1_CONFIRMED;
+        updateData.status = CuratedDateStatus.CURATED_DATE_STATUS_CONFIRMED;
       }
     } else if (date.user2Id === userId) {
       updateData.user2ConfirmedAt = new Date();
       if (date.user1ConfirmedAt) {
-        updateData.status = CuratedDateStatus.USER1_CONFIRMED;
+        updateData.status = CuratedDateStatus.CURATED_DATE_STATUS_CONFIRMED;
       } else {
-        updateData.status = CuratedDateStatus.USER2_CONFIRMED;
+        updateData.status = CuratedDateStatus.CURATED_DATE_STATUS_CONFIRMED;
       }
     } else {
       throw new Error("User not authorized to confirm this date");
@@ -520,7 +595,7 @@ export class DateCurationRepository implements IDateCurationRepository {
     }
 
     const updateData: Partial<DatifyyCuratedDates> = {
-      status: CuratedDateStatus.CANCELLED,
+      status: CuratedDateStatus.CURATED_DATE_STATUS_CANCELLED,
       cancelledAt: new Date(),
       cancellationReason: reason,
       cancellationCategory: category,
@@ -539,7 +614,7 @@ export class DateCurationRepository implements IDateCurationRepository {
     this.logger.info("Marking date as completed", { dateId, actualDuration });
 
     const updateData: Partial<DatifyyCuratedDates> = {
-      status: CuratedDateStatus.COMPLETED,
+      status: CuratedDateStatus.CURATED_DATE_STATUS_COMPLETED,
       completedAt: new Date(),
       actualDurationMinutes: actualDuration,
     };
@@ -634,9 +709,9 @@ export class DateCurationRepository implements IDateCurationRepository {
       ])
       .where("(date.user1Id = :userId OR date.user2Id = :userId)", { userId })
       .setParameters({
-        completed: CuratedDateStatus.COMPLETED,
-        cancelled: CuratedDateStatus.CANCELLED,
-        noShow: CuratedDateStatus.NO_SHOW,
+        completed: CuratedDateStatus.CURATED_DATE_STATUS_COMPLETED,
+        cancelled: CuratedDateStatus.CURATED_DATE_STATUS_CANCELLED,
+        noShow: CuratedDateStatus.CURATED_DATE_STATUS_NO_SHOW,
       })
       .getRawOne();
 
@@ -760,8 +835,8 @@ export class DateCurationRepository implements IDateCurationRepository {
         "AVG(CASE WHEN date.status = :completed THEN date.actualDurationMinutes END) as avgDuration",
       ])
       .setParameters({
-        completed: CuratedDateStatus.COMPLETED,
-        cancelled: CuratedDateStatus.CANCELLED,
+        completed: CuratedDateStatus.CURATED_DATE_STATUS_COMPLETED,
+        cancelled: CuratedDateStatus.CURATED_DATE_STATUS_CANCELLED,
       })
       .getRawOne();
 
@@ -813,7 +888,7 @@ export class DateCurationRepository implements IDateCurationRepository {
       ])
       .where("date.curatedAt >= :thirtyDaysAgo", { thirtyDaysAgo })
       .setParameters({
-        pending: CuratedDateStatus.PENDING,
+        pending: CuratedDateStatus.CURATED_DATE_STATUS_PENDING,
       })
       .getRawOne();
 
@@ -840,7 +915,7 @@ export class DateCurationRepository implements IDateCurationRepository {
         { user1Id, user2Id }
       )
       .andWhere("date.status != :cancelled", {
-        cancelled: CuratedDateStatus.CANCELLED,
+        cancelled: CuratedDateStatus.CURATED_DATE_STATUS_CANCELLED,
       })
       .andWhere(
         `(
@@ -864,12 +939,12 @@ export class DateCurationRepository implements IDateCurationRepository {
       where: [
         {
           dateTime: Between(now, twentyFourHoursFromNow),
-          status: CuratedDateStatus.USER1_CONFIRMED,
+          status: CuratedDateStatus.CURATED_DATE_STATUS_CONFIRMED,
           reminderSent_24h: false,
         },
         {
           dateTime: Between(now, twoHoursFromNow),
-          status: CuratedDateStatus.USER2_CONFIRMED,
+          status: CuratedDateStatus.CURATED_DATE_STATUS_CONFIRMED,
           reminderSent_2h: false,
         },
       ],

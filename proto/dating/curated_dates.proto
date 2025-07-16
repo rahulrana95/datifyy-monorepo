@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package datifyy.dating.curated_dates;
+
+import "common/base.proto";
+import "admin/revenue.proto";
+import "dating/common.proto";
+import "dating/curation.proto";
+
+message CuratedDatesListResponse {
+  bool success = 1;
+  repeated .dating.curation.CuratedDate dates = 2;
+  datifyy.common.PaginationResponse pagination = 3;
+  string message = 4;
+}
+
+// Get user dates request message with filters
+message GetUserDatesRequest {
+  optional int32 user_id = 1; // If not provided, use authenticated user
+  repeated .dating.common.CuratedDateStatus status = 2;
+  optional string date_from = 3; // YYYY-MM-DD
+  optional string date_to = 4; // YYYY-MM-DD
+  optional .dating.common.DateMode mode = 5;
+  optional bool include_series_info = 6;
+  optional bool include_feedback = 7;
+  optional int32 page = 8;
+  optional int32 limit = 9;
+  optional .dating.common.SortBy sort_by = 10;
+  optional .dating.common.SortOrder sort_order = 11;
+}
+
+// Admin get dates request message with extensive filters
+message AdminGetDatesRequest {
+  repeated .dating.common.CuratedDateStatus status = 1;
+  optional string date_from = 2;
+  optional string date_to = 3;
+  optional .dating.common.DateMode mode = 4;
+  optional string city = 5;
+  optional .dating.common.AdminPriority admin_priority = 6;
+  optional int32 curated_by = 7;
+  optional bool has_unread_feedback = 8;
+  optional bool requires_follow_up = 9;
+  optional string series_id = 10;
+  optional int32 user1_id = 11;
+  optional int32 user2_id = 12;
+  optional double min_compatibility_score = 13;
+  optional double max_compatibility_score = 14;
+  optional double revenue_impact_min = 15;
+  optional double revenue_impact_max = 16;
+  optional bool include_cancelled_by_admin = 17;
+  optional bool include_workflow_details = 18;
+  optional bool include_trust_scores = 19;
+  optional int32 page = 20;
+  optional int32 limit = 21;
+  optional string sort_by = 22;
+  optional .dating.common.SortOrder sort_order = 23;
+}

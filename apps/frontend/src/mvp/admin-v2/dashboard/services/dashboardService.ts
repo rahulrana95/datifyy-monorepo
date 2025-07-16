@@ -1,7 +1,7 @@
 // apps/frontend/src/mvp/admin-v2/dashboard/services/dashboardService.ts
 
 import apiService from "../../../../service/apiService";
-import { ServiceResponse } from "@datifyy/shared-types";
+import { ServiceResponse } from "../../../../service/ErrorTypes";
 import type {
   AdminDashboardOverviewResponse,
   RevenueAnalyticsOverview,

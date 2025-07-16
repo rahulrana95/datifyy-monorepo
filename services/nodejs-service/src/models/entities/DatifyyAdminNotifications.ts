@@ -72,6 +72,16 @@ export class DatifyyAdminNotifications {
   })
   createdAt: Date | null;
 
+  @Column("timestamp without time zone", {
+    name: "updated_at",
+    nullable: true,
+    default: () => "CURRENT_TIMESTAMP",
+  })
+  updatedAt: Date | null;
+
+  @Column("integer", { name: "retry_count", nullable: true, default: () => "0" })
+  retryCount: number | null;
+
   @ManyToOne(
     () => DatifyyUsersLogin,
     (datifyyUsersLogin) => datifyyUsersLogin.datifyyAdminNotifications,
