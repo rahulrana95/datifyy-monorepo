@@ -33,6 +33,10 @@ import AdminLayout from "./mvp/admin-v2/components/AdminLayout";
 import { AvailabilityContainer } from './mvp/availability';
 import { DateCurationContainer } from './mvp/date-curation';
 import { DashboardContainer } from "./mvp/admin-v2/dashboard";
+import { AdminDashboardContainer } from "./mvp/admin-v2/admin-home";
+import { CurateDatesContainer } from "./mvp/admin-v2/curate-dates";
+import { CuratedDatesManagementContainer } from "./mvp/admin-v2/curated-dates-management";
+import { RevenueTrackingContainer } from "./mvp/admin-v2/revenue-tracking";
 
 
 LogRocket.init('kcpnhr/datifyy-fronend');
@@ -145,7 +149,10 @@ function App() {
                   </Route>
                   <Route path="/admin/login" element={<AdminLoginPage />} />
                   <Route path="/admin" element={<AdminLayout />}>
-                    <Route path="dashboard" element={<DashboardContainer />} />
+                    <Route path="dashboard" element={<AdminDashboardContainer />} />
+                    <Route path="curate-dates" element={<CurateDatesContainer />} />
+                    <Route path="dates-management" element={<CuratedDatesManagementContainer />} />
+                    <Route path="revenue" element={<RevenueTrackingContainer />} />
                     {/* Future admin routes will go here */}
                     <Route index element={<Navigate to="/admin/dashboard" replace />} />
                   </Route>

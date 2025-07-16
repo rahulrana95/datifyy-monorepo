@@ -25,6 +25,7 @@ import {
     FiCalendar,
     FiTrendingUp,
     FiAlertTriangle,
+    FiList,
 } from 'react-icons/fi';
 
 interface SidebarItem {
@@ -53,19 +54,30 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     },
     {
         label: 'Date Curation',
-        path: '/admin/dates',
+        path: '/admin/curate-dates',
         icon: FiHeart,
         badge: 'New',
         description: 'Curate and manage dates',
         isNew: true,
-        isComingSoon: true,
+        isComingSoon: false,
+    },
+    {
+        label: 'Dates Management',
+        path: '/admin/dates-management',
+        icon: FiList,
+        badge: 'New',
+        description: 'View and manage curated dates',
+        isNew: true,
+        isComingSoon: false,
     },
     {
         label: 'Revenue Analytics',
         path: '/admin/revenue',
         icon: FiDollarSign,
+        badge: 'New',
         description: 'Financial insights and reports',
-        isComingSoon: true,
+        isNew: true,
+        isComingSoon: false,
     },
     {
         label: 'Match Analytics',
@@ -180,14 +192,11 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isCollapsed = false }) => {
                 {SIDEBAR_ITEMS.map((item) => {
                     const isActive = isActiveRoute(item.path);
 
-                    const menuItem = (
+                    const menuItem = item.isComingSoon ? (
                         <Box
-                            as={item.isComingSoon ? 'div' : NavLink}
-                            // to={item.isComingSoon ? undefined : item.path}
                             w="full"
-                            cursor={item.isComingSoon ? 'not-allowed' : 'pointer'}
-                            opacity={item.isComingSoon ? 0.6 : 1}
-                            _hover={!item.isComingSoon ? { bg: hoverBg } : {}}
+                            cursor="not-allowed"
+                            opacity={0.6}
                         >
                             <HStack
                                 p={3}
@@ -215,6 +224,46 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isCollapsed = false }) => {
                                         {item.isComingSoon && (
                                             <Badge colorScheme="gray" variant="outline" fontSize="xs">
                                                 Soon
+                                            </Badge>
+                                        )}
+
+                                        {item.badge && !item.isNew && (
+                                            <Badge colorScheme="blue" variant="solid" fontSize="xs">
+                                                {item.badge}
+                                            </Badge>
+                                        )}
+                                    </>
+                                )}
+                            </HStack>
+                        </Box>
+                    ) : (
+                        <Box
+                            as={NavLink}
+                            to={item.path}
+                            w="full"
+                            cursor="pointer"
+                            _hover={{ bg: hoverBg }}
+                        >
+                            <HStack
+                                p={3}
+                                borderRadius="lg"
+                                bg={isActive ? activeBg : 'transparent'}
+                                color={isActive ? activeColor : textColor}
+                                spacing={3}
+                                transition="all 0.2s"
+                            >
+                                <Icon as={item.icon} boxSize="20px" />
+
+                                {!isCollapsed && (
+                                    <>
+                                        <Text fontSize="sm" fontWeight="medium" flex="1">
+                                            {item.label}
+                                        </Text>
+
+                                        {/* Badges */}
+                                        {item.isNew && (
+                                            <Badge colorScheme="green" variant="solid" fontSize="xs">
+                                                New
                                             </Badge>
                                         )}
 
