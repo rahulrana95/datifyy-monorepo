@@ -8,8 +8,8 @@
  * @since 1.0.0
  */
 
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcryptjs';
+import * as jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import {
   IAdminAuthService,

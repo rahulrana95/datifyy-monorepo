@@ -19,7 +19,7 @@ enum MatchAlgorithm {
 }
 
 // Compatibility factors for scoring
-enum CompatibilityFactor {
+enum CompatibilityFactorScoring {
   COMPATIBILITY_FACTOR_UNSPECIFIED = 0;
   COMPATIBILITY_FACTOR_AGE_COMPATIBILITY = 1;
   COMPATIBILITY_FACTOR_LOCATION_PROXIMITY = 2;
@@ -140,7 +140,7 @@ enum MatchUsageOutcome {
 }
 
 // Location coordinates
-message LocationCoordinates {
+message LocationCoordinatesSmall {
   float lat = 1;
   float lng = 2;
 }
@@ -150,7 +150,7 @@ message UserLocation {
   string city = 1;
   string state = 2;
   string country = 3;
-  LocationCoordinates coordinates = 4;
+  LocationCoordinatesSmall coordinates = 4;
   string timezone = 5;
 }
 
@@ -261,7 +261,7 @@ message FactorScore {
 
 // Compatibility strength or concern area
 message CompatibilityStrength {
-  CompatibilityFactor factor = 1;
+  CompatibilityFactorScoring factor = 1;
   float score = 2;
   ImpactLevel impact = 3;
   string description = 4;
@@ -345,7 +345,7 @@ message BatchMatchSuggestion {
   repeated MatchAlgorithm algorithms = 3;
   int32 max_suggestions_per_user = 4;
   float min_compatibility_score = 5;
-  repeated CompatibilityFactor priority_factors = 6;
+  repeated CompatibilityFactorScoring priority_factors = 6;
   bool include_analysis = 7;
   string requested_by = 8;
   string requested_at = 9;
@@ -358,7 +358,7 @@ message GenerateMatchSuggestionRequest {
   repeated MatchAlgorithm algorithms = 2;
   int32 max_suggestions = 3;
   float min_compatibility_score = 4;
-  repeated CompatibilityFactor priority_factors = 5;
+  repeated CompatibilityFactorScoring priority_factors = 5;
   bool include_detailed_analysis = 6;
   repeated int32 exclude_user_ids = 7;
 }
@@ -395,7 +395,7 @@ message UseMatchSuggestionRequest {
 message GetCompatibilityAnalysisRequest {
   int32 user1_id = 1;
   int32 user2_id = 2;
-  repeated CompatibilityFactor factors = 3;
+  repeated CompatibilityFactorScoring factors = 3;
   bool include_detailed_breakdown = 4;
   bool include_risk_analysis = 5;
 }
@@ -405,7 +405,7 @@ message BatchGenerateMatchSuggestionsRequest {
   repeated MatchAlgorithm algorithms = 2;
   int32 max_suggestions_per_user = 3;
   float min_compatibility_score = 4;
-  repeated CompatibilityFactor priority_factors = 5;
+  repeated CompatibilityFactorScoring priority_factors = 5;
   bool include_analysis = 6;
   int32 requesting_admin_id = 7;
 }
@@ -449,8 +449,8 @@ message BatchMatchSuggestionResponse {
 message UserMatchabilityResponse {
   bool success = 1;
   MatchUserProfile user_profile = 2;
-  repeated CompatibilityFactor strong_factors = 3;
-  repeated CompatibilityFactor weak_factors = 4;
+  repeated CompatibilityFactorScoring strong_factors = 3;
+  repeated CompatibilityFactorScoring weak_factors = 4;
   repeated string improvement_suggestions = 5;
   float overall_matchability_score = 6;
   string message = 7;

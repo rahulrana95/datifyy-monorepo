@@ -234,3 +234,32 @@ enum MatchSuggestionStatus {
   SUGGESTION_REJECTED = 5;
   SUGGESTION_EXPIRED = 6;
 }
+
+// Admin token payload for JWT tokens
+message AdminTokenPayload {
+  string sub = 1;
+  string email = 2;
+  AdminPermissionLevel permission_level = 3;
+  repeated AdminPermission permissions = 4;
+  string session_id = 5;
+  int64 iat = 6;
+  int64 exp = 7;
+  string iss = 8;
+  string aud = 9;
+  int32 admin_id = 10;
+}
+
+// Admin security constants
+message AdminSecurityConstants {
+  int32 max_login_attempts = 1;
+  int32 session_timeout_hours = 2;
+  int32 two_factor_validity_minutes = 3;
+  int32 password_reset_validity_hours = 4;
+  int32 account_lock_duration_minutes = 5;
+  int32 refresh_token_validity_days = 6;
+  int32 max_concurrent_sessions = 7;
+  int32 password_history_count = 8;
+  int32 password_min_length = 9;
+  int32 rate_limit_window_minutes = 10;
+  int32 rate_limit_max_requests = 11;
+}

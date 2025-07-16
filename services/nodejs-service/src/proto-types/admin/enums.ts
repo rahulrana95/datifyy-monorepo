@@ -226,3 +226,32 @@ export enum MatchSuggestionStatus {
   SUGGESTION_REJECTED = "SUGGESTION_REJECTED",
   SUGGESTION_EXPIRED = "SUGGESTION_EXPIRED",
 }
+
+/** Admin token payload for JWT tokens */
+export interface AdminTokenPayload {
+  sub: string;
+  email: string;
+  permissionLevel: AdminPermissionLevel;
+  permissions: AdminPermission[];
+  sessionId: string;
+  iat: number;
+  exp: number;
+  iss: string;
+  aud: string;
+  adminId: number;
+}
+
+/** Admin security constants */
+export interface AdminSecurityConstants {
+  maxLoginAttempts: number;
+  sessionTimeoutHours: number;
+  twoFactorValidityMinutes: number;
+  passwordResetValidityHours: number;
+  accountLockDurationMinutes: number;
+  refreshTokenValidityDays: number;
+  maxConcurrentSessions: number;
+  passwordHistoryCount: number;
+  passwordMinLength: number;
+  rateLimitWindowMinutes: number;
+  rateLimitMaxRequests: number;
+}

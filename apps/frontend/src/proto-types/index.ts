@@ -1,5 +1,5 @@
 // Auto-generated index file for proto types
-// Generated at: 2025-07-15T19:26:38.382Z
+// Generated at: 2025-07-16T02:13:58.660Z
 
 // Common types
 export * from './common';

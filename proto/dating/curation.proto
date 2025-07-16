@@ -3,74 +3,7 @@ syntax = "proto3";
 package dating.curation;
 
 import "common/base.proto";
-import "admin/matching.proto";
-
-// Date mode types
-enum DateMode {
-  DATE_MODE_UNSPECIFIED = 0;
-  DATE_MODE_ONLINE = 1;
-  DATE_MODE_OFFLINE = 2;
-}
-
-// Curated date status types
-enum CuratedDateStatus {
-  CURATED_DATE_STATUS_UNSPECIFIED = 0;
-  CURATED_DATE_STATUS_PENDING = 1;
-  CURATED_DATE_STATUS_USER1_CONFIRMED = 2;
-  CURATED_DATE_STATUS_USER2_CONFIRMED = 3;
-  CURATED_DATE_STATUS_BOTH_CONFIRMED = 4;
-  CURATED_DATE_STATUS_CANCELLED = 5;
-  CURATED_DATE_STATUS_COMPLETED = 6;
-  CURATED_DATE_STATUS_NO_SHOW = 7;
-}
-
-// Date series relationship stages
-enum RelationshipStage {
-  RELATIONSHIP_STAGE_UNSPECIFIED = 0;
-  RELATIONSHIP_STAGE_GETTING_TO_KNOW = 1;
-  RELATIONSHIP_STAGE_BUILDING_CONNECTION = 2;
-  RELATIONSHIP_STAGE_STRONG_INTEREST = 3;
-  RELATIONSHIP_STAGE_EXCLUSIVE_DATING = 4;
-  RELATIONSHIP_STAGE_RELATIONSHIP = 5;
-}
-
-// Cancellation categories
-enum CancellationCategory {
-  CANCELLATION_CATEGORY_UNSPECIFIED = 0;
-  CANCELLATION_CATEGORY_NO_TIME = 1;
-  CANCELLATION_CATEGORY_NOT_INTERESTED = 2;
-  CANCELLATION_CATEGORY_EMERGENCY = 3;
-  CANCELLATION_CATEGORY_OTHER = 4;
-}
-
-// Workflow stages for admin curation
-enum CurationWorkflowStage {
-  CURATION_WORKFLOW_STAGE_UNSPECIFIED = 0;
-  CURATION_WORKFLOW_STAGE_USER_SELECTION = 1;
-  CURATION_WORKFLOW_STAGE_COMPATIBILITY_CHECK = 2;
-  CURATION_WORKFLOW_STAGE_SCHEDULING = 3;
-  CURATION_WORKFLOW_STAGE_CONFIRMATION = 4;
-  CURATION_WORKFLOW_STAGE_REMINDER_SENT = 5;
-  CURATION_WORKFLOW_STAGE_COMPLETED = 6;
-  CURATION_WORKFLOW_STAGE_FEEDBACK_COLLECTED = 7;
-}
-
-// Stage status for workflow tracking
-enum WorkflowStageStatus {
-  WORKFLOW_STAGE_STATUS_UNSPECIFIED = 0;
-  WORKFLOW_STAGE_STATUS_PENDING = 1;
-  WORKFLOW_STAGE_STATUS_IN_PROGRESS = 2;
-  WORKFLOW_STAGE_STATUS_COMPLETED = 3;
-  WORKFLOW_STAGE_STATUS_FAILED = 4;
-}
-
-// Date series status
-enum DateSeriesStatus {
-  DATE_SERIES_STATUS_UNSPECIFIED = 0;
-  DATE_SERIES_STATUS_ACTIVE = 1;
-  DATE_SERIES_STATUS_PAUSED = 2;
-  DATE_SERIES_STATUS_ENDED = 3;
-}
+import "dating/common.proto";
 
 // Core curated date message
 message CuratedDate {
@@ -79,12 +12,12 @@ message CuratedDate {
   int32 user2_id = 3;
   string date_time = 4; // ISO string
   int32 duration_minutes = 5;
-  DateMode mode = 6;
+  dating.common.DateMode mode = 6;
   
   // Location details (for offline dates)
   string location_name = 7;
   string location_address = 8;
-  datifyy.admin.matching.LocationCoordinates location_coordinates = 9;
+  dating.common.LocationCoordinates location_coordinates = 9;
   string location_google_maps_url = 10;
   
   // Online meeting details
@@ -93,7 +26,7 @@ message CuratedDate {
   string meeting_password = 13;
   
   // Status and tracking
-  CuratedDateStatus status = 14;
+  dating.common.CuratedDateStatus status = 14;
   string date_series_id = 15;
   int32 date_number_in_series = 16;
   
@@ -111,7 +44,7 @@ message CuratedDate {
   int32 cancelled_by_user_id = 23;
   string cancelled_at = 24;
   string cancellation_reason = 25;
-  CancellationCategory cancellation_category = 26;
+  dating.common.CancellationCategory cancellation_category = 26;
   
   // Completion tracking
   string completed_at = 27;
@@ -138,84 +71,6 @@ message CuratedDate {
   string updated_at = 40;
 }
 
-// Date feedback message
-message DateFeedback {
-  int32 id = 1;
-  int32 curated_date_id = 2;
-  int32 user_id = 3;
-  
-  // Overall experience ratings (1-5)
-  int32 overall_rating = 4;
-  bool would_meet_again = 5;
-  int32 chemistry_rating = 6;
-  int32 conversation_quality = 7;
-  
-  // Text feedback
-  string what_went_well = 8;
-  string what_could_improve = 9;
-  string favorite_moment = 10;
-  
-  // Partner evaluation (1-5)
-  int32 partner_punctuality = 11;
-  int32 partner_appearance_match = 12;
-  
-  // Future preferences
-  string suggested_improvements = 13;
-  string preferred_next_date_activity = 14;
-  string preferred_next_date_timing = 15;
-  
-  // Safety and concerns
-  bool safety_concerns = 16;
-  repeated string red_flags = 17;
-  bool report_user = 18;
-  string report_reason = 19;
-  
-  // Logistics feedback (1-5)
-  int32 venue_rating = 20;
-  int32 timing_satisfaction = 21;
-  int32 duration_satisfaction = 22;
-  
-  // Follow-up intentions
-  bool interested_in_second_date = 23;
-  string preferred_contact_method = 24;
-  string additional_comments = 25;
-  
-  // Metadata
-  string submitted_at = 26;
-  bool is_anonymous = 27;
-}
-
-// Date series message
-message DateSeries {
-  string id = 1;
-  int32 user1_id = 2;
-  int32 user2_id = 3;
-  
-  // Series metadata
-  DateSeriesStatus series_status = 4;
-  int32 total_dates_in_series = 5;
-  string last_date_at = 6;
-  string next_suggested_date = 7;
-  
-  // Progression
-  RelationshipStage relationship_stage = 8;
-  int32 mutual_interest_level = 9; // 1-5
-  string admin_notes = 10;
-  
-  // Preferences
-  string preferred_date_frequency = 11;
-  repeated string preferred_date_types = 12;
-  
-  // Outcome tracking
-  string series_ended_reason = 13;
-  int32 ended_by_user_id = 14;
-  string ended_at = 15;
-  string final_outcome = 16;
-  
-  // Audit
-  string created_at = 17;
-  string updated_at = 18;
-}
 
 // Request messages
 message CreateCuratedDateRequest {
@@ -223,12 +78,12 @@ message CreateCuratedDateRequest {
   int32 user2_id = 2;
   string date_time = 3; // ISO string
   int32 duration_minutes = 4;
-  DateMode mode = 5;
+  dating.common.DateMode mode = 5;
   
   // Location (for offline dates)
   string location_name = 6;
   string location_address = 7;
-  datifyy.admin.matching.LocationCoordinates location_coordinates = 8;
+  dating.common.LocationCoordinates location_coordinates = 8;
   
   // Online meeting (for online dates)
   string meeting_link = 9;
@@ -255,10 +110,10 @@ message UpdateCuratedDateRequest {
   int32 curated_date_id = 1;
   string date_time = 2;
   int32 duration_minutes = 3;
-  DateMode mode = 4;
+  dating.common.DateMode mode = 4;
   string location_name = 5;
   string location_address = 6;
-  datifyy.admin.matching.LocationCoordinates location_coordinates = 7;
+  dating.common.LocationCoordinates location_coordinates = 7;
   string meeting_link = 8;
   string meeting_id = 9;
   string meeting_password = 10;
@@ -269,53 +124,12 @@ message UpdateCuratedDateRequest {
 }
 
 message GetCuratedDatesRequest {
-  repeated CuratedDateStatus statuses = 1;
+  repeated dating.common.CuratedDateStatus statuses = 1;
   int32 user_id = 2;
   string start_date = 3;
   string end_date = 4;
   string date_series_id = 5;
   datifyy.common.PaginationRequest pagination = 6;
-}
-
-message ConfirmCuratedDateRequest {
-  int32 curated_date_id = 1;
-  int32 user_id = 2;
-  bool confirm = 3;
-}
-
-message CancelCuratedDateRequest {
-  int32 curated_date_id = 1;
-  int32 user_id = 2;
-  string cancellation_reason = 3;
-  CancellationCategory cancellation_category = 4;
-}
-
-message SubmitDateFeedbackRequest {
-  int32 curated_date_id = 1;
-  int32 user_id = 2;
-  int32 overall_rating = 3;
-  bool would_meet_again = 4;
-  int32 chemistry_rating = 5;
-  int32 conversation_quality = 6;
-  string what_went_well = 7;
-  string what_could_improve = 8;
-  string favorite_moment = 9;
-  int32 partner_punctuality = 10;
-  int32 partner_appearance_match = 11;
-  string suggested_improvements = 12;
-  string preferred_next_date_activity = 13;
-  string preferred_next_date_timing = 14;
-  bool safety_concerns = 15;
-  repeated string red_flags = 16;
-  bool report_user = 17;
-  string report_reason = 18;
-  int32 venue_rating = 19;
-  int32 timing_satisfaction = 20;
-  int32 duration_satisfaction = 21;
-  bool interested_in_second_date = 22;
-  string preferred_contact_method = 23;
-  string additional_comments = 24;
-  bool is_anonymous = 25;
 }
 
 message GetUserTrustScoreRequest {
@@ -325,7 +139,7 @@ message GetUserTrustScoreRequest {
 message CreateDateSeriesRequest {
   int32 user1_id = 1;
   int32 user2_id = 2;
-  RelationshipStage relationship_stage = 3;
+  dating.common.RelationshipStage relationship_stage = 3;
   int32 mutual_interest_level = 4;
   string admin_notes = 5;
   string preferred_date_frequency = 6;
@@ -334,8 +148,8 @@ message CreateDateSeriesRequest {
 
 message UpdateDateSeriesRequest {
   string series_id = 1;
-  DateSeriesStatus series_status = 2;
-  RelationshipStage relationship_stage = 3;
+  dating.common.DateSeriesStatus series_status = 2;
+  dating.common.RelationshipStage relationship_stage = 3;
   int32 mutual_interest_level = 4;
   string admin_notes = 5;
   string preferred_date_frequency = 6;
@@ -357,30 +171,6 @@ message CuratedDateListResponse {
   repeated CuratedDate curated_dates = 2;
   datifyy.common.PaginationResponse pagination = 3;
   string message = 4;
-}
-
-message DateFeedbackResponse {
-  bool success = 1;
-  DateFeedback data = 2;
-  string message = 3;
-}
-
-message DateSeriesResponse {
-  bool success = 1;
-  DateSeries data = 2;
-  string message = 3;
-}
-
-message DateSeriesListResponse {
-  bool success = 1;
-  repeated DateSeries date_series = 2;
-  datifyy.common.PaginationResponse pagination = 3;
-  string message = 4;
-}
-
-message ActionResponse {
-  bool success = 1;
-  string message = 2;
 }
 
 // Additional missing types that the service needs
@@ -482,11 +272,4 @@ message DateCurationValidationRules {
   repeated string blocked_venues = 6;
   int32 max_daily_bookings = 7;
   int32 max_weekly_bookings = 8;
-}
-
-message ConfirmDateRequest {
-  int32 curated_date_id = 1;
-  int32 user_id = 2;
-  bool confirmed = 3;
-  string notes = 4;
 }

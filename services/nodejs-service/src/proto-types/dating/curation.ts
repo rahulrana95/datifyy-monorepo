@@ -5,75 +5,15 @@
 // source: dating/curation.proto
 
 /* eslint-disable */
-import type { LocationCoordinates } from "../admin/matching";
 import type { PaginationRequest, PaginationResponse } from "../common/base";
-
-/** Date mode types */
-export enum DateMode {
-  DATE_MODE_UNSPECIFIED = "DATE_MODE_UNSPECIFIED",
-  DATE_MODE_ONLINE = "DATE_MODE_ONLINE",
-  DATE_MODE_OFFLINE = "DATE_MODE_OFFLINE",
-}
-
-/** Curated date status types */
-export enum CuratedDateStatus {
-  CURATED_DATE_STATUS_UNSPECIFIED = "CURATED_DATE_STATUS_UNSPECIFIED",
-  CURATED_DATE_STATUS_PENDING = "CURATED_DATE_STATUS_PENDING",
-  CURATED_DATE_STATUS_USER1_CONFIRMED = "CURATED_DATE_STATUS_USER1_CONFIRMED",
-  CURATED_DATE_STATUS_USER2_CONFIRMED = "CURATED_DATE_STATUS_USER2_CONFIRMED",
-  CURATED_DATE_STATUS_BOTH_CONFIRMED = "CURATED_DATE_STATUS_BOTH_CONFIRMED",
-  CURATED_DATE_STATUS_CANCELLED = "CURATED_DATE_STATUS_CANCELLED",
-  CURATED_DATE_STATUS_COMPLETED = "CURATED_DATE_STATUS_COMPLETED",
-  CURATED_DATE_STATUS_NO_SHOW = "CURATED_DATE_STATUS_NO_SHOW",
-}
-
-/** Date series relationship stages */
-export enum RelationshipStage {
-  RELATIONSHIP_STAGE_UNSPECIFIED = "RELATIONSHIP_STAGE_UNSPECIFIED",
-  RELATIONSHIP_STAGE_GETTING_TO_KNOW = "RELATIONSHIP_STAGE_GETTING_TO_KNOW",
-  RELATIONSHIP_STAGE_BUILDING_CONNECTION = "RELATIONSHIP_STAGE_BUILDING_CONNECTION",
-  RELATIONSHIP_STAGE_STRONG_INTEREST = "RELATIONSHIP_STAGE_STRONG_INTEREST",
-  RELATIONSHIP_STAGE_EXCLUSIVE_DATING = "RELATIONSHIP_STAGE_EXCLUSIVE_DATING",
-  RELATIONSHIP_STAGE_RELATIONSHIP = "RELATIONSHIP_STAGE_RELATIONSHIP",
-}
-
-/** Cancellation categories */
-export enum CancellationCategory {
-  CANCELLATION_CATEGORY_UNSPECIFIED = "CANCELLATION_CATEGORY_UNSPECIFIED",
-  CANCELLATION_CATEGORY_NO_TIME = "CANCELLATION_CATEGORY_NO_TIME",
-  CANCELLATION_CATEGORY_NOT_INTERESTED = "CANCELLATION_CATEGORY_NOT_INTERESTED",
-  CANCELLATION_CATEGORY_EMERGENCY = "CANCELLATION_CATEGORY_EMERGENCY",
-  CANCELLATION_CATEGORY_OTHER = "CANCELLATION_CATEGORY_OTHER",
-}
-
-/** Workflow stages for admin curation */
-export enum CurationWorkflowStage {
-  CURATION_WORKFLOW_STAGE_UNSPECIFIED = "CURATION_WORKFLOW_STAGE_UNSPECIFIED",
-  CURATION_WORKFLOW_STAGE_USER_SELECTION = "CURATION_WORKFLOW_STAGE_USER_SELECTION",
-  CURATION_WORKFLOW_STAGE_COMPATIBILITY_CHECK = "CURATION_WORKFLOW_STAGE_COMPATIBILITY_CHECK",
-  CURATION_WORKFLOW_STAGE_SCHEDULING = "CURATION_WORKFLOW_STAGE_SCHEDULING",
-  CURATION_WORKFLOW_STAGE_CONFIRMATION = "CURATION_WORKFLOW_STAGE_CONFIRMATION",
-  CURATION_WORKFLOW_STAGE_REMINDER_SENT = "CURATION_WORKFLOW_STAGE_REMINDER_SENT",
-  CURATION_WORKFLOW_STAGE_COMPLETED = "CURATION_WORKFLOW_STAGE_COMPLETED",
-  CURATION_WORKFLOW_STAGE_FEEDBACK_COLLECTED = "CURATION_WORKFLOW_STAGE_FEEDBACK_COLLECTED",
-}
-
-/** Stage status for workflow tracking */
-export enum WorkflowStageStatus {
-  WORKFLOW_STAGE_STATUS_UNSPECIFIED = "WORKFLOW_STAGE_STATUS_UNSPECIFIED",
-  WORKFLOW_STAGE_STATUS_PENDING = "WORKFLOW_STAGE_STATUS_PENDING",
-  WORKFLOW_STAGE_STATUS_IN_PROGRESS = "WORKFLOW_STAGE_STATUS_IN_PROGRESS",
-  WORKFLOW_STAGE_STATUS_COMPLETED = "WORKFLOW_STAGE_STATUS_COMPLETED",
-  WORKFLOW_STAGE_STATUS_FAILED = "WORKFLOW_STAGE_STATUS_FAILED",
-}
-
-/** Date series status */
-export enum DateSeriesStatus {
-  DATE_SERIES_STATUS_UNSPECIFIED = "DATE_SERIES_STATUS_UNSPECIFIED",
-  DATE_SERIES_STATUS_ACTIVE = "DATE_SERIES_STATUS_ACTIVE",
-  DATE_SERIES_STATUS_PAUSED = "DATE_SERIES_STATUS_PAUSED",
-  DATE_SERIES_STATUS_ENDED = "DATE_SERIES_STATUS_ENDED",
-}
+import type {
+  CancellationCategory,
+  CuratedDateStatus,
+  DateMode,
+  DateSeriesStatus,
+  LocationCoordinates,
+  RelationshipStage,
+} from "./common";
 
 /** Core curated date message */
 export interface CuratedDate {
@@ -128,73 +68,6 @@ export interface CuratedDate {
   curatedBy: number;
   curatedAt: string;
   updatedBy: number;
-  updatedAt: string;
-}
-
-/** Date feedback message */
-export interface DateFeedback {
-  id: number;
-  curatedDateId: number;
-  userId: number;
-  /** Overall experience ratings (1-5) */
-  overallRating: number;
-  wouldMeetAgain: boolean;
-  chemistryRating: number;
-  conversationQuality: number;
-  /** Text feedback */
-  whatWentWell: string;
-  whatCouldImprove: string;
-  favoriteMoment: string;
-  /** Partner evaluation (1-5) */
-  partnerPunctuality: number;
-  partnerAppearanceMatch: number;
-  /** Future preferences */
-  suggestedImprovements: string;
-  preferredNextDateActivity: string;
-  preferredNextDateTiming: string;
-  /** Safety and concerns */
-  safetyConcerns: boolean;
-  redFlags: string[];
-  reportUser: boolean;
-  reportReason: string;
-  /** Logistics feedback (1-5) */
-  venueRating: number;
-  timingSatisfaction: number;
-  durationSatisfaction: number;
-  /** Follow-up intentions */
-  interestedInSecondDate: boolean;
-  preferredContactMethod: string;
-  additionalComments: string;
-  /** Metadata */
-  submittedAt: string;
-  isAnonymous: boolean;
-}
-
-/** Date series message */
-export interface DateSeries {
-  id: string;
-  user1Id: number;
-  user2Id: number;
-  /** Series metadata */
-  seriesStatus: DateSeriesStatus;
-  totalDatesInSeries: number;
-  lastDateAt: string;
-  nextSuggestedDate: string;
-  /** Progression */
-  relationshipStage: RelationshipStage;
-  /** 1-5 */
-  mutualInterestLevel: number;
-  adminNotes: string;
-  /** Preferences */
-  preferredDateFrequency: string;
-  preferredDateTypes: string[];
-  /** Outcome tracking */
-  seriesEndedReason: string;
-  endedByUserId: number;
-  endedAt: string;
-  finalOutcome: string;
-  /** Audit */
-  createdAt: string;
   updatedAt: string;
 }
 
@@ -256,47 +129,6 @@ export interface GetCuratedDatesRequest {
   pagination?: PaginationRequest | undefined;
 }
 
-export interface ConfirmCuratedDateRequest {
-  curatedDateId: number;
-  userId: number;
-  confirm: boolean;
-}
-
-export interface CancelCuratedDateRequest {
-  curatedDateId: number;
-  userId: number;
-  cancellationReason: string;
-  cancellationCategory: CancellationCategory;
-}
-
-export interface SubmitDateFeedbackRequest {
-  curatedDateId: number;
-  userId: number;
-  overallRating: number;
-  wouldMeetAgain: boolean;
-  chemistryRating: number;
-  conversationQuality: number;
-  whatWentWell: string;
-  whatCouldImprove: string;
-  favoriteMoment: string;
-  partnerPunctuality: number;
-  partnerAppearanceMatch: number;
-  suggestedImprovements: string;
-  preferredNextDateActivity: string;
-  preferredNextDateTiming: string;
-  safetyConcerns: boolean;
-  redFlags: string[];
-  reportUser: boolean;
-  reportReason: string;
-  venueRating: number;
-  timingSatisfaction: number;
-  durationSatisfaction: number;
-  interestedInSecondDate: boolean;
-  preferredContactMethod: string;
-  additionalComments: string;
-  isAnonymous: boolean;
-}
-
 export interface GetUserTrustScoreRequest {
   userId: number;
 }
@@ -335,30 +167,6 @@ export interface CuratedDateListResponse {
   success: boolean;
   curatedDates: CuratedDate[];
   pagination?: PaginationResponse | undefined;
-  message: string;
-}
-
-export interface DateFeedbackResponse {
-  success: boolean;
-  data?: DateFeedback | undefined;
-  message: string;
-}
-
-export interface DateSeriesResponse {
-  success: boolean;
-  data?: DateSeries | undefined;
-  message: string;
-}
-
-export interface DateSeriesListResponse {
-  success: boolean;
-  dateSeries: DateSeries[];
-  pagination?: PaginationResponse | undefined;
-  message: string;
-}
-
-export interface ActionResponse {
-  success: boolean;
   message: string;
 }
 
@@ -462,11 +270,4 @@ export interface DateCurationValidationRules {
   blockedVenues: string[];
   maxDailyBookings: number;
   maxWeeklyBookings: number;
-}
-
-export interface ConfirmDateRequest {
-  curatedDateId: number;
-  userId: number;
-  confirmed: boolean;
-  notes: string;
 }

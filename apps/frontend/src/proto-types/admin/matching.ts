@@ -22,7 +22,7 @@ export enum MatchAlgorithm {
 }
 
 /** Compatibility factors for scoring */
-export enum CompatibilityFactor {
+export enum CompatibilityFactorScoring {
   COMPATIBILITY_FACTOR_UNSPECIFIED = "COMPATIBILITY_FACTOR_UNSPECIFIED",
   COMPATIBILITY_FACTOR_AGE_COMPATIBILITY = "COMPATIBILITY_FACTOR_AGE_COMPATIBILITY",
   COMPATIBILITY_FACTOR_LOCATION_PROXIMITY = "COMPATIBILITY_FACTOR_LOCATION_PROXIMITY",
@@ -154,7 +154,7 @@ export enum MatchUsageOutcome {
 }
 
 /** Location coordinates */
-export interface LocationCoordinates {
+export interface LocationCoordinatesSmall {
   lat: number;
   lng: number;
 }
@@ -164,7 +164,7 @@ export interface UserLocation {
   city: string;
   state: string;
   country: string;
-  coordinates?: LocationCoordinates | undefined;
+  coordinates?: LocationCoordinatesSmall | undefined;
   timezone: string;
 }
 
@@ -293,7 +293,7 @@ export interface FactorScore {
 
 /** Compatibility strength or concern area */
 export interface CompatibilityStrength {
-  factor: CompatibilityFactor;
+  factor: CompatibilityFactorScoring;
   score: number;
   impact: ImpactLevel;
   description: string;
@@ -390,7 +390,7 @@ export interface BatchMatchSuggestion {
   algorithms: MatchAlgorithm[];
   maxSuggestionsPerUser: number;
   minCompatibilityScore: number;
-  priorityFactors: CompatibilityFactor[];
+  priorityFactors: CompatibilityFactorScoring[];
   includeAnalysis: boolean;
   requestedBy: string;
   requestedAt: string;
@@ -403,7 +403,7 @@ export interface GenerateMatchSuggestionRequest {
   algorithms: MatchAlgorithm[];
   maxSuggestions: number;
   minCompatibilityScore: number;
-  priorityFactors: CompatibilityFactor[];
+  priorityFactors: CompatibilityFactorScoring[];
   includeDetailedAnalysis: boolean;
   excludeUserIds: number[];
 }
@@ -440,7 +440,7 @@ export interface UseMatchSuggestionRequest {
 export interface GetCompatibilityAnalysisRequest {
   user1Id: number;
   user2Id: number;
-  factors: CompatibilityFactor[];
+  factors: CompatibilityFactorScoring[];
   includeDetailedBreakdown: boolean;
   includeRiskAnalysis: boolean;
 }
@@ -450,7 +450,7 @@ export interface BatchGenerateMatchSuggestionsRequest {
   algorithms: MatchAlgorithm[];
   maxSuggestionsPerUser: number;
   minCompatibilityScore: number;
-  priorityFactors: CompatibilityFactor[];
+  priorityFactors: CompatibilityFactorScoring[];
   includeAnalysis: boolean;
   requestingAdminId: number;
 }
@@ -494,8 +494,8 @@ export interface BatchMatchSuggestionResponse {
 export interface UserMatchabilityResponse {
   success: boolean;
   userProfile?: MatchUserProfile | undefined;
-  strongFactors: CompatibilityFactor[];
-  weakFactors: CompatibilityFactor[];
+  strongFactors: CompatibilityFactorScoring[];
+  weakFactors: CompatibilityFactorScoring[];
   improvementSuggestions: string[];
   overallMatchabilityScore: number;
   message: string;

@@ -1,0 +1,287 @@
+syntax = "proto3";
+
+package dating.common;
+
+import "common/base.proto";
+
+// Date mode types - shared across dating services
+enum DateMode {
+  DATE_MODE_UNSPECIFIED = 0;
+  DATE_MODE_ONLINE = 1;
+  DATE_MODE_OFFLINE = 2;
+}
+
+// Curated date status types - unified status system
+enum CuratedDateStatus {
+  CURATED_DATE_STATUS_UNSPECIFIED = 0;
+  CURATED_DATE_STATUS_PENDING = 1;
+  CURATED_DATE_STATUS_USER1_CONFIRMED = 2;
+  CURATED_DATE_STATUS_USER2_CONFIRMED = 3;
+  CURATED_DATE_STATUS_BOTH_CONFIRMED = 4;
+  CURATED_DATE_STATUS_CONFIRMED = 5; // Alias for backward compatibility
+  CURATED_DATE_STATUS_CANCELLED = 6;
+  CURATED_DATE_STATUS_COMPLETED = 7;
+  CURATED_DATE_STATUS_NO_SHOW = 8;
+}
+
+// Cancellation category - why dates get cancelled
+enum CancellationCategory {
+  CANCELLATION_CATEGORY_UNSPECIFIED = 0;
+  CANCELLATION_CATEGORY_PERSONAL_EMERGENCY = 1;
+  CANCELLATION_CATEGORY_ILLNESS = 2;
+  CANCELLATION_CATEGORY_WORK_CONFLICT = 3;
+  CANCELLATION_CATEGORY_FAMILY_EMERGENCY = 4;
+  CANCELLATION_CATEGORY_TRANSPORTATION = 5;
+  CANCELLATION_CATEGORY_WEATHER = 6;
+  CANCELLATION_CATEGORY_NOT_INTERESTED = 7;
+  CANCELLATION_CATEGORY_OTHER = 8;
+}
+
+// Date series relationship stages - progression tracking
+enum RelationshipStage {
+  RELATIONSHIP_STAGE_UNSPECIFIED = 0;
+  RELATIONSHIP_STAGE_GETTING_TO_KNOW = 1;
+  RELATIONSHIP_STAGE_BUILDING_CONNECTION = 2;
+  RELATIONSHIP_STAGE_STRONG_INTEREST = 3;
+  RELATIONSHIP_STAGE_EXCLUSIVE_DATING = 4;
+  RELATIONSHIP_STAGE_RELATIONSHIP = 5;
+}
+
+// Date series status
+enum DateSeriesStatus {
+  DATE_SERIES_STATUS_UNSPECIFIED = 0;
+  DATE_SERIES_STATUS_ACTIVE = 1;
+  DATE_SERIES_STATUS_PAUSED = 2;
+  DATE_SERIES_STATUS_ENDED = 3;
+}
+
+// Workflow stages for admin curation - unified workflow
+enum CurationWorkflowStage {
+  CURATION_WORKFLOW_STAGE_UNSPECIFIED = 0;
+  CURATION_WORKFLOW_STAGE_USER_SELECTION = 1;
+  CURATION_WORKFLOW_STAGE_COMPATIBILITY_CHECK = 2;
+  CURATION_WORKFLOW_STAGE_MATCHING = 3;
+  CURATION_WORKFLOW_STAGE_VENUE_SELECTION = 4;
+  CURATION_WORKFLOW_STAGE_SCHEDULING = 5;
+  CURATION_WORKFLOW_STAGE_CONFIRMATION = 6;
+  CURATION_WORKFLOW_STAGE_PAYMENT = 7;
+  CURATION_WORKFLOW_STAGE_REMINDER_SENT = 8;
+  CURATION_WORKFLOW_STAGE_COMPLETED = 9;
+  CURATION_WORKFLOW_STAGE_FEEDBACK_COLLECTED = 10;
+}
+
+// Stage status for workflow tracking
+enum WorkflowStageStatus {
+  WORKFLOW_STAGE_STATUS_UNSPECIFIED = 0;
+  WORKFLOW_STAGE_STATUS_PENDING = 1;
+  WORKFLOW_STAGE_STATUS_IN_PROGRESS = 2;
+  WORKFLOW_STAGE_STATUS_COMPLETED = 3;
+  WORKFLOW_STAGE_STATUS_FAILED = 4;
+}
+
+// Sorting options for date queries
+enum SortBy {
+  SORT_BY_UNSPECIFIED = 0;
+  SORT_BY_DATE_TIME = 1;
+  SORT_BY_STATUS = 2;
+  SORT_BY_CREATED_AT = 3;
+}
+
+// Sort order options
+enum SortOrder {
+  SORT_ORDER_UNSPECIFIED = 0;
+  SORT_ORDER_ASC = 1;
+  SORT_ORDER_DESC = 2;
+}
+
+// Admin priority levels for dating operations
+enum AdminPriority {
+  ADMIN_PRIORITY_UNSPECIFIED = 0;
+  ADMIN_PRIORITY_1 = 1;
+  ADMIN_PRIORITY_2 = 2;
+  ADMIN_PRIORITY_3 = 3;
+}
+
+// Location coordinates for venue information
+message LocationCoordinates {
+  double latitude = 1;
+  double longitude = 2;
+  string address = 3;
+  string place_id = 4;
+  string timezone = 5;
+}
+
+// Compatibility factor for matching algorithms
+message CompatibilityFactorForAlgo {
+  string factor_name = 1;
+  double score = 2;
+  double weight = 3;
+  string description = 4;
+}
+
+// Core compatibility details between users
+message CompatibilityDetails {
+  int32 user1_id = 1;
+  int32 user2_id = 2;
+  double overall_score = 3;
+  repeated CompatibilityFactorForAlgo factors = 4;
+  string algorithm_version = 5;
+  string calculated_at = 6;
+}
+
+// Unified date feedback structure
+message DateFeedback {
+  string id = 1;
+  string curated_date_id = 2;
+  int32 user_id = 3;
+  
+  // Overall experience ratings (1-5)
+  int32 overall_rating = 4;
+  int32 venue_rating = 5;
+  int32 partner_rating = 6;
+  int32 curation_rating = 7;
+  
+  // Boolean feedback
+  bool would_meet_again = 8;
+  bool would_recommend_venue = 9;
+  
+  // Detailed ratings
+  int32 chemistry_rating = 10;
+  int32 conversation_quality = 11;
+  int32 partner_punctuality = 12;
+  int32 partner_appearance_match = 13;
+  int32 timing_satisfaction = 14;
+  int32 duration_satisfaction = 15;
+  
+  // Text feedback
+  string feedback_text = 16;
+  string what_went_well = 17;
+  string what_could_improve = 18;
+  string favorite_moment = 19;
+  string suggested_improvements = 20;
+  string preferred_next_date_activity = 21;
+  string preferred_next_date_timing = 22;
+  string additional_comments = 23;
+  
+  // Safety and concerns
+  bool safety_concerns = 24;
+  repeated string red_flags = 25;
+  bool report_user = 26;
+  string report_reason = 27;
+  
+  // Follow-up intentions
+  bool interested_in_second_date = 28;
+  string preferred_contact_method = 29;
+  
+  // Improvement suggestions
+  repeated string improvement_suggestions = 30;
+  
+  // Metadata
+  bool is_anonymous = 31;
+  string submitted_at = 32;
+}
+
+// Unified date series structure
+message DateSeries {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  int32 user1_id = 4;
+  int32 user2_id = 5;
+  
+  // Series metadata
+  DateSeriesStatus series_status = 6;
+  int32 total_dates_in_series = 7;
+  int32 completed_dates = 8;
+  repeated string curated_date_ids = 9;
+  string last_date_at = 10;
+  string next_suggested_date = 11;
+  
+  // Progression
+  RelationshipStage relationship_stage = 12;
+  int32 mutual_interest_level = 13; // 1-5
+  string admin_notes = 14;
+  
+  // Preferences
+  string preferred_date_frequency = 15;
+  repeated string preferred_date_types = 16;
+  
+  // Outcome tracking
+  string series_ended_reason = 17;
+  int32 ended_by_user_id = 18;
+  string ended_at = 19;
+  string final_outcome = 20;
+  
+  // Audit
+  bool is_active = 21;
+  string created_at = 22;
+  string updated_at = 23;
+}
+
+// Request/Response messages for common operations
+
+// Confirm date request
+message ConfirmDateRequest {
+  int32 curated_date_id = 1;
+  int32 user_id = 2;
+  bool confirmed = 3;
+  string notes = 4;
+}
+
+// Cancel date request
+message CancelDateRequest {
+  int32 curated_date_id = 1;
+  int32 user_id = 2;
+  CancellationCategory cancellation_category = 3;
+  string cancellation_reason = 4;
+  bool request_refund = 5;
+}
+
+// Submit date feedback request
+message SubmitDateFeedbackRequest {
+  int32 curated_date_id = 1;
+  int32 user_id = 2;
+  int32 overall_rating = 3;
+  bool would_meet_again = 4;
+  int32 chemistry_rating = 5;
+  int32 conversation_quality = 6;
+  string what_went_well = 7;
+  string what_could_improve = 8;
+  string favorite_moment = 9;
+  int32 partner_punctuality = 10;
+  int32 partner_appearance_match = 11;
+  string suggested_improvements = 12;
+  string preferred_next_date_activity = 13;
+  string preferred_next_date_timing = 14;
+  bool safety_concerns = 15;
+  repeated string red_flags = 16;
+  bool report_user = 17;
+  string report_reason = 18;
+  int32 venue_rating = 19;
+  int32 timing_satisfaction = 20;
+  int32 duration_satisfaction = 21;
+  bool interested_in_second_date = 22;
+  string preferred_contact_method = 23;
+  string additional_comments = 24;
+  bool is_anonymous = 25;
+}
+
+// Response messages for common operations
+message DateFeedbackResponse {
+  bool success = 1;
+  DateFeedback data = 2;
+  string message = 3;
+}
+
+message DateSeriesResponse {
+  bool success = 1;
+  DateSeries data = 2;
+  string message = 3;
+}
+
+message DateSeriesListResponse {
+  bool success = 1;
+  repeated DateSeries date_series = 2;
+  datifyy.common.PaginationResponse pagination = 3;
+  string message = 4;
+}

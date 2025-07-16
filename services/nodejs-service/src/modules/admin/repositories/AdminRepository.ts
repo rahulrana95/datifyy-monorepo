@@ -351,7 +351,7 @@ export class AdminRepository implements IAdminRepository {
       
       const admins = await this.repository.find({
         where: [
-          { accountStatus: adminAccountStatusToDb(AdminAccountStatus.LOCKED) as any, isactive: true },
+          { accountStatus: adminAccountStatusToDb(AdminAccountStatus.ADMIN_LOCKED) as any, isactive: true },
           { 
             lockedAt: new Date(),
             isactive: true
@@ -425,7 +425,7 @@ export class AdminRepository implements IAdminRepository {
       
       // Check if account should be locked
       if (newAttempts >= ADMIN_SECURITY_CONSTANTS.MAX_LOGIN_ATTEMPTS) {
-        await this.lockAccount(id, ADMIN_SECURITY_CONSTANTS.ACCOUNT_LOCK_DURATION);
+        await this.lockAccount(id, ADMIN_SECURITY_CONSTANTS.ACCOUNT_LOCK_DURATION_MINUTES);
       } else {
         await this.repository.update(id, { failedLoginAttempts: newAttempts });
       }
@@ -458,7 +458,7 @@ export class AdminRepository implements IAdminRepository {
       const lockExpiresAt = new Date(now.getTime() + lockDurationMinutes * 60 * 1000);
 
       const result = await this.repository.update(id, {
-        accountStatus: adminAccountStatusToDb(AdminAccountStatus.LOCKED) as any,
+        accountStatus: adminAccountStatusToDb(AdminAccountStatus.ADMIN_LOCKED) as any,
         lockedAt: now,
         lockExpiresAt,
         failedLoginAttempts: 0
@@ -522,7 +522,7 @@ export class AdminRepository implements IAdminRepository {
         this.repository.count({ 
           where: { 
             isactive: true, 
-            accountStatus: adminAccountStatusToDb(AdminAccountStatus.LOCKED) as any
+            accountStatus: adminAccountStatusToDb(AdminAccountStatus.ADMIN_LOCKED) as any
           } 
         }),
         this.getAdminsLoggedInSince(this.getStartOfDay()),
