@@ -107,6 +107,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({
     ];
 
     const unreadCount = notifications.filter(n => !n.isRead).length;
+    const MenuIcon = () => <FiMenu />;
 
     return (
         <>
@@ -128,7 +129,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({
                     <HStack spacing={4}>
                         <IconButton
                             aria-label="Toggle sidebar"
-                            icon={<FiMenu /> as React.ReactElement}
+                            icon={<MenuIcon />}
                             variant="ghost"
                             size="sm"
                             onClick={onToggleSidebar}
