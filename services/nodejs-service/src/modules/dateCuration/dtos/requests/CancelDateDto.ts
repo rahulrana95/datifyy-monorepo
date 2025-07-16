@@ -4,7 +4,7 @@
 
 import { IsString, IsEnum, IsOptional, IsBoolean, MinLength, MaxLength } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { CancellationCategory } from '../../../../proto-types/dating/curated_dates';
+import { CancellationCategory } from '../../../../proto-types';
 import { VALIDATION_MESSAGES, FIELD_LENGTHS } from '../base/CommonTypes';
 
 /**

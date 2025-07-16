@@ -2,7 +2,8 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { body, param, validationResult, ValidationChain } from 'express-validator';
-import { CancellationCategory } from '../../../../proto-types/dating/curated_dates';
+import {  } from '../../../../proto-types/dating/curated_dates';
+import { CancellationCategory } from '../../../../proto-types';
 
 /**
  * Validation rules for canceling dates

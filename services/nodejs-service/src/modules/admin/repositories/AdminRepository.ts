@@ -19,8 +19,6 @@ import {
 import {
   AdminPermissionLevel,
   AdminAccountStatus,
-  AdminListFilters,
-  ADMIN_SECURITY_CONSTANTS
 } from '../../../proto-types/admin/enums';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { DatifyyUsersLogin } from '../../../models/entities/DatifyyUsersLogin';
@@ -30,6 +28,7 @@ import {
   adminAccountStatusToDb,
   dbToAdminAccountStatus
 } from '../../../utils/enum-converters';
+import { ADMIN_SECURITY_CONSTANTS } from '../../../utils/admin-auth-constants';
 
 /**
  * TypeORM implementation of Admin Repository
@@ -312,7 +311,7 @@ export class AdminRepository implements IAdminRepository {
   }
 
   async findWithFilters(
-    filters: AdminListFilters,
+    filters: any,
     pagination: PaginationOptions
   ): Promise<PaginatedResult<DatifyyUsersLogin>> {
     try {
@@ -424,8 +423,8 @@ export class AdminRepository implements IAdminRepository {
       const newAttempts = admin.failedLoginAttempts + 1;
       
       // Check if account should be locked
-      if (newAttempts >= ADMIN_SECURITY_CONSTANTS.MAX_LOGIN_ATTEMPTS) {
-        await this.lockAccount(id, ADMIN_SECURITY_CONSTANTS.ACCOUNT_LOCK_DURATION_MINUTES);
+      if (newAttempts >= ADMIN_SECURITY_CONSTANTS.maxLoginAttempts) {
+        await this.lockAccount(id, ADMIN_SECURITY_CONSTANTS.accountLockDurationMinutes);
       } else {
         await this.repository.update(id, { failedLoginAttempts: newAttempts });
       }

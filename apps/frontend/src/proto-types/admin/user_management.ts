@@ -19,7 +19,7 @@ export enum UserTrustScoreLevel {
 }
 
 /** User verification status */
-export enum UserVerificationStatus {
+export enum UserVerificationStatusOVERALL {
   USER_VERIFICATION_STATUS_UNSPECIFIED = "USER_VERIFICATION_STATUS_UNSPECIFIED",
   USER_VERIFICATION_STATUS_PENDING = "USER_VERIFICATION_STATUS_PENDING",
   USER_VERIFICATION_STATUS_VERIFIED = "USER_VERIFICATION_STATUS_VERIFIED",
@@ -36,7 +36,7 @@ export interface AdminUserDetail {
   dateOfBirth: string;
   phoneNumber: string;
   status: UserStatus;
-  verificationStatus: UserVerificationStatus;
+  verificationStatus: UserVerificationStatusOVERALL;
   trustScore?: UserTrustScore | undefined;
   profileCompletionPercentage: string;
   totalDates: number;
@@ -106,7 +106,7 @@ export interface UserEngagementStats {
 /** Request messages */
 export interface GetUsersRequest {
   status: UserStatus;
-  verificationStatus: UserVerificationStatus;
+  verificationStatus: UserVerificationStatusOVERALL;
   trustScoreLevel: UserTrustScoreLevel;
   searchQuery: string;
   startDate: string;
@@ -132,7 +132,7 @@ export interface UpdateUserTrustScoreRequest {
 
 export interface VerifyUserRequest {
   userId: number;
-  verificationStatus: UserVerificationStatus;
+  verificationStatus: UserVerificationStatusOVERALL;
   notes: string;
 }
 

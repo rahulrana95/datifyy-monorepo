@@ -20,7 +20,7 @@ import {
   IsObject
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
-import { DateMode } from '../../../../proto-types/dating/curated_dates';
+import { DateMode } from '../../../../proto-types';
 import { VALIDATION_RULES, VALIDATION_MESSAGES, FIELD_LENGTHS } from '../base/CommonTypes';
 
 /**

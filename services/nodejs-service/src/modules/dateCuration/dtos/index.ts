@@ -26,26 +26,3 @@ export { VALIDATION_RULES, FIELD_LENGTHS, VALIDATION_MESSAGES } from './base/Com
 
 // Validation middleware (all validators)
 export * from './validation/index';
-
-// Type-only exports from shared-types
-export type {
-  CreateCuratedDateRequest,
-  UpdateCuratedDateRequest,
-  ConfirmDateRequest,
-  CancelDateRequest,
-  SubmitDateFeedbackRequest,
-  GetUserDatesRequest,
-  AdminGetDatesRequest,
-  SearchPotentialMatchesRequest,
-  DateCurationAnalyticsRequest,
-  CuratedDateResponse,
-  UserDatesResponse,
-  SearchPotentialMatchesResponse,
-  DateCurationAnalyticsResponse,
-  DateFeedbackResponse,
-  UserTrustScoreResponse,
-  DateSeriesResponse,
-  BulkDateOperationResult,
-  DateConflict,
-  CompatibilityDetails
-} from '../../../../proto-types/dating/curated_dates';

@@ -6,13 +6,10 @@ import { DatifyyUserTrustScores } from "../../../models/entities/DatifyyUserTrus
 import { DatifyyDateSeries } from "../../../models/entities/DatifyyDateSeries";
 import {
   CuratedDateResponse,
-  DateFeedbackResponse,
-  DateSeriesResponse,
-  CuratedDateStatus,
-  DateMode,
 } from "../../../proto-types/dating/curated_dates";
 import { UserTrustScoreResponse } from "../../../proto-types/admin/user_management";
 import { SearchPotentialMatchesResponse } from "../../../proto-types/dating/curation";
+import { CuratedDateStatus, DateFeedbackResponse, DateSeriesResponse } from "../../../proto-types";
 
 export class DateCurationMapper {
   constructor(private readonly logger: Logger) {}
@@ -30,7 +27,7 @@ export class DateCurationMapper {
       success: true,
       message: '',
       data: {
-        id: date.id.toString(),
+        id: date.id,
         user1Id: date.user1Id,
         user2Id: date.user2Id,
         dateType: 'DATE_TYPE_COFFEE' as any,
@@ -52,7 +49,7 @@ export class DateCurationMapper {
         cancellationReason: date.cancellationReason || '',
         cancelledByUserId: date.cancelledByUser?.id || 0,
       }
-    };
+    } as any;
   }
 
   toDateFeedbackResponse(
@@ -76,7 +73,7 @@ export class DateCurationMapper {
         improvementSuggestions: [],
         isAnonymous: feedback.isAnonymous || false,
         submittedAt: feedback.submittedAt?.toISOString() || new Date().toISOString(),
-      }
+      } as any
     };
   }
 
@@ -115,7 +112,7 @@ export class DateCurationMapper {
         isActive: true,
         createdAt: series.createdAt?.toISOString() || new Date().toISOString(),
         updatedAt: series.updatedAt?.toISOString() || new Date().toISOString(),
-      }
+      } as any
     };
   }
 

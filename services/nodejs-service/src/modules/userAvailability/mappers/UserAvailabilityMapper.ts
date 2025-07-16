@@ -6,7 +6,6 @@ import {
   SearchAvailableUsersResponse,
   AvailabilitySlot,
   AvailabilityBooking,
-  AvailabilityDateType,
   AvailabilitySlotStatus,
   AvailabilityRecurrenceType,
   AvailabilityCancellationPolicy,
@@ -16,6 +15,7 @@ import { DatifyyUserAvailability } from '../../../models/entities/DatifyyUserAva
 import { DatifyyAvailabilityBookings } from '../../../models/entities/DatifyyAvailabilityBookings';
 import { DatifyyUsersInformation } from '../../../models/entities/DatifyyUsersInformation';
 import { Logger } from '../../../infrastructure/logging/Logger';
+import { DateType } from '../../../proto-types';
 
 /**
  * User Availability Mapper
@@ -605,11 +605,11 @@ export class UserAvailabilityMapper {
   // ENUM MAPPING HELPERS
   // ============================================================================
 
-  private mapDateType(dateType: string): AvailabilityDateType {
+  private mapDateType(dateType: string): DateType {
     switch (dateType?.toLowerCase()) {
-      case 'online': return AvailabilityDateType.AVAILABILITY_DATE_TYPE_ONLINE;
-      case 'offline': return AvailabilityDateType.AVAILABILITY_DATE_TYPE_OFFLINE;
-      default: return AvailabilityDateType.AVAILABILITY_DATE_TYPE_UNSPECIFIED;
+      case 'online': return DateType.DATE_TYPE_ONLINE;
+      case 'offline': return DateType.DATE_TYPE_OFFLINE;
+      default: return DateType.DATE_TYPE_UNSPECIFIED;
     }
   }
 

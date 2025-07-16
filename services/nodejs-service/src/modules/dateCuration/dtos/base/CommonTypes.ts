@@ -7,7 +7,7 @@ import {
   CuratedDateStatus, 
   CancellationCategory,
   DateCurationValidationRules 
-} from '../../../../proto-types/dating/curated_dates';
+} from '../../../../proto-types';
 
 /**
  * Common validation constraints and rules

@@ -6,9 +6,6 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.842.0",
     "@aws-sdk/s3-request-presigner": "^3.842.0",
-    "@datifyy/shared-constants": "file:../../libs/shared-constants",
-    "@datifyy/shared-utils": "file:../../libs/shared-utils",
-    "@datifyy/shared-validation": "file:../../libs/shared-validation",
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",

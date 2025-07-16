@@ -16,7 +16,7 @@ enum UserTrustScoreLevel {
 }
 
 // User verification status
-enum UserVerificationStatus {
+enum UserVerificationStatus_OVERALL {
   USER_VERIFICATION_STATUS_UNSPECIFIED = 0;
   USER_VERIFICATION_STATUS_PENDING = 1;
   USER_VERIFICATION_STATUS_VERIFIED = 2;
@@ -35,7 +35,7 @@ message AdminUserDetail {
   string date_of_birth = 6;
   string phone_number = 7;
   datifyy.common.UserStatus status = 8;
-  UserVerificationStatus verification_status = 9;
+  UserVerificationStatus_OVERALL verification_status = 9;
   UserTrustScore trust_score = 10;
   string profile_completion_percentage = 11;
   int32 total_dates = 12;
@@ -105,7 +105,7 @@ message UserEngagementStats {
 // Request messages
 message GetUsersRequest {
   datifyy.common.UserStatus status = 1;
-  UserVerificationStatus verification_status = 2;
+  UserVerificationStatus_OVERALL verification_status = 2;
   UserTrustScoreLevel trust_score_level = 3;
   string search_query = 4;
   string start_date = 5;
@@ -131,7 +131,7 @@ message UpdateUserTrustScoreRequest {
 
 message VerifyUserRequest {
   int32 user_id = 1;
-  UserVerificationStatus verification_status = 2;
+  UserVerificationStatus_OVERALL verification_status = 2;
   string notes = 3;
 }
 

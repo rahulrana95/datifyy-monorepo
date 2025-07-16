@@ -4,7 +4,7 @@
 
 import { IsOptional, IsInt, IsArray, IsEnum, IsBoolean, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { CuratedDateStatus, DateMode } from '../../../../proto-types/dating/curated_dates';
+import { CuratedDateStatus, DateMode } from '../../../../proto-types';
 import { BaseDateRangeQueryDto } from '../base/BaseQueryDto';
 import { VALIDATION_MESSAGES } from '../base/CommonTypes';
 

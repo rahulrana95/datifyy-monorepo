@@ -5,15 +5,10 @@ import { IImageRepository } from '../repositories/IImageRepository';
 import { ImageCategory } from '../dtos/ImageUploadDtos';
 import {
   StorageError,
-  StorageFileTooLargeError,
-  StorageInvalidFileTypeError,
   FileValidationResult
 } from '../../../proto-types/common/storage';
-import {
-  validateFile,
-  FILE_VALIDATION_CONFIGS,
-  formatFileSize,
-  } from '@datifyy/shared-utils';
+import { formatFileSize } from '../utils/format/formatUtils';
+import { FILE_VALIDATION_CONFIGS, validateFile } from '../utils/validation/fileValidationUtils';
 
 /**
  * Image Validation Service - Single Responsibility
@@ -126,7 +121,7 @@ export class ImageValidationService {
 
       return {
         isValid: false,
-        errors: ['Validation service error: ' + (error instanceof Error ? error.message : 'Unknown error')],
+        errors: ['Validation service error: ' + (error instanceof Error ? error.message : 'Unknown error')] as any,
         warnings
       };
     }
@@ -187,11 +182,11 @@ export class ImageValidationService {
       fileResults.push({
         fileName: file.originalname,
         isValid: fileValidation.isValid,
-        errors: fileValidation.errors
+        errors: fileValidation.errors as any
       });
 
       if (fileValidation.warnings) {
-        warnings.push(...fileValidation.warnings);
+        warnings.push(...fileValidation.warnings as any);
       }
     }
 

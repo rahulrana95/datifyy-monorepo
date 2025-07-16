@@ -5,24 +5,17 @@ import { DateCurationMapper } from "../mappers/DateCurationMapper";
 import {
   CreateCuratedDateRequest,
   UpdateCuratedDateRequest,
-  SubmitDateFeedbackRequest,
   SearchPotentialMatchesRequest,
   GetDateAnalyticsRequest,
   UserDatesResponse,
   SearchPotentialMatchesResponse,
   DateCurationAnalyticsResponse,
   CuratedDateResponse,
-  DateFeedbackResponse,
-  DateSeriesResponse,
-  CuratedDateStatus,
-  CancellationCategory,
-  DateMode,
   CuratedDate,
-  ConfirmDateRequest,
-  CancelCuratedDateRequest,
 } from "../../../proto-types/dating/curation";
 import { UserTrustScoreResponse } from "../../../proto-types/admin/user_management";
 import { GetUserDatesRequest, AdminGetDatesRequest } from "../../../proto-types/dating/curated_dates";
+import { ConfirmDateRequest, CuratedDateStatus, DateFeedbackResponse, DateSeriesResponse, SubmitDateFeedbackRequest } from "../../../proto-types";
 
 export interface DateConflict {
   conflictingDateId: number;
@@ -74,7 +67,7 @@ export interface IDateCurationService {
   cancelDate(
     userId: number,
     dateId: number,
-    data: CancelCuratedDateRequest
+    data: any 
   ): Promise<{ cancelled: boolean; refundAmount?: number }>;
   submitDateFeedback(
     userId: number,
@@ -177,7 +170,7 @@ export class DateCurationService implements IDateCurationService {
     try {
       const { dates, total } = await this.repository.getUserDates(
         userId,
-        filters
+        filters as any
       );
       const mappedDates = dates.map((date) =>
         this.mapper.toCuratedDateResponse(date, userId)
@@ -294,7 +287,7 @@ export class DateCurationService implements IDateCurationService {
   async cancelDate(
     userId: number,
     dateId: number,
-    data: CancelCuratedDateRequest
+    data: any
   ): Promise<{ cancelled: boolean; refundAmount?: number }> {
     this.logger.info("Cancelling date", {
       userId,
@@ -580,7 +573,7 @@ export class DateCurationService implements IDateCurationService {
     return {
       success: true,
       message: "",
-      matches: mappedUsers,
+      matches: mappedUsers as any,
       totalMatches: total,
     };
   }

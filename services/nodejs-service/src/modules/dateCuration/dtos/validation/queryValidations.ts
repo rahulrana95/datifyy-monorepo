@@ -2,7 +2,8 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { query, validationResult, ValidationChain } from 'express-validator';
-import { CuratedDateStatus, DateMode } from '../../../../proto-types/dating/curated_dates';
+import { } from '../../../../proto-types/dating/curated_dates';
+import { CuratedDateStatus, DateMode } from '../../../../proto-types';
 
 /**
  * Validation rules for getting user dates

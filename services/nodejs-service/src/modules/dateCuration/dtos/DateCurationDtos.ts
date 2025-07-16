@@ -5,8 +5,38 @@ import {
   DateMode, 
   CuratedDateStatus, 
   CancellationCategory,
-  DateCurationValidationRules 
-} from '../../../proto-types/dating/curated_dates';
+} from '../../../proto-types';
+
+export const VALIDATION_RULES = {
+  dateScheduling: {
+    minAdvanceHours: 24,
+    maxAdvanceDays: 90,
+    minDurationMinutes: 30,
+    maxDurationMinutes: 240,
+    allowedTimeSlots: {
+      start: '09:00',
+      end: '22:00'
+    }
+  },
+  feedback: {
+    submissionDeadlineHours: 48,
+    minRating: 1,
+    maxRating: 5,
+    maxRedFlags: 5,
+    maxCommentLength: 1000
+  },
+  location: {
+    maxNameLength: 255,
+    maxAddressLength: 1000,
+    latRange: { min: -90, max: 90 },
+    lngRange: { min: -180, max: 180 }
+  },
+  notes: {
+    maxAdminNotesLength: 2000,
+    maxSpecialInstructionsLength: 1000,
+    maxCancellationReasonLength: 1000
+  }
+} as const;
 
 /**
  * Validation middleware for creating curated dates
@@ -32,22 +62,22 @@ export const validateCreateCuratedDate = [
     .custom((value) => {
       const dateTime = new Date(value);
       const now = new Date();
-      const minAdvance = new Date(now.getTime() + DateCurationValidationRules.dateScheduling.minAdvanceHours * 60 * 60 * 1000);
-      const maxAdvance = new Date(now.getTime() + DateCurationValidationRules.dateScheduling.maxAdvanceDays * 24 * 60 * 60 * 1000);
+      const minAdvance = new Date(now.getTime() + VALIDATION_RULES.dateScheduling.minAdvanceHours * 60 * 60 * 1000);
+      const maxAdvance = new Date(now.getTime() + VALIDATION_RULES.dateScheduling.maxAdvanceDays * 24 * 60 * 60 * 1000);
       
       if (dateTime < minAdvance) {
-        throw new Error(`Date must be at least ${DateCurationValidationRules.dateScheduling.minAdvanceHours} hours in advance`);
+        throw new Error(`Date must be at least ${VALIDATION_RULES.dateScheduling.minAdvanceHours} hours in advance`);
       }
       if (dateTime > maxAdvance) {
-        throw new Error(`Date cannot be more than ${DateCurationValidationRules.dateScheduling.maxAdvanceDays} days in advance`);
+        throw new Error(`Date cannot be more than ${VALIDATION_RULES.dateScheduling.maxAdvanceDays} days in advance`);
       }
       return true;
     }),
     
   body('durationMinutes')
     .optional()
-    .isInt({ min: DateCurationValidationRules.dateScheduling.minDurationMinutes, max: DateCurationValidationRules.dateScheduling.maxDurationMinutes })
-    .withMessage(`Duration must be between ${DateCurationValidationRules.dateScheduling.minDurationMinutes} and ${DateCurationValidationRules.dateScheduling.maxDurationMinutes} minutes`),
+    .isInt({ min: VALIDATION_RULES.dateScheduling.minDurationMinutes, max: VALIDATION_RULES.dateScheduling.maxDurationMinutes })
+    .withMessage(`Duration must be between ${VALIDATION_RULES.dateScheduling.minDurationMinutes} and ${VALIDATION_RULES.dateScheduling.maxDurationMinutes} minutes`),
     
   body('mode')
     .isIn(Object.values(DateMode))
@@ -149,8 +179,8 @@ export const validateUpdateCuratedDate = [
     
   body('durationMinutes')
     .optional()
-    .isInt({ min: DateCurationValidationRules.dateScheduling.minDurationMinutes, max: DateCurationValidationRules.dateScheduling.maxDurationMinutes })
-    .withMessage(`Duration must be between ${DateCurationValidationRules.dateScheduling.minDurationMinutes} and ${DateCurationValidationRules.dateScheduling.maxDurationMinutes} minutes`),
+    .isInt({ min: VALIDATION_RULES.dateScheduling.minDurationMinutes, max: VALIDATION_RULES.dateScheduling.maxDurationMinutes })
+    .withMessage(`Duration must be between ${VALIDATION_RULES.dateScheduling.minDurationMinutes} and ${VALIDATION_RULES.dateScheduling.maxDurationMinutes} minutes`),
     
   body('mode')
     .optional()
@@ -277,8 +307,8 @@ export const validateSubmitDateFeedback = [
     
   body('overallRating')
     .optional()
-    .isInt({ min: DateCurationValidationRules.feedback.minRating, max: DateCurationValidationRules.feedback.maxRating })
-    .withMessage(`Overall rating must be between ${DateCurationValidationRules.feedback.minRating} and ${DateCurationValidationRules.feedback.maxRating}`),
+    .isInt({ min: VALIDATION_RULES.feedback.minRating, max: VALIDATION_RULES.feedback.maxRating })
+    .withMessage(`Overall rating must be between ${VALIDATION_RULES.feedback.minRating} and ${VALIDATION_RULES.feedback.maxRating}`),
     
   body('wouldMeetAgain')
     .optional()
@@ -287,25 +317,25 @@ export const validateSubmitDateFeedback = [
     
   body('chemistryRating')
     .optional()
-    .isInt({ min: DateCurationValidationRules.feedback.minRating, max: DateCurationValidationRules.feedback.maxRating })
-    .withMessage(`Chemistry rating must be between ${DateCurationValidationRules.feedback.minRating} and ${DateCurationValidationRules.feedback.maxRating}`),
+    .isInt({ min: VALIDATION_RULES.feedback.minRating, max: VALIDATION_RULES.feedback.maxRating })
+    .withMessage(`Chemistry rating must be between ${VALIDATION_RULES.feedback.minRating} and ${VALIDATION_RULES.feedback.maxRating}`),
     
   body('conversationQuality')
     .optional()
-    .isInt({ min: DateCurationValidationRules.feedback.minRating, max: DateCurationValidationRules.feedback.maxRating })
-    .withMessage(`Conversation quality must be between ${DateCurationValidationRules.feedback.minRating} and ${DateCurationValidationRules.feedback.maxRating}`),
+    .isInt({ min: VALIDATION_RULES.feedback.minRating, max: VALIDATION_RULES.feedback.maxRating })
+    .withMessage(`Conversation quality must be between ${VALIDATION_RULES.feedback.minRating} and ${VALIDATION_RULES.feedback.maxRating}`),
     
   body('whatWentWell')
     .optional()
     .trim()
-    .isLength({ max: DateCurationValidationRules.feedback.maxCommentLength })
-    .withMessage(`What went well must be less than ${DateCurationValidationRules.feedback.maxCommentLength} characters`),
+    .isLength({ max: VALIDATION_RULES.feedback.maxCommentLength })
+    .withMessage(`What went well must be less than ${VALIDATION_RULES.feedback.maxCommentLength} characters`),
     
   body('whatCouldImprove')
     .optional()
     .trim()
-    .isLength({ max: DateCurationValidationRules.feedback.maxCommentLength })
-    .withMessage(`What could improve must be less than ${DateCurationValidationRules.feedback.maxCommentLength} characters`),
+    .isLength({ max: VALIDATION_RULES.feedback.maxCommentLength })
+    .withMessage(`What could improve must be less than ${VALIDATION_RULES.feedback.maxCommentLength} characters`),
     
   body('safetyConcerns')
     .optional()
@@ -314,8 +344,8 @@ export const validateSubmitDateFeedback = [
     
   body('redFlags')
     .optional()
-    .isArray({ max: DateCurationValidationRules.feedback.maxRedFlags })
-    .withMessage(`Maximum ${DateCurationValidationRules.feedback.maxRedFlags} red flags allowed`),
+    .isArray({ max: VALIDATION_RULES.feedback.maxRedFlags })
+    .withMessage(`Maximum ${VALIDATION_RULES.feedback.maxRedFlags} red flags allowed`),
     
   body('reportUser')
     .optional()

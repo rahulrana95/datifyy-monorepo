@@ -534,6 +534,7 @@ export class ImageUploadService implements IImageUploadService {
       contentType: file.mimetype,
       folder: `users/${category}`,
       isPublic: true,
+      expiresIn: 2000000,
       metadata: {
         operationId,
         originalName: file.originalname,

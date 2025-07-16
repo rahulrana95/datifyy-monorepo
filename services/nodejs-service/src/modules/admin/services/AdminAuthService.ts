@@ -42,7 +42,7 @@ import {
   AdminTwoFactorMethod,
   AdminTokenPayload,
   AdminLoginAttemptResult,
-  ADMIN_SECURITY_CONSTANTS,
+  AdminSecurityConstants,
 } from '../../../proto-types/admin/enums';
 import { Logger } from '../../../infrastructure/logging/Logger';
 import { Config } from '../../../infrastructure/config/Config';
@@ -182,7 +182,7 @@ export class AdminAuthService implements IAdminAuthService {
           }
         });
 
-        const remainingAttempts = ADMIN_SECURITY_CONSTANTS.MAX_LOGIN_ATTEMPTS - failedAttempts;
+        const remainingAttempts = ADMIN_SECURITY_CONSTANTS.maxLoginAttempts - failedAttempts;
         
         return {
           success: false,
@@ -766,7 +766,7 @@ export class AdminAuthService implements IAdminAuthService {
     
     await this.redisService.setex(
       `2fa_session:${loginSessionId}`,
-      ADMIN_SECURITY_CONSTANTS.TWO_FACTOR_VALIDITY_MINUTES * 60,
+      ADMIN_SECURITY_CONSTANTS.twoFactorValidityMinutes * 60,
       JSON.stringify({
         adminId,
         deviceInfo,
@@ -778,7 +778,7 @@ export class AdminAuthService implements IAdminAuthService {
   }
 
   private getTokenExpirySeconds(): number {
-    return ADMIN_SECURITY_CONSTANTS.SESSION_TIMEOUT_HOURS * 60 * 60;
+    return ADMIN_SECURITY_CONSTANTS.sessionTimeoutHours * 60 * 60;
   }
 
   private getRefreshTokenExpirySeconds(rememberMe?: boolean): number {
