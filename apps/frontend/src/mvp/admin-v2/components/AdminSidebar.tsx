@@ -27,6 +27,7 @@ import {
     FiAlertTriangle,
     FiList,
 } from 'react-icons/fi';
+import { featureFlags } from '../../../config/featureFlags';
 
 interface SidebarItem {
     label: string;
@@ -36,6 +37,7 @@ interface SidebarItem {
     description?: string;
     isNew?: boolean;
     isComingSoon?: boolean;
+    featureFlag?: keyof typeof featureFlags;
 }
 
 const SIDEBAR_ITEMS: SidebarItem[] = [
@@ -44,6 +46,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
         path: '/admin/dashboard',
         icon: FiHome,
         description: 'Overview and key metrics',
+        featureFlag: 'adminDashboard',
     },
     {
         label: 'User Management',
@@ -60,6 +63,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
         description: 'Curate and manage dates',
         isNew: true,
         isComingSoon: false,
+        featureFlag: 'curateDates',
     },
     {
         label: 'Dates Management',
@@ -69,6 +73,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
         description: 'View and manage curated dates',
         isNew: true,
         isComingSoon: false,
+        featureFlag: 'curatedDatesManagement',
     },
     {
         label: 'Revenue Analytics',
@@ -78,6 +83,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
         description: 'Financial insights and reports',
         isNew: true,
         isComingSoon: false,
+        featureFlag: 'revenueTracking',
     },
     {
         label: 'Match Analytics',
@@ -189,7 +195,9 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isCollapsed = false }) => {
 
             {/* Navigation Menu */}
             <VStack spacing={1} p={4} align="stretch">
-                {SIDEBAR_ITEMS.map((item) => {
+                {SIDEBAR_ITEMS
+                    .filter(item => !item.featureFlag || featureFlags[item.featureFlag])
+                    .map((item) => {
                     const isActive = isActiveRoute(item.path);
 
                     const menuItem = item.isComingSoon ? (

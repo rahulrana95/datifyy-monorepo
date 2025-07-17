@@ -14,7 +14,7 @@ class ApiService {
         : process.env.REACT_APP_BACKENDEND_URL_DEV;
     
     this.authToken = "";
-    this.prefixPath = '/api/v1'
+    this.prefixPath = ''
 
     if (!baseURL) {
       throw new Error(
@@ -64,8 +64,9 @@ class ApiService {
   }
 
   async get<T>(path: string, config?: AxiosRequestConfig): Promise<ServiceResponse<T>> {
+    const url = this.prefixPath ? `${this.prefixPath}/${path}` : path;
     return this.handleRequest<T>(
-      this.axiosInstance.get<T>(`${this.prefixPath}/${path}`, config)
+      this.axiosInstance.get<T>(url, config)
     );
   }
 
@@ -74,8 +75,9 @@ class ApiService {
     data?: unknown, 
     config?: AxiosRequestConfig
   ): Promise<ServiceResponse<T>> {
+    const url = this.prefixPath ? `${this.prefixPath}/${path}` : path;
     return this.handleRequest<T>(
-      this.axiosInstance.post<T>(`${this.prefixPath}/${path}`, data, config)
+      this.axiosInstance.post<T>(url, data, config)
     );
   }
 
@@ -84,20 +86,22 @@ class ApiService {
     data?: unknown, 
     config?: AxiosRequestConfig
   ): Promise<ServiceResponse<T>> {
+    const url = this.prefixPath ? `${this.prefixPath}/${path}` : path;
     return this.handleRequest<T>(
-      this.axiosInstance.put<T>(`${this.prefixPath}/${path}`, data, config)
+      this.axiosInstance.put<T>(url, data, config)
     );
   }
 
   async delete<T>(path: string, config?: AxiosRequestConfig): Promise<ServiceResponse<T>> {
+    const url = this.prefixPath ? `${this.prefixPath}/${path}` : path;
     return this.handleRequest<T>(
-      this.axiosInstance.delete<T>(`${this.prefixPath}/${path}`, config)
+      this.axiosInstance.delete<T>(url, config)
     );
   }
 
   async setAuthToken(token: string) {
     this.authToken = token;
-    this.axiosInstance.defaults.headers.Authorization = `${token}`;
+    this.axiosInstance.defaults.headers.Authorization = `Bearer ${token}`;
   }
 
   async setTokenFromCookies(): Promise<boolean> { 

@@ -3,6 +3,7 @@
  * Mock API service for managing curated dates
  */
 
+import { BaseService, ServiceResponse } from '../../../../services/baseService';
 import { CuratedDateDetails, DateStats, DateFilters } from '../types';
 
 // Mock data generator
@@ -85,13 +86,18 @@ const generateMockDates = (count: number = 50): CuratedDateDetails[] => {
 // Simulate API delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-class CuratedDatesManagementService {
+const ADMIN_API_PREFIX = 'admin/date-curation';
+
+class CuratedDatesManagementService extends BaseService {
   private mockDates: CuratedDateDetails[] = generateMockDates();
 
-  async getDates(filters: DateFilters, page: number, pageSize: number) {
-    await delay(800);
-
-    try {
+  async getDates(filters: DateFilters, page: number, pageSize: number): Promise<ServiceResponse<{
+    dates: CuratedDateDetails[];
+    totalCount: number;
+  }>> {
+    return this.getData<{ dates: CuratedDateDetails[]; totalCount: number }>(
+      async () => {
+        await delay(800);
       // Apply filters
       let filteredDates = [...this.mockDates];
 
@@ -151,25 +157,23 @@ class CuratedDatesManagementService {
       const endIndex = startIndex + pageSize;
       const paginatedDates = filteredDates.slice(startIndex, endIndex);
 
-      return {
-        response: {
-          dates: paginatedDates,
-          totalCount: filteredDates.length,
-        },
-        error: null,
-      };
-    } catch (error) {
-      return {
-        response: null,
-        error: { message: 'Failed to fetch dates' },
-      };
-    }
+        return {
+          response: {
+            dates: paginatedDates,
+            totalCount: filteredDates.length,
+          },
+          error: null,
+        };
+      },
+      `${ADMIN_API_PREFIX}/curated-dates`,
+      { filters, page, pageSize }
+    );
   }
 
-  async getDateStats() {
-    await delay(500);
-
-    try {
+  async getDateStats(): Promise<ServiceResponse<DateStats>> {
+    return this.getData<DateStats>(
+      async () => {
+        await delay(500);
       const stats: DateStats = {
         total: this.mockDates.length,
         scheduled: this.mockDates.filter(d => d.status === 'scheduled').length,
@@ -198,22 +202,19 @@ class CuratedDatesManagementService {
         ? Math.round((allRatings.reduce((a, b) => a + b, 0) / allRatings.length) * 10) / 10
         : 0;
 
-      return {
-        response: stats,
-        error: null,
-      };
-    } catch (error) {
-      return {
-        response: null,
-        error: { message: 'Failed to fetch stats' },
-      };
-    }
+        return {
+          response: stats,
+          error: null,
+        };
+      },
+      `${ADMIN_API_PREFIX}/analytics/overview`
+    );
   }
 
-  async updateDateStatus(dateId: string, status: CuratedDateDetails['status'], reason?: string) {
-    await delay(500);
-
-    try {
+  async updateDateStatus(dateId: string, status: CuratedDateDetails['status'], reason?: string): Promise<ServiceResponse<{ success: boolean }>> {
+    return this.putData<{ success: boolean }>(
+      async () => {
+        await delay(500);
       const dateIndex = this.mockDates.findIndex(d => d.id === dateId);
       if (dateIndex !== -1) {
         this.mockDates[dateIndex] = {
@@ -224,22 +225,20 @@ class CuratedDatesManagementService {
         };
       }
 
-      return {
-        response: { success: true },
-        error: null,
-      };
-    } catch (error) {
-      return {
-        response: null,
-        error: { message: 'Failed to update date status' },
-      };
-    }
+        return {
+          response: { success: true },
+          error: null,
+        };
+      },
+      `${ADMIN_API_PREFIX}/curated-dates/${dateId}`,
+      { status, reason }
+    );
   }
 
-  async addNote(dateId: string, note: string) {
-    await delay(500);
-
-    try {
+  async addNote(dateId: string, note: string): Promise<ServiceResponse<{ success: boolean }>> {
+    return this.putData<{ success: boolean }>(
+      async () => {
+        await delay(500);
       const dateIndex = this.mockDates.findIndex(d => d.id === dateId);
       if (dateIndex !== -1) {
         this.mockDates[dateIndex] = {
@@ -249,16 +248,14 @@ class CuratedDatesManagementService {
         };
       }
 
-      return {
-        response: { success: true },
-        error: null,
-      };
-    } catch (error) {
-      return {
-        response: null,
-        error: { message: 'Failed to add note' },
-      };
-    }
+        return {
+          response: { success: true },
+          error: null,
+        };
+      },
+      `${ADMIN_API_PREFIX}/curated-dates/${dateId}/notes`,
+      { note }
+    );
   }
 }
 

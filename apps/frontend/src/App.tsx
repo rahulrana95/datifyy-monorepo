@@ -37,6 +37,8 @@ import { AdminDashboardContainer } from "./mvp/admin-v2/admin-home";
 import { CurateDatesContainer } from "./mvp/admin-v2/curate-dates";
 import { CuratedDatesManagementContainer } from "./mvp/admin-v2/curated-dates-management";
 import { RevenueTrackingContainer } from "./mvp/admin-v2/revenue-tracking";
+import FeatureFlagsPanel from "./components/FeatureFlagsPanel";
+import { featureFlags } from "./config/featureFlags";
 
 
 LogRocket.init('kcpnhr/datifyy-fronend');
@@ -149,10 +151,18 @@ function App() {
                   </Route>
                   <Route path="/admin/login" element={<AdminLoginPage />} />
                   <Route path="/admin" element={<AdminLayout />}>
-                    <Route path="dashboard" element={<AdminDashboardContainer />} />
-                    <Route path="curate-dates" element={<CurateDatesContainer />} />
-                    <Route path="dates-management" element={<CuratedDatesManagementContainer />} />
-                    <Route path="revenue" element={<RevenueTrackingContainer />} />
+                    {featureFlags.adminDashboard && (
+                      <Route path="dashboard" element={<AdminDashboardContainer />} />
+                    )}
+                    {featureFlags.curateDates && (
+                      <Route path="curate-dates" element={<CurateDatesContainer />} />
+                    )}
+                    {featureFlags.curatedDatesManagement && (
+                      <Route path="dates-management" element={<CuratedDatesManagementContainer />} />
+                    )}
+                    {featureFlags.revenueTracking && (
+                      <Route path="revenue" element={<RevenueTrackingContainer />} />
+                    )}
                     {/* Future admin routes will go here */}
                     <Route index element={<Navigate to="/admin/dashboard" replace />} />
                   </Route>
@@ -173,6 +183,8 @@ function App() {
 
               {/* <GlobalSnackbar /> */}
 
+              {/* Feature Flags Panel - only show in development */}
+              {featureFlags.showDevTools && <FeatureFlagsPanel />}
 
             </StatusWrapper>
           </div >

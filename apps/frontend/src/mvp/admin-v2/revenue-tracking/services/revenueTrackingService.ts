@@ -3,6 +3,7 @@
  * Mock API service for revenue tracking
  */
 
+import { BaseService, ServiceResponse } from '../../../../services/baseService';
 import { 
   Transaction, 
   RevenueMetrics, 
@@ -75,13 +76,18 @@ const generateMockTransactions = (count: number = 100): Transaction[] => {
 // Simulate API delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-class RevenueTrackingService {
+const ADMIN_API_PREFIX = 'admin/revenue';
+
+class RevenueTrackingService extends BaseService {
   private mockTransactions: Transaction[] = generateMockTransactions(150);
 
-  async getTransactions(filters: RevenueFilters, page: number, pageSize: number) {
-    await delay(800);
-
-    try {
+  async getTransactions(filters: RevenueFilters, page: number, pageSize: number): Promise<ServiceResponse<{
+    transactions: Transaction[];
+    totalCount: number;
+  }>> {
+    return this.getData<{ transactions: Transaction[]; totalCount: number }>(
+      async () => {
+        await delay(800);
       // Apply filters
       let filteredTransactions = [...this.mockTransactions];
 
@@ -138,25 +144,23 @@ class RevenueTrackingService {
       const endIndex = startIndex + pageSize;
       const paginatedTransactions = filteredTransactions.slice(startIndex, endIndex);
 
-      return {
-        response: {
-          transactions: paginatedTransactions,
-          totalCount: filteredTransactions.length,
-        },
-        error: null,
-      };
-    } catch (error) {
-      return {
-        response: null,
-        error: { message: 'Failed to fetch transactions' },
-      };
-    }
+        return {
+          response: {
+            transactions: paginatedTransactions,
+            totalCount: filteredTransactions.length,
+          },
+          error: null,
+        };
+      },
+      `${ADMIN_API_PREFIX}/transactions`,
+      { filters, page, pageSize }
+    );
   }
 
-  async getRevenueMetrics() {
-    await delay(500);
-
-    try {
+  async getRevenueMetrics(): Promise<ServiceResponse<RevenueMetrics>> {
+    return this.getData<RevenueMetrics>(
+      async () => {
+        await delay(500);
       const now = new Date();
       const startOfToday = startOfDay(now);
       const startOfWeek = startOfDay(subDays(now, 7));
@@ -191,22 +195,19 @@ class RevenueTrackingService {
         ? Math.round(purchaseTransactions.reduce((sum, t) => sum + t.amount, 0) / purchaseTransactions.length)
         : 0;
 
-      return {
-        response: metrics,
-        error: null,
-      };
-    } catch (error) {
-      return {
-        response: null,
-        error: { message: 'Failed to fetch metrics' },
-      };
-    }
+        return {
+          response: metrics,
+          error: null,
+        };
+      },
+      `${ADMIN_API_PREFIX}/overview`
+    );
   }
 
-  async getRevenueByPeriod(days: number = 30) {
-    await delay(500);
-
-    try {
+  async getRevenueByPeriod(days: number = 30): Promise<ServiceResponse<RevenueByPeriod[]>> {
+    return this.getData<RevenueByPeriod[]>(
+      async () => {
+        await delay(500);
       const revenueByPeriod: RevenueByPeriod[] = [];
       const now = new Date();
 
@@ -227,22 +228,20 @@ class RevenueTrackingService {
         });
       }
 
-      return {
-        response: revenueByPeriod,
-        error: null,
-      };
-    } catch (error) {
-      return {
-        response: null,
-        error: { message: 'Failed to fetch revenue by period' },
-      };
-    }
+        return {
+          response: revenueByPeriod,
+          error: null,
+        };
+      },
+      `${ADMIN_API_PREFIX}/analytics/trends`,
+      { days }
+    );
   }
 
-  async getRevenueByCategory() {
-    await delay(500);
-
-    try {
+  async getRevenueByCategory(): Promise<ServiceResponse<RevenueByCategory[]>> {
+    return this.getData<RevenueByCategory[]>(
+      async () => {
+        await delay(500);
       const completedTransactions = this.mockTransactions.filter(t => t.status === 'completed' && t.amount > 0);
       const totalRevenue = completedTransactions.reduce((sum, t) => sum + t.amount, 0);
 
@@ -259,22 +258,19 @@ class RevenueTrackingService {
         };
       });
 
-      return {
-        response: revenueByCategory,
-        error: null,
-      };
-    } catch (error) {
-      return {
-        response: null,
-        error: { message: 'Failed to fetch revenue by category' },
-      };
-    }
+        return {
+          response: revenueByCategory,
+          error: null,
+        };
+      },
+      `${ADMIN_API_PREFIX}/analytics/by-category`
+    );
   }
 
-  async getTopUsers(limit: number = 10) {
-    await delay(500);
-
-    try {
+  async getTopUsers(limit: number = 10): Promise<ServiceResponse<TopUser[]>> {
+    return this.getData<TopUser[]>(
+      async () => {
+        await delay(500);
       const userSpending = new Map<string, {
         userId: string;
         userName: string;
@@ -315,22 +311,20 @@ class RevenueTrackingService {
         .sort((a, b) => b.totalSpent - a.totalSpent)
         .slice(0, limit);
 
-      return {
-        response: topUsers,
-        error: null,
-      };
-    } catch (error) {
-      return {
-        response: null,
-        error: { message: 'Failed to fetch top users' },
-      };
-    }
+        return {
+          response: topUsers,
+          error: null,
+        };
+      },
+      `${ADMIN_API_PREFIX}/analytics/top-users`,
+      { limit }
+    );
   }
 
-  async getPaymentMethodStats() {
-    await delay(500);
-
-    try {
+  async getPaymentMethodStats(): Promise<ServiceResponse<PaymentMethodStats[]>> {
+    return this.getData<PaymentMethodStats[]>(
+      async () => {
+        await delay(500);
       const completedTransactions = this.mockTransactions.filter(t => t.status === 'completed' && t.amount > 0);
       const totalRevenue = completedTransactions.reduce((sum, t) => sum + t.amount, 0);
 
@@ -347,22 +341,19 @@ class RevenueTrackingService {
         };
       });
 
-      return {
-        response: paymentMethodStats,
-        error: null,
-      };
-    } catch (error) {
-      return {
-        response: null,
-        error: { message: 'Failed to fetch payment method stats' },
-      };
-    }
+        return {
+          response: paymentMethodStats,
+          error: null,
+        };
+      },
+      `${ADMIN_API_PREFIX}/analytics/payment-methods`
+    );
   }
 
-  async getSubscriptionMetrics() {
-    await delay(500);
-
-    try {
+  async getSubscriptionMetrics(): Promise<ServiceResponse<SubscriptionMetrics>> {
+    return this.getData<SubscriptionMetrics>(
+      async () => {
+        await delay(500);
       const now = new Date();
       const startOfMonth = startOfDay(subDays(now, 30));
       
@@ -380,16 +371,13 @@ class RevenueTrackingService {
         churnRate: activeSubscriptions > 0 ? Math.round((cancelledSubscriptions / activeSubscriptions) * 100) : 0,
       };
 
-      return {
-        response: metrics,
-        error: null,
-      };
-    } catch (error) {
-      return {
-        response: null,
-        error: { message: 'Failed to fetch subscription metrics' },
-      };
-    }
+        return {
+          response: metrics,
+          error: null,
+        };
+      },
+      `${ADMIN_API_PREFIX}/analytics/subscriptions`
+    );
   }
 }
 
