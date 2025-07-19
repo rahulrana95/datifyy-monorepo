@@ -12,6 +12,7 @@ export interface FeatureFlags {
   curateDates: boolean;
   curatedDatesManagement: boolean;
   revenueTracking: boolean;
+  genieSection: boolean;
   realTimeNotifications: boolean;
   
   // API endpoints (when not using mock data)
@@ -32,6 +33,7 @@ const defaultFlags: FeatureFlags = {
   curateDates: true,
   curatedDatesManagement: true,
   revenueTracking: true,
+  genieSection: true,
   realTimeNotifications: false, // Not implemented yet
   
   // API configuration
@@ -61,6 +63,10 @@ const getEnvironmentFlags = (): Partial<FeatureFlags> => {
   
   if (process.env.REACT_APP_ENABLE_REVENUE_TRACKING !== undefined) {
     envFlags.revenueTracking = process.env.REACT_APP_ENABLE_REVENUE_TRACKING === 'true';
+  }
+  
+  if (process.env.REACT_APP_ENABLE_GENIE_SECTION !== undefined) {
+    envFlags.genieSection = process.env.REACT_APP_ENABLE_GENIE_SECTION === 'true';
   }
   
   return envFlags;

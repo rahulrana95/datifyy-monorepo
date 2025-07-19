@@ -26,6 +26,7 @@ import {
     FiTrendingUp,
     FiAlertTriangle,
     FiList,
+    FiStar,
 } from 'react-icons/fi';
 import { featureFlags } from '../../../config/featureFlags';
 
@@ -74,6 +75,16 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
         isNew: true,
         isComingSoon: false,
         featureFlag: 'curatedDatesManagement',
+    },
+    {
+        label: 'Genie Section',
+        path: '/admin/genie',
+        icon: FiStar,
+        badge: 'New',
+        description: 'Manage assigned dates',
+        isNew: true,
+        isComingSoon: false,
+        featureFlag: 'genieSection',
     },
     {
         label: 'Revenue Analytics',
