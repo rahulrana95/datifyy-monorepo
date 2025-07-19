@@ -6,14 +6,25 @@
  */
 
 import { defineStyle, defineStyleConfig } from '@chakra-ui/react';
-import type { SystemStyleFunction } from '@chakra-ui/theme-tools';
 
 // Base button styles
 const baseStyle = defineStyle({
-  fontWeight: 'semibold',
-  borderRadius: 'xl', // More rounded for modern feel
+  fontWeight: 'medium',
+  borderRadius: 'lg', // Slightly less rounded for better balance
   transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
   cursor: 'pointer',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 2,
+  lineHeight: 1.2,
+  
+  // Icon styles
+  '& svg': {
+    width: '1.2em',
+    height: '1.2em',
+    flexShrink: 0,
+  },
   
   _focus: {
     boxShadow: '0 0 0 3px rgba(232, 93, 117, 0.3)',
@@ -21,13 +32,14 @@ const baseStyle = defineStyle({
   },
   
   _disabled: {
-    opacity: 0.6,
+    opacity: 0.5,
     cursor: 'not-allowed',
     transform: 'none !important',
+    boxShadow: 'none !important',
   },
   
   _active: {
-    transform: 'scale(0.98)',
+    transform: 'scale(0.97)',
   },
 });
 
@@ -35,42 +47,42 @@ const baseStyle = defineStyle({
 const sizes = {
   xs: defineStyle({
     fontSize: 'xs',
-    px: 3,
-    py: 2,
+    px: 2.5,
+    py: 1,
+    h: 7, // 28px - better ratio
     minW: 'auto',
-    minH: '32px', // Minimum touch target
   }),
   
   sm: defineStyle({
     fontSize: 'sm', 
-    px: 4,
-    py: 2.5,
+    px: 3,
+    py: 1.5,
+    h: 8, // 32px - better ratio
     minW: 'auto',
-    minH: '36px',
   }),
   
   md: defineStyle({
     fontSize: 'md',
-    px: 6,
-    py: 3,
+    px: 4,
+    py: 2,
+    h: 10, // 40px - better ratio
     minW: 'auto', 
-    minH: '44px', // Comfortable touch target
   }),
   
   lg: defineStyle({
     fontSize: 'lg',
-    px: 8,
-    py: 4,
+    px: 6,
+    py: 2.5,
+    h: 12, // 48px - better ratio
     minW: 'auto',
-    minH: '48px', // Large touch target
   }),
   
   xl: defineStyle({
     fontSize: 'xl',
-    px: 10,
-    py: 5,
+    px: 8,
+    py: 3,
+    h: 14, // 56px - better ratio
     minW: 'auto',
-    minH: '56px', // Extra large for primary actions
   }),
 };
 
@@ -117,33 +129,39 @@ const variants = {
     
     if (colorScheme === 'brand') {
       return {
-        border: '2px solid',
-        borderColor: 'brand.500',
-        color: 'brand.500',
+        border: '1px solid',
+        borderColor: 'brand.200',
+        color: 'brand.600',
         bg: 'transparent',
+        fontWeight: 'medium',
         _hover: {
           bg: 'brand.50',
-          borderColor: 'brand.600',
-          color: 'brand.600',
+          borderColor: 'brand.300',
+          color: 'brand.700',
           transform: 'translateY(-1px)',
         },
         _active: {
           bg: 'brand.100',
-          transform: 'scale(0.98)',
+          transform: 'scale(0.97)',
         },
       };
     }
     
     return {
-      border: '2px solid',
-      borderColor: `${colorScheme}.500`,
-      color: `${colorScheme}.500`,
+      border: '1px solid',
+      borderColor: `${colorScheme}.200`,
+      color: `${colorScheme}.600`,
       bg: 'transparent',
+      fontWeight: 'medium',
       _hover: {
         bg: `${colorScheme}.50`,
-        borderColor: `${colorScheme}.600`,
-        color: `${colorScheme}.600`,
+        borderColor: `${colorScheme}.300`,
+        color: `${colorScheme}.700`,
         transform: 'translateY(-1px)',
+      },
+      _active: {
+        bg: `${colorScheme}.100`,
+        transform: 'scale(0.97)',
       },
     };
   }),

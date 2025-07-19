@@ -21,6 +21,7 @@ import {
   HStack,
   Text,
   IconButton,
+  Button,
   useColorModeValue,
   Highlight,
   Flex,
@@ -326,12 +327,13 @@ function SearchableTable<T extends { id: string }>({
             Showing {showingFrom} to {showingTo} of {totalItems || data.length} results
           </Text>
 
-          <HStack>
+          <HStack spacing={1}>
             <IconButton
               aria-label="Previous page"
               icon={<FiChevronLeft />}
-              size="sm"
+              size="xs"
               variant="outline"
+              colorScheme="gray"
               isDisabled={currentPage === 1}
               onClick={() => onPageChange?.(currentPage - 1)}
             />
@@ -339,26 +341,27 @@ function SearchableTable<T extends { id: string }>({
             {[...Array(Math.min(5, totalPages))].map((_, i) => {
               const pageNum = i + 1;
               return (
-                <IconButton
+                <Button
                   key={pageNum}
-                  aria-label={`Page ${pageNum}`}
-                  size="sm"
+                  size="xs"
                   variant={currentPage === pageNum ? 'solid' : 'outline'}
                   colorScheme={currentPage === pageNum ? 'brand' : 'gray'}
                   onClick={() => onPageChange?.(pageNum)}
+                  minW="7"
                 >
                   {pageNum}
-                </IconButton>
+                </Button>
               );
             })}
 
-            {totalPages > 5 && <Text>...</Text>}
+            {totalPages > 5 && <Text fontSize="sm" px={1}>...</Text>}
 
             <IconButton
               aria-label="Next page"
               icon={<FiChevronRight />}
-              size="sm"
+              size="xs"
               variant="outline"
+              colorScheme="gray"
               isDisabled={currentPage === totalPages}
               onClick={() => onPageChange?.(currentPage + 1)}
             />
