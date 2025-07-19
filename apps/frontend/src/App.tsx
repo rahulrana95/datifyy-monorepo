@@ -39,6 +39,7 @@ import { CurateDatesContainer } from "./mvp/admin-v2/curate-dates";
 import { CuratedDatesManagementContainer } from "./mvp/admin-v2/curated-dates-management";
 import { RevenueTrackingContainer } from "./mvp/admin-v2/revenue-tracking";
 import { GenieSectionContainer } from "./mvp/admin-v2/genie-section";
+import VerificationPage from "./mvp/admin-v2/verification/VerificationPage";
 import FeatureFlagsPanel from "./components/FeatureFlagsPanel";
 import { featureFlags } from "./config/featureFlags";
 
@@ -168,6 +169,9 @@ function App() {
                       )}
                       {featureFlags.genieSection && (
                         <Route path="genie" element={<GenieSectionContainer />} />
+                      )}
+                      {featureFlags.verification && (
+                        <Route path="verification" element={<VerificationPage />} />
                       )}
                       {/* Future admin routes will go here */}
                       <Route index element={<Navigate to="/admin/dashboard" replace />} />

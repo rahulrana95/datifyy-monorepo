@@ -27,6 +27,7 @@ import {
     FiAlertTriangle,
     FiList,
     FiStar,
+    FiCheckCircle,
 } from 'react-icons/fi';
 import { featureFlags } from '../../../config/featureFlags';
 
@@ -85,6 +86,16 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
         isNew: true,
         isComingSoon: false,
         featureFlag: 'genieSection',
+    },
+    {
+        label: 'Verification',
+        path: '/admin/verification',
+        icon: FiCheckCircle,
+        badge: 'New',
+        description: 'Manage user verifications',
+        isNew: true,
+        isComingSoon: false,
+        featureFlag: 'verification',
     },
     {
         label: 'Revenue Analytics',

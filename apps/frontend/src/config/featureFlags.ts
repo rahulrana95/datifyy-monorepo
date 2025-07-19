@@ -13,6 +13,7 @@ export interface FeatureFlags {
   curatedDatesManagement: boolean;
   revenueTracking: boolean;
   genieSection: boolean;
+  verification: boolean;
   realTimeNotifications: boolean;
   
   // API endpoints (when not using mock data)
@@ -34,6 +35,7 @@ const defaultFlags: FeatureFlags = {
   curatedDatesManagement: true,
   revenueTracking: true,
   genieSection: true,
+  verification: true,
   realTimeNotifications: false, // Not implemented yet
   
   // API configuration
