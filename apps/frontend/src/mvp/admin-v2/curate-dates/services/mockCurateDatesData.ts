@@ -232,6 +232,9 @@ export const generateSuggestedMatches = (user: User): SuggestedMatch[] => {
       )
     );
     
+    // Simulate some users having scheduled dates
+    const hasScheduledDate = Math.random() > 0.7; // 30% chance of having scheduled date
+    
     return {
       user: matchUser,
       matchScore: 60 + Math.floor(Math.random() * 40),
@@ -256,7 +259,14 @@ export const generateSuggestedMatches = (user: User): SuggestedMatch[] => {
         feedback: 'Good conversation',
         rating: 4
       }] : undefined,
-      alreadyHasDateThisWeek: Math.random() > 0.9
+      alreadyHasDateThisWeek: Math.random() > 0.9,
+      hasScheduledDate,
+      scheduledDateInfo: hasScheduledDate ? {
+        dateId: `scheduled-${matchUser.id}`,
+        scheduledOn: new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+        slot: matchingOnlineSlots[0] || matchingOfflineSlots[0],
+        otherUser: `User ${Math.floor(Math.random() * 50)}`
+      } : undefined
     };
   });
 };

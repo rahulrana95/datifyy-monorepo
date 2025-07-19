@@ -16,20 +16,29 @@ import {
   useColorModeValue,
   Avatar,
   Badge,
+  Icon,
+  Spinner,
+  Divider,
+  Flex,
+  useDisclosure,
 } from '@chakra-ui/react';
-import { FiDollarSign } from 'react-icons/fi';
+import { FiDollarSign, FiUsers, FiHeart, FiCalendar } from 'react-icons/fi';
 import { useCurateDatesStore } from './store/curateDatesStore';
 import SearchableTable from './components/SearchableTable';
 import UserFilters from './components/UserFilters';
 import SuggestedMatchesTable from './components/SuggestedMatchesTable';
-import SlotSelector from './components/SlotSelector';
-import CurationSummary from './components/CurationSummary';
+import SlotSelectionModal from './components/SlotSelectionModal';
 import TableWrapper from './components/TableWrapper';
 import { User } from './types';
 
 const CurateDatesContainer: React.FC = () => {
   const toast = useToast();
+  const { isOpen: isSlotModalOpen, onOpen: onSlotModalOpen, onClose: onSlotModalClose } = useDisclosure();
   const bgColor = useColorModeValue('gray.50', 'gray.900');
+  const leftPanelBg = useColorModeValue('white', 'gray.800');
+  const rightPanelBg = useColorModeValue('gray.50', 'gray.850');
+  const selectedUserBg = useColorModeValue('brand.50', 'brand.900');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
   
   const {
     users,
@@ -115,6 +124,10 @@ const CurateDatesContainer: React.FC = () => {
     }
   }, [selectedUser?.city, fetchOfflineLocations]);
 
+  // Improved highlight for selected row
+  const selectedRowBg = useColorModeValue('brand.100', 'brand.800');
+  const selectedRowBorder = useColorModeValue('brand.300', 'brand.600');
+  
   // Table columns configuration
   const userColumns = [
     {
@@ -226,141 +239,224 @@ const CurateDatesContainer: React.FC = () => {
         >
           {/* Left Column - User Selection */}
           <GridItem>
-            <VStack spacing={4} align="stretch" h="full">
-              {/* Filters */}
-              <UserFilters
-                filters={filters}
-                onFiltersChange={setFilters}
-                onReset={() => setFilters({
-                  search: '',
-                  gender: 'all',
-                  verificationStatus: 'all',
-                  hasAvailability: 'all'
-                })}
-              />
-
-              {/* Users Table */}
-              <TableWrapper 
-                pageSize={pagination.pageSize}
-                hasHeader={true}
-                hasFooter={true}
-                flex={1}
-              >
-                <SearchableTable
-                  data={users}
-                  columns={userColumns}
-                  title="Select User"
-                  subtitle="Choose a user to find compatible matches"
-                  onRowClick={selectUser}
-                  selectedRow={selectedUser || undefined}
-                  searchValue={filters.search}
-                  onSearchChange={(value) => setFilters({ search: value })}
-                  pageSize={pagination.pageSize}
-                  currentPage={pagination.currentPage}
-                  totalItems={pagination.totalItems}
-                  onPageChange={goToPage}
-                  onPageSizeChange={setPageSize}
-                  isLoading={isLoading}
+            <Box 
+              bg={leftPanelBg} 
+              borderRadius="xl" 
+              p={4}
+              h="full"
+              border="1px solid"
+              borderColor={borderColor}
+              boxShadow="sm"
+            >
+              <VStack spacing={4} align="stretch" h="full">
+                {/* Panel Header */}
+                <HStack>
+                  <Icon as={FiUsers} color="brand.500" boxSize={5} />
+                  <Text fontSize="lg" fontWeight="semibold">User Selection</Text>
+                </HStack>
+                
+                <Divider />
+                
+                {/* Filters */}
+                <UserFilters
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  onReset={() => setFilters({
+                    search: '',
+                    gender: 'all',
+                    verificationStatus: 'all',
+                    hasAvailability: 'all'
+                  })}
                 />
-              </TableWrapper>
-            </VStack>
+
+                {/* Users Table */}
+                <TableWrapper 
+                  pageSize={pagination.pageSize}
+                  hasHeader={true}
+                  hasFooter={true}
+                  flex={1}
+                >
+                  <SearchableTable
+                    data={users}
+                    columns={userColumns}
+                    title="Select User"
+                    subtitle="Choose a user to find compatible matches"
+                    onRowClick={(user) => {
+                      if (selectedUser?.id !== user.id) {
+                        selectUser(user);
+                      }
+                    }}
+                    selectedRow={selectedUser || undefined}
+                    searchValue={filters.search}
+                    onSearchChange={(value) => setFilters({ search: value })}
+                    pageSize={pagination.pageSize}
+                    currentPage={pagination.currentPage}
+                    totalItems={pagination.totalItems}
+                    onPageChange={goToPage}
+                    onPageSizeChange={setPageSize}
+                    isLoading={false}
+                    selectedRowBg={selectedRowBg}
+                    selectedRowBorder={selectedRowBorder}
+                  />
+                </TableWrapper>
+              </VStack>
+            </Box>
           </GridItem>
 
           {/* Right Column - Match Selection */}
           <GridItem>
-            <VStack spacing={4} align="stretch" h="full">
-              {/* Selected User Info */}
-              {selectedUser && (
-                <Box
-                  bg="white"
-                  p={4}
-                  borderRadius="lg"
-                  border="1px solid"
-                  borderColor="gray.200"
-                >
-                  <HStack>
-                    <Avatar src={selectedUser.profilePicture} size="md" name={selectedUser.firstName} />
-                    <VStack align="start" spacing={1} flex={1}>
-                      <Text fontWeight="bold">
-                        {selectedUser.firstName} {selectedUser.lastName}
+            <Box 
+              bg={rightPanelBg} 
+              borderRadius="xl" 
+              p={4}
+              h="full"
+              border="1px solid"
+              borderColor={borderColor}
+              boxShadow="sm"
+              position="relative"
+            >
+              <VStack spacing={4} align="stretch" h="full">
+                {/* Panel Header */}
+                <HStack>
+                  <Icon as={FiHeart} color="brand.500" boxSize={5} />
+                  <Text fontSize="lg" fontWeight="semibold">Match Selection</Text>
+                </HStack>
+                
+                <Divider />
+                
+                {/* Selected User Info */}
+                {selectedUser && (
+                  <Box
+                    bg={selectedUserBg}
+                    p={4}
+                    borderRadius="lg"
+                    border="2px solid"
+                    borderColor="brand.200"
+                    boxShadow="sm"
+                  >
+                    <HStack>
+                      <Avatar 
+                        src={selectedUser.profilePicture} 
+                        size="lg" 
+                        name={selectedUser.firstName}
+                        border="3px solid"
+                        borderColor="brand.300"
+                      />
+                      <VStack align="start" spacing={1} flex={1}>
+                        <Text fontWeight="bold" fontSize="lg">
+                          {selectedUser.firstName} {selectedUser.lastName}
+                        </Text>
+                        <HStack spacing={2} flexWrap="wrap">
+                          <Badge colorScheme="purple" fontSize="sm">{selectedUser.age}y</Badge>
+                          <Badge colorScheme="blue" fontSize="sm">{selectedUser.city}</Badge>
+                          <Badge colorScheme="green" fontSize="sm">
+                            <HStack spacing={1}>
+                              <FiDollarSign size={12} />
+                              <Text>{selectedUser.loveTokens} tokens</Text>
+                            </HStack>
+                          </Badge>
+                          {selectedUser.isVerified && (
+                            <Badge colorScheme="green" fontSize="sm">✓ Verified</Badge>
+                          )}
+                        </HStack>
+                      </VStack>
+                    </HStack>
+                  </Box>
+                )}
+
+                {/* Suggested Matches with Loading State */}
+                {selectedUser && (
+                  <Box flex={1} position="relative">
+                    {isLoading && (
+                      <Flex
+                        position="absolute"
+                        top={0}
+                        left={0}
+                        right={0}
+                        bottom={0}
+                        bg="whiteAlpha.800"
+                        zIndex={10}
+                        align="center"
+                        justify="center"
+                        borderRadius="lg"
+                      >
+                        <VStack spacing={3}>
+                          <Spinner
+                            thickness="4px"
+                            speed="0.65s"
+                            emptyColor="gray.200"
+                            color="brand.500"
+                            size="xl"
+                          />
+                          <Text color="gray.600">Finding compatible matches...</Text>
+                        </VStack>
+                      </Flex>
+                    )}
+                    <SuggestedMatchesTable
+                      matches={suggestedMatches}
+                      onMatchSelect={(match) => {
+                        selectMatch(match);
+                        if (!match.hasScheduledDate) {
+                          onSlotModalOpen();
+                        }
+                      }}
+                      selectedMatch={selectedMatch}
+                      filters={suggestedMatchFilters}
+                      onFiltersChange={setSuggestedMatchFilters}
+                      isLoading={false}
+                    />
+                  </Box>
+                )}
+
+                {/* Empty State */}
+                {!selectedUser && (
+                  <Flex
+                    flex={1}
+                    align="center"
+                    justify="center"
+                    bg={useColorModeValue('white', 'gray.800')}
+                    borderRadius="lg"
+                    border="2px dashed"
+                    borderColor="gray.300"
+                  >
+                    <VStack spacing={3}>
+                      <Icon as={FiUsers} boxSize={12} color="gray.400" />
+                      <Text color="gray.500" fontSize="lg">
+                        Select a user from the left panel
                       </Text>
-                      <HStack spacing={2}>
-                        <Badge>{selectedUser.age}y</Badge>
-                        <Badge>{selectedUser.city}</Badge>
-                        <Badge colorScheme="green">
-                          <HStack spacing={1}>
-                            <FiDollarSign size={10} />
-                            <Text>{selectedUser.loveTokens} tokens</Text>
-                          </HStack>
-                        </Badge>
-                      </HStack>
+                      <Text color="gray.400" fontSize="sm">
+                        Then we'll show you compatible matches
+                      </Text>
                     </VStack>
-                  </HStack>
-                </Box>
-              )}
-
-              {/* Suggested Matches */}
-              {selectedUser && (
-                <Box flex={1} overflow="auto">
-                  <SuggestedMatchesTable
-                    matches={suggestedMatches}
-                    onMatchSelect={selectMatch}
-                    selectedMatch={selectedMatch}
-                    filters={suggestedMatchFilters}
-                    onFiltersChange={setSuggestedMatchFilters}
-                    isLoading={isLoading}
-                  />
-                </Box>
-              )}
-
-              {/* Loading State */}
-              {!selectedUser && (
-                <Box
-                  bg="white"
-                  p={8}
-                  borderRadius="lg"
-                  border="1px solid"
-                  borderColor="gray.200"
-                  textAlign="center"
-                >
-                  <Text color="gray.500">
-                    Select a user from the left to see suggested matches
-                  </Text>
-                </Box>
-              )}
-            </VStack>
+                  </Flex>
+                )}
+              </VStack>
+            </Box>
           </GridItem>
         </Grid>
 
-        {/* Bottom Section - Slot Selection and Summary */}
-        {selectedMatch && (
-          <Grid templateColumns={{ base: '1fr', lg: '1fr 1fr' }} gap={6}>
-            <GridItem>
-              <SlotSelector
-                match={selectedMatch}
-                selectedSlots={selectedSlots}
-                onSlotSelect={selectSlot}
-              />
-            </GridItem>
-            
-            <GridItem>
-              <CurationSummary
-                selectedUser={selectedUser}
-                selectedMatch={selectedMatch}
-                selectedSlots={selectedSlots}
-                genies={genies}
-                selectedGenie={selectedGenie}
-                onGenieSelect={selectGenie}
-                offlineLocations={offlineLocations}
-                selectedLocation={selectedLocation}
-                onLocationSelect={selectLocation}
-                onCreateDate={createCuratedDate}
-                isCreating={isLoading}
-                curatedDate={curatedDate}
-              />
-            </GridItem>
-          </Grid>
-        )}
+        
+        {/* Slot Selection Modal */}
+        <SlotSelectionModal
+          isOpen={isSlotModalOpen}
+          onClose={onSlotModalClose}
+          selectedUser={selectedUser}
+          match={selectedMatch}
+          selectedSlots={selectedSlots}
+          onSlotSelect={selectSlot}
+          genies={genies}
+          selectedGenie={selectedGenie}
+          onGenieSelect={selectGenie}
+          offlineLocations={offlineLocations}
+          selectedLocation={selectedLocation}
+          onLocationSelect={selectLocation}
+          onCreateDate={() => {
+            createCuratedDate();
+            onSlotModalClose();
+          }}
+          isCreating={isLoading}
+          curatedDate={curatedDate}
+        />
       </VStack>
     </Box>
   );

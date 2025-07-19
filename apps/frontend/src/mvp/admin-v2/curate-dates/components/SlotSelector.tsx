@@ -93,23 +93,30 @@ const SlotSelector: React.FC<SlotSelectorProps> = ({
   return (
     <Box bg={bgColor} borderRadius="lg" border="1px solid" borderColor={borderColor}>
       <Box p={4} borderBottom="1px solid" borderColor={borderColor}>
-        <HStack justify="space-between">
-          <Text fontSize="lg" fontWeight="bold">Available Time Slots</Text>
-          <HStack>
-            <Badge colorScheme="blue" variant="solid">
-              <HStack spacing={1}>
-                <FiVideo size={12} />
-                <Text>{match.matchingSlotsCounts.online} Online</Text>
-              </HStack>
-            </Badge>
-            <Badge colorScheme="purple" variant="solid">
-              <HStack spacing={1}>
-                <FiMapPin size={12} />
-                <Text>{match.matchingSlotsCounts.offline} Offline</Text>
-              </HStack>
-            </Badge>
+        <VStack align="stretch" spacing={3}>
+          <HStack justify="space-between">
+            <VStack align="start" spacing={1}>
+              <Text fontSize="lg" fontWeight="bold">Common Available Time Slots</Text>
+              <Text fontSize="sm" color="gray.600">
+                Select a mutually available time for {match.user.firstName}
+              </Text>
+            </VStack>
+            <HStack>
+              <Badge colorScheme="blue" variant="solid" fontSize="sm">
+                <HStack spacing={1}>
+                  <FiVideo size={12} />
+                  <Text>{match.matchingSlotsCounts.online} Online</Text>
+                </HStack>
+              </Badge>
+              <Badge colorScheme="purple" variant="solid" fontSize="sm">
+                <HStack spacing={1}>
+                  <FiMapPin size={12} />
+                  <Text>{match.matchingSlotsCounts.offline} Offline</Text>
+                </HStack>
+              </Badge>
+            </HStack>
           </HStack>
-        </HStack>
+        </VStack>
       </Box>
 
       <Tabs index={activeTab} onChange={setActiveTab}>
@@ -144,20 +151,23 @@ const SlotSelector: React.FC<SlotSelectorProps> = ({
                     {slots.map(slot => (
                       <Button
                         key={slot.id}
-                        size="sm"
+                        size="md"
                         variant={selectedSlots.online?.id === slot.id ? 'solid' : 'outline'}
                         colorScheme={selectedSlots.online?.id === slot.id ? 'brand' : 'gray'}
                         onClick={() => onSlotSelect(slot, 'online')}
-                        leftIcon={<Text>{getTimeBlockIcon(slot.timeBlock)}</Text>}
+                        leftIcon={<Text fontSize="lg">{getTimeBlockIcon(slot.timeBlock)}</Text>}
+                        h="auto"
+                        py={3}
+                        px={4}
+                        flexDir="column"
+                        gap={1}
                       >
-                        <VStack spacing={0}>
-                          <Text fontSize="xs" textTransform="capitalize">
-                            {slot.timeBlock}
-                          </Text>
-                          <Text fontSize="xs" opacity={0.7}>
-                            {getTimeBlockLabel(slot.timeBlock)}
-                          </Text>
-                        </VStack>
+                        <Text fontSize="sm" fontWeight="medium" textTransform="capitalize">
+                          {slot.timeBlock}
+                        </Text>
+                        <Text fontSize="xs" opacity={0.7}>
+                          {getTimeBlockLabel(slot.timeBlock)}
+                        </Text>
                       </Button>
                     ))}
                   </SimpleGrid>
@@ -188,20 +198,23 @@ const SlotSelector: React.FC<SlotSelectorProps> = ({
                     {slots.map(slot => (
                       <Button
                         key={slot.id}
-                        size="sm"
+                        size="md"
                         variant={selectedSlots.offline?.id === slot.id ? 'solid' : 'outline'}
                         colorScheme={selectedSlots.offline?.id === slot.id ? 'brand' : 'gray'}
                         onClick={() => onSlotSelect(slot, 'offline')}
-                        leftIcon={<Text>{getTimeBlockIcon(slot.timeBlock)}</Text>}
+                        leftIcon={<Text fontSize="lg">{getTimeBlockIcon(slot.timeBlock)}</Text>}
+                        h="auto"
+                        py={3}
+                        px={4}
+                        flexDir="column"
+                        gap={1}
                       >
-                        <VStack spacing={0}>
-                          <Text fontSize="xs" textTransform="capitalize">
-                            {slot.timeBlock}
-                          </Text>
-                          <Text fontSize="xs" opacity={0.7}>
-                            {getTimeBlockLabel(slot.timeBlock)}
-                          </Text>
-                        </VStack>
+                        <Text fontSize="sm" fontWeight="medium" textTransform="capitalize">
+                          {slot.timeBlock}
+                        </Text>
+                        <Text fontSize="xs" opacity={0.7}>
+                          {getTimeBlockLabel(slot.timeBlock)}
+                        </Text>
                       </Button>
                     ))}
                   </SimpleGrid>
@@ -221,22 +234,31 @@ const SlotSelector: React.FC<SlotSelectorProps> = ({
 
       {/* Selected Slots Summary */}
       {(selectedSlots.online || selectedSlots.offline) && (
-        <Box p={4} bg="gray.50" borderTop="1px solid" borderColor={borderColor}>
-          <Text fontSize="sm" fontWeight="bold" mb={2}>Selected Slots:</Text>
+        <Box p={4} bg={useColorModeValue('brand.50', 'brand.900')} borderTop="2px solid" borderColor="brand.200">
+          <HStack mb={3}>
+            <Icon as={FiClock} color="brand.500" />
+            <Text fontSize="sm" fontWeight="bold">Selected Time Slots</Text>
+          </HStack>
           <VStack align="stretch" spacing={2}>
             {selectedSlots.online && (
-              <HStack>
-                <Badge colorScheme="blue">Online</Badge>
-                <Text fontSize="sm">
-                  {format(new Date(selectedSlots.online.date), 'MMM d')} • {selectedSlots.online.timeBlock} ({getTimeBlockLabel(selectedSlots.online.timeBlock)})
+              <HStack p={2} bg="white" borderRadius="md" boxShadow="sm">
+                <Badge colorScheme="blue" fontSize="sm">Online</Badge>
+                <Text fontSize="sm" fontWeight="medium">
+                  {format(new Date(selectedSlots.online.date), 'EEEE, MMM d')} • {getTimeBlockIcon(selectedSlots.online.timeBlock)} {selectedSlots.online.timeBlock}
+                </Text>
+                <Text fontSize="xs" color="gray.600">
+                  ({getTimeBlockLabel(selectedSlots.online.timeBlock)})
                 </Text>
               </HStack>
             )}
             {selectedSlots.offline && (
-              <HStack>
-                <Badge colorScheme="purple">Offline</Badge>
-                <Text fontSize="sm">
-                  {format(new Date(selectedSlots.offline.date), 'MMM d')} • {selectedSlots.offline.timeBlock} ({getTimeBlockLabel(selectedSlots.offline.timeBlock)})
+              <HStack p={2} bg="white" borderRadius="md" boxShadow="sm">
+                <Badge colorScheme="purple" fontSize="sm">Offline</Badge>
+                <Text fontSize="sm" fontWeight="medium">
+                  {format(new Date(selectedSlots.offline.date), 'EEEE, MMM d')} • {getTimeBlockIcon(selectedSlots.offline.timeBlock)} {selectedSlots.offline.timeBlock}
+                </Text>
+                <Text fontSize="xs" color="gray.600">
+                  ({getTimeBlockLabel(selectedSlots.offline.timeBlock)})
                 </Text>
               </HStack>
             )}

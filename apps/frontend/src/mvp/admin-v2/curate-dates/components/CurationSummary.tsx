@@ -41,7 +41,8 @@ import {
   FiCalendar,
   FiVideo,
   FiSend,
-  FiExternalLink
+  FiExternalLink,
+  FiEdit2
 } from 'react-icons/fi';
 import { format } from 'date-fns';
 import { 
@@ -69,6 +70,7 @@ interface CurationSummaryProps {
   onCreateDate: () => void;
   isCreating: boolean;
   curatedDate: CuratedDate | null;
+  onEditSlots?: () => void;
 }
 
 const CurationSummary: React.FC<CurationSummaryProps> = ({
@@ -84,6 +86,7 @@ const CurationSummary: React.FC<CurationSummaryProps> = ({
   onCreateDate,
   isCreating,
   curatedDate,
+  onEditSlots,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const bgColor = useColorModeValue('white', 'gray.800');
@@ -177,7 +180,19 @@ const CurationSummary: React.FC<CurationSummaryProps> = ({
         {activeSlot && (
           <>
             <Box>
-              <Text fontSize="sm" fontWeight="medium" mb={2}>Selected Date & Time</Text>
+              <HStack justify="space-between" mb={2}>
+                <Text fontSize="sm" fontWeight="medium">Selected Date & Time</Text>
+                {onEditSlots && (
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    leftIcon={<FiEdit2 />}
+                    onClick={onEditSlots}
+                  >
+                    Change Slot
+                  </Button>
+                )}
+              </HStack>
               <Box p={3} bg="gray.50" borderRadius="md">
                 <HStack justify="space-between">
                   <HStack>

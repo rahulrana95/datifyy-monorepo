@@ -53,6 +53,8 @@ interface SearchableTableProps<T> {
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
   isLoading?: boolean;
+  selectedRowBg?: string;
+  selectedRowBorder?: string;
 }
 
 function SearchableTable<T extends { id: string }>({
@@ -70,6 +72,8 @@ function SearchableTable<T extends { id: string }>({
   onPageChange,
   onPageSizeChange,
   isLoading = false,
+  selectedRowBg,
+  selectedRowBorder,
 }: SearchableTableProps<T>) {
   const [sortColumn, setSortColumn] = useState<string>('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -80,7 +84,8 @@ function SearchableTable<T extends { id: string }>({
   const borderColor = useColorModeValue('gray.200', 'gray.700');
   const headerBg = useColorModeValue('gray.50', 'gray.700');
   const hoverBg = useColorModeValue('gray.50', 'gray.700');
-  const selectedBg = useColorModeValue('brand.50', 'brand.900');
+  const defaultSelectedBg = useColorModeValue('brand.50', 'brand.900');
+  const selectedBg = selectedRowBg || defaultSelectedBg;
 
   // Trigger search callback when debounced value changes
   useEffect(() => {
@@ -296,6 +301,8 @@ function SearchableTable<T extends { id: string }>({
                 bg={selectedRow?.id === item.id ? selectedBg : 'transparent'}
                 _hover={{ bg: selectedRow?.id === item.id ? selectedBg : hoverBg }}
                 h="52px"
+                borderLeft={selectedRow?.id === item.id && selectedRowBorder ? `4px solid ${selectedRowBorder}` : undefined}
+                transition="all 0.2s"
               >
                 {columns.map((column) => (
                   <Td key={String(column.key)}>

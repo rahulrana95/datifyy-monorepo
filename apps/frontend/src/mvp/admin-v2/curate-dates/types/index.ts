@@ -64,6 +64,13 @@ export interface SuggestedMatch {
     rating?: number;
   }[];
   alreadyHasDateThisWeek: boolean;
+  hasScheduledDate?: boolean;
+  scheduledDateInfo?: {
+    dateId: string;
+    scheduledOn: string;
+    slot: TimeSlot;
+    otherUser: string;
+  };
 }
 
 export interface CuratedDate {

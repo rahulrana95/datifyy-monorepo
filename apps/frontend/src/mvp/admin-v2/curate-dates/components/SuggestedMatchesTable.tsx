@@ -28,7 +28,7 @@ import {
   Collapse,
   useDisclosure,
 } from '@chakra-ui/react';
-import { FiCalendar, FiVideo, FiMapPin, FiFilter } from 'react-icons/fi';
+import { FiCalendar, FiVideo, FiMapPin, FiFilter, FiCheckCircle } from 'react-icons/fi';
 import { SuggestedMatch, SuggestedMatchFilters } from '../types';
 
 interface SuggestedMatchesTableProps {
@@ -53,6 +53,8 @@ const SuggestedMatchesTable: React.FC<SuggestedMatchesTableProps> = ({
   const borderColor = useColorModeValue('gray.200', 'gray.700');
   const headerBg = useColorModeValue('gray.50', 'gray.700');
   const selectedBg = useColorModeValue('brand.50', 'brand.900');
+  const scheduledBg = useColorModeValue('green.50', 'green.900');
+  const scheduledBorder = useColorModeValue('green.200', 'green.700');
 
   return (
     <Box bg={bgColor} borderRadius="lg" border="1px solid" borderColor={borderColor}>
@@ -121,7 +123,7 @@ const SuggestedMatchesTable: React.FC<SuggestedMatchesTableProps> = ({
             <Tr>
               <Th>User</Th>
               <Th>Match Score</Th>
-              <Th>Available Slots</Th>
+              <Th>Common Available Slots</Th>
               <Th>Previous Dates</Th>
               <Th>Actions</Th>
             </Tr>
@@ -130,18 +132,42 @@ const SuggestedMatchesTable: React.FC<SuggestedMatchesTableProps> = ({
             {matches.map((match) => (
               <Tr
                 key={match.user.id}
-                bg={selectedMatch?.user.id === match.user.id ? selectedBg : 'transparent'}
-                _hover={{ bg: selectedMatch?.user.id === match.user.id ? selectedBg : 'gray.50' }}
-                cursor="pointer"
-                onClick={() => onMatchSelect(match)}
+                bg={
+                  match.hasScheduledDate 
+                    ? scheduledBg 
+                    : selectedMatch?.user.id === match.user.id 
+                    ? selectedBg 
+                    : 'transparent'
+                }
+                _hover={{ 
+                  bg: match.hasScheduledDate 
+                    ? scheduledBg 
+                    : selectedMatch?.user.id === match.user.id 
+                    ? selectedBg 
+                    : 'gray.50' 
+                }}
+                cursor={match.hasScheduledDate ? 'not-allowed' : 'pointer'}
+                onClick={() => !match.hasScheduledDate && onMatchSelect(match)}
+                borderLeft={match.hasScheduledDate ? `4px solid` : undefined}
+                borderLeftColor={match.hasScheduledDate ? scheduledBorder : undefined}
+                opacity={match.hasScheduledDate ? 0.8 : 1}
               >
                 <Td>
                   <HStack>
                     <Avatar src={match.user.profilePicture} size="sm" name={match.user.firstName} />
                     <VStack align="start" spacing={0}>
-                      <Text fontWeight="medium">
-                        {match.user.firstName} {match.user.lastName}
-                      </Text>
+                      <HStack>
+                        <Text fontWeight="medium">
+                          {match.user.firstName} {match.user.lastName}
+                        </Text>
+                        {match.hasScheduledDate && (
+                          <Tooltip label="Already has a scheduled date">
+                            <Box>
+                              <FiCheckCircle color="green" />
+                            </Box>
+                          </Tooltip>
+                        )}
+                      </HStack>
                       <Text fontSize="xs" color="gray.500">
                         {match.user.age}y • {match.user.city}
                       </Text>
@@ -169,24 +195,37 @@ const SuggestedMatchesTable: React.FC<SuggestedMatchesTableProps> = ({
                 </Td>
                 
                 <Td>
-                  <HStack spacing={3}>
-                    <Tooltip label="Online slots available">
-                      <Badge colorScheme="blue" variant="solid">
-                        <HStack spacing={1}>
-                          <FiVideo size={12} />
-                          <Text>{match.matchingSlotsCounts.online}</Text>
-                        </HStack>
-                      </Badge>
-                    </Tooltip>
-                    <Tooltip label="Offline slots available">
-                      <Badge colorScheme="purple" variant="solid">
-                        <HStack spacing={1}>
-                          <FiMapPin size={12} />
-                          <Text>{match.matchingSlotsCounts.offline}</Text>
-                        </HStack>
-                      </Badge>
-                    </Tooltip>
-                  </HStack>
+                  <VStack align="start" spacing={1}>
+                    <HStack spacing={2}>
+                      <Tooltip label="Common online slots">
+                        <Badge 
+                          colorScheme="blue" 
+                          variant="solid"
+                          fontSize="sm"
+                        >
+                          <HStack spacing={1}>
+                            <FiVideo size={12} />
+                            <Text>{match.matchingSlotsCounts.online}</Text>
+                          </HStack>
+                        </Badge>
+                      </Tooltip>
+                      <Tooltip label="Common offline slots">
+                        <Badge 
+                          colorScheme="purple" 
+                          variant="solid"
+                          fontSize="sm"
+                        >
+                          <HStack spacing={1}>
+                            <FiMapPin size={12} />
+                            <Text>{match.matchingSlotsCounts.offline}</Text>
+                          </HStack>
+                        </Badge>
+                      </Tooltip>
+                    </HStack>
+                    <Text fontSize="xs" color="gray.500">
+                      {match.matchingSlotsCounts.online + match.matchingSlotsCounts.offline} common slots
+                    </Text>
+                  </VStack>
                 </Td>
                 
                 <Td>
@@ -201,16 +240,22 @@ const SuggestedMatchesTable: React.FC<SuggestedMatchesTableProps> = ({
                 </Td>
                 
                 <Td>
-                  <Button
-                    size="xs"
-                    colorScheme="brand"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onMatchSelect(match);
-                    }}
-                  >
-                    View Slots
-                  </Button>
+                  {match.hasScheduledDate ? (
+                    <Badge colorScheme="green" fontSize="xs">
+                      Date Scheduled
+                    </Badge>
+                  ) : (
+                    <Button
+                      size="xs"
+                      colorScheme="brand"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onMatchSelect(match);
+                      }}
+                    >
+                      View Slots
+                    </Button>
+                  )}
                 </Td>
               </Tr>
             ))}
