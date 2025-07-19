@@ -158,7 +158,7 @@ export const QueryProvider: React.FC<QueryProviderProps> = ({ children }) => {
         <QueryClientProvider client={queryClient}>
             {children}
             {/* Development tools - only in development */}
-            {process.env.NODE_ENV === 'development' && (
+            {/* {process.env.NODE_ENV === 'development' && (
                 <ReactQueryDevtools
                     initialIsOpen={false}
                 // position="bottom-right"
@@ -170,7 +170,7 @@ export const QueryProvider: React.FC<QueryProviderProps> = ({ children }) => {
                 //     }
                 // }}
                 />
-            )}
+            )} */}
         </QueryClientProvider>
     );
 };

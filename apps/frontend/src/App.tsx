@@ -30,9 +30,18 @@ import { useAuthStore } from "./mvp/login-signup";
 import { PartnerPreferencesContainer } from "./mvp/partner-preferences";
 import { AdminLoginPage } from './mvp/admin-v2';
 import AdminLayout from "./mvp/admin-v2/components/AdminLayout";
+import AdminProtectedRoute from "./mvp/admin-v2/components/AdminProtectedRoute";
 import { AvailabilityContainer } from './mvp/availability';
 import { DateCurationContainer } from './mvp/date-curation';
 import { DashboardContainer } from "./mvp/admin-v2/dashboard";
+import { AdminDashboardContainer } from "./mvp/admin-v2/admin-home";
+import { CurateDatesContainer } from "./mvp/admin-v2/curate-dates";
+import { CuratedDatesManagementContainer } from "./mvp/admin-v2/curated-dates-management";
+import { RevenueTrackingContainer } from "./mvp/admin-v2/revenue-tracking";
+import { GenieSectionContainer } from "./mvp/admin-v2/genie-section";
+import VerificationPage from "./mvp/admin-v2/verification/VerificationPage";
+import FeatureFlagsPanel from "./components/FeatureFlagsPanel";
+import { featureFlags } from "./config/featureFlags";
 
 
 LogRocket.init('kcpnhr/datifyy-fronend');
@@ -144,10 +153,29 @@ function App() {
 
                   </Route>
                   <Route path="/admin/login" element={<AdminLoginPage />} />
-                  <Route path="/admin" element={<AdminLayout />}>
-                    <Route path="dashboard" element={<DashboardContainer />} />
-                    {/* Future admin routes will go here */}
-                    <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                  <Route path="/admin" element={<AdminProtectedRoute />}>
+                    <Route element={<AdminLayout />}>
+                      {featureFlags.adminDashboard && (
+                        <Route path="dashboard" element={<AdminDashboardContainer />} />
+                      )}
+                      {featureFlags.curateDates && (
+                        <Route path="curate-dates" element={<CurateDatesContainer />} />
+                      )}
+                      {featureFlags.curatedDatesManagement && (
+                        <Route path="dates-management" element={<CuratedDatesManagementContainer />} />
+                      )}
+                      {featureFlags.revenueTracking && (
+                        <Route path="revenue" element={<RevenueTrackingContainer />} />
+                      )}
+                      {featureFlags.genieSection && (
+                        <Route path="genie" element={<GenieSectionContainer />} />
+                      )}
+                      {featureFlags.verification && (
+                        <Route path="verification" element={<VerificationPage />} />
+                      )}
+                      {/* Future admin routes will go here */}
+                      <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                    </Route>
                   </Route>
 
                   {/* Protect Profile Route */}
@@ -166,6 +194,8 @@ function App() {
 
               {/* <GlobalSnackbar /> */}
 
+              {/* Feature Flags Panel - only show in development */}
+              {featureFlags.showDevTools && <FeatureFlagsPanel />}
 
             </StatusWrapper>
           </div >

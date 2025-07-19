@@ -66,7 +66,7 @@ const authRateLimiters = {
   // Login attempts: 5 per 15 minutes per IP+email
   login: createAuthRateLimit(
     15 * 60 * 1000, // 15 minutes
-    5,
+    100,
     'Too many login attempts. Please try again in 15 minutes.'
   ),
 
@@ -80,14 +80,14 @@ const authRateLimiters = {
   // Token refresh: 10 per hour per session
   refresh: createAuthRateLimit(
     60 * 60 * 1000, // 1 hour
-    10,
+    100,
     'Too many token refresh attempts. Please try again later.'
   ),
 
   // Password change: 3 per hour per admin
   passwordChange: createAuthRateLimit(
     60 * 60 * 1000, // 1 hour
-    3,
+    5,
     'Too many password change attempts. Please try again in 1 hour.'
   ),
 

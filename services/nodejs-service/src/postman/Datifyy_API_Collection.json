@@ -1,0 +1,1860 @@
+{
+  "info": {
+    "name": "Datifyy API Collection",
+    "description": "Complete API collection for Datifyy dating platform backend services",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{login_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api",
+      "type": "string"
+    },
+    {
+      "key": "login_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_email",
+      "value": "test@example.com",
+      "type": "string"
+    },
+    {
+      "key": "user_password",
+      "value": "Test@1234",
+      "type": "string"
+    },
+    {
+      "key": "admin_email",
+      "value": "admin@datifyy.com",
+      "type": "string"
+    },
+    {
+      "key": "admin_password",
+      "value": "Admin@1234",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Send Verification Code",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{user_email}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/send-verification-code",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "send-verification-code"]
+            },
+            "description": "Send email verification code for signup process"
+          }
+        },
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{user_email}}\",\n  \"password\": \"{{user_password}}\",\n  \"verificationCode\": \"123456\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"dateOfBirth\": \"1990-01-01\",\n  \"gender\": \"male\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/signup",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "signup"]
+            },
+            "description": "Register new user account with email verification"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('login_token', response.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{user_email}}\",\n  \"password\": \"{{user_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Authenticate user and get JWT token"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Clear authentication session"
+          }
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{user_email}}\",\n  \"verificationCode\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/verify-email",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "verify-email"]
+            },
+            "description": "Verify user email with code"
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{user_email}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/forgot-password",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "forgot-password"]
+            },
+            "description": "Send password reset code"
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{user_email}}\",\n  \"verificationCode\": \"123456\",\n  \"newPassword\": \"NewPassword@1234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/reset-password",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "reset-password"]
+            },
+            "description": "Reset password with verification code"
+          }
+        },
+        {
+          "name": "Validate Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/validate-token",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "validate-token"]
+            },
+            "description": "Validate JWT token and get user info"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Authentication",
+      "item": [
+        {
+          "name": "Admin Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('admin_token', response.data.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "auth", "login"]
+            },
+            "description": "Admin login with 2FA support"
+          }
+        },
+        {
+          "name": "Admin 2FA Verification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tempToken\": \"temp_2fa_token\",\n  \"twoFactorCode\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/auth/2fa",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "auth", "2fa"]
+            },
+            "description": "Complete 2FA verification"
+          }
+        },
+        {
+          "name": "Admin Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"refresh_token_here\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "auth", "refresh"]
+            },
+            "description": "Refresh admin access token"
+          }
+        },
+        {
+          "name": "Admin Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "auth", "logout"]
+            },
+            "description": "Admin logout and session termination"
+          }
+        },
+        {
+          "name": "Get Admin Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/auth/profile",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "auth", "profile"]
+            },
+            "description": "Get admin profile and permissions"
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Profile",
+      "item": [
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user-profile",
+              "host": ["{{base_url}}"],
+              "path": ["user-profile"]
+            },
+            "description": "Get authenticated user profile"
+          }
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bio\": \"Updated bio\",\n  \"city\": \"Delhi\",\n  \"occupation\": \"Senior Software Engineer\",\n  \"hobbies\": [\"reading\", \"traveling\", \"cooking\", \"photography\"],\n  \"interests\": [\"technology\", \"music\", \"sports\", \"art\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/user-profile",
+              "host": ["{{base_url}}"],
+              "path": ["user-profile"]
+            },
+            "description": "Update user profile"
+          }
+        },
+        {
+          "name": "Delete User Profile",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user-profile",
+              "host": ["{{base_url}}"],
+              "path": ["user-profile"]
+            },
+            "description": "Soft delete user profile"
+          }
+        },
+        {
+          "name": "Update Profile Avatar",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "src": "/path/to/avatar.jpg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/user-profile/avatar",
+              "host": ["{{base_url}}"],
+              "path": ["user-profile", "avatar"]
+            },
+            "description": "Update profile image"
+          }
+        },
+        {
+          "name": "Get Profile Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user-profile/stats",
+              "host": ["{{base_url}}"],
+              "path": ["user-profile", "stats"]
+            },
+            "description": "Get profile completion stats"
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Availability",
+      "item": [
+        {
+          "name": "Create Availability",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date\": \"2024-02-01\",\n  \"startTime\": \"18:00\",\n  \"endTime\": \"20:00\",\n  \"type\": \"online\",\n  \"isRecurring\": false,\n  \"recurringDays\": [],\n  \"notes\": \"Available for video dates\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/availability",
+              "host": ["{{base_url}}"],
+              "path": ["availability"]
+            },
+            "description": "Create availability slot"
+          }
+        },
+        {
+          "name": "Create Bulk Availability",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slots\": [\n    {\n      \"date\": \"2024-02-01\",\n      \"startTime\": \"18:00\",\n      \"endTime\": \"20:00\",\n      \"type\": \"online\"\n    },\n    {\n      \"date\": \"2024-02-02\",\n      \"startTime\": \"19:00\",\n      \"endTime\": \"21:00\",\n      \"type\": \"offline\"\n    }\n  ],\n  \"recurringOptions\": {\n    \"enabled\": true,\n    \"endDate\": \"2024-03-01\",\n    \"days\": [\"monday\", \"wednesday\", \"friday\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/availability/bulk",
+              "host": ["{{base_url}}"],
+              "path": ["availability", "bulk"]
+            },
+            "description": "Create multiple availability slots"
+          }
+        },
+        {
+          "name": "Get Availability",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/availability?page=1&limit=10&status=available",
+              "host": ["{{base_url}}"],
+              "path": ["availability"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "available"
+                }
+              ]
+            },
+            "description": "Get user availability (paginated)"
+          }
+        },
+        {
+          "name": "Get Specific Slot",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/availability/:id",
+              "host": ["{{base_url}}"],
+              "path": ["availability", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Get specific availability slot"
+          }
+        },
+        {
+          "name": "Update Availability",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startTime\": \"19:00\",\n  \"endTime\": \"21:00\",\n  \"notes\": \"Updated availability\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/availability/:id",
+              "host": ["{{base_url}}"],
+              "path": ["availability", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Update availability slot"
+          }
+        },
+        {
+          "name": "Cancel Availability",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Emergency came up\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/availability/:id/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["availability", ":id", "cancel"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Cancel availability slot"
+          }
+        },
+        {
+          "name": "Search Available Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/availability/search/users?date=2024-02-14&startTime=18:00&endTime=20:00&type=online&city=Mumbai",
+              "host": ["{{base_url}}"],
+              "path": ["availability", "search", "users"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2024-02-14"
+                },
+                {
+                  "key": "startTime",
+                  "value": "18:00"
+                },
+                {
+                  "key": "endTime",
+                  "value": "20:00"
+                },
+                {
+                  "key": "type",
+                  "value": "online"
+                },
+                {
+                  "key": "city",
+                  "value": "Mumbai"
+                }
+              ]
+            },
+            "description": "Search for available users"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Partner Preferences",
+      "item": [
+        {
+          "name": "Get Partner Preferences",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/partner-preferences",
+              "host": ["{{base_url}}"],
+              "path": ["user", "partner-preferences"]
+            },
+            "description": "Get user's partner preferences"
+          }
+        },
+        {
+          "name": "Update Partner Preferences",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ageRange\": {\n    \"min\": 26,\n    \"max\": 36\n  },\n  \"education\": [\"bachelors\", \"masters\"],\n  \"location\": {\n    \"cities\": [\"Mumbai\", \"Pune\"],\n    \"maxDistance\": 100\n  },\n  \"importanceWeights\": {\n    \"age\": 7,\n    \"education\": 8,\n    \"religion\": 9,\n    \"lifestyle\": 7,\n    \"location\": 6\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/user/partner-preferences",
+              "host": ["{{base_url}}"],
+              "path": ["user", "partner-preferences"]
+            },
+            "description": "Update partner preferences"
+          }
+        },
+        {
+          "name": "Create Partner Preferences",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ageRange\": {\n    \"min\": 25,\n    \"max\": 35\n  },\n  \"heightRange\": {\n    \"min\": 160,\n    \"max\": 180\n  },\n  \"education\": [\"bachelors\", \"masters\", \"phd\"],\n  \"occupation\": [\"any\"],\n  \"religion\": [\"hindu\", \"sikh\", \"jain\"],\n  \"motherTongue\": [\"hindi\", \"english\", \"punjabi\"],\n  \"maritalStatus\": [\"single\", \"divorced\"],\n  \"diet\": [\"vegetarian\", \"vegan\"],\n  \"drinking\": [\"never\", \"occasionally\"],\n  \"smoking\": [\"never\"],\n  \"location\": {\n    \"cities\": [\"Mumbai\", \"Delhi\", \"Bangalore\"],\n    \"maxDistance\": 50\n  },\n  \"interests\": [\"reading\", \"traveling\", \"music\"],\n  \"personalityTraits\": [\"honest\", \"caring\", \"ambitious\"],\n  \"dealBreakers\": [\"smoking\", \"non-vegetarian\"],\n  \"importanceWeights\": {\n    \"age\": 8,\n    \"education\": 7,\n    \"religion\": 9,\n    \"lifestyle\": 6,\n    \"location\": 5\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/user/partner-preferences",
+              "host": ["{{base_url}}"],
+              "path": ["user", "partner-preferences"]
+            },
+            "description": "Create partner preferences"
+          }
+        },
+        {
+          "name": "Delete Partner Preferences",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/partner-preferences",
+              "host": ["{{base_url}}"],
+              "path": ["user", "partner-preferences"]
+            },
+            "description": "Delete partner preferences"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Date Curation - User",
+      "item": [
+        {
+          "name": "Get My Dates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/date-curation/my-dates?status=upcoming&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["date-curation", "my-dates"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "upcoming"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get user's curated dates"
+          }
+        },
+        {
+          "name": "Get Specific Date",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/date-curation/my-dates/:dateId",
+              "host": ["{{base_url}}"],
+              "path": ["date-curation", "my-dates", ":dateId"],
+              "variable": [
+                {
+                  "key": "dateId",
+                  "value": "DT-2024-001"
+                }
+              ]
+            },
+            "description": "Get specific curated date details"
+          }
+        },
+        {
+          "name": "Confirm Date",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmationNote\": \"Looking forward to meeting!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/date-curation/my-dates/:dateId/confirm",
+              "host": ["{{base_url}}"],
+              "path": ["date-curation", "my-dates", ":dateId", "confirm"],
+              "variable": [
+                {
+                  "key": "dateId",
+                  "value": "DT-2024-001"
+                }
+              ]
+            },
+            "description": "User confirms attendance for date"
+          }
+        },
+        {
+          "name": "Cancel Date",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Emergency came up\",\n  \"apology\": \"Really sorry, had a family emergency\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/date-curation/my-dates/:dateId/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["date-curation", "my-dates", ":dateId", "cancel"],
+              "variable": [
+                {
+                  "key": "dateId",
+                  "value": "DT-2024-001"
+                }
+              ]
+            },
+            "description": "User cancels their curated date"
+          }
+        },
+        {
+          "name": "Submit Date Feedback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"overallRating\": 4,\n  \"showedUp\": true,\n  \"wasInterested\": true,\n  \"wouldMeetAgain\": true,\n  \"connectionQuality\": 5,\n  \"conversationFlow\": 4,\n  \"punctuality\": 5,\n  \"appearance\": 4,\n  \"personality\": 5,\n  \"comments\": \"Had a great time! Very interesting person.\",\n  \"privateNotes\": \"Definitely interested in second date\",\n  \"reportIssue\": false,\n  \"issueType\": null,\n  \"issueDescription\": null\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/date-curation/my-dates/:dateId/feedback",
+              "host": ["{{base_url}}"],
+              "path": ["date-curation", "my-dates", ":dateId", "feedback"],
+              "variable": [
+                {
+                  "key": "dateId",
+                  "value": "DT-2024-001"
+                }
+              ]
+            },
+            "description": "Submit feedback after date completion"
+          }
+        },
+        {
+          "name": "Get My Trust Score",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/date-curation/my-trust-score",
+              "host": ["{{base_url}}"],
+              "path": ["date-curation", "my-trust-score"]
+            },
+            "description": "Get user's trust/love score details"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Date Curation - Admin",
+      "item": [
+        {
+          "name": "Create Curated Date",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user1Id\": 1,\n  \"user2Id\": 2,\n  \"scheduledDate\": \"2024-02-14\",\n  \"scheduledTime\": \"19:00\",\n  \"type\": \"offline\",\n  \"venue\": {\n    \"name\": \"Café Coffee Day\",\n    \"address\": \"Bandra West, Mumbai\",\n    \"mapUrl\": \"https://maps.google.com/...\"\n  },\n  \"adminNotes\": \"High compatibility score, similar interests\",\n  \"notifyUsers\": true,\n  \"requireConfirmation\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/date-curation/admin/curated-dates",
+              "host": ["{{base_url}}"],
+              "path": ["date-curation", "admin", "curated-dates"]
+            },
+            "description": "Admin creates curated date between users"
+          }
+        },
+        {
+          "name": "Get All Curated Dates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/date-curation/admin/curated-dates?status=all&page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["date-curation", "admin", "curated-dates"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "all"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Admin gets all curated dates with filters"
+          }
+        },
+        {
+          "name": "Search Potential Matches",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 1,\n  \"filters\": {\n    \"ageRange\": {\n      \"min\": 25,\n      \"max\": 35\n    },\n    \"location\": {\n      \"cities\": [\"Mumbai\", \"Pune\"],\n      \"maxDistance\": 50\n    },\n    \"minMatchScore\": 70,\n    \"excludeUsers\": [5, 10, 15],\n    \"onlyVerified\": true,\n    \"hasAvailability\": true\n  },\n  \"sortBy\": \"matchScore\",\n  \"limit\": 20\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/date-curation/admin/search-potential-matches",
+              "host": ["{{base_url}}"],
+              "path": ["date-curation", "admin", "search-potential-matches"]
+            },
+            "description": "Admin searches potential matches for user"
+          }
+        },
+        {
+          "name": "Get User Trust Score",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/date-curation/admin/users/:userId/trust-score",
+              "host": ["{{base_url}}"],
+              "path": ["date-curation", "admin", "users", ":userId", "trust-score"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Admin gets user's trust score"
+          }
+        },
+        {
+          "name": "Get Date Curation Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/date-curation/admin/analytics/date-curation?period=month",
+              "host": ["{{base_url}}"],
+              "path": ["date-curation", "admin", "analytics", "date-curation"],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "month"
+                }
+              ]
+            },
+            "description": "Admin gets comprehensive analytics"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Overview",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/overview?dateRange=month",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "dashboard", "overview"],
+              "query": [
+                {
+                  "key": "dateRange",
+                  "value": "month"
+                }
+              ]
+            },
+            "description": "Get comprehensive dashboard overview"
+          }
+        },
+        {
+          "name": "Get Real-time Metrics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/metrics/real-time",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "dashboard", "metrics", "real-time"]
+            },
+            "description": "Get real-time dashboard metrics"
+          }
+        },
+        {
+          "name": "Get User Metrics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/users/metrics",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "dashboard", "users", "metrics"]
+            },
+            "description": "Get comprehensive user metrics"
+          }
+        },
+        {
+          "name": "Get Date Metrics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/dates/metrics",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "dashboard", "dates", "metrics"]
+            },
+            "description": "Get comprehensive date metrics"
+          }
+        },
+        {
+          "name": "Get Revenue Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/revenue/summary",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "dashboard", "revenue", "summary"]
+            },
+            "description": "Get revenue summary for dashboard"
+          }
+        },
+        {
+          "name": "Get Dashboard Alerts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/alerts",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "dashboard", "alerts"]
+            },
+            "description": "Get dashboard alerts requiring attention"
+          }
+        },
+        {
+          "name": "Get System Health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/dashboard/system/health",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "dashboard", "system", "health"]
+            },
+            "description": "Get comprehensive system health status"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Notifications",
+      "item": [
+        {
+          "name": "Create Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"user_notification\",\n  \"recipients\": {\n    \"userIds\": [1, 2, 3],\n    \"segments\": [\"premium_users\"],\n    \"filters\": {\n      \"city\": [\"Mumbai\", \"Delhi\"],\n      \"isVerified\": true\n    }\n  },\n  \"channels\": [\"email\", \"push\", \"sms\"],\n  \"content\": {\n    \"subject\": \"Special Valentine's Day Offer!\",\n    \"message\": \"Get 20% off on premium membership\",\n    \"emailTemplate\": \"valentine_offer\",\n    \"pushData\": {\n      \"title\": \"Special Offer!\",\n      \"body\": \"20% off on premium\",\n      \"action\": \"VIEW_OFFER\"\n    },\n    \"smsText\": \"Datifyy: Get 20% off on premium membership this Valentine's Day!\"\n  },\n  \"scheduling\": {\n    \"sendImmediately\": false,\n    \"scheduledTime\": \"2024-02-10T10:00:00Z\",\n    \"timezone\": \"Asia/Kolkata\"\n  },\n  \"tracking\": {\n    \"trackOpens\": true,\n    \"trackClicks\": true,\n    \"utmParams\": {\n      \"source\": \"admin\",\n      \"medium\": \"email\",\n      \"campaign\": \"valentine_2024\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/notifications",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "notifications"]
+            },
+            "description": "Create and send notification"
+          }
+        },
+        {
+          "name": "Get All Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/notifications?page=1&limit=20&status=sent",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "notifications"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "status",
+                  "value": "sent"
+                }
+              ]
+            },
+            "description": "Get all notifications with filtering"
+          }
+        },
+        {
+          "name": "Send Bulk Notifications",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notifications\": [\n    {\n      \"userId\": 1,\n      \"channels\": [\"email\", \"push\"],\n      \"content\": {\n        \"subject\": \"Your date is tomorrow!\",\n        \"message\": \"Don't forget your date with Jane tomorrow at 7 PM\"\n      }\n    },\n    {\n      \"userId\": 2,\n      \"channels\": [\"email\", \"push\"],\n      \"content\": {\n        \"subject\": \"Your date is tomorrow!\",\n        \"message\": \"Don't forget your date with John tomorrow at 7 PM\"\n      }\n    }\n  ],\n  \"sendImmediately\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/notifications/bulk-send",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "notifications", "bulk-send"]
+            },
+            "description": "Send bulk notifications"
+          }
+        },
+        {
+          "name": "Get Notification Templates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/notifications/templates",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "notifications", "templates"]
+            },
+            "description": "Get notification templates"
+          }
+        },
+        {
+          "name": "Get Notification Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/notifications/analytics?period=week",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "notifications", "analytics"],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "week"
+                }
+              ]
+            },
+            "description": "Get notification analytics"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin User Management",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users?page=1&limit=20&status=active&verified=true",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "status",
+                  "value": "active"
+                },
+                {
+                  "key": "verified",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Get all users with filtering"
+          }
+        },
+        {
+          "name": "Ban User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Inappropriate behavior reported multiple times\",\n  \"duration\": \"permanent\",\n  \"notifyUser\": true,\n  \"internalNotes\": \"Multiple reports of harassment\",\n  \"evidenceUrls\": [\n    \"https://storage.datifyy.com/reports/123.pdf\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/users/:userId/ban",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users", ":userId", "ban"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "123"
+                }
+              ]
+            },
+            "description": "Ban user"
+          }
+        },
+        {
+          "name": "Verify User Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"verificationNote\": \"Manually verified after document check\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/users/:userId/verify/email",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users", ":userId", "verify", "email"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "123"
+                }
+              ]
+            },
+            "description": "Verify user email"
+          }
+        },
+        {
+          "name": "Get Pending Verifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users/verification/pending",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users", "verification", "pending"]
+            },
+            "description": "Get pending verifications"
+          }
+        },
+        {
+          "name": "Get User Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/users/analytics/overview",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users", "analytics", "overview"]
+            },
+            "description": "Get user analytics"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Revenue Analytics",
+      "item": [
+        {
+          "name": "Get Revenue Overview",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/revenue/overview?period=month&groupBy=week",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "revenue", "overview"],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "month"
+                },
+                {
+                  "key": "groupBy",
+                  "value": "week"
+                }
+              ]
+            },
+            "description": "Get revenue analytics overview"
+          }
+        },
+        {
+          "name": "Get Real-time Revenue",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/revenue/real-time",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "revenue", "real-time"]
+            },
+            "description": "Get real-time revenue metrics"
+          }
+        },
+        {
+          "name": "Get All Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/revenue/transactions?page=1&limit=50&status=completed",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "revenue", "transactions"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                },
+                {
+                  "key": "status",
+                  "value": "completed"
+                }
+              ]
+            },
+            "description": "Get all transactions"
+          }
+        },
+        {
+          "name": "Process Refund",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transactionId\": \"TXN-2024-001234\",\n  \"amount\": 1999,\n  \"reason\": \"Service not delivered\",\n  \"type\": \"full\",\n  \"notifyUser\": true,\n  \"internalNotes\": \"User reported technical issues during date\",\n  \"approvedBy\": \"supervisor@datifyy.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/revenue/refunds",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "revenue", "refunds"]
+            },
+            "description": "Process refund"
+          }
+        },
+        {
+          "name": "Get LTV Analysis",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/revenue/analytics/ltv-analysis",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "revenue", "analytics", "ltv-analysis"]
+            },
+            "description": "Get customer LTV analysis"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Match Suggestions",
+      "item": [
+        {
+          "name": "Generate Match Suggestions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 1,\n  \"algorithm\": \"compatibility_v2\",\n  \"limit\": 10,\n  \"filters\": {\n    \"minScore\": 70,\n    \"maxDistance\": 50,\n    \"ageRange\": {\n      \"min\": 25,\n      \"max\": 35\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/match-suggestions/generate",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "match-suggestions", "generate"]
+            },
+            "description": "Generate match suggestions"
+          }
+        },
+        {
+          "name": "Get Match Suggestions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/match-suggestions?userId=1&status=pending",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "match-suggestions"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "1"
+                },
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            },
+            "description": "Get match suggestions"
+          }
+        },
+        {
+          "name": "Get Compatibility Analysis",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user1Id\": 1,\n  \"user2Id\": 2,\n  \"detailed\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/match-suggestions/compatibility-analysis",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "match-suggestions", "compatibility-analysis"]
+            },
+            "description": "Get compatibility analysis"
+          }
+        },
+        {
+          "name": "Get Algorithm Performance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/match-suggestions/algorithms/performance",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "match-suggestions", "algorithms", "performance"]
+            },
+            "description": "Get algorithm performance"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Image Upload",
+      "item": [
+        {
+          "name": "Upload Images",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "/path/to/image1.jpg"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "/path/to/image2.jpg"
+                },
+                {
+                  "key": "type",
+                  "value": "profile",
+                  "type": "text"
+                },
+                {
+                  "key": "metadata",
+                  "value": "{\"primary\": true}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/images/upload",
+              "host": ["{{base_url}}"],
+              "path": ["images", "upload"]
+            },
+            "description": "Upload profile images"
+          }
+        },
+        {
+          "name": "Get Image",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/images/:id",
+              "host": ["{{base_url}}"],
+              "path": ["images", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "img_123456"
+                }
+              ]
+            },
+            "description": "Get uploaded image"
+          }
+        },
+        {
+          "name": "Delete Image",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{login_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/images/:id",
+              "host": ["{{base_url}}"],
+              "path": ["images", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "img_123456"
+                }
+              ]
+            },
+            "description": "Delete uploaded image"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health & Utility",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "API health check"
+          }
+        },
+        {
+          "name": "Get Available Routes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/routes",
+              "host": ["{{base_url}}"],
+              "path": ["routes"]
+            },
+            "description": "Get all available API routes"
+          }
+        }
+      ]
+    }
+  ]
+}

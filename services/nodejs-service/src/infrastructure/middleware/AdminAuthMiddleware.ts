@@ -17,6 +17,7 @@ import {
   AdminPermission,
   AdminPermissionLevel,
 } from "../../proto-types";
+import { dbToAdminAccountStatus } from "../../utils/enum-converters";
 
 /**
  * Enhanced request interface with admin context
@@ -147,7 +148,7 @@ export function adminAuthMiddleware(
       }
 
       if (
-        adminProfile.accountStatus !== AdminAccountStatus.ADMIN_ACTIVE &&
+        dbToAdminAccountStatus(adminProfile.accountStatus) !== AdminAccountStatus.ADMIN_ACTIVE &&
         !options.allowInactive
       ) {
         logger.warn("Non-active admin attempted access", {
