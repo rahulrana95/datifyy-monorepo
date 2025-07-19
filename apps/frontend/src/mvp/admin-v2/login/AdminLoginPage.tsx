@@ -1,5 +1,5 @@
 // apps/frontend/src/mvp/admin-v2/login/AdminLoginPage.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Container,
@@ -28,6 +28,8 @@ import {
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
 import adminAuthService from '../../../service/adminAuthService';
+import authService from '../../../service/authService';
+import { useAuthStore } from '../../login-signup';
 
 /**
  * Admin login form data interface
@@ -78,6 +80,49 @@ const AdminLoginPage: React.FC = () => {
     // ===== HOOKS =====
     const navigate = useNavigate();
     const toast = useToast();
+    const authStore = useAuthStore();
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+    // ===== CHECK IF ALREADY LOGGED IN =====
+    useEffect(() => {
+        checkExistingAuth();
+    }, []);
+
+    const checkExistingAuth = async () => {
+        try {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            
+            if (!token) {
+                setIsCheckingAuth(false);
+                return;
+            }
+
+            // Validate token
+            const { response, error } = await authService.verifyToken();
+            
+            if (!error && response) {
+                // Get user details
+                const userResponse = await authService.getCurrentUser();
+                
+                if (!userResponse.error && userResponse.response) {
+                    const userData = userResponse.response;
+                    // @ts-ignore
+                    const isAdmin = userData?.isadmin || userData?.isAdmin || false;
+                    
+                    if (isAdmin) {
+                        // Already logged in as admin, redirect to dashboard
+                        navigate('/admin/dashboard', { replace: true });
+                        return;
+                    }
+                }
+            }
+            
+            setIsCheckingAuth(false);
+        } catch (error) {
+            console.error('Error checking auth:', error);
+            setIsCheckingAuth(false);
+        }
+    };
 
     // ===== FORM VALIDATION =====
 
@@ -254,6 +299,18 @@ const AdminLoginPage: React.FC = () => {
     };
 
     // ===== RENDER =====
+    // Show loading while checking auth
+    if (isCheckingAuth) {
+        return (
+            <Center minH="100vh">
+                <VStack>
+                    <Box className="animate-spin" borderRadius="full" border="4px solid" borderColor="brand.500" borderTopColor="transparent" w="50px" h="50px" />
+                    <Text mt={4} color="gray.600">Checking authentication...</Text>
+                </VStack>
+            </Center>
+        );
+    }
+
     return (
         <Box
             minH="100vh"

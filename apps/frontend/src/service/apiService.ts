@@ -101,7 +101,7 @@ class ApiService {
 
   async setAuthToken(token: string) {
     this.authToken = token;
-    this.axiosInstance.defaults.headers.Authorization = `Bearer ${token}`;
+    this.axiosInstance.defaults.headers.Authorization = `${token}`;
   }
 
   async setTokenFromCookies(): Promise<boolean> { 

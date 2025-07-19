@@ -30,6 +30,7 @@ import { useAuthStore } from "./mvp/login-signup";
 import { PartnerPreferencesContainer } from "./mvp/partner-preferences";
 import { AdminLoginPage } from './mvp/admin-v2';
 import AdminLayout from "./mvp/admin-v2/components/AdminLayout";
+import AdminProtectedRoute from "./mvp/admin-v2/components/AdminProtectedRoute";
 import { AvailabilityContainer } from './mvp/availability';
 import { DateCurationContainer } from './mvp/date-curation';
 import { DashboardContainer } from "./mvp/admin-v2/dashboard";
@@ -151,24 +152,26 @@ function App() {
 
                   </Route>
                   <Route path="/admin/login" element={<AdminLoginPage />} />
-                  <Route path="/admin" element={<AdminLayout />}>
-                    {featureFlags.adminDashboard && (
-                      <Route path="dashboard" element={<AdminDashboardContainer />} />
-                    )}
-                    {featureFlags.curateDates && (
-                      <Route path="curate-dates" element={<CurateDatesContainer />} />
-                    )}
-                    {featureFlags.curatedDatesManagement && (
-                      <Route path="dates-management" element={<CuratedDatesManagementContainer />} />
-                    )}
-                    {featureFlags.revenueTracking && (
-                      <Route path="revenue" element={<RevenueTrackingContainer />} />
-                    )}
-                    {featureFlags.genieSection && (
-                      <Route path="genie" element={<GenieSectionContainer />} />
-                    )}
-                    {/* Future admin routes will go here */}
-                    <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                  <Route path="/admin" element={<AdminProtectedRoute />}>
+                    <Route element={<AdminLayout />}>
+                      {featureFlags.adminDashboard && (
+                        <Route path="dashboard" element={<AdminDashboardContainer />} />
+                      )}
+                      {featureFlags.curateDates && (
+                        <Route path="curate-dates" element={<CurateDatesContainer />} />
+                      )}
+                      {featureFlags.curatedDatesManagement && (
+                        <Route path="dates-management" element={<CuratedDatesManagementContainer />} />
+                      )}
+                      {featureFlags.revenueTracking && (
+                        <Route path="revenue" element={<RevenueTrackingContainer />} />
+                      )}
+                      {featureFlags.genieSection && (
+                        <Route path="genie" element={<GenieSectionContainer />} />
+                      )}
+                      {/* Future admin routes will go here */}
+                      <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                    </Route>
                   </Route>
 
                   {/* Protect Profile Route */}
