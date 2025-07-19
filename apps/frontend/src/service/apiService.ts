@@ -14,7 +14,7 @@ class ApiService {
         : process.env.REACT_APP_BACKENDEND_URL_DEV;
     
     this.authToken = "";
-    this.prefixPath = ''
+    this.prefixPath = 'api/v1'; // Default API prefix path
 
     if (!baseURL) {
       throw new Error(

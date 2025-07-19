@@ -3,7 +3,8 @@
  * Reusable table with search, sort, and pagination
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useDebounce } from '../hooks/useDebounce';
 import {
   Box,
   Table,
@@ -15,6 +16,7 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  InputRightElement,
   Select,
   HStack,
   Text,
@@ -22,8 +24,10 @@ import {
   useColorModeValue,
   Highlight,
   Flex,
+  Spinner,
+  Center,
 } from '@chakra-ui/react';
-import { FiSearch, FiChevronUp, FiChevronDown, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiSearch, FiChevronUp, FiChevronDown, FiChevronLeft, FiChevronRight, FiX } from 'react-icons/fi';
 
 interface Column<T> {
   key: keyof T | string;
@@ -36,6 +40,8 @@ interface Column<T> {
 interface SearchableTableProps<T> {
   data: T[];
   columns: Column<T>[];
+  title?: string;
+  subtitle?: string;
   onRowClick?: (item: T) => void;
   selectedRow?: T;
   searchValue?: string;
@@ -45,11 +51,14 @@ interface SearchableTableProps<T> {
   totalItems?: number;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
+  isLoading?: boolean;
 }
 
 function SearchableTable<T extends { id: string }>({
   data,
   columns,
+  title,
+  subtitle,
   onRowClick,
   selectedRow,
   searchValue = '',
@@ -59,16 +68,30 @@ function SearchableTable<T extends { id: string }>({
   totalItems,
   onPageChange,
   onPageSizeChange,
+  isLoading = false,
 }: SearchableTableProps<T>) {
   const [sortColumn, setSortColumn] = useState<string>('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [localSearch, setLocalSearch] = useState(searchValue);
+  const debouncedSearch = useDebounce(localSearch, 300);
 
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
   const headerBg = useColorModeValue('gray.50', 'gray.700');
   const hoverBg = useColorModeValue('gray.50', 'gray.700');
   const selectedBg = useColorModeValue('brand.50', 'brand.900');
+
+  // Trigger search callback when debounced value changes
+  useEffect(() => {
+    if (debouncedSearch !== searchValue) {
+      onSearchChange?.(debouncedSearch);
+    }
+  }, [debouncedSearch, searchValue, onSearchChange]);
+
+  // Update local search when prop changes
+  useEffect(() => {
+    setLocalSearch(searchValue);
+  }, [searchValue]);
 
   // Handle sorting
   const handleSort = (column: string) => {
@@ -102,9 +125,9 @@ function SearchableTable<T extends { id: string }>({
 
   // Highlight search text
   const highlightText = (text: string) => {
-    if (!localSearch) return text;
+    if (!debouncedSearch) return text;
     return (
-      <Highlight query={localSearch} styles={{ bg: 'yellow.200' }}>
+      <Highlight query={debouncedSearch} styles={{ bg: 'yellow.200' }}>
         {text}
       </Highlight>
     );
@@ -116,23 +139,67 @@ function SearchableTable<T extends { id: string }>({
   };
 
   return (
-    <Box bg={bgColor} borderRadius="lg" border="1px solid" borderColor={borderColor} overflow="hidden">
+    <Box 
+      bg={bgColor} 
+      borderRadius="lg" 
+      border="1px solid" 
+      borderColor={borderColor} 
+      overflow="hidden"
+      h="100%"
+      display="flex"
+      flexDirection="column"
+    >
+      {/* Header */}
+      {(title || subtitle) && (
+        <Box p={4} borderBottom="1px solid" borderColor={borderColor}>
+          {title && (
+            <Text fontSize="lg" fontWeight="semibold" mb={subtitle ? 1 : 0}>
+              {title}
+            </Text>
+          )}
+          {subtitle && (
+            <Text fontSize="sm" color="gray.500">
+              {subtitle}
+            </Text>
+          )}
+        </Box>
+      )}
+      
       {/* Search and Controls */}
       <Box p={4} borderBottom="1px solid" borderColor={borderColor}>
         <HStack justify="space-between">
           <InputGroup maxW="400px">
-            <InputLeftElement pointerEvents="none">
-              <FiSearch color="gray.400" />
+            <InputLeftElement 
+              pointerEvents="none" 
+              h="32px"
+              width="32px"
+            >
+              <FiSearch color="gray.400" size="16" />
             </InputLeftElement>
             <Input
               placeholder="Search users..."
               value={localSearch}
-              onChange={(e) => {
-                setLocalSearch(e.target.value);
-                onSearchChange?.(e.target.value);
-              }}
+              onChange={(e) => setLocalSearch(e.target.value)}
               size="sm"
+              pl="32px"
+              pr={localSearch ? "32px" : 3}
+              h="32px"
+              _placeholder={{ color: 'gray.400' }}
             />
+            {localSearch && (
+              <InputRightElement
+                h="32px"
+                width="32px"
+              >
+                <IconButton
+                  aria-label="Clear search"
+                  icon={<FiX />}
+                  size="xs"
+                  variant="ghost"
+                  onClick={() => setLocalSearch('')}
+                />
+              </InputRightElement>
+            )}
           </InputGroup>
 
           <HStack>
@@ -155,8 +222,8 @@ function SearchableTable<T extends { id: string }>({
       </Box>
 
       {/* Table */}
-      <Box overflowX="auto">
-        <Table variant="simple" size="sm">
+      <Box overflowX="auto" flex={1} position="relative">
+        <Table variant="simple" size="sm" minW="100%">
           <Thead bg={headerBg}>
             <Tr>
               {columns.map((column) => (
@@ -180,13 +247,54 @@ function SearchableTable<T extends { id: string }>({
             </Tr>
           </Thead>
           <Tbody>
-            {sortedData.map((item) => (
+            {isLoading ? (
+              <>
+                {Array.from({ length: pageSize }).map((_, index) => (
+                  <Tr key={`loading-${index}`} h="52px">
+                    {columns.map((column, colIndex) => (
+                      <Td key={String(column.key)} borderColor="gray.100">
+                        {index === Math.floor(pageSize / 2) && colIndex === Math.floor(columns.length / 2) ? (
+                          <Center>
+                            <Spinner size="sm" color="brand.500" />
+                          </Center>
+                        ) : (
+                          <Box>&nbsp;</Box>
+                        )}
+                      </Td>
+                    ))}
+                  </Tr>
+                ))}
+              </>
+            ) : sortedData.length === 0 ? (
+              <>
+                <Tr>
+                  <Td colSpan={columns.length} border="none">
+                    <Center py={4}>
+                      <Text color="gray.500">
+                        {debouncedSearch ? 'No results found' : 'No data available'}
+                      </Text>
+                    </Center>
+                  </Td>
+                </Tr>
+                {/* Fill empty rows */}
+                {Array.from({ length: pageSize - 1 }).map((_, index) => (
+                  <Tr key={`empty-${index}`} h="52px">
+                    {columns.map((column) => (
+                      <Td key={String(column.key)} borderColor="gray.100">&nbsp;</Td>
+                    ))}
+                  </Tr>
+                ))}
+              </>
+            ) : (
+              <>
+                {sortedData.map((item) => (
               <Tr
                 key={item.id}
                 onClick={() => onRowClick?.(item)}
                 cursor={onRowClick ? 'pointer' : 'default'}
                 bg={selectedRow?.id === item.id ? selectedBg : 'transparent'}
                 _hover={{ bg: selectedRow?.id === item.id ? selectedBg : hoverBg }}
+                h="52px"
               >
                 {columns.map((column) => (
                   <Td key={String(column.key)}>
@@ -196,7 +304,17 @@ function SearchableTable<T extends { id: string }>({
                   </Td>
                 ))}
               </Tr>
-            ))}
+                ))}
+                {/* Fill empty rows to maintain consistent height */}
+                {sortedData.length < pageSize && Array.from({ length: pageSize - sortedData.length }).map((_, index) => (
+                  <Tr key={`empty-${index}`} h="52px">
+                    {columns.map((column) => (
+                      <Td key={String(column.key)} borderColor="gray.100">&nbsp;</Td>
+                    ))}
+                  </Tr>
+                ))}
+              </>
+            )}
           </Tbody>
         </Table>
       </Box>

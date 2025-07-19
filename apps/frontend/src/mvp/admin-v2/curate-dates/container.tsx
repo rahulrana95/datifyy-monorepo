@@ -24,6 +24,7 @@ import UserFilters from './components/UserFilters';
 import SuggestedMatchesTable from './components/SuggestedMatchesTable';
 import SlotSelector from './components/SlotSelector';
 import CurationSummary from './components/CurationSummary';
+import TableWrapper from './components/TableWrapper';
 import { User } from './types';
 
 const CurateDatesContainer: React.FC = () => {
@@ -69,6 +70,11 @@ const CurateDatesContainer: React.FC = () => {
     fetchGenies();
     fetchOfflineLocations();
   }, []);
+
+  // Fetch users when filters change
+  useEffect(() => {
+    fetchUsers();
+  }, [filters, fetchUsers]);
 
   // Handle errors
   useEffect(() => {
@@ -216,7 +222,7 @@ const CurateDatesContainer: React.FC = () => {
           templateColumns={{ base: '1fr', lg: '1fr 1fr' }}
           templateRows={{ base: 'auto', lg: '1fr' }}
           gap={6}
-          minH="calc(100vh - 200px)"
+          h="calc(100vh - 200px)"
         >
           {/* Left Column - User Selection */}
           <GridItem>
@@ -234,10 +240,17 @@ const CurateDatesContainer: React.FC = () => {
               />
 
               {/* Users Table */}
-              <Box flex={1}>
+              <TableWrapper 
+                pageSize={pagination.pageSize}
+                hasHeader={true}
+                hasFooter={true}
+                flex={1}
+              >
                 <SearchableTable
                   data={users}
                   columns={userColumns}
+                  title="Select User"
+                  subtitle="Choose a user to find compatible matches"
                   onRowClick={selectUser}
                   selectedRow={selectedUser || undefined}
                   searchValue={filters.search}
@@ -247,8 +260,9 @@ const CurateDatesContainer: React.FC = () => {
                   totalItems={pagination.totalItems}
                   onPageChange={goToPage}
                   onPageSizeChange={setPageSize}
+                  isLoading={isLoading}
                 />
-              </Box>
+              </TableWrapper>
             </VStack>
           </GridItem>
 
