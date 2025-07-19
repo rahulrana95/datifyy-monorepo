@@ -22,10 +22,16 @@ import {
   Divider,
   Alert,
   AlertIcon,
+  FormControl,
+  FormLabel,
+  Card,
+  CardBody,
+  Link,
 } from '@chakra-ui/react';
 import { FiVideo, FiMapPin, FiCalendar, FiClock } from 'react-icons/fi';
-import { TimeSlot, SuggestedMatch } from '../types';
+import { TimeSlot, SuggestedMatch, OfflineLocation } from '../types';
 import { format } from 'date-fns';
+import { LocationSearch, ParsedLocation } from '../../../common/LocationSearch';
 
 interface SlotSelectorProps {
   match: SuggestedMatch | null;
@@ -33,18 +39,22 @@ interface SlotSelectorProps {
     online: TimeSlot | null;
     offline: TimeSlot | null;
   };
+  selectedLocation?: OfflineLocation | null;
   onSlotSelect: (slot: TimeSlot, mode: 'online' | 'offline') => void;
+  onLocationSelect?: (location: OfflineLocation) => void;
 }
 
 const SlotSelector: React.FC<SlotSelectorProps> = ({
   match,
   selectedSlots,
+  selectedLocation,
   onSlotSelect,
+  onLocationSelect,
 }) => {
   const [activeTab, setActiveTab] = useState(0);
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
-  const selectedBg = useColorModeValue('brand.50', 'brand.900');
+  const cardBg = useColorModeValue('gray.50', 'gray.900');
 
   if (!match) {
     return (
@@ -226,6 +236,93 @@ const SlotSelector: React.FC<SlotSelectorProps> = ({
                   <AlertIcon />
                   No offline slots available for this match
                 </Alert>
+              )}
+              
+              {/* Location Selection for Offline Dates */}
+              {selectedSlots.offline && (
+                <Box mt={6}>
+                  <Divider mb={4} />
+                  <VStack align="stretch" spacing={4}>
+                    <Text fontSize="lg" fontWeight="semibold">
+                      Select Meeting Location
+                    </Text>
+                    
+                    <FormControl isRequired>
+                      <FormLabel>Search for a venue</FormLabel>
+                      <LocationSearch
+                        placeholder="Search for cafes, restaurants, parks..."
+                        onLocationSelect={(location: ParsedLocation) => {
+                          // Convert ParsedLocation to OfflineLocation
+                          const offlineLocation: OfflineLocation = {
+                            id: location.id,
+                            name: location.displayName,
+                            address: location.fullAddress,
+                            googleMapsUrl: location.googleMapsUrl,
+                            latitude: location.latitude,
+                            longitude: location.longitude,
+                            type: location.placeType === 'poi' ? 'cafe' : 'other',
+                            city: location.city,
+                            state: location.state,
+                            country: location.country,
+                            postalCode: location.postalCode,
+                          };
+                          onLocationSelect?.(offlineLocation);
+                        }}
+                        types={['poi', 'address']}
+                        countries={['IN']}
+                        maxResults={8}
+                        size="md"
+                        required
+                      />
+                    </FormControl>
+                    
+                    {/* Selected Location Display */}
+                    {selectedLocation && (
+                      <Card bg={cardBg} size="sm">
+                        <CardBody>
+                          <VStack align="start" spacing={2}>
+                            <HStack justify="space-between" w="full">
+                              <Text fontWeight="bold">{selectedLocation.name}</Text>
+                              <Badge colorScheme="green" fontSize="xs">
+                                Selected
+                              </Badge>
+                            </HStack>
+                            <Text fontSize="sm" color="gray.600">
+                              {selectedLocation.address}
+                            </Text>
+                            <HStack spacing={4}>
+                              <Text fontSize="xs" color="gray.500">
+                                {selectedLocation.city}, {selectedLocation.state}
+                              </Text>
+                              {selectedLocation.postalCode && (
+                                <Text fontSize="xs" color="gray.500">
+                                  {selectedLocation.postalCode}
+                                </Text>
+                              )}
+                            </HStack>
+                            <Link
+                              href={selectedLocation.googleMapsUrl}
+                              isExternal
+                              color="brand.500"
+                              fontSize="sm"
+                              fontWeight="medium"
+                            >
+                              View on Google Maps →
+                            </Link>
+                          </VStack>
+                        </CardBody>
+                      </Card>
+                    )}
+                    
+                    {/* Info Alert */}
+                    <Alert status="info" variant="subtle">
+                      <AlertIcon />
+                      <Text fontSize="sm">
+                        Select a convenient meeting location for both users. Consider accessibility and preferences.
+                      </Text>
+                    </Alert>
+                  </VStack>
+                </Box>
               )}
             </VStack>
           </TabPanel>

@@ -33,6 +33,8 @@ import {
   SimpleGrid,
   Icon,
   Link,
+  Card,
+  CardBody,
 } from '@chakra-ui/react';
 import { 
   FiUser, 
@@ -236,39 +238,50 @@ const CurationSummary: React.FC<CurationSummaryProps> = ({
         {isOfflineDate && (
           <>
             <Divider />
-            <FormControl isRequired>
-              <FormLabel fontSize="sm">Select Location</FormLabel>
-              <Select
-                placeholder="Choose a location"
-                value={selectedLocation?.id || ''}
-                onChange={(e) => {
-                  const location = offlineLocations.find(l => l.id === e.target.value);
-                  onLocationSelect(location || null);
-                }}
-                size="sm"
-              >
-                {offlineLocations.map(location => (
-                  <option key={location.id} value={location.id}>
-                    {location.name} - {location.type} ({location.city})
-                  </option>
-                ))}
-              </Select>
-              
-              {selectedLocation && (
-                <Box mt={2} p={3} bg="gray.50" borderRadius="md">
-                  <VStack align="start" spacing={1}>
-                    <Text fontSize="sm" fontWeight="medium">{selectedLocation.name}</Text>
-                    <Text fontSize="xs" color="gray.600">{selectedLocation.address}</Text>
-                    <Link href={selectedLocation.googleMapsUrl} isExternal color="brand.500" fontSize="xs">
-                      <HStack spacing={1}>
-                        <Text>View on Google Maps</Text>
-                        <FiExternalLink size={12} />
+            <Box>
+              <Text fontSize="sm" fontWeight="medium" mb={2}>Meeting Location</Text>
+              {selectedLocation ? (
+                <Card size="sm" variant="outline">
+                  <CardBody>
+                    <VStack align="start" spacing={2}>
+                      <HStack justify="space-between" w="full">
+                        <Text fontWeight="bold" fontSize="sm">{selectedLocation.name}</Text>
+                        <Badge colorScheme="green" fontSize="xs">
+                          Selected
+                        </Badge>
                       </HStack>
-                    </Link>
-                  </VStack>
-                </Box>
+                      <Text fontSize="xs" color="gray.600">
+                        {selectedLocation.address}
+                      </Text>
+                      <HStack spacing={4}>
+                        <Text fontSize="xs" color="gray.500">
+                          {selectedLocation.city}, {selectedLocation.state}
+                        </Text>
+                        {selectedLocation.postalCode && (
+                          <Text fontSize="xs" color="gray.500">
+                            {selectedLocation.postalCode}
+                          </Text>
+                        )}
+                      </HStack>
+                      <Link
+                        href={selectedLocation.googleMapsUrl}
+                        isExternal
+                        color="brand.500"
+                        fontSize="xs"
+                        fontWeight="medium"
+                      >
+                        View on Google Maps →
+                      </Link>
+                    </VStack>
+                  </CardBody>
+                </Card>
+              ) : (
+                <Alert status="warning" size="sm">
+                  <AlertIcon />
+                  <Text fontSize="sm">Please select a location in the slot selection step</Text>
+                </Alert>
               )}
-            </FormControl>
+            </Box>
           </>
         )}
 

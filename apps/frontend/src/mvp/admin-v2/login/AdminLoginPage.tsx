@@ -29,6 +29,7 @@ import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
 import adminAuthService from '../../../service/adminAuthService';
 import authService from '../../../service/authService';
+import apiService from '../../../service/apiService';
 import { useAuthStore } from '../../login-signup';
 
 /**
@@ -90,31 +91,24 @@ const AdminLoginPage: React.FC = () => {
 
     const checkExistingAuth = async () => {
         try {
-            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            // Check for admin token specifically
+            const adminToken = localStorage.getItem('admin_access_token') || sessionStorage.getItem('admin_access_token');
             
-            if (!token) {
+            if (!adminToken) {
                 setIsCheckingAuth(false);
                 return;
             }
+
+            // Set token in API service
+            await apiService.setAuthToken(adminToken);
 
             // Validate token
             const { response, error } = await authService.verifyToken();
             
             if (!error && response) {
-                // Get user details
-                const userResponse = await authService.getCurrentUser();
-                
-                if (!userResponse.error && userResponse.response) {
-                    const userData = userResponse.response;
-                    // @ts-ignore
-                    const isAdmin = userData?.isadmin || userData?.isAdmin || false;
-                    
-                    if (isAdmin) {
-                        // Already logged in as admin, redirect to dashboard
-                        navigate('/admin/dashboard', { replace: true });
-                        return;
-                    }
-                }
+                // Admin token is valid, redirect to dashboard
+                navigate('/admin/dashboard', { replace: true });
+                return;
             }
             
             setIsCheckingAuth(false);

@@ -229,7 +229,9 @@ const SlotSelectionModal: React.FC<SlotSelectionModalProps> = ({
               <SlotSelector
                 match={match}
                 selectedSlots={selectedSlots}
+                selectedLocation={selectedLocation}
                 onSlotSelect={onSlotSelect}
+                onLocationSelect={onLocationSelect}
               />
             </Box>
           ) : (

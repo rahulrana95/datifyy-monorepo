@@ -97,6 +97,7 @@ export interface OfflineLocation {
   city: string;
   state: string;
   country: string;
+  postalCode?: string;
   amenities?: string[];
   rating?: number;
   priceRange?: string;

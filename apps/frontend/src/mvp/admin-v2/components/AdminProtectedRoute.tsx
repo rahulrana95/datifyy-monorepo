@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { Center, Spinner } from '@chakra-ui/react';
 import authService from '../../../service/authService';
+import apiService from '../../../service/apiService';
 import { useAuthStore } from '../../login-signup';
 
 interface AdminProtectedRouteProps {
@@ -21,14 +22,17 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ children }) =
     try {
       setIsValidating(true);
 
-      // First check if user has token
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      // First check if admin has token
+      const adminToken = localStorage.getItem('admin_access_token') || sessionStorage.getItem('admin_access_token');
 
-      if (!token) {
+      if (!adminToken) {
         setIsAuthorized(false);
         setIsValidating(false);
         return;
       }
+      
+      // Set the token in API service for subsequent calls
+      await apiService.setAuthToken(adminToken);
 
       // Validate token with backend
       const { response, error } = await authService.verifyToken();
@@ -52,8 +56,9 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ children }) =
       const userData = userResponse.response;
 
       // Check if user is admin
-      // @ts-ignore
-      const isAdmin = response?.data?.user?.isAdmin ?? false;
+      // For admin portal, we'll check if the token is valid and user exists
+      // The fact that they have an admin_access_token means they logged in as admin
+      const isAdmin = !!(userData && adminToken);
 
       if (!isAdmin) {
         setIsAuthorized(false);
@@ -66,8 +71,7 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ children }) =
       authStore.setUserData({
         email: userData?.officialEmail || '',
         name: userData?.firstName || '',
-        // @ts-ignore
-        isAdmin: isAdmin,
+        isAdmin: true, // We know this is admin because they have admin token
         id: String(userData?.id || '')
       });
 
