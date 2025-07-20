@@ -9,9 +9,10 @@ import { FiUsers, FiTrendingUp, FiTrendingDown } from 'react-icons/fi';
 describe('MetricCard', () => {
   const mockMetric: MetricData = {
     value: 1234,
-    change: 12.5,
+    changePercent: 12.5,
     label: 'Total Users',
-    icon: 'users',
+    icon: 'FiUsers',
+    trend: 'up' as const,
   };
 
   describe('Rendering', () => {
@@ -42,9 +43,10 @@ describe('MetricCard', () => {
     it('should handle zero values correctly', () => {
       const zeroMetric: MetricData = {
         value: 0,
-        change: 0,
+        changePercent: 0,
         label: 'New Signups',
-        icon: 'users',
+        icon: 'FiUsers',
+        trend: 'neutral' as const,
       };
 
       render(<MetricCard metric={zeroMetric} />);
@@ -70,7 +72,8 @@ describe('MetricCard', () => {
     it('should show negative change with down arrow and red color', () => {
       const negativeMetric: MetricData = {
         ...mockMetric,
-        change: -8.3,
+        changePercent: -8.3,
+        trend: 'down' as const,
       };
 
       render(<MetricCard metric={negativeMetric} />);
@@ -86,7 +89,8 @@ describe('MetricCard', () => {
     it('should show zero change with neutral color', () => {
       const zeroChangeMetric: MetricData = {
         ...mockMetric,
-        change: 0,
+        changePercent: 0,
+        trend: 'neutral' as const,
       };
 
       render(<MetricCard metric={zeroChangeMetric} />);
@@ -112,7 +116,7 @@ describe('MetricCard', () => {
       const decimalMetric: MetricData = {
         ...mockMetric,
         value: 1234.56,
-        change: 12.567,
+        changePercent: 12.567,
       };
 
       render(<MetricCard metric={decimalMetric} />);
@@ -168,7 +172,7 @@ describe('MetricCard', () => {
     it('should handle undefined change value', () => {
       const noChangeMetric: MetricData = {
         ...mockMetric,
-        change: undefined as any,
+        changePercent: undefined,
       };
 
       render(<MetricCard metric={noChangeMetric} />);
@@ -180,7 +184,7 @@ describe('MetricCard', () => {
     it('should handle very large percentage changes', () => {
       const largeChangeMetric: MetricData = {
         ...mockMetric,
-        change: 999.99,
+        changePercent: 999.99,
       };
 
       render(<MetricCard metric={largeChangeMetric} />);
@@ -192,7 +196,7 @@ describe('MetricCard', () => {
       const nanMetric: MetricData = {
         ...mockMetric,
         value: NaN,
-        change: NaN,
+        changePercent: NaN,
       };
 
       render(<MetricCard metric={nanMetric} />);
@@ -215,7 +219,7 @@ describe('MetricCard', () => {
       render(<MetricCard metric={mockMetric} />);
 
       // Check for screen reader text
-      expect(screen.getByText(`${mockMetric.label}: ${mockMetric.value}, change: +${mockMetric.change}%`))
+      expect(screen.getByText(`${mockMetric.label}: ${mockMetric.value}, change: +${mockMetric.changePercent}%`))
         .toHaveClass('sr-only');
     });
   });
