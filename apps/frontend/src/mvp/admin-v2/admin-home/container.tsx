@@ -117,20 +117,20 @@ const AdminDashboardContainer: React.FC = () => {
     metrics.verifiedUsers,
     metrics.activeUsersToday,
     metrics.activeUsersThisWeek,
-  ] : [];
+  ].filter(Boolean) : [];
 
   const dateMetrics = metrics ? [
     metrics.totalCuratedDates,
     metrics.successfulDatesThisMonth,
     metrics.upcomingDates,
     metrics.cancelledDates,
-  ] : [];
+  ].filter(Boolean) : [];
 
   const revenueMetrics = metrics ? [
     metrics.totalRevenue,
     metrics.totalTokensPurchased,
     metrics.newUsersThisWeek,
-  ] : [];
+  ].filter(Boolean) : [];
 
   return (
     <Box bg={bgColor} minH="100vh" p={6}>
@@ -177,18 +177,36 @@ const AdminDashboardContainer: React.FC = () => {
         </HStack>
 
         {/* Primary Metrics */}
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
-          {primaryMetrics.map((metric, index) => (
-            <MetricCard key={index} metric={metric} isLoading={isLoading} />
-          ))}
-        </SimpleGrid>
+        {(primaryMetrics.length > 0 || isLoading) && (
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
+            {isLoading ? (
+              // Show 4 skeleton cards while loading
+              [...Array(4)].map((_, index) => (
+                <MetricCard key={`skeleton-primary-${index}`} metric={null as any} isLoading={true} />
+              ))
+            ) : (
+              primaryMetrics.map((metric, index) => (
+                <MetricCard key={`primary-${index}`} metric={metric} isLoading={false} />
+              ))
+            )}
+          </SimpleGrid>
+        )}
 
         {/* Date Metrics */}
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
-          {dateMetrics.map((metric, index) => (
-            <MetricCard key={index} metric={metric} isLoading={isLoading} />
-          ))}
-        </SimpleGrid>
+        {(dateMetrics.length > 0 || isLoading) && (
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
+            {isLoading ? (
+              // Show 4 skeleton cards while loading
+              [...Array(4)].map((_, index) => (
+                <MetricCard key={`skeleton-date-${index}`} metric={null as any} isLoading={true} />
+              ))
+            ) : (
+              dateMetrics.map((metric, index) => (
+                <MetricCard key={`date-${index}`} metric={metric} isLoading={false} />
+              ))
+            )}
+          </SimpleGrid>
+        )}
 
         {/* Revenue Section */}
         <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
@@ -205,11 +223,20 @@ const AdminDashboardContainer: React.FC = () => {
         </SimpleGrid>
 
         {/* Bottom Revenue Metrics */}
-        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-          {revenueMetrics.map((metric, index) => (
-            <MetricCard key={index} metric={metric} isLoading={isLoading} />
-          ))}
-        </SimpleGrid>
+        {(revenueMetrics.length > 0 || isLoading) && (
+          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+            {isLoading ? (
+              // Show 3 skeleton cards while loading
+              [...Array(3)].map((_, index) => (
+                <MetricCard key={`skeleton-revenue-${index}`} metric={null as any} isLoading={true} />
+              ))
+            ) : (
+              revenueMetrics.map((metric, index) => (
+                <MetricCard key={`revenue-${index}`} metric={metric} isLoading={false} />
+              ))
+            )}
+          </SimpleGrid>
+        )}
       </VStack>
     </Box>
   );
