@@ -2,7 +2,7 @@
 
 import { Router } from 'express';
 import { DataSource } from 'typeorm';
-import { AuthController } from '../../controllers/auth/AuthController';
+import  AuthController  from '../../controllers/auth/AuthController';
 import {  
   validateSignup, 
   validateLogin,
