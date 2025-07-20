@@ -20,7 +20,7 @@ import * as FiIcons from 'react-icons/fi';
 import { MetricData } from '../types';
 
 interface MetricCardProps {
-  metric: MetricData;
+  metric: MetricData | null;
   isLoading?: boolean;
 }
 
@@ -28,6 +28,24 @@ const MetricCard: React.FC<MetricCardProps> = ({ metric, isLoading = false }) =>
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
   const labelColor = useColorModeValue('gray.600', 'gray.400');
+  
+  // Handle undefined metric
+  if (!metric) {
+    return (
+      <Box
+        bg={bgColor}
+        p={6}
+        borderRadius="xl"
+        border="1px solid"
+        borderColor={borderColor}
+        boxShadow="sm"
+      >
+        <Skeleton height="20px" width="60%" mb={2} />
+        <Skeleton height="32px" width="80%" mb={2} />
+        <Skeleton height="16px" width="40%" />
+      </Box>
+    );
+  }
   
   // Get icon component dynamically
   const IconComponent = metric.icon ? (FiIcons as any)[metric.icon] : FiIcons.FiActivity;

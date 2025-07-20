@@ -28,13 +28,13 @@ interface TopCitiesTableProps {
   isLoading?: boolean;
 }
 
-const TopCitiesTable: React.FC<TopCitiesTableProps> = ({ cities, isLoading = false }) => {
+const TopCitiesTable: React.FC<TopCitiesTableProps> = ({ cities = [], isLoading = false }) => {
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
   const headerBg = useColorModeValue('gray.50', 'gray.700');
   
   // Calculate max revenue for percentage calculation
-  const maxRevenue = cities.length > 0 ? Math.max(...cities.map(c => c.revenue)) : 0;
+  const maxRevenue = cities && cities.length > 0 ? Math.max(...cities.map(c => c.revenue || 0)) : 0;
 
   if (isLoading) {
     return (
@@ -107,12 +107,12 @@ const TopCitiesTable: React.FC<TopCitiesTableProps> = ({ cities, isLoading = fal
                 </Td>
                 <Td isNumeric>
                   <Text fontWeight="medium">
-                    {city.userCount.toLocaleString('en-IN')}
+                    {(city.userCount || 0).toLocaleString('en-IN')}
                   </Text>
                 </Td>
                 <Td isNumeric>
                   <Text fontWeight="bold" color="green.500">
-                    ₹{city.revenue.toLocaleString('en-IN')}
+                    ₹{(city.revenue || 0).toLocaleString('en-IN')}
                   </Text>
                 </Td>
                 <Td>
