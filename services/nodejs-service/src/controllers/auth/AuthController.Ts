@@ -29,7 +29,7 @@ import { getCodeForVerifyingEmail, verifyCodeForEmail } from '../../methods/code
 import { sendEmail, from } from '../emailController';
 import forgotPasswordTemplate from '../../methods/templates/forgotPassword';
 
-export class AuthController {
+class AuthController {
   private readonly logger: Logger;
   private readonly jwtSecret: string;
   private readonly saltRounds: number = 12;
@@ -972,3 +972,5 @@ export class AuthController {
     return hasUppercase && hasLowercase && hasNumbers && hasSpecialChar && isLongEnough;
   }
 }
+
+export default AuthController;
