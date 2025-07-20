@@ -10,6 +10,8 @@
     "forceConsistentCasingInFileNames": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "allowImportingTsExtensions": false,
+    "noEmit": false,
     "strictPropertyInitialization": false, // This disables the strict property initialization checks,
     "paths": {
       "@datifyy/shared-constants": [

@@ -1,6 +1,7 @@
 // apps/frontend/src/service/apiService.ts
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { ServiceResponse } from "./ErrorTypes";
+import cookieService from "../utils/cookieService";
 
 class ApiService {
   private axiosInstance: AxiosInstance;
@@ -13,7 +14,10 @@ class ApiService {
         ? process.env.REACT_APP_BACKENDEND_URL_PROD
         : process.env.REACT_APP_BACKENDEND_URL_DEV;
     
-    this.authToken = "";
+    // Initialize token from cookies if available
+    const tokenFromCookie = cookieService.getCookie('token');
+    this.authToken = tokenFromCookie || "";
+    
     this.prefixPath = 'api/v1'; // Default API prefix path
 
     if (!baseURL) {
@@ -26,7 +30,7 @@ class ApiService {
       baseURL,
       headers: {
         "Content-Type": "application/json",
-        Authorization: this.authToken,
+        Authorization: this.authToken ? `Bearer ${this.authToken}` : "",
       },
     });
 
@@ -101,35 +105,38 @@ class ApiService {
 
   async setAuthToken(token: string) {
     this.authToken = token;
-    this.axiosInstance.defaults.headers.Authorization = `${token}`;
+    this.axiosInstance.defaults.headers.Authorization = token ? `Bearer ${token}` : "";
+    // Also update cookie
+    if (token) {
+      cookieService.setCookie('token', token, false);
+    }
   }
 
   async setTokenFromCookies(): Promise<boolean> { 
-    const token = await this.getTokenFromCookies();
-    this.setTokenInCookies(token);
+    const token = cookieService.getCookie('token');
     if (token) {
-      this.setAuthToken(token);
+      await this.setAuthToken(token);
     }
     return !!this.authToken;
   }
 
   async setTokenInCookies(token: string) {
-    document.cookie = `Authorization=${token}; path=/;`;
-    this.setAuthToken(token);
+    cookieService.setCookie('token', token, false);
+    await this.setAuthToken(token);
   }
 
   async getTokenFromCookies(): Promise<string> { 
-    const match = document.cookie.match(new RegExp('(^| )Authorization=([^;]+)'));
-    if (match) {
-      this.setAuthToken(match[2]);
+    const token = cookieService.getCookie('token');
+    if (token) {
+      await this.setAuthToken(token);
     }
-    return match?.[2] ?? '';
+    return token || '';
   }
   
   async clearToken() {
     this.authToken = "";
     this.axiosInstance.defaults.headers.Authorization = "";
-    document.cookie = "Authorization=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    cookieService.clearAuthCookies();
   }
 }
 
