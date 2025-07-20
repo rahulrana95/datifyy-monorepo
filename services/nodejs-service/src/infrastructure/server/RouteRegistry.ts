@@ -13,7 +13,7 @@ export class RouteRegistry {
 
   register(app: Express): void {
     // Root-level health check for Render and monitoring services
-    app.get('/health', (req, res) => {
+    app.get('/health', (_req, res) => {
       res.status(200).json({
         status: 'ok',
         timestamp: new Date().toISOString(),
