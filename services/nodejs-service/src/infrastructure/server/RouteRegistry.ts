@@ -12,6 +12,21 @@ export class RouteRegistry {
   ) {}
 
   register(app: Express): void {
+    // Root-level health check for Render and monitoring services
+    app.get('/health', (req, res) => {
+      res.status(200).json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV || 'development',
+        database: this.dataSource.isInitialized ? 'connected' : 'disconnected',
+        memory: {
+          used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + ' MB',
+          total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + ' MB',
+        }
+      });
+    });
+
     // API version prefix
     const apiPrefix = this.config.get('api.prefix', '/api/v1');
     
