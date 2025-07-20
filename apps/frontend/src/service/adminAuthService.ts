@@ -1,8 +1,17 @@
 // apps/frontend/src/service/adminAuthService.ts
 import apiService from "./apiService";
 import { ServiceResponse } from "./ErrorTypes";
+import cookieService from "../utils/cookieService";
+import { 
+    ADMIN_AUTH_ENDPOINTS, 
+    AUTH_STORAGE_KEYS, 
+    ERROR_MESSAGES,
+    DeviceType,
+    EXPIRY_DAYS
+} from '../constants';
+import { getDeviceInfo } from '../utils/browser.utils';
 
-const ADMIN_API_PREFIX = "admin/auth";
+const ADMIN_API_PREFIX = ADMIN_AUTH_ENDPOINTS.PREFIX;
 
 /**
  * Device information interface for admin login tracking
@@ -92,7 +101,7 @@ class AdminAuthService {
     try {
       console.log('🔐 Admin login attempt...', { email, rememberMe });
       
-      const deviceInfo = this.getDeviceInfo();
+      const deviceInfo = getDeviceInfo();
       
       const loginData: AdminLoginRequest = {
         email: email.toLowerCase().trim(),
@@ -102,7 +111,7 @@ class AdminAuthService {
       };
 
       const response = await apiService.post<AdminLoginResponse>(
-        `${ADMIN_API_PREFIX}/login`, 
+        ADMIN_AUTH_ENDPOINTS.LOGIN, 
         loginData
       );
 
@@ -115,7 +124,7 @@ class AdminAuthService {
         console.error('❌ Invalid admin login response');
         return { 
           response: undefined, 
-          error: { code: 401, message: "Invalid login response" } 
+          error: { code: 401, message: ERROR_MESSAGES.INVALID_RESPONSE } 
         };
       }
 
@@ -138,7 +147,7 @@ class AdminAuthService {
       console.error('❌ Admin login error:', error);
       return { 
         response: undefined, 
-        error: { code: 500, message: "Login failed due to server error" } 
+        error: { code: 500, message: ERROR_MESSAGES.SERVER_ERROR } 
       };
     }
   }
@@ -191,7 +200,7 @@ class AdminAuthService {
   // ===== PRIVATE TOKEN MANAGEMENT METHODS =====
 
   /**
-   * Store admin tokens and profile securely
+   * Store admin tokens and profile securely in cookies
    * 
    * @param {string} accessToken - JWT access token
    * @param {string} sessionId - Session ID
@@ -203,39 +212,40 @@ class AdminAuthService {
     sessionId: string, 
     rememberMe: boolean
   ): Promise<void> {
-    const storage = rememberMe ? localStorage : sessionStorage;
-    
-    storage.setItem('admin_access_token', accessToken);
-    storage.setItem('admin_session_id', sessionId);
-    storage.setItem('admin_remember_me', rememberMe.toString());
+    // Store tokens in secure cookies
+    cookieService.setCookie(AUTH_STORAGE_KEYS.TOKEN, accessToken, rememberMe);
+    cookieService.setCookie(AUTH_STORAGE_KEYS.ADMIN_SESSION_ID, sessionId, rememberMe);
+    cookieService.setCookie(AUTH_STORAGE_KEYS.ADMIN_REMEMBER_ME, rememberMe.toString(), rememberMe);
     
     // Set token in API service for immediate use
     await apiService.setAuthToken(accessToken);
   }
 
   /**
-   * Get admin access token from storage
+   * Get admin access token from cookies
    * 
    * @returns {string | null} Access token or null
    * @private
    */
   private getAccessToken(): string | null {
-    return localStorage.getItem('admin_access_token') || 
-           sessionStorage.getItem('admin_access_token');
+    return cookieService.getCookie(AUTH_STORAGE_KEYS.TOKEN);
   }
 
   /**
-   * Clear all admin tokens and data from storage
+   * Clear all admin tokens and data from cookies and storage
    * 
    * @private
    */
   private async clearAdminTokens(): Promise<void> {
-    // Clear from both storages to be safe
+    // Clear cookies
+    cookieService.clearAuthCookies();
+    
+    // Clear from both storages to be safe (for backward compatibility)
     const items = [
-      'admin_access_token',
-      'admin_session_id', 
-      'admin_remember_me',
-      'admin_profile'
+      AUTH_STORAGE_KEYS.ADMIN_TOKEN,
+      AUTH_STORAGE_KEYS.ADMIN_SESSION_ID, 
+      AUTH_STORAGE_KEYS.ADMIN_REMEMBER_ME,
+      AUTH_STORAGE_KEYS.ADMIN_PROFILE
     ];
     
     items.forEach(item => {
@@ -247,67 +257,7 @@ class AdminAuthService {
     await apiService.clearToken();
   }
 
-  /**
-   * Get current device information for security tracking
-   * 
-   * @returns {DeviceInfo} Device information object
-   * @private
-   */
-  private getDeviceInfo(): DeviceInfo {
-    const userAgent = navigator.userAgent;
-    
-    return {
-      userAgent,
-      ipAddress: '', // Will be filled by backend
-      deviceType: this.detectDeviceType(userAgent),
-      browser: this.detectBrowser(userAgent),
-      os: this.detectOS(userAgent)
-    };
-  }
-
-  /**
-   * Detect device type from user agent
-   * 
-   * @param {string} userAgent - Browser user agent
-   * @returns {'desktop' | 'mobile' | 'tablet'} Device type
-   * @private
-   */
-  private detectDeviceType(userAgent: string): 'desktop' | 'mobile' | 'tablet' {
-    if (/tablet|ipad/i.test(userAgent)) return 'tablet';
-    if (/mobile|android|iphone/i.test(userAgent)) return 'mobile';
-    return 'desktop';
-  }
-
-  /**
-   * Detect browser from user agent
-   * 
-   * @param {string} userAgent - Browser user agent
-   * @returns {string} Browser name
-   * @private
-   */
-  private detectBrowser(userAgent: string): string {
-    if (userAgent.includes('Chrome')) return 'Chrome';
-    if (userAgent.includes('Firefox')) return 'Firefox';
-    if (userAgent.includes('Safari')) return 'Safari';
-    if (userAgent.includes('Edge')) return 'Edge';
-    return 'Unknown';
-  }
-
-  /**
-   * Detect operating system from user agent
-   * 
-   * @param {string} userAgent - Browser user agent
-   * @returns {string} Operating system name
-   * @private
-   */
-  private detectOS(userAgent: string): string {
-    if (userAgent.includes('Windows')) return 'Windows';
-    if (userAgent.includes('Mac')) return 'macOS';
-    if (userAgent.includes('Linux')) return 'Linux';
-    if (userAgent.includes('Android')) return 'Android';
-    if (userAgent.includes('iOS')) return 'iOS';
-    return 'Unknown';
-  }
+  // Device detection methods moved to browser.utils.ts
 }
 
 // Export singleton instance
