@@ -1,0 +1,46 @@
+# Production-only Dockerfile
+# Assumes you've already built the TypeScript locally
+FROM node:20-alpine
+
+# Install dumb-init
+RUN apk add --no-cache dumb-init
+
+# Create app directory
+WORKDIR /app
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+# Copy package.json
+COPY package.json ./
+
+# Copy yarn.lock from root if building standalone
+COPY ../../yarn.lock* ./
+
+# Install production dependencies
+ENV NODE_ENV=production
+RUN yarn install --production --network-timeout 100000 || npm install --production
+
+# Copy built application
+COPY dist ./dist
+
+# Copy any additional files needed at runtime
+COPY src/methods ./src/methods
+
+# Change ownership
+RUN chown -R nodejs:nodejs /app
+
+# Switch to non-root user
+USER nodejs
+
+# Expose port
+EXPOSE 5000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:5000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); })"
+
+# Start with dumb-init
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "dist/index.js"]

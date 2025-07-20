@@ -1,0 +1,79 @@
+# Dockerfile for building backend from monorepo context
+# This should be run from the monorepo root: docker build -f services/nodejs-service/Dockerfile.monorepo -t datifyy-backend .
+
+FROM node:20-alpine AS builder
+
+# Install Python and build dependencies for native modules
+RUN apk add --no-cache python3 make g++
+
+# Set working directory
+WORKDIR /app
+
+# Copy root package files and yarn configuration
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn ./.yarn
+
+# Copy workspace package.json files
+COPY apps/frontend/package.json ./apps/frontend/
+COPY services/nodejs-service/package.json ./services/nodejs-service/
+COPY libs/shared-constants/package.json ./libs/shared-constants/
+
+# Install all dependencies
+RUN yarn install --immutable
+
+# Copy source code
+COPY apps/frontend ./apps/frontend
+COPY services/nodejs-service ./services/nodejs-service  
+COPY libs/shared-constants ./libs/shared-constants
+
+# Build the backend service
+WORKDIR /app/services/nodejs-service
+RUN yarn build
+
+# Production stage
+FROM node:20-alpine
+
+# Install dumb-init
+RUN apk add --no-cache dumb-init
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+# Set working directory
+WORKDIR /app
+
+# Copy necessary files from builder
+COPY --from=builder /app/package.json /app/yarn.lock /app/.yarnrc.yml ./
+COPY --from=builder /app/.yarn ./.yarn
+COPY --from=builder /app/apps/frontend/package.json ./apps/frontend/
+COPY --from=builder /app/services/nodejs-service/package.json ./services/nodejs-service/
+COPY --from=builder /app/libs/shared-constants/package.json ./libs/shared-constants/
+
+# Install production dependencies only
+ENV NODE_ENV=production
+RUN yarn workspaces focus nodejs-service --production
+
+# Copy built application and shared libs
+COPY --from=builder /app/services/nodejs-service/dist ./services/nodejs-service/dist
+COPY --from=builder /app/libs/shared-constants ./libs/shared-constants
+
+# Change ownership
+RUN chown -R nodejs:nodejs /app
+
+# Switch to non-root user
+USER nodejs
+
+# Expose port
+EXPOSE 5000
+
+# Set working directory to backend
+WORKDIR /app/services/nodejs-service
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:5000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); })"
+
+# Start with dumb-init
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "dist/index.js"]
