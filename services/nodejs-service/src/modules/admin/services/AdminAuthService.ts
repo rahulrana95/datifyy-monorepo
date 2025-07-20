@@ -468,6 +468,7 @@ export class AdminAuthService implements IAdminAuthService {
         expiresAt.setHours(expiresAt.getHours() + 48);
 
     // Generate access token
+    // @ts-ignore
     const accessToken = jwt.sign(payload, this.jwtSecret, {
       expiresIn: this.jwtExpiresIn
     });
