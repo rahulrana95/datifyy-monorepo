@@ -31,6 +31,19 @@ import adminAuthService from '../../../service/adminAuthService';
 import authService from '../../../service/authService';
 import apiService from '../../../service/apiService';
 import { useAuthStore } from '../../login-signup';
+import cookieService from '../../../utils/cookieService';
+import { 
+    ADMIN_LOGIN, 
+    FORM_LABELS, 
+    PLACEHOLDERS, 
+    ERROR_MESSAGES, 
+    BUTTON_TEXT,
+    AUTH_STORAGE_KEYS,
+    ROUTES,
+    TIME_CONSTANTS
+} from '../../../constants';
+import { validateEmail as validateEmailUtil, validatePassword as validatePasswordUtil } from '../../../utils/validation.utils';
+import { APP_BRANDING } from '../../../constants/ui.constants';
 
 /**
  * Admin login form data interface
@@ -91,23 +104,28 @@ const AdminLoginPage: React.FC = () => {
 
     const checkExistingAuth = async () => {
         try {
-            // Check for admin token specifically
-            const adminToken = localStorage.getItem('admin_access_token') || sessionStorage.getItem('admin_access_token');
+            // Check for admin token in cookies first
+            const adminToken = cookieService.getCookie(AUTH_STORAGE_KEYS.TOKEN);
             
-            if (!adminToken) {
+            // Also check localStorage/sessionStorage for backward compatibility
+            const legacyToken = localStorage.getItem(AUTH_STORAGE_KEYS.ADMIN_TOKEN) || sessionStorage.getItem(AUTH_STORAGE_KEYS.ADMIN_TOKEN);
+            
+            const token = adminToken || legacyToken;
+            
+            if (!token) {
                 setIsCheckingAuth(false);
                 return;
             }
 
             // Set token in API service
-            await apiService.setAuthToken(adminToken);
+            await apiService.setAuthToken(token);
 
             // Validate token
             const { response, error } = await authService.verifyToken();
             
             if (!error && response) {
                 // Admin token is valid, redirect to dashboard
-                navigate('/admin/dashboard', { replace: true });
+                navigate(ROUTES.ADMIN_DASHBOARD, { replace: true });
                 return;
             }
             
@@ -120,50 +138,9 @@ const AdminLoginPage: React.FC = () => {
 
     // ===== FORM VALIDATION =====
 
-    /**
-     * Validate email format and requirements
-     * 
-     * @param {string} email - Email to validate
-     * @returns {string | undefined} Error message or undefined if valid
-     */
-    const validateEmail = (email: string): string | undefined => {
-        if (!email.trim()) {
-            return 'Email is required';
-        }
-
-        if (email.length > 255) {
-            return 'Email must not exceed 255 characters';
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            return 'Please provide a valid email address';
-        }
-
-        return undefined;
-    };
-
-    /**
-     * Validate password format and requirements
-     * 
-     * @param {string} password - Password to validate
-     * @returns {string | undefined} Error message or undefined if valid
-     */
-    const validatePassword = (password: string): string | undefined => {
-        if (!password) {
-            return 'Password is required';
-        }
-
-        if (password.length < 8) {
-            return 'Password must be at least 8 characters long';
-        }
-
-        if (password.length > 128) {
-            return 'Password must not exceed 128 characters';
-        }
-
-        return undefined;
-    };
+    // Use validation utilities from utils
+    const validateEmail = validateEmailUtil;
+    const validatePassword = validatePasswordUtil;
 
     /**
      * Validate entire form and return errors
@@ -244,25 +221,25 @@ const AdminLoginPage: React.FC = () => {
                     title: 'Login Successful',
                     description: `Welcome back, ${result.response.data.admin.email}!`,
                     status: 'success',
-                    duration: 3000,
+                    duration: TIME_CONSTANTS.TOAST_DURATION,
                     isClosable: true,
                 });
 
                 // Redirect to admin dashboard
-                navigate('/admin/dashboard', { replace: true });
+                navigate(ROUTES.ADMIN_DASHBOARD, { replace: true });
 
             } else {
                 // Login failed
                 console.error('❌ Admin login failed:', result.error);
 
-                const errorMessage = result.error?.message || 'Login failed. Please try again.';
+                const errorMessage = result.error?.message || ERROR_MESSAGES.LOGIN_FAILED;
                 setErrors({ general: errorMessage });
 
                 toast({
                     title: 'Login Failed',
                     description: errorMessage,
                     status: 'error',
-                    duration: 5000,
+                    duration: TIME_CONSTANTS.LONG_TOAST_DURATION,
                     isClosable: true,
                 });
             }
@@ -270,14 +247,14 @@ const AdminLoginPage: React.FC = () => {
         } catch (error: any) {
             console.error('❌ Admin login error:', error);
 
-            const errorMessage = 'An unexpected error occurred. Please try again.';
+            const errorMessage = ERROR_MESSAGES.GENERIC_ERROR;
             setErrors({ general: errorMessage });
 
             toast({
                 title: 'Login Error',
                 description: errorMessage,
                 status: 'error',
-                duration: 5000,
+                duration: TIME_CONSTANTS.LONG_TOAST_DURATION,
                 isClosable: true,
             });
         } finally {
@@ -344,14 +321,14 @@ const AdminLoginPage: React.FC = () => {
                                         color="gray.800"
                                         fontWeight="bold"
                                     >
-                                        Admin Login
+                                        {ADMIN_LOGIN.TITLE}
                                     </Heading>
                                     <Text
                                         color="gray.600"
                                         fontSize="sm"
                                         textAlign="center"
                                     >
-                                        Secure access to Datifyy administration panel
+                                        {ADMIN_LOGIN.SUBTITLE}
                                     </Text>
                                     <Badge
                                         variant="subtle"
@@ -360,7 +337,7 @@ const AdminLoginPage: React.FC = () => {
                                         px={2}
                                         py={1}
                                     >
-                                        🔒 Encrypted & Monitored
+                                        {ADMIN_LOGIN.SECURITY_BADGE}
                                     </Badge>
                                 </VStack>
                             </VStack>
@@ -386,14 +363,14 @@ const AdminLoginPage: React.FC = () => {
                                             fontWeight="semibold"
                                             color="gray.700"
                                         >
-                                            Email Address
+                                            {FORM_LABELS.EMAIL}
                                         </FormLabel>
                                         <Input
                                             name="email"
                                             type="email"
                                             value={formData.email}
                                             onChange={handleInputChange}
-                                            placeholder="admin@datifyy.com"
+                                            placeholder={PLACEHOLDERS.ADMIN_EMAIL}
                                             size="lg"
                                             borderRadius="lg"
                                             focusBorderColor="brand.500"
@@ -415,7 +392,7 @@ const AdminLoginPage: React.FC = () => {
                                             fontWeight="semibold"
                                             color="gray.700"
                                         >
-                                            Password
+                                            {FORM_LABELS.PASSWORD}
                                         </FormLabel>
                                         <InputGroup size="lg">
                                             <Input
@@ -423,7 +400,7 @@ const AdminLoginPage: React.FC = () => {
                                                 type={showPassword ? 'text' : 'password'}
                                                 value={formData.password}
                                                 onChange={handleInputChange}
-                                                placeholder="Enter your password"
+                                                placeholder={PLACEHOLDERS.PASSWORD}
                                                 borderRadius="lg"
                                                 focusBorderColor="brand.500"
                                                 bg="gray.50"
@@ -459,7 +436,7 @@ const AdminLoginPage: React.FC = () => {
                                             size="sm"
                                         >
                                             <Text fontSize="sm" color="gray.600">
-                                                Keep me logged in for 30 days
+                                                {ADMIN_LOGIN.REMEMBER_ME_TEXT}
                                             </Text>
                                         </Checkbox>
                                     </FormControl>
@@ -480,7 +457,7 @@ const AdminLoginPage: React.FC = () => {
                                         }}
                                         transition="all 0.2s"
                                     >
-                                        Sign In to Admin Panel
+                                        {ADMIN_LOGIN.SIGN_IN_TITLE}
                                     </Button>
 
                                 </VStack>
@@ -489,17 +466,17 @@ const AdminLoginPage: React.FC = () => {
                             {/* Footer Links */}
                             <VStack spacing={2} pt={2}>
                                 <Link
-                                    href="/admin/forgot-password"
+                                    href={ROUTES.ADMIN_FORGOT_PASSWORD}
                                     fontSize="sm"
                                     color="brand.500"
                                     fontWeight="medium"
                                     _hover={{ color: "brand.600", textDecoration: "underline" }}
                                 >
-                                    Forgot your password?
+                                    {ADMIN_LOGIN.FORGOT_PASSWORD_TEXT}
                                 </Link>
 
                                 <Text fontSize="xs" color="gray.500" textAlign="center">
-                                    This is a secure admin area. All activities are logged and monitored.
+                                    {ADMIN_LOGIN.SECURITY_NOTE}
                                 </Text>
                             </VStack>
 
@@ -510,7 +487,7 @@ const AdminLoginPage: React.FC = () => {
                 {/* Footer */}
                 <Center mt={6}>
                     <Text fontSize="xs" color="whiteAlpha.800" textAlign="center">
-                        © 2024 Datifyy Admin Panel. All rights reserved.
+                        {APP_BRANDING.ADMIN_COPYRIGHT}
                     </Text>
                 </Center>
 

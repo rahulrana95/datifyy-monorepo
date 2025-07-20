@@ -10,12 +10,17 @@
     "forceConsistentCasingInFileNames": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "allowImportingTsExtensions": false,
+    "noEmit": false,
     "strictPropertyInitialization": false, // This disables the strict property initialization checks,
     "paths": {
       "@datifyy/shared-constants": [
         "../../libs/shared-constants/src"
       ],
     }
+  },
+  "ts-node": {
+    "esm": true
   },
   "include": [
     "src/**/*"

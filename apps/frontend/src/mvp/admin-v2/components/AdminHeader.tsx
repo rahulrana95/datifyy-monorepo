@@ -38,7 +38,7 @@ import {
     FiRefreshCw,
 } from 'react-icons/fi';
 import { useAuthStore } from '../../login-signup';
-import authService from '../../../service/authService';
+import adminAuthService from '../../../service/adminAuthService';
 import { useNavigate } from 'react-router-dom';
 
 interface AdminHeaderProps {
@@ -67,13 +67,14 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({
     // Handle logout
     const handleLogout = async () => {
         try {
-            await authService.logout();
-            // authStore.logout();
+            await adminAuthService.logout();
+            // Clear auth store
+            authStore.clearUser();
             navigate('/admin/login');
         } catch (error) {
             console.error('Logout error:', error);
             // Force logout even if API call fails
-            // authStore.logout();
+            authStore.clearUser();
             navigate('/admin/login');
         }
     };

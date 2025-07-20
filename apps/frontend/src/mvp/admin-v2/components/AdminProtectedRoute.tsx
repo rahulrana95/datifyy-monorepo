@@ -4,6 +4,7 @@ import { Center, Spinner } from '@chakra-ui/react';
 import authService from '../../../service/authService';
 import apiService from '../../../service/apiService';
 import { useAuthStore } from '../../login-signup';
+import cookieService from '../../../utils/cookieService';
 
 interface AdminProtectedRouteProps {
   children?: React.ReactNode;
@@ -22,17 +23,22 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ children }) =
     try {
       setIsValidating(true);
 
-      // First check if admin has token
-      const adminToken = localStorage.getItem('admin_access_token') || sessionStorage.getItem('admin_access_token');
+      // First check if admin has token in cookies
+      const adminToken = cookieService.getCookie('token');
 
-      if (!adminToken) {
+      // Also check localStorage/sessionStorage for backward compatibility
+      const legacyToken = localStorage.getItem('admin_access_token') || sessionStorage.getItem('admin_access_token');
+      
+      const token = adminToken || legacyToken;
+
+      if (!token) {
         setIsAuthorized(false);
         setIsValidating(false);
         return;
       }
       
       // Set the token in API service for subsequent calls
-      await apiService.setAuthToken(adminToken);
+      await apiService.setAuthToken(token);
 
       // Validate token with backend
       const { response, error } = await authService.verifyToken();
@@ -57,8 +63,8 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ children }) =
 
       // Check if user is admin
       // For admin portal, we'll check if the token is valid and user exists
-      // The fact that they have an admin_access_token means they logged in as admin
-      const isAdmin = !!(userData && adminToken);
+      // The fact that they have an admin token means they logged in as admin
+      const isAdmin = !!(userData && token);
 
       if (!isAdmin) {
         setIsAuthorized(false);

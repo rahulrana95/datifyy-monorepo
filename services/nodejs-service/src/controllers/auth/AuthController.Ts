@@ -1,5 +1,3 @@
-// src/controllers/auth/AuthController.ts
-
 import { Request, Response, NextFunction } from 'express';
 import { DataSource, QueryRunner } from 'typeorm';
 import bcrypt from 'bcryptjs';
