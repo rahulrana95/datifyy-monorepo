@@ -19,7 +19,8 @@
     "type-check": "yarn workspaces run type-check",
     "generate-proto-types": "node generate-proto-types",
     "start:frontend": "yarn workspace frontend start",
-    "start:backend": "yarn workspace nodejs-service dev"
+    "start:backend": "yarn workspace nodejs-service dev",
+    "render:build:backend": "cd services/nodejs-service && yarn install && yarn build"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
