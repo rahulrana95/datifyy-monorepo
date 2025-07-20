@@ -83,7 +83,8 @@ const RevenueChart: React.FC<RevenueChartProps> = ({
         },
         callbacks: {
           label: (context) => {
-            return `Revenue: ₹${context.parsed.y.toLocaleString('en-IN')}`;
+            const value = context.parsed?.y || 0;
+            return `Revenue: ₹${value.toLocaleString('en-IN')}`;
           },
         },
       },
@@ -99,7 +100,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({
           color: 'rgba(0, 0, 0, 0.05)',
         },
         ticks: {
-          callback: (value) => `₹${value.toLocaleString('en-IN')}`,
+          callback: (value) => `₹${(value || 0).toLocaleString('en-IN')}`,
         },
       },
     },
@@ -122,10 +123,48 @@ const RevenueChart: React.FC<RevenueChartProps> = ({
   }
 
   if (!revenueData) {
-    return null;
+    return (
+      <Box
+        bg={bgColor}
+        p={6}
+        borderRadius="xl"
+        border="1px solid"
+        borderColor={borderColor}
+        boxShadow="sm"
+      >
+        <VStack align="stretch" spacing={4}>
+          <Skeleton height="30px" width="200px" />
+          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+            {[...Array(3)].map((_, i) => (
+              <Box key={i}>
+                <Skeleton height="20px" width="100px" mb={2} />
+                <Skeleton height="30px" width="150px" />
+              </Box>
+            ))}
+          </SimpleGrid>
+          <Skeleton height="300px" width="100%" />
+        </VStack>
+      </Box>
+    );
   }
 
   const chartData = chartType === 'week' ? revenueData.revenueByWeek : revenueData.revenueByMonth;
+  
+  // Ensure chart data is valid
+  if (!chartData || !chartData.labels || !chartData.datasets) {
+    return (
+      <Box
+        bg={bgColor}
+        p={6}
+        borderRadius="xl"
+        border="1px solid"
+        borderColor={borderColor}
+        boxShadow="sm"
+      >
+        <Text color="gray.500">No chart data available</Text>
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -162,28 +201,32 @@ const RevenueChart: React.FC<RevenueChartProps> = ({
           <Stat>
             <StatLabel>Total Revenue</StatLabel>
             <StatNumber fontSize="xl" color="green.500">
-              ₹{revenueData.totalRevenue.toLocaleString('en-IN')}
+              ₹{(revenueData.totalRevenue || 0).toLocaleString('en-IN')}
             </StatNumber>
           </Stat>
           
           <Stat>
             <StatLabel>Online Dates</StatLabel>
             <StatNumber fontSize="xl">
-              ₹{revenueData.revenueByDateType.online.toLocaleString('en-IN')}
+              ₹{(revenueData.revenueByDateType?.online || 0).toLocaleString('en-IN')}
             </StatNumber>
-            <Badge colorScheme="blue" mt={1}>
-              {((revenueData.revenueByDateType.online / revenueData.totalRevenue) * 100).toFixed(1)}%
-            </Badge>
+            {revenueData.totalRevenue > 0 && (
+              <Badge colorScheme="blue" mt={1}>
+                {(((revenueData.revenueByDateType?.online || 0) / revenueData.totalRevenue) * 100).toFixed(1)}%
+              </Badge>
+            )}
           </Stat>
           
           <Stat>
             <StatLabel>Offline Dates</StatLabel>
             <StatNumber fontSize="xl">
-              ₹{revenueData.revenueByDateType.offline.toLocaleString('en-IN')}
+              ₹{(revenueData.revenueByDateType?.offline || 0).toLocaleString('en-IN')}
             </StatNumber>
-            <Badge colorScheme="purple" mt={1}>
-              {((revenueData.revenueByDateType.offline / revenueData.totalRevenue) * 100).toFixed(1)}%
-            </Badge>
+            {revenueData.totalRevenue > 0 && (
+              <Badge colorScheme="purple" mt={1}>
+                {(((revenueData.revenueByDateType?.offline || 0) / revenueData.totalRevenue) * 100).toFixed(1)}%
+              </Badge>
+            )}
           </Stat>
         </SimpleGrid>
 
@@ -204,7 +247,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({
               Token Packs Sold
             </Text>
             <Text fontSize="lg" fontWeight="bold">
-              {revenueData.tokenPacksSold.volume.toLocaleString('en-IN')}
+              {(revenueData.tokenPacksSold?.volume || 0).toLocaleString('en-IN')}
             </Text>
           </VStack>
           
@@ -213,7 +256,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({
               Token Revenue
             </Text>
             <Text fontSize="lg" fontWeight="bold" color="green.500">
-              ₹{revenueData.tokenPacksSold.amount.toLocaleString('en-IN')}
+              ₹{(revenueData.tokenPacksSold?.amount || 0).toLocaleString('en-IN')}
             </Text>
           </VStack>
         </HStack>

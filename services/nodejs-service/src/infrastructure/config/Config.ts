@@ -74,8 +74,8 @@ export class Config {
     });
 
     this.config.set('rateLimit', {
-      windowMs: parseInt(process.env.RATE_LIMIT_WINDOW || '900000', 10), // 15 minutes
-      max: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),
+      windowMs: parseInt(process.env.RATE_LIMIT_WINDOW || '900000', 100), // 15 minutes
+      max: parseInt(process.env.RATE_LIMIT_MAX || '100', 100),
       message: 'Too many requests from this IP, please try again later.',
     });
 
