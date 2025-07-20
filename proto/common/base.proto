@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package datifyy.common;
+
+// Common response structure
+message ApiResponse {
+  bool success = 1;
+  string message = 2;
+  // Data will be handled as a generic type in TypeScript
+  bytes data = 3;
+  ErrorDetails error = 4;
+  ResponseMetadata metadata = 5;
+}
+
+// Error details
+message ErrorDetails {
+  string code = 1;
+  string message = 2;
+  // Details will be handled as JSON string in TypeScript
+  string details = 3;
+}
+
+// Response metadata
+message ResponseMetadata {
+  string request_id = 1;
+  string timestamp = 2;
+  int64 processing_time = 3;
+}
+
+// Pagination
+message PaginationRequest {
+  int32 page = 1;
+  int32 limit = 2;
+  string sort_by = 3;
+  string sort_order = 4; // "asc" or "desc"
+}
+
+message PaginationResponse {
+  int32 page = 1;
+  int32 limit = 2;
+  int32 total = 3;
+  int32 total_pages = 4;
+}
+
+// Common timestamps
+message Timestamps {
+  string created_at = 1;
+  string updated_at = 2;
+  string deleted_at = 3;
+}
+
+// Geographic coordinates
+message Coordinates {
+  double latitude = 1;
+  double longitude = 2;
+}
+
+// Location information
+message LocationInfo {
+  string city = 1;
+  string state = 2;
+  string country = 3;
+  string zip_code = 4;
+  Coordinates coordinates = 5;
+}

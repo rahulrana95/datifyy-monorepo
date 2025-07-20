@@ -1,4 +1,6 @@
+// apps/frontend/src/service/apiService.ts
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import { ServiceResponse } from "./ErrorTypes";
 
 class ApiService {
   private axiosInstance: AxiosInstance;
@@ -12,7 +14,7 @@ class ApiService {
         : process.env.REACT_APP_BACKENDEND_URL_DEV;
     
     this.authToken = "";
-    this.prefixPath = '/api/v1'
+    this.prefixPath = 'api/v1'; // Default API prefix path
 
     if (!baseURL) {
       throw new Error(
@@ -26,13 +28,14 @@ class ApiService {
         "Content-Type": "application/json",
         Authorization: this.authToken,
       },
-    //   withCredentials: true, // Ensures cookies (e.g., JWT tokens) are sent
     });
 
     this.setupInterceptors();
   }
 
-
+  handleError(error: any) {
+    return error?.message ?? ''
+  }
 
   private setupInterceptors() {
     this.axiosInstance.interceptors.response.use(
@@ -46,7 +49,7 @@ class ApiService {
 
   private async handleRequest<T>(
     request: Promise<AxiosResponse<T>>
-  ): Promise<{ response?: T; error?: { code: number; message: string } }> {
+  ): Promise<ServiceResponse<T>> {
     try {
       const { data } = await request;
       return { response: data };
@@ -54,28 +57,46 @@ class ApiService {
       return {
         error: {
           code: error?.response?.status || 500,
-          message: error?.response?.data?.message || "An error occurred",
+          message: error?.response?.data?.message || error?.message || "An error occurred",
         },
       };
     }
   }
 
-  async get<T>(path: string, config?: AxiosRequestConfig) {
-    return this.handleRequest<T>(this.axiosInstance.get<T>(`${this.prefixPath}/${path}`, config));
-  }
-
-  async post<T>(path: string, data?: unknown, config?: AxiosRequestConfig) {
+  async get<T>(path: string, config?: AxiosRequestConfig): Promise<ServiceResponse<T>> {
+    const url = this.prefixPath ? `${this.prefixPath}/${path}` : path;
     return this.handleRequest<T>(
-      this.axiosInstance.post<T>(`${this.prefixPath}/${path}`, data, config)
+      this.axiosInstance.get<T>(url, config)
     );
   }
 
-  async put<T>(path: string, data?: unknown, config?: AxiosRequestConfig) {
-    return this.handleRequest<T>(this.axiosInstance.put<T>(`${this.prefixPath}/${path}`, data, config));
+  async post<T>(
+    path: string, 
+    data?: unknown, 
+    config?: AxiosRequestConfig
+  ): Promise<ServiceResponse<T>> {
+    const url = this.prefixPath ? `${this.prefixPath}/${path}` : path;
+    return this.handleRequest<T>(
+      this.axiosInstance.post<T>(url, data, config)
+    );
   }
 
-  async delete<T>(path: string, config?: AxiosRequestConfig) {
-    return this.handleRequest<T>(this.axiosInstance.delete<T>(`${this.prefixPath}/${path}`, config));
+  async put<T>(
+    path: string, 
+    data?: unknown, 
+    config?: AxiosRequestConfig
+  ): Promise<ServiceResponse<T>> {
+    const url = this.prefixPath ? `${this.prefixPath}/${path}` : path;
+    return this.handleRequest<T>(
+      this.axiosInstance.put<T>(url, data, config)
+    );
+  }
+
+  async delete<T>(path: string, config?: AxiosRequestConfig): Promise<ServiceResponse<T>> {
+    const url = this.prefixPath ? `${this.prefixPath}/${path}` : path;
+    return this.handleRequest<T>(
+      this.axiosInstance.delete<T>(url, config)
+    );
   }
 
   async setAuthToken(token: string) {
@@ -83,7 +104,7 @@ class ApiService {
     this.axiosInstance.defaults.headers.Authorization = `${token}`;
   }
 
-  async setTokenFromCookies() { 
+  async setTokenFromCookies(): Promise<boolean> { 
     const token = await this.getTokenFromCookies();
     this.setTokenInCookies(token);
     if (token) {
@@ -97,14 +118,13 @@ class ApiService {
     this.setAuthToken(token);
   }
 
-
-   async getTokenFromCookies() { 
+  async getTokenFromCookies(): Promise<string> { 
     const match = document.cookie.match(new RegExp('(^| )Authorization=([^;]+)'));
     if (match) {
       this.setAuthToken(match[2]);
     }
     return match?.[2] ?? '';
-   }
+  }
   
   async clearToken() {
     this.authToken = "";

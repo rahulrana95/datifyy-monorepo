@@ -40,6 +40,7 @@ const StatusWrapper: React.FC<StatusWrapperProps> = ({
         case Boolean(error):
             content = (
                 <VStack spacing={3} textAlign="center">
+                    {/* @ts-ignore */}
                     <Icon as={FaTimesCircle} color="red.500" boxSize={10} />
                     <Text fontSize="lg" fontWeight="semibold" color="red.500">
                         {error}
@@ -56,6 +57,7 @@ const StatusWrapper: React.FC<StatusWrapperProps> = ({
         case accessDenied:
             content = (
                 <VStack spacing={4} textAlign="center">
+                     {/*  @ts-ignore */}
                     <Icon as={FaLock} color="orange.500" boxSize={12} />
                     <Text fontSize="xl" fontWeight="bold" color="orange.600">
                         Access Denied
@@ -73,6 +75,7 @@ const StatusWrapper: React.FC<StatusWrapperProps> = ({
         case dataUnavailable:
             content = (
                 <VStack spacing={3} textAlign="center">
+                     {/*  @ts-ignore */}
                     <Icon as={FaExclamationTriangle} color="yellow.500" boxSize={10} />
                     <Text fontSize="lg" fontWeight="semibold" color="yellow.600">
                         Data Not Available

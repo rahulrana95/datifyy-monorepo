@@ -1,0 +1,169 @@
+syntax = "proto3";
+
+package datifyy.admin.user_management;
+
+import "common/base.proto";
+import "common/enums.proto";
+import "user/enums.proto";
+
+// User trust score levels
+enum UserTrustScoreLevel {
+  USER_TRUST_SCORE_LEVEL_UNSPECIFIED = 0;
+  USER_TRUST_SCORE_LEVEL_LOW = 1;
+  USER_TRUST_SCORE_LEVEL_MEDIUM = 2;
+  USER_TRUST_SCORE_LEVEL_HIGH = 3;
+  USER_TRUST_SCORE_LEVEL_VERIFIED = 4;
+}
+
+// User verification status
+enum UserVerificationStatus_OVERALL {
+  USER_VERIFICATION_STATUS_UNSPECIFIED = 0;
+  USER_VERIFICATION_STATUS_PENDING = 1;
+  USER_VERIFICATION_STATUS_VERIFIED = 2;
+  USER_VERIFICATION_STATUS_REJECTED = 3;
+}
+
+// Admin user information
+
+// User detail for admin view
+message AdminUserDetail {
+  int32 id = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+  datifyy.user.Gender gender = 5;
+  string date_of_birth = 6;
+  string phone_number = 7;
+  datifyy.common.UserStatus status = 8;
+  UserVerificationStatus_OVERALL verification_status = 9;
+  UserTrustScore trust_score = 10;
+  string profile_completion_percentage = 11;
+  int32 total_dates = 12;
+  int32 successful_dates = 13;
+  int32 cancelled_dates = 14;
+  double total_spent = 15;
+  string last_active = 16;
+  string created_at = 17;
+  string updated_at = 18;
+  repeated string profile_images = 19;
+  string bio = 20;
+  datifyy.common.LocationInfo location = 21;
+}
+
+// User trust score
+message UserTrustScore {
+  int32 score = 1;
+  UserTrustScoreLevel level = 2;
+  string last_updated = 3;
+  repeated TrustScoreFactor factors = 4;
+}
+
+// User trust score response message
+message UserTrustScoreResponse {
+  bool success = 1;
+  UserTrustScore data = 2;
+  string message = 3;
+}
+
+
+// Trust score factor
+message TrustScoreFactor {
+  string factor_name = 1;
+  int32 score = 2;
+  string description = 3;
+  double weight = 4;
+}
+
+// User statistics
+message UserStats {
+  int32 total_users = 1;
+  int32 active_users = 2;
+  int32 verified_users = 3;
+  int32 suspended_users = 4;
+  int32 new_signups_today = 5;
+  int32 new_signups_this_week = 6;
+  int32 new_signups_this_month = 7;
+  repeated UserDemographics demographics = 8;
+  repeated UserEngagementStats engagement_stats = 9;
+}
+
+// User demographics
+message UserDemographics {
+  string category = 1; // "age_group", "gender", "location"
+  string value = 2;
+  int32 count = 3;
+  double percentage = 4;
+}
+
+// User engagement statistics
+message UserEngagementStats {
+  string metric = 1;
+  double value = 2;
+  string period = 3;
+}
+
+// Request messages
+message GetUsersRequest {
+  datifyy.common.UserStatus status = 1;
+  UserVerificationStatus_OVERALL verification_status = 2;
+  UserTrustScoreLevel trust_score_level = 3;
+  string search_query = 4;
+  string start_date = 5;
+  string end_date = 6;
+  datifyy.common.PaginationRequest pagination = 7;
+}
+
+message GetUserDetailRequest {
+  int32 user_id = 1;
+}
+
+message UpdateUserStatusRequest {
+  int32 user_id = 1;
+  datifyy.common.UserStatus status = 2;
+  string reason = 3;
+}
+
+message UpdateUserTrustScoreRequest {
+  int32 user_id = 1;
+  int32 score = 2;
+  string reason = 3;
+}
+
+message VerifyUserRequest {
+  int32 user_id = 1;
+  UserVerificationStatus_OVERALL verification_status = 2;
+  string notes = 3;
+}
+
+message GetUserStatsRequest {
+  string start_date = 1;
+  string end_date = 2;
+  bool include_demographics = 3;
+  bool include_engagement = 4;
+}
+
+// Response messages
+message AdminUserListResponse {
+  bool success = 1;
+  repeated AdminUserDetail users = 2;
+  datifyy.common.PaginationResponse pagination = 3;
+  string message = 4;
+}
+
+message AdminUserDetailResponse {
+  bool success = 1;
+  AdminUserDetail data = 2;
+  string message = 3;
+}
+
+message UserStatsResponse {
+  bool success = 1;
+  UserStats data = 2;
+  string message = 3;
+}
+
+message UserActionResponse {
+  bool success = 1;
+  string message = 2;
+  AdminUserDetail updated_user = 3;
+}

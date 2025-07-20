@@ -6,6 +6,7 @@ import { Express } from 'express';
 import { DataSource } from 'typeorm';
 import { setupTestDatabase } from './helpers/setupTestDatabase';
 import { UsersLogin } from '../models/entities/UsersLogin';
+// @ts-ignore
 import app from '../index';
 
 describe('User Routes', () => {

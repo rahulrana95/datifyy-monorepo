@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd apps/frontend && yarn build",
+  "outputDirectory": "apps/frontend/build",
+  "installCommand": "cd apps/frontend && yarn install",
+  "framework": null
+}

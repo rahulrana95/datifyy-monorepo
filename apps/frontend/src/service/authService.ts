@@ -1,169 +1,216 @@
-import apiService from './apiService';
-import { ErrorObject } from './ErrorTypes';
+// apps/frontend/src/service/authService.ts
+import apiService from "./apiService";
+import { 
+  ServiceResponse,
+  LoginRequest,
+  LoginResponse,
+  SignupRequest,
+  SignupResponse,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
+  EmailVerificationRequest,
+  TokenValidationResponse,
+} from "../proto-types";
+import { DatifyyUsersInformation } from "./userService/UserProfileTypes";
 
-export const login = async (username: string, password: string) => {
-    try {
-        const response: {
-            response?: {
-                token: string;
-            },
-            error?: ErrorObject
-        } = await apiService.post('/login', { email:username, password });
+const AUTH_API_PREFIX = "auth";
 
-        if (!response?.response?.token) {
-            return { response: null, error: 'Login failed' };
-        }
+export const login = async (
+  username: string, 
+  password: string
+): Promise<ServiceResponse<LoginResponse>> => {
+  try {
+    const loginData: LoginRequest = {
+      email: username,
+      password,
+    };
 
-        const token = response.response.token;
+    const { response }: {response?: LoginResponse | undefined} = await apiService.post<LoginResponse>(`${AUTH_API_PREFIX}/login`, loginData);
 
-        apiService.setTokenInCookies(token);
-
-        return { response: response.response, error: null };
-    } catch (error) {
-        return { response: null, error: 'Login failed' };
+    if (!response?.accessToken) {
+      return { response: undefined, error: { code: 401, message: "Login failed" } };
     }
+
+    const token = response.accessToken;
+    apiService.setTokenInCookies(token);
+
+    return { response: response, error: undefined };
+  } catch (error) {
+    console.log(error);
+    return { response: undefined, error: { code: 500, message: "Login failed" } };
+  }
 };
 
-export const verifyToken = async () => {
-    try {
-        await apiService.getTokenFromCookies();
-        const response: {
-            response?: {
-                id: string;
-                firstName: string;
-                officialEmail: string;
-                isadmin: boolean;
-            },
-            error?: ErrorObject
-        } = await apiService.post('/validate-token');
-        if (response.error) {
-            return { response: null, error: 'validate-token failed' };
-        }
-        return { response: response.response, error: null };
-    } catch (error) {
-        return { response: null, error: 'validate-token failed' };
-    }
-}
-
-export const register = async ( password: string, email: string) => {
-    try {
-        const response = await apiService.post('/signup', { password, email });
-        if (response.error) { 
-            return { response: null, error: 'Registration failed' };
-        }
-        return { response: response.response, error: null };
-    } catch (error) {
-        return { response: null, error: 'Registration failed' };
-    }
+export const verifyToken = async (): Promise<ServiceResponse<TokenValidationResponse>> => {
+  try {
+    await apiService.getTokenFromCookies();
+    const {response} = await apiService.post<TokenValidationResponse>(`${AUTH_API_PREFIX}/validate-token`);
+  
+    
+    return { response: response, error: undefined };
+  } catch (error) {
+    return { response: undefined, error: { code: 500, message: "validate-token failed" } };
+  }
 };
 
-export const logout = async () => {
-    try {
-        const response = await apiService.post('/logout');
+export const register = async (
+  password: string, 
+  email: string, 
+  verificationCode: string,
+  firstName: string = '',
+  lastName: string = ''
+): Promise<ServiceResponse<SignupResponse>> => {
+  try {
+    const signupData: SignupRequest = {
+      password,
+      email,
+      firstName,
+      lastName,
+      agreeToTerms: true
+    };
 
-        if (response.error) { 
-            return { response: null, error: 'Logout failed.' };
-        }
-
-        return { response: response.response, error: null };
-    } catch (error) {
-        return { response: null, error: 'Logout failed' };
-    }
+    const {response}: {response?: SignupResponse} = await apiService.post<SignupResponse>(`${AUTH_API_PREFIX}/signup`, signupData);
+    
+    return { response: response, error: undefined };
+  } catch (error) {
+    return { response: undefined, error: { code: 500, message: "Registration failed" } };
+  }
 };
 
-export const getCurrentUser = async () => {
-    try {
-        const response: {
-            response?: {
-                data: {id: string;
-                    officialEmail: string;
-                firstName: string
-                isadmin: boolean;}
-            },
-            error?: ErrorObject
-        } = await apiService.get('/user-profile');
-        if (response.error) { 
-            return { response: null, error: 'Failed to fetch current user' };
-        }
-        return { response: response.response, error: null };
-    } catch (error) {
-        return { response: null, error: 'Failed to fetch current user' };
-    }
+export const logout = async (): Promise<ServiceResponse<any>> => {
+  try {
+    const {response} = await apiService.post(`${AUTH_API_PREFIX}/logout`);
+
+
+    return { response: response, error: undefined };
+  } catch (error) {
+    return { response: undefined, error: { code: 500, message: "Logout failed" } };
+  }
 };
 
-export const sendEmailCode = async ({ to, type }: { to: {email: string, name: string}[], type: "verifyEmail" | "forgotPassword"}) => {
-    try {
-        const response = await apiService.post('/send-emails', {to, type});
-        if (response.error) { 
-            return { response: null, error: 'Something is wrong.' };
-        }
-        return { response: response.response, error: null };
-    } catch (error) {
-        return { response: null, error: 'Failed to fetch current user' };
-    }
+export const getCurrentUser = async (): Promise<ServiceResponse<DatifyyUsersInformation>> => {
+  try {
+const {response} = await apiService.get<DatifyyUsersInformation>("user-profile");
+  
+    
+    return { response, error: undefined };
+  } catch (error) {
+    return { response: undefined, error: { code: 500, message: "Failed to fetch current user" } };
+  }
 };
 
-export const verifyEmailCode = async ({email, verificationCode}: {email: string, verificationCode: string}) => {
-    try {
-        const response = await apiService.post('/verify-email-code', {email, verificationCode} );
-        if (response.error) { 
-            return { response: null, error: 'Something is wrong.' };
-        }
-        return { response: response.response, error: null };
-    } catch (error) {
-        return { response: null, error: 'Failed to fetch current user' };
-    }
+export const sendEmailCode = async (
+  email: string
+): Promise<ServiceResponse<any>> => {
+  try {
+    const {response} = await apiService.post(
+      `${AUTH_API_PREFIX}/send-verification-code`, 
+      { email }
+    );
+    
+    return { response: response, error: undefined };
+  } catch (error) {
+    return { response: undefined, error: { code: 500, message: "Failed to send verification code" } };
+  }
 };
 
+export const verifyEmailCode = async ({
+  email,
+  verificationCode,
+}: {
+  email: string;
+  verificationCode: string;
+}): Promise<ServiceResponse<any>> => {
+  try {
+    const {response} = await apiService.post("/verify-email-code", {
+      email,
+      verificationCode,
+    });
+    
+    // if (response.error) {
+    //   return { response: undefined, error: { code: 400, message: "Something is wrong." } };
+    // }
+    
+    return { response: response, error: undefined };
+  } catch (error) {
+    return { response: undefined, error: { code: 500, message: "Failed to verify email code" } };
+  }
+};
 
-export const sendForgotPasswordCode = async (email: string) => {
-    try {
-        const response = await apiService.post('/forgot-password/send-verification-code', {email});
-        if (response.error) { 
-            return { response: null, error: 'Something is wrong.' };
-        }
-        return { response: response.response, error: null };
-    } catch (error) {
-        return { response: null, error: 'Failed to fetch current user' };
+export const sendForgotPasswordCode = async (
+  email: string
+): Promise<ServiceResponse<any>> => {
+  try {
+    const forgotPasswordData: ForgotPasswordRequest = { email };
+    
+    const response = await apiService.post(
+      `${AUTH_API_PREFIX}/forgot-password`,
+      forgotPasswordData
+    );
+    
+    if (response.error) {
+      return { response: undefined, error: { code: 400, message: "Something is wrong." } };
     }
-}
+    
+    return { response: response.response, error: undefined };
+  } catch (error) {
+    return { response: undefined, error: { code: 500, message: "Failed to send forgot password code" } };
+  }
+};
 
-export const verifyForgotPasswordCode = async ({ email, verificationCode }: { email: string, verificationCode: string }) => {
-    try {
-        const response = await apiService.post('/forgot-password/verify-code', { email, verificationCode });
-        if (response.error) { 
-            return { response: null, error: 'Something is wrong.' };
-        }
-        return { response: response.response, error: null };
-    } catch (error) {
-        return { response: null, error: 'Failed to fetch current user' };
+export const verifyForgotPasswordCode = async ({
+  email,
+  verificationCode,
+}: {
+  email: string;
+  verificationCode: string;
+}): Promise<ServiceResponse<any>> => {
+  try {
+    const response = await apiService.post(`${AUTH_API_PREFIX}/verify-email`, {
+      email,
+      verificationCode,
+    });
+    
+    if (response.error) {
+      return { response: undefined, error: { code: 400, message: "Something is wrong." } };
     }
-}
+    
+    return { response: response.response, error: undefined };
+  } catch (error) {
+    return { response: undefined, error: { code: 500, message: "Failed to verify forgot password code" } };
+  }
+};
 
-export const resetPassword = async ({ email, password }: { email: string, password: string }) => {
-    try {
-        const response = await apiService.post('/forgot-password/reset-password', { email, password });
-        if (response.error) { 
-            return { response: null, error: 'Something is wrong.' };
-        }
-        return { response: response.response, error: null };
-    } catch (error) {
-        return { response: null, error: 'Failed to fetch current user' };
+export const resetPassword = async (
+  resetData: ResetPasswordRequest
+): Promise<ServiceResponse<any>> => {
+  try {
+    const response = await apiService.post(
+      `${AUTH_API_PREFIX}/reset-password`,
+      resetData
+    );
+    
+    if (response.error) {
+      return { response: undefined, error: { code: 400, message: "Something is wrong." } };
     }
-}
-
+    
+    return { response: response.response, error: undefined };
+  } catch (error) {
+    return { response: undefined, error: { code: 500, message: "Failed to reset password" } };
+  }
+};
 
 const authService = {
-    login,
-    register,
-    logout,
-    getCurrentUser,
-    sendEmailCode,
-    verifyEmailCode,
-    verifyToken,
-    sendForgotPasswordCode,
-    verifyForgotPasswordCode,
-    resetPassword
-}
+  login,
+  register,
+  logout,
+  getCurrentUser,
+  sendEmailCode,
+  verifyEmailCode,
+  verifyToken,
+  sendForgotPasswordCode,
+  verifyForgotPasswordCode,
+  resetPassword,
+};
 
 export default authService;

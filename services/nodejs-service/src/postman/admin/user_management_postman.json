@@ -1,0 +1,1232 @@
+{
+  "info": {
+    "name": "Datifyy Admin - User Management",
+    "description": "Complete admin user management API testing collection for Datifyy dating platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{login_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3453/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "apiVersion",
+      "value": "api/v1",
+      "type": "string"
+    },
+    {
+      "key": "test_user_f1", 
+      "value": "eydss.ta@outlook.com",
+      "type": "string"
+    },
+    {
+      "key": "test_password",
+      "value": "1",
+      "type": "string"
+    },
+   {
+      "key": "test_user_m1",
+      "value": "3rahul4@gmail.com",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01. Authentication",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "health"]
+            },
+            "description": "Check admin API health status"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Health check successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data.status).to.eql('healthy');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@datifyy.com\",\n  \"password\": \"AdminPassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "auth", "login"]
+            },
+            "description": "Login admin user to get access token"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Admin login successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('accessToken');",
+                  "    pm.expect(response.data).to.have.property('refreshToken');",
+                  "    ",
+                  "    // Store tokens for subsequent requests",
+                  "    pm.collectionVariables.set('admin_access_token', response.data.accessToken);",
+                  "    pm.collectionVariables.set('admin_refresh_token', response.data.refreshToken);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Admin Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "auth", "profile"]
+            },
+            "description": "Get current admin profile and permissions"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Profile retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('admin');",
+                  "    pm.expect(response.data).to.have.property('permissions');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Admin authentication endpoints"
+    },
+    {
+      "name": "02. User Management",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users?page=1&limit=20&sortBy=createdAt&sortOrder=DESC",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "20"},
+                {"key": "sortBy", "value": "createdAt"},
+                {"key": "sortOrder", "value": "DESC"}
+              ]
+            },
+            "description": "Get paginated list of users with default sorting"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Users list retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('data');",
+                  "    pm.expect(response.data).to.have.property('pagination');",
+                  "    pm.expect(response.data.data).to.be.an('array');",
+                  "    ",
+                  "    // Store first user ID for subsequent tests",
+                  "    if (response.data.data.length > 0) {",
+                  "        pm.collectionVariables.set('test_user_id', response.data.data[0].id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Users with Filters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users?accountStatus=active&gender=male&minTrustScore=70&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users"],
+              "query": [
+                {"key": "accountStatus", "value": "active"},
+                {"key": "gender", "value": "male"},
+                {"key": "minTrustScore", "value": "70"},
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "10"}
+              ]
+            },
+            "description": "Get users with filters applied"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Filtered users retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data.metadata).to.have.property('appliedFilters');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users/search?q=john&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users", "search"],
+              "query": [
+                {"key": "q", "value": "john"},
+                {"key": "limit", "value": "10"}
+              ]
+            },
+            "description": "Search users by name or email"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User search completed successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('users');",
+                  "    pm.expect(response.data).to.have.property('query');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users/{{test_user_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users", "{{test_user_id}}"]
+            },
+            "description": "Get detailed information about a specific user"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User details retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('profile');",
+                  "    pm.expect(response.data).to.have.property('trustScore');",
+                  "    pm.expect(response.data).to.have.property('dateHistory');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update User Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountStatus\": \"active\",\n  \"reason\": \"Account review completed\",\n  \"adminNotes\": \"User account restored after review\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users/{{test_user_id}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users", "{{test_user_id}}", "status"]
+            },
+            "description": "Update user account status"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User status updated successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('accountStatus');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update User Verification",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"verificationType\": \"email\",\n  \"isVerified\": true,\n  \"verificationNotes\": \"Email verification completed manually\",\n  \"verificationMethod\": \"admin_review\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users/{{test_user_id}}/verification",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users", "{{test_user_id}}", "verification"]
+            },
+            "description": "Update user verification status"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User verification updated successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Users by Filter - Low Trust Score",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users/filters/lowTrustScore?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users", "filters", "lowTrustScore"],
+              "query": [
+                {"key": "limit", "value": "20"}
+              ]
+            },
+            "description": "Get users with low trust scores"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Low trust score users retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('filterType');",
+                  "    pm.expect(response.data.filterType).to.eql('lowTrustScore');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Users on Probation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users/filters/onProbation?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users", "filters", "onProbation"],
+              "query": [
+                {"key": "limit", "value": "20"}
+              ]
+            },
+            "description": "Get users currently on probation"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Probation users retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data.filterType).to.eql('onProbation');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get User Activity Log",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users/{{test_user_id}}/activity-log?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users", "{{test_user_id}}", "activity-log"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "20"}
+              ]
+            },
+            "description": "Get user activity log"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User activity log retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('activities');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add User Note",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"User contacted support regarding profile verification. Issue resolved.\",\n  \"category\": \"support\",\n  \"isPrivate\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users/{{test_user_id}}/notes",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users", "{{test_user_id}}", "notes"]
+            },
+            "description": "Add admin note to user profile"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User note added successfully', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('noteId');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get User Notes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users/{{test_user_id}}/notes",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users", "{{test_user_id}}", "notes"]
+            },
+            "description": "Get all admin notes for a user"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User notes retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('notes');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "User management operations"
+    },
+    {
+      "name": "03. Trust Score Management",
+      "item": [
+        {
+          "name": "Get User Trust Score",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users/{{test_user_id}}/trust-score",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users", "{{test_user_id}}", "trust-score"]
+            },
+            "description": "Get detailed trust score analysis for a user"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Trust score retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('currentScore');",
+                  "    pm.expect(response.data).to.have.property('recommendations');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update User Trust Score",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"overallScore\": 85,\n  \"attendanceScore\": 90,\n  \"punctualityScore\": 80,\n  \"feedbackScore\": 85,\n  \"warningLevel\": 0,\n  \"adjustmentReason\": \"positive_feedback\",\n  \"adminNotes\": \"User has shown significant improvement in behavior and feedback\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users/{{test_user_id}}/trust-score",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users", "{{test_user_id}}", "trust-score"]
+            },
+            "description": "Manually update user trust score"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Trust score updated successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('trustScore');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Recalculate User Trust Score",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users/{{test_user_id}}/trust-score/recalculate",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users", "{{test_user_id}}", "trust-score", "recalculate"]
+            },
+            "description": "Recalculate trust score based on current data"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Trust score recalculated successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('oldScore');",
+                  "    pm.expect(response.data).to.have.property('newScore');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Users Requiring Attention",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/trust-scores/requiring-attention?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "trust-scores", "requiring-attention"],
+              "query": [
+                {"key": "limit", "value": "20"}
+              ]
+            },
+            "description": "Get users with trust scores requiring admin attention"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Users requiring attention retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('users');",
+                  "    pm.expect(response.data).to.have.property('priorities');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Manage User Probation - Place",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"place\",\n  \"duration\": \"P30D\",\n  \"reason\": \"Multiple complaints about user behavior during dates\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users/{{test_user_id}}/probation",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users", "{{test_user_id}}", "probation"]
+            },
+            "description": "Place user on probation"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User placed on probation successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data.action).to.eql('place');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Trust Score Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/trust-scores/statistics",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "trust-scores", "statistics"]
+            },
+            "description": "Get trust score statistics and distributions"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Trust score statistics retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('distribution');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bulk Recalculate Trust Scores",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userIds\": [{{test_user_id}}],\n  \"batchSize\": 10\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/trust-scores/bulk-recalculate",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "trust-scores", "bulk-recalculate"]
+            },
+            "description": "Bulk recalculate trust scores for specific users"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Bulk recalculation completed successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('usersProcessed');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Trust score management operations"
+    },
+    {
+      "name": "04. Statistics & Analytics",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/stats/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "stats", "dashboard"]
+            },
+            "description": "Get dashboard statistics for quick overview"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Dashboard stats retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('quickStats');",
+                  "    pm.expect(response.data).to.have.property('alerts');",
+                  "    pm.expect(response.data).to.have.property('trends');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Comprehensive Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/stats?startDate=2024-01-01&endDate=2024-12-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "stats"],
+              "query": [
+                {"key": "startDate", "value": "2024-01-01"},
+                {"key": "endDate", "value": "2024-12-31"}
+              ]
+            },
+            "description": "Get comprehensive user statistics with date filters"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Comprehensive stats retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('overview');",
+                  "    pm.expect(response.data).to.have.property('byStatus');",
+                  "    pm.expect(response.data).to.have.property('byGender');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Real-time Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/stats/real-time",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "stats", "real-time"]
+            },
+            "description": "Get real-time statistics"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Real-time stats retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('activeUsers');",
+                  "    pm.expect(response.data).to.have.property('lastUpdated');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get User Segments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/stats/segments",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "stats", "segments"]
+            },
+            "description": "Get user segments analysis"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User segments retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('segments');",
+                  "    pm.expect(response.data.segments).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Trending Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/stats/trends?period=week",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "stats", "trends"],
+              "query": [
+                {"key": "period", "value": "week"}
+              ]
+            },
+            "description": "Get trending statistics and patterns"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Trending stats retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('period');",
+                  "    pm.expect(response.data.period).to.eql('week');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Cohort Analysis",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/stats/cohorts?months=6",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "stats", "cohorts"],
+              "query": [
+                {"key": "months", "value": "6"}
+              ]
+            },
+            "description": "Get cohort analysis data"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Cohort analysis retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('cohorts');",
+                  "    pm.expect(response.data).to.have.property('monthsAnalyzed');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Export User Stats",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"format\": \"json\",\n  \"includePersonalData\": false,\n  \"startDate\": \"2024-01-01\",\n  \"endDate\": \"2024-12-31\",\n  \"filters\": {\n    \"accountStatus\": \"active\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/stats/export",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "stats", "export"]
+            },
+            "description": "Export user statistics in JSON format"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Stats export initiated successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('downloadUrl');",
+                  "    pm.expect(response.data).to.have.property('fileName');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Statistics and analytics operations"
+    },
+    {
+      "name": "05. Bulk Operations",
+      "item": [
+        {
+          "name": "Bulk User Action - Status Change",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userIds\": [{{test_user_id}}],\n  \"action\": \"status_change\",\n  \"parameters\": {\n    \"accountStatus\": \"active\",\n    \"reason\": \"Bulk status update for testing\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users/bulk-action",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users", "bulk-action"]
+            },
+            "description": "Perform bulk status change on multiple users"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Bulk action completed successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('processedUsers');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bulk Trust Score Update",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"updates\": [\n    {\n      \"userId\": {{test_user_id}},\n      \"updates\": {\n        \"overallScore\": 75,\n        \"adminNotes\": \"Bulk adjustment for system optimization\"\n      }\n    }\n  ],\n  \"reason\": \"system_error_correction\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/trust-scores/bulk-update",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "trust-scores", "bulk-update"]
+            },
+            "description": "Bulk update trust scores for multiple users"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Bulk trust score update completed successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('successfulUpdates');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Bulk operations for administrative efficiency"
+    },
+    {
+      "name": "06. Error Handling Tests",
+      "item": [
+        {
+          "name": "Invalid User ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users/invalid_id",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users", "invalid_id"]
+            },
+            "description": "Test error handling for invalid user ID"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Invalid user ID handled correctly', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.false;",
+                  "    pm.expect(response.error.code).to.eql('INVALID_USER_ID');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Non-existent User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users/999999",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users", "999999"]
+            },
+            "description": "Test error handling for non-existent user"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Non-existent user handled correctly', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.false;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Invalid Search Query",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/user-management/users/search?q=x",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "user-management", "users", "search"],
+              "query": [
+                {"key": "q", "value": "x"}
+              ]
+            },
+            "description": "Test error handling for too short search query"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Short search query handled correctly', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.false;",
+                  "    pm.expect(response.error.code).to.eql('INVALID_SEARCH_QUERY');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Test error handling scenarios"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global pre-request script for admin collection",
+          "// Check if we have an access token",
+          "const accessToken = pm.collectionVariables.get('admin_access_token');",
+          "if (!accessToken && !pm.request.url.path.includes('login') && !pm.request.url.path.includes('health')) {",
+          "    console.log('Warning: No access token found. Please run the login request first.');",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test script for admin collection",
+          "pm.test('Response time is acceptable', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+          "});",
+          "",
+          "pm.test('Content-Type is JSON', function () {",
+          "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+          "});"
+        ]
+      }
+    }
+  ]
+}

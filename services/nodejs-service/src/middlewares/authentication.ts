@@ -36,8 +36,9 @@ export const authenticateAdmin = async (req: Request, res: Response, next: NextF
 
 
 
-interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest extends Request {
   user?: any;
+  admin?: any;
 }
 
 export const authenticateToken = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -60,17 +61,21 @@ export const authenticateToken = async (req: AuthenticatedRequest, res: Response
       return;
     }
 
-    const userProfile = await userProfilesRepository.findOne({
-      where: { userLogin: user, isDeleted: false },
+     const userProfile = await userProfilesRepository.findOne({
+      where: { 
+        userLoginId: user.id,  // Use the foreign key directly
+        isDeleted: false 
+      },
       relations: ["userLogin"],
-    });
-
+     });
+    
     if (!userProfile) {
       res.status(404).json({ message: "User profile not found." });
       return;
     }
 
     req.user = { id: user.id, email: user.email, isAdmin: decodedToken.isadmin, profile: userProfile };
+    req.admin = req.user;
 
     next(); // Continue to the next middleware or route handler
   } catch (error) {
@@ -78,4 +83,14 @@ export const authenticateToken = async (req: AuthenticatedRequest, res: Response
     res.status(403).json({ message: "Invalid or expired token." });
     return;
   }
+};
+
+
+
+export const checkIsAdmin = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  if (!req.user || !req.user.isAdmin) {
+    res.status(403).json({ message: 'Access denied, admin privileges required' });
+    return;
+  }
+  next();
 };

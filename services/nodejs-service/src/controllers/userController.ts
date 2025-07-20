@@ -11,7 +11,7 @@ declare module "express-serve-static-core" {
   }
 }
 import { DatifyyUsersLogin } from "../models/entities/DatifyyUsersLogin"; // Ensure this path is correct
-import bcrypt from "bcrypt";
+import bcryptjs from 'bcryptjs';
 import jwt from "jsonwebtoken";
 import { AppDataSource } from "..";
 import { v4 } from "uuid";
@@ -46,7 +46,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcryptjs.hash(password, 10);
 
     // Create a new user
     const user = queryRunner.manager.create(DatifyyUsersLogin, {
@@ -150,14 +150,14 @@ export const login = async (req: Request, res: Response) => {
     }
 
     // Compare password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcryptjs.compare(password, user.password);
     if (!isPasswordValid) {
       res.status(400).json({ message: "Invalid password." });
       return;
     }
 
     // Update last login time
-    user.lastlogin = new Date();
+    user.lastLoginAt = new Date();
     await userRepository.save(user); // Save the last login date
 
     // Create JWT token
@@ -259,10 +259,10 @@ export const forgotPasswordSendCode = async (req: Request, res: Response): Promi
       return;
     }
 
-    const code = getCodeForVerifyingEmail({ to: { email } });
+    const code = getCodeForVerifyingEmail(email);
 
 
-    await sendEmail(from, [{ email, name: email }], "Reset Your Password", forgotPasswordTemplate(code), forgotPasswordTemplate(code));
+    await sendEmail('',from, [{ email, name: email }], "Reset Your Password", forgotPasswordTemplate(code), forgotPasswordTemplate(code));
     res.status(200).json({ message: "Verification code sent successfully" });
     
   } catch (error) {
@@ -310,7 +310,7 @@ export const forgotPasswordReset = async (req: Request, res: Response): Promise<
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcryptjs.hash(password, 10);
 
     // Update user password
     user.password = hashedPassword;

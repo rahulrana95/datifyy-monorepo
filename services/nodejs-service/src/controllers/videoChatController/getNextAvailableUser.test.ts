@@ -1,5 +1,6 @@
 import request from 'supertest';
 import { createMockQueryRunner, mockRepositoryMethods, mockEventData, mockRoomData, mockSessionData } from '../../utils/tests/testHelper';
+// @ts-ignore
 import app, { AppDataSource } from '../..';
 
 jest.mock('../..', () => ({

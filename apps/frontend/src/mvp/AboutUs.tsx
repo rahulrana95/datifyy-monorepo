@@ -1,7 +1,7 @@
 import { Box, Button, Container, Flex, Heading, Icon, Stack, Text, VStack } from "@chakra-ui/react";
 import { FaShieldAlt, FaCheckCircle, FaHeart, FaUsers, FaHandshake, FaRocket } from "react-icons/fa";
 import { useTheme } from "@chakra-ui/react";
-import { useAuthStore } from "./login-signup/authStore";
+import { useAuthStore } from "./login-signup";
 
 const AboutUs = () => {
     const theme = useTheme();
@@ -34,6 +34,7 @@ const AboutUs = () => {
                             spacing={4}
                             w={{ base: "100%", md: "30%" }}
                         >
+                            {/* @ts-ignore */}
                             <Icon as={value.icon} w={12} h={12} color={accentColor} />
                             <Heading fontSize="xl" color={accentColor}>
                                 {value.title} {value.emoji}

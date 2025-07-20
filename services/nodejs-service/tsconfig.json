@@ -10,8 +10,12 @@
     "forceConsistentCasingInFileNames": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "strictPropertyInitialization": false, // This disables the strict property initialization checks
-
+    "strictPropertyInitialization": false, // This disables the strict property initialization checks,
+    "paths": {
+      "@datifyy/shared-constants": [
+        "../../libs/shared-constants/src"
+      ],
+    }
   },
   "include": [
     "src/**/*"

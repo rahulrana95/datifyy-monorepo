@@ -1,0 +1,372 @@
+# Datifyy Monorepo - Complete Development Blueprint
+
+## 🏗️ Architecture Overview
+
+**Datifyy** is a premium dating application built with a sophisticated monorepo architecture using Yarn 4.9.2 workspaces. The system emphasizes type safety, code sharing, and enterprise-grade development practices.
+
+### Core Philosophy
+- **"Let's be serious about love"** - Premium, trustworthy, emotional, modern dating experience
+- **Mobile-first** progressive enhancement with 60fps animations
+- **Enterprise-grade** TypeScript architecture with end-to-end type safety
+- **Component-driven** development with Chakra UI and custom design system
+
+## 📁 Monorepo Structure
+
+```
+datifyy-monorepo/
+├── apps/frontend/           # React 18 + TypeScript dating app
+├── libs/                    # Shared libraries
+│   ├── shared-types/        # TypeScript interfaces & enums
+│   ├── shared-utils/        # Validation & formatting utilities
+│   ├── shared-validation/   # Zod schemas (placeholder)
+│   └── shared-constants/    # Application constants (placeholder)
+└── package.json            # Workspace configuration
+```
+
+## 🎯 Frontend Application (apps/frontend/)
+
+### Tech Stack
+- **Framework**: React 18 + TypeScript (CRA)
+- **UI Library**: Chakra UI with comprehensive custom theme
+- **State**: Zustand + React Query (TanStack)
+- **Routing**: React Router DOM v6
+- **Styling**: Chakra UI + CSS-in-JS with design tokens
+- **Package Manager**: Yarn 4.9.2 Berry
+
+### Key Features Implemented
+1. **Authentication System**
+   - Login/Signup with email verification
+   - JWT token management with cookie storage
+   - Password reset flow
+   - Form validation with real-time feedback
+
+2. **User Profile Management**
+   - Comprehensive profile creation (35+ fields)
+   - Image upload support
+   - Demographics, preferences, lifestyle data
+   - Profile completion tracking
+
+3. **Partner Preferences**
+   - Multi-page preference configuration
+   - Age, location, lifestyle, values filtering
+   - Advanced search criteria
+
+4. **User Availability System** (Comprehensive)
+   - Time slot management for dates
+   - Online/offline date types
+   - Booking system with cancellation policies
+   - Recurring availability patterns
+   - Analytics and conflict detection
+
+5. **Admin Dashboard**
+   - Role-based access control
+   - User management
+   - Content moderation
+   - Security monitoring
+
+## 🎨 Design System
+
+### Brand Identity
+- **Primary Color**: #e85d75 (brand.500) - romantic pink
+- **Typography**: Inter font family
+- **Spacing**: 8px grid system
+- **Border Radius**: 12px+ for modern feel
+- **Shadows**: Layered depth with brand-colored glows
+
+### Component Categories
+- **Action Buttons**: `swipeLike`, `swipeNope`, `swipeSuperLike`, `boost`, `premium`
+- **Cards**: `profile`, `match`, `floating`, `interactive`
+- **Inputs**: Touch-optimized with 44px minimum targets
+- **Avatars**: Status indicators, verification badges
+- **Animations**: Heart beats, swipe gestures, love pulses
+
+### Color System
+```typescript
+// Brand Colors (Pink Gradient)
+brand: {
+  50: '#fef7f7',   // Ultra light backgrounds
+  500: '#e85d75',  // Primary brand color
+  900: '#842439'   // High contrast text
+}
+
+// Dating Actions
+swipe: {
+  like: '#22c55e',     // Green
+  nope: '#ef4444',     // Red  
+  superLike: '#3b82f6', // Blue
+  boost: '#f59e0b'     // Gold
+}
+```
+
+## 🔧 Development Architecture
+
+### State Management Strategy
+```typescript
+// Zustand for app state
+const useAuthStore = create((set) => ({
+  isAuthenticated: false,
+  userData: null,
+  setAuthenticated: (status) => set({ isAuthenticated: status })
+}));
+
+// React Query for server state
+const { data: profile } = useQuery({
+  queryKey: ['userProfile'],
+  queryFn: () => userService.getProfile(),
+  staleTime: 5 * 60 * 1000
+});
+```
+
+### API Service Layer
+- **Base Service**: Axios with interceptors
+- **Authentication**: JWT with automatic refresh
+- **Error Handling**: Centralized with user-friendly messages
+- **Type Safety**: Full TypeScript coverage
+
+### Validation Strategy
+- **Frontend**: Real-time validation with shared utilities
+- **Shared Types**: Single source of truth for data structures
+- **File Validation**: Comprehensive image/document checking
+
+## 📦 Shared Libraries
+
+### @datifyy/shared-types
+**Purpose**: TypeScript type definitions and enums
+
+**Key Exports**:
+```typescript
+// User & Dating Types
+export interface DatifyyUserProfile {
+  id: string;
+  gender: Gender;
+  age: number;
+  bio: string;
+  // ... 30+ profile fields
+}
+
+// Enums
+export enum Gender {
+  MALE = 'male',
+  FEMALE = 'female', 
+  OTHER = 'other'
+}
+
+// API Contracts
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: { code: string; message: string; };
+}
+
+// User Availability (New Major Feature)
+export interface AvailabilitySlot {
+  dateType: DateType; // 'online' | 'offline'
+  startTime: string;
+  endTime: string;
+  bookingStatus: BookingStatus;
+  // ... comprehensive availability management
+}
+```
+
+### @datifyy/shared-utils
+**Purpose**: Validation and formatting utilities
+
+**Key Functions**:
+```typescript
+// Validation
+export const validateEmail = (email: string): ValidationResult
+export const validateAge = (age: number): ValidationResult
+export const validateHeight = (height: number): ValidationResult
+
+// Formatting  
+export const formatHeight = (heightCm: number): string
+export const formatInterests = (interests: string[]): string
+export const formatName = (name: string): string
+```
+
+## 🛣️ Routing & Navigation
+
+### Route Structure
+```typescript
+// Main App Routes
+<Routes>
+  <Route path="/" element={<Home />}>
+    <Route index element={<LandingPage />} />
+    <Route path="profile" element={<HeaderWithTabs />} />
+    <Route path="partner-preferences" element={<PartnerPreferencesContainer />} />
+    <Route path="availability" element={<AvailabilityContainer />} />
+    <Route path="about-us" element={<AboutUs />} />
+  </Route>
+  <Route path="/admin/login" element={<AdminLoginPage />} />
+</Routes>
+```
+
+### Authentication Flow
+1. Public routes (landing, about, contact)
+2. Protected routes with `<PrivateRoute>` wrapper
+3. Admin routes with role-based access
+4. Automatic token validation on app load
+
+## 🎭 User Experience Patterns
+
+### Mobile-First Design
+- **Touch Targets**: Minimum 44px
+- **Gestures**: Swipe support for profile cards
+- **Performance**: 60fps animations, lazy loading
+- **Accessibility**: WCAG 2.1 AA compliance
+
+### Dating-Specific UX
+- **Emotional Design**: Heart animations, celebration moments
+- **Trust Signals**: Verification badges, safety features
+- **Progressive Disclosure**: Gradual information reveal
+- **Swipe Mechanics**: Like/pass/super like actions
+
+## 🔐 Security & Authentication
+
+### JWT Implementation
+```typescript
+// Token Storage (Secure Cookies)
+document.cookie = `Authorization=${token}; path=/; secure; samesite=strict`;
+
+// Automatic Refresh
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      await refreshToken();
+      return axiosInstance.request(error.config);
+    }
+  }
+);
+```
+
+### Admin Security
+- **Role-based Access**: Hierarchical permission levels
+- **Session Management**: Multiple session tracking
+- **Audit Logging**: Comprehensive action tracking
+- **2FA Support**: Email, SMS, TOTP methods
+
+## 📊 Performance & Monitoring
+
+### Build Optimization
+- **Code Splitting**: Route-based lazy loading
+- **Tree Shaking**: Optimized bundle sizes
+- **Image Optimization**: Responsive images, lazy loading
+- **Caching**: React Query with stale-while-revalidate
+
+### Error Handling
+```typescript
+// Global Error Boundary
+<ErrorBoundary fallback={<ErrorPage />}>
+  <App />
+</ErrorBoundary>
+
+// Service Error Handling  
+const handleApiError = (error) => {
+  const message = error?.response?.data?.message || 'Something went wrong';
+  toast({ title: 'Error', description: message, status: 'error' });
+};
+```
+
+## 🚀 Development Workflow
+
+### Scripts & Commands
+```bash
+# Development
+yarn dev:shared          # Watch shared libraries
+yarn start:frontend      # Start React app
+yarn start:backend       # Start Node.js service
+
+# Building
+yarn build:shared        # Build all shared libs
+yarn build:all          # Build entire monorepo
+yarn type-check         # TypeScript validation
+```
+
+### Code Quality
+- **TypeScript**: Strict mode enabled
+- **ESLint**: Code quality rules
+- **Prettier**: Code formatting
+- **Husky**: Pre-commit hooks
+
+## 🎯 Key Features Deep Dive
+
+### 1. User Availability System (Major Feature)
+The availability system is a comprehensive date scheduling platform:
+
+**Core Capabilities**:
+- Create time slots for online/offline dates
+- Recurring availability patterns
+- Booking management with confirmation/cancellation
+- Activity selection (coffee, dinner, walks, etc.)
+- Analytics and conflict detection
+- Cancellation policies (flexible to strict)
+
+**Technical Implementation**:
+- 20+ TypeScript interfaces
+- Enum-driven type safety
+- Comprehensive validation rules
+- Search and filtering capabilities
+
+### 2. Profile Management
+**35+ Profile Fields**:
+- Demographics (age, height, location)
+- Lifestyle (exercise, drinking, smoking)
+- Values (religion, causes, qualities)
+- Interests and hobbies
+- Education and prompts
+
+### 3. Partner Preferences
+**Multi-page Configuration**:
+- Basics: Age range, location radius
+- Lifestyle: Exercise, drinking, smoking preferences  
+- Physical: Height, appearance preferences
+- Values: Religion, family plans, dealbreakers
+
+## 🔮 Extension Patterns
+
+### Adding New Features
+1. **Define Types**: Add interfaces to `shared-types`
+2. **Create Service**: Implement API service layer
+3. **Build Components**: Use Chakra UI + design system
+4. **Add Routes**: Integrate with React Router
+5. **State Management**: Zustand store + React Query
+
+### Scaling Patterns
+```typescript
+// Feature-based Structure
+features/
+├── matching/
+│   ├── components/
+│   ├── hooks/
+│   ├── services/
+│   └── types/
+├── messaging/
+└── video-calling/
+```
+
+## 📚 Context Documentation Structure
+
+### Essential Files for Development Context
+```
+apps/frontend/context/
+├── api-contract.md         # Complete API documentation
+├── dev-guidelines.md       # Development standards & patterns
+├── system-design.md        # Design system & brand guidelines
+├── folder-hierarchy.md     # Project structure guide
+├── css-config.md          # Color system & design tokens
+└── typography.md          # Font system & text styles
+```
+
+This documentation provides a complete blueprint for understanding and extending the Datifyy monorepo. The context folder contains all architectural decisions, patterns, and standards needed for seamless development without diving into the actual codebase.
+
+## 🎯 Next Development Priorities
+
+Based on the current architecture, logical next features would be:
+1. **Matching Algorithm**: Compatibility scoring system
+2. **Real-time Messaging**: Chat system with WebSocket
+3. **Video Dating**: WebRTC integration for virtual dates
+4. **Subscription System**: Premium features & billing
+5. **Mobile App**: React Native with shared business logic
+
+The monorepo is expertly architected for rapid feature development with type-safe, scalable patterns already established.

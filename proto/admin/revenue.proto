@@ -1,0 +1,429 @@
+syntax = "proto3";
+
+package datifyy.admin.revenue;
+import "admin/enums.proto";
+import "common/base.proto";
+
+// Revenue time periods for analytics
+enum RevenueTimePeriod {
+  REVENUE_TIME_PERIOD_UNSPECIFIED = 0;
+  REVENUE_TIME_PERIOD_HOURLY = 1;
+  REVENUE_TIME_PERIOD_DAILY = 2;
+  REVENUE_TIME_PERIOD_WEEKLY = 3;
+  REVENUE_TIME_PERIOD_MONTHLY = 4;
+  REVENUE_TIME_PERIOD_QUARTERLY = 5;
+  REVENUE_TIME_PERIOD_YEARLY = 6;
+}
+
+// Revenue categories for classification
+enum RevenueCategory {
+  REVENUE_CATEGORY_UNSPECIFIED = 0;
+  REVENUE_CATEGORY_DATE_BOOKING = 1;
+  REVENUE_CATEGORY_ONLINE_DATE = 2;
+  REVENUE_CATEGORY_OFFLINE_DATE = 3;
+  REVENUE_CATEGORY_PREMIUM_FEATURE = 4;
+  REVENUE_CATEGORY_EVENT_TICKET = 5;
+  REVENUE_CATEGORY_SUBSCRIPTION = 6;
+  REVENUE_CATEGORY_GIFT_PURCHASE = 7;
+  REVENUE_CATEGORY_OTHER = 8;
+}
+
+// Transaction status for revenue tracking
+enum TransactionStatus {
+  TRANSACTION_STATUS_UNSPECIFIED = 0;
+  TRANSACTION_STATUS_PENDING = 1;
+  TRANSACTION_STATUS_COMPLETED = 2;
+  TRANSACTION_STATUS_FAILED = 3;
+  TRANSACTION_STATUS_CANCELLED = 4;
+  TRANSACTION_STATUS_REFUNDED = 5;
+  TRANSACTION_STATUS_PARTIALLY_REFUNDED = 6;
+  TRANSACTION_STATUS_DISPUTED = 7;
+  TRANSACTION_STATUS_UNDER_REVIEW = 8;
+}
+
+// Payment methods for revenue breakdown
+enum PaymentMethod {
+  PAYMENT_METHOD_UNSPECIFIED = 0;
+  PAYMENT_METHOD_UPI = 1;
+  PAYMENT_METHOD_CREDIT_CARD = 2;
+  PAYMENT_METHOD_DEBIT_CARD = 3;
+  PAYMENT_METHOD_NET_BANKING = 4;
+  PAYMENT_METHOD_WALLET = 5;
+  PAYMENT_METHOD_CASH = 6;
+  PAYMENT_METHOD_OTHER = 7;
+}
+
+// Refund status tracking
+enum RefundStatus {
+  REFUND_STATUS_UNSPECIFIED = 0;
+  REFUND_STATUS_NOT_APPLICABLE = 1;
+  REFUND_STATUS_PENDING = 2;
+  REFUND_STATUS_APPROVED = 3;
+  REFUND_STATUS_REJECTED = 4;
+  REFUND_STATUS_PROCESSED = 5;
+  REFUND_STATUS_FAILED = 6;
+}
+
+// Date type for revenue breakdown
+enum DateType {
+  DATE_TYPE_UNSPECIFIED = 0;
+  DATE_TYPE_ONLINE = 1;
+  DATE_TYPE_OFFLINE = 2;
+}
+
+// Statistical significance levels
+enum SignificanceLevel {
+  SIGNIFICANCE_LEVEL_UNSPECIFIED = 0;
+  SIGNIFICANCE_LEVEL_LOW = 1;
+  SIGNIFICANCE_LEVEL_MEDIUM = 2;
+  SIGNIFICANCE_LEVEL_HIGH = 3;
+}
+
+// Individual revenue data point
+message RevenueDataPoint {
+  string period = 1; // ISO date or period identifier
+  float value = 2;
+  int32 count = 3; // Transaction count for this period
+  float change = 4; // Percentage change from previous period
+  bool is_projected = 5; // For forecast data
+}
+
+// Seasonal pattern data
+message SeasonalPattern {
+  string season = 1; // 'spring', 'summer', 'fall', 'winter'
+  float revenue_multiplier = 2; // Compared to average
+  string description = 3;
+  repeated string peak_periods = 4;
+}
+
+// Revenue summary metrics
+message RevenueSummary {
+  float total_revenue = 1;
+  float net_revenue = 2; // After refunds and fees
+  float gross_revenue = 3; // Before any deductions
+  int32 total_transactions = 4;
+  int32 successful_transactions = 5;
+  int32 failed_transactions = 6;
+  int32 refunded_transactions = 7;
+  float average_transaction_value = 8;
+  float average_order_value = 9;
+  float total_refunds = 10;
+  float refund_rate = 11; // Percentage
+  float conversion_rate = 12; // Percentage
+  float revenue_growth_rate = 13; // Percentage vs previous period
+  float transaction_growth_rate = 14; // Percentage vs previous period
+}
+
+// Revenue trends over time
+message RevenueTrends {
+  repeated RevenueDataPoint revenue_by_period = 1;
+  repeated RevenueDataPoint transactions_by_period = 2;
+  repeated RevenueDataPoint average_value_by_period = 3;
+  repeated RevenueDataPoint refunds_by_period = 4;
+  repeated RevenueDataPoint conversion_by_period = 5;
+  .admin.enums.TrendDirection trend_direction = 6;
+  repeated SeasonalPattern seasonal_patterns = 7;
+}
+
+// Revenue breakdown by category
+message CategoryBreakdown {
+  RevenueCategory category = 1;
+  float revenue = 2;
+  int32 transactions = 3;
+  float percentage = 4;
+  float growth = 5; // Percentage change
+  float average_value = 6;
+}
+
+// Revenue breakdown by location
+message LocationBreakdown {
+  string location = 1; // City or country name
+  float revenue = 2;
+  int32 transactions = 3;
+  int32 users = 4; // Unique paying users
+  float percentage = 5;
+  float growth = 6;
+  float average_value = 7;
+  float conversion_rate = 8;
+}
+
+// Revenue breakdown by payment method
+message PaymentMethodBreakdown {
+  PaymentMethod method = 1;
+  float revenue = 2;
+  int32 transactions = 3;
+  float percentage = 4;
+  float success_rate = 5;
+  float average_value = 6;
+  float processing_fee = 7;
+}
+
+// Revenue breakdown by user segment
+message UserSegmentBreakdown {
+  string segment = 1; // 'new', 'returning', 'premium', etc.
+  float revenue = 2;
+  int32 users = 3;
+  int32 transactions = 4;
+  float average_value_per_user = 5;
+  float lifetime_value = 6;
+  float retention_rate = 7;
+}
+
+// Revenue breakdown by date type
+message DateTypeBreakdown {
+  DateType date_type = 1;
+  float revenue = 2;
+  int32 bookings = 3;
+  float average_value = 4;
+  float completion_rate = 5;
+  float satisfaction_score = 6;
+}
+
+// Revenue breakdown by time periods
+message TimeBreakdown {
+  int32 hour = 1; // 0-23
+  string day = 2; // 'monday', 'tuesday', etc.
+  float revenue = 3;
+  int32 transactions = 4;
+  float percentage = 5;
+}
+
+// Day of week breakdown
+message DayBreakdown {
+  string day = 1; // 'Monday', 'Tuesday', etc.
+  float revenue = 2;
+  int32 transactions = 3;
+  float percentage = 4;
+  int32 peak_hour = 5; // Most active hour on this day
+}
+
+// Revenue breakdowns by various dimensions
+message RevenueBreakdowns {
+  repeated CategoryBreakdown by_category = 1;
+  repeated LocationBreakdown by_city = 2;
+  repeated LocationBreakdown by_country = 3;
+  repeated PaymentMethodBreakdown by_payment_method = 4;
+  repeated UserSegmentBreakdown by_user_segment = 5;
+  repeated DateTypeBreakdown by_date_type = 6;
+  repeated TimeBreakdown by_time_of_day = 7;
+  repeated DayBreakdown by_day_of_week = 8;
+}
+
+// Comparison metrics between periods
+message ComparisonMetrics {
+  float revenue_change = 1; // Percentage
+  float transaction_change = 2; // Percentage
+  float average_value_change = 3; // Percentage
+  float user_count_change = 4; // Percentage
+  .admin.enums.TrendDirection trend = 5;
+  SignificanceLevel significance = 6; // Statistical significance
+}
+
+// Performance period details
+message PerformancePeriod {
+  string period = 1;
+  float revenue = 2;
+  int32 transactions = 3;
+  string reason = 4; // Why it performed well/poorly
+}
+
+// Revenue comparisons with previous periods
+message RevenueComparisons {
+  ComparisonMetrics vs_yesterday = 1;
+  ComparisonMetrics vs_last_week = 2;
+  ComparisonMetrics vs_last_month = 3;
+  ComparisonMetrics vs_last_quarter = 4;
+  ComparisonMetrics vs_last_year = 5;
+  PerformancePeriod best_performing_period = 6;
+  PerformancePeriod worst_performing_period = 7;
+}
+
+// Forecast data structure
+message ForecastData {
+  float predicted_revenue = 1;
+  float predicted_transactions = 2;
+  float confidence_interval_low = 3;
+  float confidence_interval_high = 4;
+  repeated RevenueDataPoint daily_breakdown = 5;
+  repeated string assumptions = 6;
+}
+
+// Revenue forecasting
+message RevenueForecast {
+  ForecastData next_week = 1;
+  ForecastData next_month = 2;
+  ForecastData next_quarter = 3;
+  float confidence_level = 4; // 0-100
+  string methodology = 5; // 'trend_analysis', 'ml_model', etc.
+  repeated string factors_considered = 6;
+  repeated string risks = 7;
+  repeated string opportunities = 8;
+}
+
+// Revenue alert types
+message RevenueAlert {
+  string id = 1;
+  string type = 2; // 'drop', 'spike', 'threshold', 'anomaly'
+  string severity = 3; // 'low', 'medium', 'high', 'critical'
+  string title = 4;
+  string description = 5;
+  string impact = 6;
+  repeated string recommended_actions = 7;
+  string created_at = 8;
+  bool is_resolved = 9;
+  string resolved_at = 10;
+}
+
+// Transaction details for revenue tracking
+message TransactionDetails {
+  string id = 1;
+  string user_id = 2;
+  RevenueCategory category = 3;
+  PaymentMethod payment_method = 4;
+  TransactionStatus status = 5;
+  RefundStatus refund_status = 6;
+  float amount = 7;
+  float fee = 8;
+  float net_amount = 9;
+  string currency = 10;
+  string description = 11;
+  string reference_id = 12;
+  string gateway_transaction_id = 13;
+  string created_at = 14;
+  string updated_at = 15;
+  string completed_at = 16;
+  string failed_at = 17;
+  string refunded_at = 18;
+  string failure_reason = 19;
+  string refund_reason = 20;
+  float refund_amount = 21;
+  map<string, string> metadata = 22;
+}
+
+// Main revenue analytics overview
+message RevenueAnalyticsOverview {
+  RevenueSummary summary = 1;
+  RevenueTrends trends = 2;
+  RevenueBreakdowns breakdowns = 3;
+  RevenueComparisons comparisons = 4;
+  RevenueForecast forecasts = 5;
+  repeated RevenueAlert alerts = 6;
+  string last_updated = 7;
+}
+
+// Request messages
+message GetRevenueAnalyticsRequest {
+  RevenueTimePeriod period = 1;
+  string start_date = 2;
+  string end_date = 3;
+  repeated RevenueCategory categories = 4;
+  repeated string locations = 5;
+  repeated PaymentMethod payment_methods = 6;
+  bool include_trends = 7;
+  bool include_breakdowns = 8;
+  bool include_comparisons = 9;
+  bool include_forecasts = 10;
+  bool include_alerts = 11;
+}
+
+message GetTransactionDetailsRequest {
+  repeated TransactionStatus statuses = 1;
+  repeated RevenueCategory categories = 2;
+  repeated PaymentMethod payment_methods = 3;
+  string start_date = 4;
+  string end_date = 5;
+  string user_id = 6;
+  float min_amount = 7;
+  float max_amount = 8;
+  datifyy.common.PaginationRequest pagination = 9;
+}
+
+message GetRevenueBreakdownRequest {
+  RevenueTimePeriod period = 1;
+  string start_date = 2;
+  string end_date = 3;
+  string breakdown_type = 4; // 'category', 'location', 'payment_method', etc.
+  repeated string filters = 5;
+  int32 limit = 6;
+}
+
+message GetRevenueForecastRequest {
+  RevenueTimePeriod period = 1;
+  int32 periods_ahead = 2;
+  string methodology = 3; // 'trend_analysis', 'ml_model', etc.
+  repeated string factors_to_consider = 4;
+  float confidence_level = 5;
+}
+
+message GetRevenueAlertsRequest {
+  repeated string alert_types = 1;
+  repeated string severity_levels = 2;
+  bool include_resolved = 3;
+  string start_date = 4;
+  string end_date = 5;
+  datifyy.common.PaginationRequest pagination = 6;
+}
+
+message CreateRevenueAlertRequest {
+  string type = 1;
+  string severity = 2;
+  string title = 3;
+  string description = 4;
+  string impact = 5;
+  repeated string recommended_actions = 6;
+  map<string, string> metadata = 7;
+}
+
+message UpdateRevenueAlertRequest {
+  string alert_id = 1;
+  bool is_resolved = 2;
+  string resolution_notes = 3;
+  repeated string actions_taken = 4;
+}
+
+message GetRevenueComparisonsRequest {
+  RevenueTimePeriod period = 1;
+  string target_date = 2;
+  repeated string comparison_periods = 3; // 'yesterday', 'last_week', etc.
+  repeated RevenueCategory categories = 4;
+  repeated string locations = 5;
+}
+
+// Response messages
+message RevenueAnalyticsResponse {
+  bool success = 1;
+  RevenueAnalyticsOverview data = 2;
+  string message = 3;
+}
+
+message TransactionDetailsResponse {
+  bool success = 1;
+  repeated TransactionDetails transactions = 2;
+  datifyy.common.PaginationResponse pagination = 3;
+  string message = 4;
+}
+
+message RevenueBreakdownResponse {
+  bool success = 1;
+  RevenueBreakdowns data = 2;
+  string message = 3;
+}
+
+message RevenueForecastResponse {
+  bool success = 1;
+  RevenueForecast data = 2;
+  string message = 3;
+}
+
+message RevenueAlertsResponse {
+  bool success = 1;
+  repeated RevenueAlert alerts = 2;
+  datifyy.common.PaginationResponse pagination = 3;
+  string message = 4;
+}
+
+message RevenueComparisonsResponse {
+  bool success = 1;
+  RevenueComparisons data = 2;
+  string message = 3;
+}

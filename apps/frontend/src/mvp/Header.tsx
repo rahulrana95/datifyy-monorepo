@@ -1,124 +1,96 @@
+// apps/frontend/src/mvp/Header.tsx
+import React, { useEffect } from 'react';
 import {
   Box,
+  Container,
   Flex,
-  Spacer,
-  Button,
-  Link,
   HStack,
-  Image,
   IconButton,
-  useColorModeValue,
-} from "@chakra-ui/react";
-import { useAuthStore } from "./login-signup/authStore";
-import AuthModal from "./login-signup/AuthModal";
-import UserMenu from "./UserMenu";
-import { useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { FaHeart } from "react-icons/fa";
-import DatifyLogo from "../assets/images/datifyy-logo-v2.png";
+  Text,
+  Spacer,
+  useDisclosure,
+  useBreakpointValue,
+} from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
+import UserMenu from './UserMenu';
 
-const Header = () => {
-  const { showHideLogin, showHideSignup, isAuthenticated } = useAuthStore();
+// Import smaller components
+import HeaderLogo from './header/HeaderLogo';
+import HeaderNavigation from './header/HeaderNavigation';
+import HeaderAuthButtons from './header/HeaderAuthButtons';
+import HeaderMobileMenu from './header/HeaderMobileMenu';
+import { AuthModal, useAuthStore } from './login-signup';
+
+const Header: React.FC = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  // Your existing auth store logic
+  const { isAuthenticated } = useAuthStore();
   const authStore = useAuthStore();
   const navigate = useNavigate();
-  const location = useLocation();
 
+  // Your existing redirect logic
   useEffect(() => {
     if (!authStore.isAuthenticated) {
-      navigate("/", { replace: true }); // Redirect to home
+      navigate('/', { replace: true });
     }
   }, [authStore.isAuthenticated, navigate]);
 
-  // Highlight active link
-  const isActive = (path: string) => location.pathname === path;
-
   return (
     <>
-      {/* HEADER */}
       <Box
-        bg={useColorModeValue("white", "gray.800")}
-        px={6}
-        py={4}
-        boxShadow="lg"
-        className="global-header"
+        as="header"
+        bg="white"
         borderBottom="3px solid"
-        borderColor="pink.400"
+        borderColor="brand.400"
+        boxShadow="lg"
+        position="sticky"
+        top={0}
+        zIndex={1000}
+        className="safe-top global-header"
       >
-        <Flex align="center">
-          {/* Logo */}
-          <Box>
-            <Image
-              src={DatifyLogo}
-              alt="Datifyy Logo"
-              boxSize="60px"
-              objectFit="contain"
-              cursor="pointer"
-              onClick={() => navigate("/")}
-              transition="transform 0.3s"
-              _hover={{ transform: "scale(1.1)" }}
-            />
-          </Box>
+        <Container maxW="7xl" py={4} px={6}>
+          <Flex align="center">
+            {/* Logo */}
+            <HeaderLogo />
 
-          <Spacer />
+            <Spacer />
 
-          {/* Navigation Links */}
-          <HStack spacing={6} display={{ base: "none", md: "flex" }}>
-            {[
-              { label: "Home", path: "/" },
-              { label: "About Us", path: "/about-us" },
-            ].map(({ label, path }) => (
-              <Link
-                key={path}
-                href={path}
-                fontWeight="medium"
-                fontSize="lg"
-                color={isActive(path) ? "pink.500" : "gray.600"}
-                textDecoration={isActive(path) ? "underline" : "none"}
-                _hover={{
-                  color: "pink.500",
-                  transform: "scale(1.05)",
-                  transition: "0.2s ease-in-out",
-                }}
-              >
-                {label}
-              </Link>
-            ))}
-          </HStack>
-
-          <Spacer />
-
-          {/* Auth Buttons */}
-          {!isAuthenticated ? (
-            <HStack spacing={4}>
-              <Button
-                colorScheme="pink"
-                variant="ghost"
-                _hover={{ bg: "pink.100" }}
-                onClick={() => showHideSignup(true)}
-              >
-                Sign Up
-              </Button>
-              <Button
-                colorScheme="pink"
-                rightIcon={<FaHeart />}
-                _hover={{
-                  bgGradient: "linear(to-r, pink.400, red.400)",
-                  color: "white",
-                  transform: "scale(1.05)",
-                  transition: "0.2s",
-                }}
-                onClick={() => showHideLogin(true)}
-              >
-                Login
-              </Button>
+            {/* Desktop Navigation */}
+            <HStack spacing={6} display={{ base: 'none', md: 'flex' }}>
+              <HeaderNavigation />
             </HStack>
-          ) : (
-            <UserMenu />
-          )}
-        </Flex>
+
+            <Spacer />
+
+            {/* Desktop Auth/User Section */}
+            <Box display={{ base: 'none', md: 'block' }}>
+              {!isAuthenticated ? (
+                <HeaderAuthButtons />
+              ) : (
+                <UserMenu />
+              )}
+            </Box>
+
+            {/* Mobile Menu Button */}
+            <IconButton
+              aria-label="Open menu"
+              icon={<Text fontSize="xl">☰</Text>}
+              variant="ghost"
+              size="sm"
+              display={{ base: 'flex', md: 'none' }}
+              onClick={onOpen}
+              _hover={{ bg: 'brand.50' }}
+              cursor="pointer"
+            />
+          </Flex>
+        </Container>
       </Box>
 
-      {/* Authentication Modal */}
+      {/* Mobile Menu */}
+      <HeaderMobileMenu isOpen={isOpen} onClose={onClose} />
+
+      {/* Your existing Authentication Modal */}
       <AuthModal />
     </>
   );

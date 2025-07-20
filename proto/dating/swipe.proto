@@ -1,0 +1,312 @@
+syntax = "proto3";
+
+package dating.swipe;
+
+import "google/protobuf/timestamp.proto";
+import "common/base.proto";
+
+// Auth view types
+enum AuthView {
+  AUTH_VIEW_UNSPECIFIED = 0;
+  AUTH_VIEW_LOGIN = 1;
+  AUTH_VIEW_SIGNUP = 2;
+  AUTH_VIEW_FORGOT_PASSWORD = 3;
+}
+
+// Swipe action types
+enum SwipeAction {
+  SWIPE_ACTION_UNSPECIFIED = 0;
+  SWIPE_ACTION_LIKE = 1;
+  SWIPE_ACTION_PASS = 2;
+  SWIPE_ACTION_SUPERLIKE = 3;
+}
+
+// Match status
+enum MatchStatus {
+  MATCH_STATUS_UNSPECIFIED = 0;
+  MATCH_STATUS_PENDING = 1;
+  MATCH_STATUS_MATCHED = 2;
+  MATCH_STATUS_UNMATCHED = 3;
+  MATCH_STATUS_BLOCKED = 4;
+}
+
+// Auth modal state
+message AuthModalState {
+  bool isOpen = 1;
+  AuthView currentView = 2;
+}
+
+// Form field errors
+message FormFieldErrors {
+  map<string, string> errors = 1;
+}
+
+// Signup form data
+message SignupFormData {
+  string email = 1;
+  string password = 2;
+  string confirmPassword = 3;
+  string firstName = 4;
+  string lastName = 5;
+  bool agreeToTerms = 6;
+  bool subscribeToNewsletter = 7;
+}
+
+// Login form data
+message LoginFormData {
+  string email = 1;
+  string password = 2;
+  bool rememberMe = 3;
+}
+
+// Forgot password form data
+message ForgotPasswordFormData {
+  string email = 1;
+}
+
+// User data for dating
+message UserData {
+  int32 id = 1;
+  string email = 2;
+  string firstName = 3;
+  string lastName = 4;
+  int32 age = 5;
+  string gender = 6;
+  string location = 7;
+  string profileImageUrl = 8;
+  repeated string additionalImages = 9;
+  string bio = 10;
+  repeated string interests = 11;
+  bool isVerified = 12;
+  bool isPremium = 13;
+  google.protobuf.Timestamp lastSeen = 14;
+  float distanceKm = 15;
+}
+
+// Extended user profile for dating
+message DatifyyUserProfile {
+  int32 id = 1;
+  string email = 2;
+  string firstName = 3;
+  string lastName = 4;
+  google.protobuf.Timestamp dateOfBirth = 5;
+  string gender = 6;
+  string sexualOrientation = 7;
+  datifyy.common.LocationInfo location = 8;
+  string profileImageUrl = 9;
+  repeated string additionalImages = 10;
+  string bio = 11;
+  string occupation = 12;
+  string company = 13;
+  string educationLevel = 14;
+  string school = 15;
+  repeated string interests = 16;
+  repeated string languages = 17;
+  string religion = 18;
+  string politicalView = 19;
+  string smokingPreference = 20;
+  string drinkingPreference = 21;
+  string exerciseLevel = 22;
+  string dietaryPreference = 23;
+  string petPreference = 24;
+  string childrenStatus = 25;
+  string wantChildren = 26;
+  string relationshipGoal = 27;
+  string personalityType = 28;
+  string zodiacSign = 29;
+  repeated string musicGenres = 30;
+  repeated string movieGenres = 31;
+  bool isVerified = 32;
+  bool isPremium = 33;
+  bool isActive = 34;
+  ProfileCompletionStats completionStats = 35;
+  google.protobuf.Timestamp createdAt = 36;
+  google.protobuf.Timestamp updatedAt = 37;
+}
+
+// Partner preferences for dating
+message DatifyyUserPartnerPreferences {
+  int32 userId = 1;
+  string genderPreference = 2;
+  int32 minAge = 3;
+  int32 maxAge = 4;
+  float maxDistanceKm = 5;
+  repeated string interests = 6;
+  repeated string languages = 7;
+  repeated string educationLevels = 8;
+  repeated string religions = 9;
+  repeated string politicalViews = 10;
+  repeated string smokingPreferences = 11;
+  repeated string drinkingPreferences = 12;
+  repeated string exerciseLevels = 13;
+  repeated string dietaryPreferences = 14;
+  repeated string petPreferences = 15;
+  repeated string childrenStatuses = 16;
+  repeated string wantChildrenOptions = 17;
+  repeated string relationshipGoals = 18;
+  repeated string personalityTypes = 19;
+  int32 minHeight = 20;
+  int32 maxHeight = 21;
+  bool mustBeVerified = 22;
+  float minCompatibilityScore = 23;
+  google.protobuf.Timestamp createdAt = 24;
+  google.protobuf.Timestamp updatedAt = 25;
+}
+
+// Swipe data
+message SwipeData {
+  string id = 1;
+  int32 swiperId = 2;
+  int32 swipedUserId = 3;
+  SwipeAction action = 4;
+  google.protobuf.Timestamp swipedAt = 5;
+  bool isMatch = 6;
+  string matchId = 7;
+}
+
+// Match data
+message MatchData {
+  string id = 1;
+  int32 user1Id = 2;
+  int32 user2Id = 3;
+  MatchStatus status = 4;
+  google.protobuf.Timestamp matchedAt = 5;
+  google.protobuf.Timestamp lastInteractionAt = 6;
+  int32 messageCount = 7;
+  bool user1Liked = 8;
+  bool user2Liked = 9;
+  bool user1Superliked = 10;
+  bool user2Superliked = 11;
+  float compatibilityScore = 12;
+  repeated string commonInterests = 13;
+  google.protobuf.Timestamp unmatchedAt = 14;
+  int32 unmatchedBy = 15;
+  string unmatchReason = 16;
+}
+
+// Distance info
+message DistanceInfo {
+  float distanceKm = 1;
+  float distanceMiles = 2;
+  string displayText = 3;
+  bool isNearby = 4;
+}
+
+// Profile card data
+message ProfileCardData {
+  UserData user = 1;
+  DistanceInfo distance = 2;
+  LastSeenInfo lastSeen = 3;
+  AgeInfo age = 4;
+  repeated string topInterests = 5;
+  bool hasBeenSwiped = 6;
+  SwipeAction previousAction = 7;
+  float compatibilityScore = 8;
+  repeated string mutualFriends = 9;
+  bool isOnline = 10;
+}
+
+// Last seen info
+message LastSeenInfo {
+  google.protobuf.Timestamp timestamp = 1;
+  string displayText = 2;
+  bool isOnline = 3;
+  bool isRecent = 4;
+}
+
+// Age info
+message AgeInfo {
+  int32 years = 1;
+  string displayText = 2;
+  bool isInPreferredRange = 3;
+}
+
+// Validation result
+message ValidationResult {
+  bool isValid = 1;
+  map<string, string> errors = 2;
+}
+
+// Profile completion stats
+message ProfileCompletionStats {
+  float overallPercentage = 1;
+  bool hasProfilePhoto = 2;
+  bool hasBio = 3;
+  bool hasInterests = 4;
+  bool hasEducation = 5;
+  bool hasOccupation = 6;
+  bool hasLifestyle = 7;
+  bool hasPartnerPreferences = 8;
+  int32 photoCount = 9;
+  int32 interestCount = 10;
+  repeated string missingFields = 11;
+  repeated string suggestions = 12;
+}
+
+// Request messages
+message GetSwipeProfilesRequest {
+  int32 userId = 1;
+  int32 limit = 2;
+  repeated int32 excludeUserIds = 3;
+  bool includeCompatibilityScore = 4;
+}
+
+message RecordSwipeRequest {
+  int32 swiperId = 1;
+  int32 swipedUserId = 2;
+  SwipeAction action = 3;
+  float timeSpentSeconds = 4;
+  string source = 5; // profile_card, quick_swipe, etc.
+}
+
+message GetMatchesRequest {
+  int32 userId = 1;
+  repeated MatchStatus statuses = 2;
+  bool includeUnread = 3;
+  datifyy.common.PaginationRequest pagination = 4;
+}
+
+message UnmatchRequest {
+  string matchId = 1;
+  int32 userId = 2;
+  string reason = 3;
+  bool blockUser = 4;
+}
+
+// Response messages
+message GetSwipeProfilesResponse {
+  bool success = 1;
+  repeated ProfileCardData profiles = 2;
+  int32 remainingToday = 3;
+  google.protobuf.Timestamp resetsAt = 4;
+  string message = 5;
+}
+
+message RecordSwipeResponse {
+  bool success = 1;
+  bool isMatch = 2;
+  MatchData match = 3;
+  int32 remainingSwipes = 4;
+  string message = 5;
+}
+
+message GetMatchesResponse {
+  bool success = 1;
+  repeated MatchData matches = 2;
+  datifyy.common.PaginationResponse pagination = 3;
+  MatchStatistics statistics = 4;
+  string message = 5;
+}
+
+message MatchStatistics {
+  int32 totalMatches = 1;
+  int32 activeMatches = 2;
+  int32 newMatches = 3;
+  int32 unreadMessages = 4;
+  float averageCompatibility = 5;
+}
+
+message UnmatchResponse {
+  bool success = 1;
+  string message = 2;
+}

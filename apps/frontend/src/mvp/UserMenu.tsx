@@ -1,10 +1,10 @@
 import { Avatar, Box, Button, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Text, Badge } from "@chakra-ui/react";
 import { BellIcon } from "@chakra-ui/icons";
 import { useState } from "react";
-import { useAuthStore } from "./login-signup/authStore";
 import { useNavigate, useRouteError } from "react-router-dom";
 import authService from "../service/authService";
 import apiService from "../service/apiService";
+import { useAuthStore } from "./login-signup";
 
 interface UserMenuProps {
 }

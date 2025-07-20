@@ -1,0 +1,72 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Node.js Service",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/services/nodejs-service/src/index.ts",
+            "args": [],
+            "runtimeArgs": [
+                "-r",
+                "ts-node/register",
+                "-r",
+                "tsconfig-paths/register"
+            ],
+            "cwd": "${workspaceFolder}/services/nodejs-service",
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "restart": true,
+            "sourceMaps": true,
+            "resolveSourceMapLocations": [
+                "${workspaceFolder}/services/nodejs-service/**",
+                "${workspaceFolder}/libs/**",
+                "!**/node_modules/**"
+            ],
+            "envFile": "${workspaceFolder}/services/nodejs-service/.env"
+        },
+        {
+            "name": "Debug Node.js Service with Nodemon",
+            "type": "node",
+            "request": "attach",
+            "port": 9229,
+            "restart": true,
+            "localRoot": "${workspaceFolder}/services/nodejs-service",
+            "remoteRoot": "${workspaceFolder}/services/nodejs-service",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/services/nodejs-service"
+        },
+        {
+            "name": "Debug Node.js Service Tests",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/services/nodejs-service/node_modules/.bin/jest",
+            "args": [
+                "--runInBand",
+                "--no-cache"
+            ],
+            "runtimeArgs": [
+                "-r",
+                "ts-node/register"
+            ],
+            "cwd": "${workspaceFolder}/services/nodejs-service",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "env": {
+                "NODE_ENV": "test"
+            },
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "envFile": "${workspaceFolder}/services/nodejs-service/.env"
+        }
+    ]
+}

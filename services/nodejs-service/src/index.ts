@@ -1,88 +1,52 @@
-// src/index.ts
-import express from "express";
-import { DataSource } from "typeorm";
-import * as dotenv from "dotenv";
-dotenv.config();
+import 'reflect-metadata';
+import { DataSource } from 'typeorm';
+import { Config } from './infrastructure/config/Config';
+import { Container } from './infrastructure/di/Container';
+import { Logger } from './infrastructure/logging/Logger';
+import { ApplicationServer } from './infrastructure/server/ApplicationServer';
+import { gracefulShutdown } from './infrastructure/utils/gracefulShutdown';
 
-import allRoutes from "./routes/allRoutes";
-import morgan from "morgan";
-import cors from "cors";
-import rateLimit from 'express-rate-limit';
-import cookieParser from "cookie-parser";
+// Global database connection for dependency injection
+export let AppDataSource: DataSource;
 
-const PORT = process.env.SERVER_PORT || 4000;
+const logger = Logger.getInstance();
 
-const app = express();
+async function bootstrap(): Promise<void> {
+  try {
+    logger.info('Starting application bootstrap');
+    
+    // Load configuration
+    const config = Config.getInstance();
+    
+    // Initialize database connection
+    const dbConfig = config.get('database');
+    AppDataSource = new DataSource({
+      ...dbConfig,
+      entities: [__dirname + '/models/entities/*.{ts,js}'],
+      migrations: [__dirname + '/migrations/*.{ts,js}'],
+    });
 
-let allowedOrigins = ['https://datifyy.com'];
-if (process.env.FRONTEND_URL_DEV) {
-  allowedOrigins = [...allowedOrigins, process.env.FRONTEND_URL_DEV];
+    await AppDataSource.initialize();
+    logger.info('Database connection established');
+    
+    // Initialize dependency injection container
+    const container = Container.getInstance(AppDataSource);
+    await container.initialize();
+    
+    // Create and start application server
+    const server = await container.resolve<ApplicationServer>('ApplicationServer');
+    await server.start();
+    
+    // Setup graceful shutdown
+    gracefulShutdown(server);
+    
+    logger.info('Application started successfully');
+    
+  } catch (error) {
+    logger.error('Failed to bootstrap application', error);
+    process.exit(1);
+  }
 }
-app.use(cookieParser()); // Enables parsing cookies in `req.cookies`
 
-app.use(
-  cors({
-    origin: [/\.vercel\.app$/, "https://datifyy.com", "http://localhost:3000"], // Allow only your frontend and all vercel.app subdomains
-    credentials: true, // Allow cookies and auth headers
-    allowedHeaders: ["Content-Type", "Authorization"], // Allow specific headers
-    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
-  })
-);
-
-
-// Create a rate limiter that allows 100 requests per 15 minutes per IP
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per window
-  message: 'Too many requests from this IP, please try again later.',
-  headers: true,
-});
-
-// Apply rate limiting middleware globally to all routes
-app.use(limiter);
-
-app.use(morgan("combined"));
-app.use(express.json());
-
-const AppDataSource = new DataSource({
-  type: "postgres",
-  host: process.env.POSTGRES_DB_HOST,
-  port: Number(process.env.POSTGRES_DB_PORT) || 4000,
-  username: process.env.POSTGRES_USERNAME,
-  password: process.env.POSTGRES_PASSWORD,
-  database: process.env.POSTGRES_DB_NAME,
-  synchronize: false,
-  logging: true,
-  entities: [__dirname + "/models/entities/*.ts"],
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
-export { AppDataSource };
-
-AppDataSource.initialize()
-  .then(() => {
-    console.log("Data Source has been initialized!");
-  })
-  .catch((err) => {
-    console.error("Error during Data Source initialization", err);
-  });
-
-// Define a simple route
-app.get("/", (req, res) => {
-  res.send("Welcome to Datifyy Express Server!");
-});
-
-// Define a health
-app.get("/health", (req, res) => {
-  res.send("Welcome to Datifyy Express Server!");
-});
-
-app.use("/api/v1", allRoutes);
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
-
-export default app;
+// Start the application
+bootstrap();

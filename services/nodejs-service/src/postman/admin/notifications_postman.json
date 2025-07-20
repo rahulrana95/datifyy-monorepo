@@ -1,0 +1,749 @@
+{
+  "info": {
+    "name": "Admin Notifications API",
+    "description": "Complete API collection for admin notification management",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{admin_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "your_admin_jwt_token_here",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Core Notifications",
+      "description": "Basic CRUD operations for notifications",
+      "item": [
+        {
+          "name": "Create Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"triggerEvent\": \"USER_SIGNUP\",\n  \"channels\": [\"email\", \"slack\"],\n  \"priority\": 2,\n  \"title\": \"New User Signup\",\n  \"message\": \"A new user has signed up for the platform\",\n  \"metadata\": {\n    \"userId\": 123,\n    \"userEmail\": \"user@example.com\"\n  },\n  \"recipientAdminIds\": [1, 2, 3]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications?page=1&limit=20&channels=email,slack&statuses=sent,delivered&sortBy=createdAt&sortOrder=desc",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "channels",
+                  "value": "email,slack"
+                },
+                {
+                  "key": "statuses",
+                  "value": "sent,delivered"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Notification by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/{{notification_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "{{notification_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Notification",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"delivered\",\n  \"deliveredAt\": \"2024-01-15T10:30:00Z\",\n  \"metadata\": {\n    \"deliveryProvider\": \"sendgrid\",\n    \"messageId\": \"msg_123\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/{{notification_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "{{notification_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Notification",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/{{notification_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "{{notification_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Retry Notification",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/{{notification_id}}/retry",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "{{notification_id}}", "retry"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Bulk Operations",
+      "description": "Bulk notification operations",
+      "item": [
+        {
+          "name": "Send Bulk Notifications",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"templateId\": \"template_123\",\n  \"recipients\": [\n    {\n      \"channel\": \"email\",\n      \"adminId\": 1,\n      \"templateVariables\": {\n        \"name\": \"John Doe\",\n        \"action\": \"user_signup\"\n      }\n    },\n    {\n      \"channel\": \"slack\",\n      \"recipientAddress\": \"#alerts\",\n      \"templateVariables\": {\n        \"name\": \"Jane Smith\",\n        \"action\": \"payment_failed\"\n      }\n    }\n  ],\n  \"priority\": 3,\n  \"metadata\": {\n    \"campaign\": \"weekly_alerts\",\n    \"source\": \"admin_dashboard\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/bulk-send",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "bulk-send"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Retry Bulk Notifications",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notificationIds\": [\"notif_1\", \"notif_2\", \"notif_3\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/bulk-retry",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "bulk-retry"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Bulk Update Notifications",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"updates\": [\n    {\n      \"id\": \"notif_1\",\n      \"status\": \"cancelled\",\n      \"metadata\": { \"reason\": \"duplicate\" }\n    },\n    {\n      \"id\": \"notif_2\",\n      \"status\": \"delivered\",\n      \"deliveredAt\": \"2024-01-15T10:30:00Z\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/bulk-update",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "bulk-update"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Templates",
+      "description": "Notification template management",
+      "item": [
+        {
+          "name": "Get All Templates",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/templates",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "templates"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Template",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"User Welcome Email\",\n  \"triggerEvent\": \"USER_SIGNUP\",\n  \"channels\": [\"email\"],\n  \"priority\": 2,\n  \"isActive\": true,\n  \"templates\": {\n    \"email\": {\n      \"subject\": \"Welcome to Datifyy, {{name}}!\",\n      \"htmlContent\": \"<h1>Welcome {{name}}!</h1><p>Thanks for joining Datifyy. Get ready to find your perfect match!</p>\",\n      \"textContent\": \"Welcome {{name}}! Thanks for joining Datifyy. Get ready to find your perfect match!\"\n    }\n  },\n  \"conditions\": [\n    {\n      \"field\": \"user.verified\",\n      \"operator\": \"equals\",\n      \"value\": true\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/templates",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "templates"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Template by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/templates/{{template_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "templates", "{{template_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Template",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated User Welcome Email\",\n  \"isActive\": false,\n  \"templates\": {\n    \"email\": {\n      \"subject\": \"Welcome to Datifyy - Find Your Match!\",\n      \"htmlContent\": \"<h1>Welcome to Datifyy!</h1><p>Your dating journey starts here. Complete your profile to get started!</p>\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/templates/{{template_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "templates", "{{template_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Template",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/templates/{{template_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "templates", "{{template_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Duplicate Template",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Copy of User Welcome Email\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/templates/{{template_id}}/duplicate",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "templates", "{{template_id}}", "duplicate"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Test Template",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"channel\": \"email\",\n  \"recipient\": \"test@example.com\",\n  \"templateVariables\": {\n    \"name\": \"John Doe\",\n    \"action\": \"test\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/templates/{{template_id}}/test",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "templates", "{{template_id}}", "test"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "description": "Notification analytics and reporting",
+      "item": [
+        {
+          "name": "Get Notification Analytics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/analytics?startDate=2024-01-01&endDate=2024-01-31",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "analytics"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-01-31"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Performance Metrics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/analytics/performance",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "analytics", "performance"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Engagement Metrics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/analytics/engagement",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "analytics", "engagement"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Cost Analysis",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/analytics/cost",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "analytics", "cost"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Failure Analysis",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/analytics/failure-analysis",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "analytics", "failure-analysis"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Slack Integration",
+      "description": "Slack integration endpoints",
+      "item": [
+        {
+          "name": "Get Slack Channels",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/slack/channels",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "slack", "channels"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Test Slack Connection",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/slack/test-connection",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "slack", "test-connection"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send Slack Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"channel\": \"#general\",\n  \"message\": \"Hello from Datifyy Admin!\",\n  \"blocks\": [\n    {\n      \"type\": \"section\",\n      \"text\": {\n        \"type\": \"mrkdwn\",\n        \"text\": \"*Admin Alert:* New user signup spike detected\"\n      }\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/slack/send-message",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "slack", "send-message"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Slack Webhook Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/slack/webhook-status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "slack", "webhook-status"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Email Integration",
+      "description": "Email integration endpoints",
+      "item": [
+        {
+          "name": "Get Email Delivery Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/email/delivery-status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "email", "delivery-status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send Test Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"channel\": \"email\",\n  \"recipient\": \"test@example.com\",\n  \"customMessage\": \"This is a test email from Datifyy Admin Dashboard\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/email/test-send",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "email", "test-send"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Bounce List",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/email/bounce-list",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "email", "bounce-list"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Suppress Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"reason\": \"user_request\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/email/suppress",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "email", "suppress"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Unsuppress Email",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/email/suppress/user@example.com",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "email", "suppress", "user@example.com"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Utilities",
+      "description": "Utility endpoints for maintenance and monitoring",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Purge Old Notifications",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"daysOld\": 30,\n  \"dryRun\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/purge-old",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "purge-old"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Cache",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cacheKeys\": [\"templates\", \"analytics\", \"preferences\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/refresh-cache",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "refresh-cache"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "System Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/system-status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "system-status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Test All Channels",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"testRecipients\": {\n    \"email\": \"admin@datifyy.com\",\n    \"sms\": \"+1234567890\",\n    \"slack\": \"#admin-alerts\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/test-all-channels",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "test-all-channels"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Queue Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/notifications/queue-status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "notifications", "queue-status"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-generate request ID for tracking",
+          "pm.globals.set('request_id', 'req_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11));"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Basic response validation",
+          "pm.test('Status code is not 5xx', function () {",
+          "    pm.expect(pm.response.code).to.be.below(500);",
+          "});",
+          "",
+          "pm.test('Response has success field', function () {",
+          "    const jsonData = pm.response.json();",
+          "    pm.expect(jsonData).to.have.property('success');",
+          "});",
+          "",
+          "pm.test('Response has metadata with timestamp', function () {",
+          "    const jsonData = pm.response.json();",
+          "    if (jsonData.metadata) {",
+          "        pm.expect(jsonData.metadata).to.have.property('timestamp');",
+          "    }",
+          "});"
+        ]
+      }
+    }
+  ]
+}
